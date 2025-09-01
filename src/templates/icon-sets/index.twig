@@ -1,0 +1,110 @@
+{#
+ # Icon Sets Index
+ #
+ # @link      https://lindemannrock.com
+ # @copyright Copyright (c) 2025 LindemannRock
+ #}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set title = 'Icon Sets'|t('icon-manager') %}
+
+{% set crumbs = [
+    { label: 'Icon Manager'|t('icon-manager'), url: url('icon-manager') }
+] %}
+
+{% block actionButton %}
+    <a href="{{ url('icon-manager/icon-sets/new') }}" class="btn submit add icon">
+        {{ 'New icon set'|t('icon-manager') }}
+    </a>
+{% endblock %}
+
+{% block content %}
+    {% if iconSets|length %}
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th scope="col">{{ 'Name'|t('icon-manager') }}</th>
+                    <th scope="col">{{ 'Handle'|t('icon-manager') }}</th>
+                    <th scope="col">{{ 'Type'|t('icon-manager') }}</th>
+                    <th scope="col">{{ 'Icons'|t('icon-manager') }}</th>
+                    <th scope="col">{{ 'Enabled'|t('icon-manager') }}</th>
+                    <td class="thin"></td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for iconSet in iconSets %}
+                    <tr data-id="{{ iconSet.id }}">
+                        <td>
+                            <a href="{{ url('icon-manager/icon-sets/' ~ iconSet.id) }}">
+                                {{ iconSet.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <code>{{ iconSet.handle }}</code>
+                        </td>
+                        <td>
+                            {{ iconSet.getTypeLabel() }}
+                        </td>
+                        <td>
+                            {{ iconSet.getIconCount() }}
+                        </td>
+                        <td>
+                            {% if iconSet.enabled %}
+                                <span class="status enabled"></span>
+                            {% else %}
+                                <span class="status disabled"></span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="delete icon" 
+                               title="{{ 'Delete'|t('app') }}" 
+                               role="button"
+                               aria-label="{{ 'Delete'|t('app') }}">
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>{{ 'No icon sets exist yet.'|t('icon-manager') }}</p>
+    {% endif %}
+{% endblock %}
+
+{% js %}
+    // Handle delete clicks
+    $(document).on('click', 'table.data a.delete', function(e) {
+        e.preventDefault();
+        
+        var $row = $(this).closest('tr');
+        var iconSetId = $row.data('id');
+        var iconSetName = $row.find('td:first-child a').text().trim();
+        
+        var message = {{ 'Are you sure you want to delete "{name}"?'|t('icon-manager')|json_encode|raw }};
+        message = message.replace('{name}', iconSetName);
+        
+        if (confirm(message)) {
+            Craft.postActionRequest('icon-manager/icon-sets/delete', {
+                iconSetId: iconSetId
+            }, function(response, textStatus) {
+                if (textStatus === 'success') {
+                    if (response.success) {
+                        Craft.cp.displayNotice({{ 'Icon set deleted.'|t('icon-manager')|json_encode|raw }});
+                        $row.fadeOut(function() {
+                            $(this).remove();
+                            // Check if table is now empty
+                            if ($('table.data tbody tr').length === 0) {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        Craft.cp.displayError(response.error || {{ "Couldn't delete icon set."|t('icon-manager')|json_encode|raw }});
+                    }
+                }
+            });
+        }
+    });
+{% endjs %}
+

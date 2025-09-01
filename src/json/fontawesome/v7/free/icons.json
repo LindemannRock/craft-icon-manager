@@ -1,0 +1,274 @@
+{
+  "house": {
+    "label": "House",
+    "unicode": "f015",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["home", "building", "house", "residence"]
+    }
+  },
+  "arrow-right": {
+    "label": "Arrow Right",
+    "unicode": "f061",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["arrow", "right", "next", "forward"]
+    }
+  },
+  "arrow-left": {
+    "label": "Arrow Left", 
+    "unicode": "f060",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["arrow", "left", "back", "previous"]
+    }
+  },
+  "arrow-up": {
+    "label": "Arrow Up",
+    "unicode": "f062", 
+    "styles": ["solid"],
+    "search": {
+      "terms": ["arrow", "up", "top"]
+    }
+  },
+  "arrow-down": {
+    "label": "Arrow Down",
+    "unicode": "f063",
+    "styles": ["solid"], 
+    "search": {
+      "terms": ["arrow", "down", "bottom"]
+    }
+  },
+  "plus": {
+    "label": "Plus",
+    "unicode": "f067",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["add", "plus", "create", "new"]
+    }
+  },
+  "minus": {
+    "label": "Minus", 
+    "unicode": "f068",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["subtract", "minus", "remove"]
+    }
+  },
+  "edit": {
+    "label": "Edit",
+    "unicode": "f044",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["edit", "pencil", "modify", "write"]
+    }
+  },
+  "trash": {
+    "label": "Trash",
+    "unicode": "f1f8",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["delete", "trash", "remove", "bin"]
+    }
+  },
+  "save": {
+    "label": "Save",
+    "unicode": "f0c7",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["save", "disk", "floppy"]
+    }
+  },
+  "download": {
+    "label": "Download",
+    "unicode": "f019",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["download", "save", "export"]
+    }
+  },
+  "upload": {
+    "label": "Upload",
+    "unicode": "f093",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["upload", "import", "cloud"]
+    }
+  },
+  "print": {
+    "label": "Print",
+    "unicode": "f02f",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["print", "printer"]
+    }
+  },
+  "share": {
+    "label": "Share",
+    "unicode": "f064",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["share", "export", "send"]
+    }
+  },
+  "link": {
+    "label": "Link",
+    "unicode": "f0c1",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["link", "url", "chain"]
+    }
+  },
+  "user": {
+    "label": "User",
+    "unicode": "f007",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["person", "profile", "account", "avatar"]
+    }
+  },
+  "envelope": {
+    "label": "Envelope",
+    "unicode": "f0e0",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["email", "mail", "message", "letter"]
+    }
+  },
+  "gear": {
+    "label": "Gear",
+    "unicode": "f013",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["settings", "cog", "preferences", "options", "configuration"]
+    }
+  },
+  "heart": {
+    "label": "Heart",
+    "unicode": "f004",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["love", "like", "favorite", "valentine"]
+    }
+  },
+  "star": {
+    "label": "Star",
+    "unicode": "f005",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["favorite", "rating", "bookmark"]
+    }
+  },
+  "check": {
+    "label": "Check",
+    "unicode": "f00c",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["checkmark", "done", "complete", "success", "yes", "tick"]
+    }
+  },
+  "xmark": {
+    "label": "X Mark",
+    "unicode": "f00d",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["close", "exit", "x", "cross", "cancel", "delete", "remove"]
+    }
+  },
+  "magnifying-glass": {
+    "label": "Magnifying Glass",
+    "unicode": "f002",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["search", "find", "lookup", "zoom"]
+    }
+  },
+  "bars": {
+    "label": "Bars",
+    "unicode": "f0c9",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["menu", "hamburger", "navigation", "nav"]
+    }
+  },
+  "phone": {
+    "label": "Phone",
+    "unicode": "f095",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["telephone", "call", "contact"]
+    }
+  },
+  "location-dot": {
+    "label": "Location Dot",
+    "unicode": "f3c5",
+    "styles": ["solid"],
+    "search": {
+      "terms": ["location", "map", "pin", "marker", "address"]
+    }
+  },
+  "calendar": {
+    "label": "Calendar",
+    "unicode": "f133",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["date", "time", "schedule", "event"]
+    }
+  },
+  "clock": {
+    "label": "Clock",
+    "unicode": "f017",
+    "styles": ["solid", "regular"],
+    "search": {
+      "terms": ["time", "watch", "hour", "minute"]
+    }
+  },
+  "facebook": {
+    "label": "Facebook",
+    "unicode": "f09a",
+    "styles": ["brands"],
+    "search": {
+      "terms": ["social", "facebook", "fb"]
+    }
+  },
+  "twitter": {
+    "label": "Twitter",
+    "unicode": "f099",
+    "styles": ["brands"],
+    "search": {
+      "terms": ["social", "twitter", "tweet", "x"]
+    }
+  },
+  "instagram": {
+    "label": "Instagram",
+    "unicode": "f16d",
+    "styles": ["brands"],
+    "search": {
+      "terms": ["social", "instagram", "photo"]
+    }
+  },
+  "youtube": {
+    "label": "YouTube",
+    "unicode": "f167",
+    "styles": ["brands"],
+    "search": {
+      "terms": ["social", "youtube", "video"]
+    }
+  },
+  "linkedin": {
+    "label": "LinkedIn",
+    "unicode": "f08c",
+    "styles": ["brands"],
+    "search": {
+      "terms": ["social", "linkedin", "professional"]
+    }
+  },
+  "github": {
+    "label": "GitHub",
+    "unicode": "f09b",
+    "styles": ["brands"],
+    "search": {
+      "terms": ["code", "github", "git", "repository"]
+    }
+  }
+}

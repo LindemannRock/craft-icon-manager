@@ -1,0 +1,117 @@
+{#
+ # Icon Manager Settings
+ #
+ # @link      https://lindemannrock.com
+ # @copyright Copyright (c) 2025 LindemannRock
+ #}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set title = 'Settings'|t('icon-manager') %}
+{% set fullPageForm = true %}
+
+{% block content %}
+    {{ actionInput('icon-manager/settings/save') }}
+    {{ redirectInput('icon-manager/settings') }}
+
+    {{ forms.textField({
+        label: 'Plugin name'|t('icon-manager'),
+        instructions: 'The public-facing name of the plugin'|t('icon-manager'),
+        id: 'pluginName',
+        name: 'settings[pluginName]',
+        value: settings.pluginName ?? 'Icon Manager',
+        placeholder: 'Icon Manager',
+        warning: settings.isOverridden('pluginName') ? 'This is being overridden by the `pluginName` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverridden('pluginName')
+    }) }}
+
+    <hr>
+
+    <h2>{{ 'General Settings'|t('icon-manager') }}</h2>
+
+    {{ forms.autosuggestField({
+        label: 'Icons Path'|t('icon-manager'),
+        instructions: 'Provide the full path to your icon files. Also supports aliases.'|t('icon-manager'),
+        id: 'iconSetsPath',
+        name: 'settings[iconSetsPath]',
+        value: settings.iconSetsPath,
+        suggestEnvVars: true,
+        suggestAliases: true,
+        required: true,
+        warning: settings.isOverridden('iconSetsPath') ? 'This is being overridden by the `iconSetsPath` setting in the `config/icon-manager.php` file.'|t('icon-manager') : 'All icon sets will look for icons relative to this path.',
+        disabled: settings.isOverridden('iconSetsPath')
+    }) }}
+
+    <hr>
+
+    <h2>{{ 'Cache Settings'|t('icon-manager') }}</h2>
+
+    {{ forms.lightswitchField({
+        label: 'Enable Cache'|t('icon-manager'),
+        instructions: 'Whether to cache icon data for better performance.'|t('icon-manager'),
+        id: 'enableCache',
+        name: 'settings[enableCache]',
+        on: settings.enableCache,
+        warning: settings.isOverridden('enableCache') ? 'This is being overridden by the `enableCache` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverridden('enableCache')
+    }) }}
+
+    {{ forms.textField({
+        label: 'Cache Duration'|t('icon-manager'),
+        instructions: 'How long to cache icon data, in seconds.'|t('icon-manager'),
+        id: 'cacheDuration',
+        name: 'settings[cacheDuration]',
+        value: settings.cacheDuration,
+        type: 'number',
+        min: 0,
+        warning: settings.isOverridden('cacheDuration') ? 'This is being overridden by the `cacheDuration` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverridden('cacheDuration')
+    }) }}
+
+    <hr>
+
+    <h2>{{ 'Icon Types'|t('icon-manager') }}</h2>
+
+    <p>{{ 'Choose which icon set types are available in the system.'|t('icon-manager') }}</p>
+
+    {{ forms.lightswitchField({
+        label: 'SVG Folder'|t('icon-manager'),
+        instructions: 'Enable SVG files from folders'|t('icon-manager'),
+        id: 'enabledIconTypes-svg-folder',
+        name: 'settings[enabledIconTypes][svg-folder]',
+        on: settings.enabledIconTypes['svg-folder'] ?? true,
+        warning: settings.isIconTypeOverridden('svg-folder') ? 'This is being overridden by the `enabledIconTypes[\'svg-folder\']` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isIconTypeOverridden('svg-folder')
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: 'SVG Sprite'|t('icon-manager'),
+        instructions: 'Enable SVG sprite files'|t('icon-manager'),
+        id: 'enabledIconTypes-svg-sprite',
+        name: 'settings[enabledIconTypes][svg-sprite]',
+        on: settings.enabledIconTypes['svg-sprite'] ?? true,
+        warning: settings.isIconTypeOverridden('svg-sprite') ? 'This is being overridden by the `enabledIconTypes[\'svg-sprite\']` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isIconTypeOverridden('svg-sprite')
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: 'Font Awesome'|t('icon-manager'),
+        instructions: 'Enable Font Awesome icons'|t('icon-manager'),
+        id: 'enabledIconTypes-font-awesome',
+        name: 'settings[enabledIconTypes][font-awesome]',
+        on: settings.enabledIconTypes['font-awesome'] ?? true,
+        warning: settings.isIconTypeOverridden('font-awesome') ? 'This is being overridden by the `enabledIconTypes[\'font-awesome\']` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isIconTypeOverridden('font-awesome')
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: 'Material Icons'|t('icon-manager'),
+        instructions: 'Enable Material Design icons'|t('icon-manager'),
+        id: 'enabledIconTypes-material-icons',
+        name: 'settings[enabledIconTypes][material-icons]',
+        on: settings.enabledIconTypes['material-icons'] ?? false,
+        warning: settings.isIconTypeOverridden('material-icons') ? 'This is being overridden by the `enabledIconTypes[\'material-icons\']` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isIconTypeOverridden('material-icons')
+    }) }}
+{% endblock %}

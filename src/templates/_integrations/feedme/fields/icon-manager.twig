@@ -1,0 +1,27 @@
+{% import "_includes/forms" as forms %}
+
+<tr>
+    <td>{{ field.name }}</td>
+    <td>
+        {{ forms.selectField({
+            name: 'fieldMapping[' ~ field.handle ~ ']',
+            options: feedData,
+            value: feed.fieldMapping[field.handle] ?? ''
+        }) }}
+    </td>
+    <td>
+        {{ forms.textField({
+            name: 'fieldDefaults[' ~ field.handle ~ ']',
+            value: feed.fieldDefaults[field.handle] ?? '',
+            placeholder: 'e.g., alhatab:health-gluten-free'
+        }) }}
+        
+        {% if field.allowMultiple %}
+            <p class="instructions">{{ 'For multiple icons, use semicolon separation: icon1;icon2;icon3'|t('icon-manager') }}</p>
+        {% endif %}
+        
+        <p class="instructions">
+            {{ 'Formats: "iconSet:iconName" or just "iconName" (uses alhatab set)'|t('icon-manager') }}
+        </p>
+    </td>
+</tr>

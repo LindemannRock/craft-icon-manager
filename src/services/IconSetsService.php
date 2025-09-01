@@ -1,0 +1,294 @@
+<?php
+/**
+ * Icon Manager plugin for Craft CMS 5.x
+ *
+ * @link      https://lindemannrock.com
+ * @copyright Copyright (c) 2025 LindemannRock
+ */
+
+namespace lindemannrock\iconmanager\services;
+
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\IconSet;
+use lindemannrock\iconmanager\records\IconSetRecord;
+
+use Craft;
+use craft\base\Component;
+use craft\db\Query;
+use craft\helpers\DateTimeHelper;
+use craft\helpers\Db;
+use craft\helpers\StringHelper;
+
+/**
+ * Icon Sets Service
+ */
+class IconSetsService extends Component
+{
+    /**
+     * @var IconSet[]|null
+     */
+    private ?array $_iconSetsById = null;
+
+    /**
+     * @var IconSet[]|null
+     */
+    private ?array $_iconSetsByHandle = null;
+
+    /**
+     * Clear icon sets cache
+     */
+    public function clearCache(): void
+    {
+        $this->_iconSetsById = null;
+        $this->_iconSetsByHandle = null;
+    }
+    
+    /**
+     * Get all icon sets
+     * 
+     * @return IconSet[]
+     */
+    public function getAllIconSets(): array
+    {
+        if ($this->_iconSetsById !== null) {
+            return array_values($this->_iconSetsById);
+        }
+
+        $results = $this->_createIconSetQuery()
+            ->orderBy(['sortOrder' => SORT_ASC, 'name' => SORT_ASC])
+            ->all();
+
+        $this->_iconSetsById = [];
+        $this->_iconSetsByHandle = [];
+
+        foreach ($results as $result) {
+            $iconSet = $this->_createIconSetFromRecord($result);
+            $this->_iconSetsById[$iconSet->id] = $iconSet;
+            $this->_iconSetsByHandle[$iconSet->handle] = $iconSet;
+        }
+
+        return array_values($this->_iconSetsById);
+    }
+
+    /**
+     * Get all enabled icon sets
+     * 
+     * @return IconSet[]
+     */
+    public function getAllEnabledIconSets(): array
+    {
+        return array_filter($this->getAllIconSets(), fn($iconSet) => $iconSet->enabled);
+    }
+
+    /**
+     * Get an icon set by ID
+     */
+    public function getIconSetById(int $id, bool $fresh = false): ?IconSet
+    {
+        if ($fresh) {
+            $this->clearCache();
+        }
+        
+        if ($this->_iconSetsById === null) {
+            $this->getAllIconSets();
+        }
+
+        return $this->_iconSetsById[$id] ?? null;
+    }
+
+    /**
+     * Get an icon set by handle
+     */
+    public function getIconSetByHandle(string $handle): ?IconSet
+    {
+        if ($this->_iconSetsByHandle === null) {
+            $this->getAllIconSets();
+        }
+
+        return $this->_iconSetsByHandle[$handle] ?? null;
+    }
+
+    /**
+     * Get multiple icon sets by their handles
+     * 
+     * @param string[] $handles
+     * @return IconSet[]
+     */
+    public function getIconSetsByHandles(array $handles): array
+    {
+        $iconSets = [];
+        
+        foreach ($handles as $handle) {
+            $iconSet = $this->getIconSetByHandle($handle);
+            if ($iconSet) {
+                $iconSets[] = $iconSet;
+            }
+        }
+
+        return $iconSets;
+    }
+
+    /**
+     * Save an icon set
+     */
+    public function saveIconSet(IconSet $iconSet, bool $runValidation = true): bool
+    {
+        $isNew = !$iconSet->id;
+
+        if ($runValidation && !$iconSet->validate()) {
+            Craft::info('Icon set not saved due to validation error.', __METHOD__);
+            return false;
+        }
+
+        $db = Craft::$app->getDb();
+        $transaction = $db->beginTransaction();
+
+        try {
+            // Get the record
+            if ($iconSet->id) {
+                $record = IconSetRecord::findOne($iconSet->id);
+                if (!$record) {
+                    throw new \Exception('Invalid icon set ID: ' . $iconSet->id);
+                }
+            } else {
+                $record = new IconSetRecord();
+                $iconSet->uid = StringHelper::UUID();
+            }
+
+            // Set attributes
+            $record->name = $iconSet->name;
+            $record->handle = $iconSet->handle;
+            $record->type = $iconSet->type;
+            $record->settings = json_encode($iconSet->settings);
+            $record->enabled = $iconSet->enabled;
+            $record->sortOrder = $iconSet->sortOrder ?? 0;
+            $record->uid = $iconSet->uid;
+
+            // Save record
+            if (!$record->save()) {
+                throw new \Exception('Could not save icon set record.');
+            }
+
+            if ($isNew) {
+                $iconSet->id = $record->id;
+            }
+
+            // Clear caches
+            $this->_iconSetsById = null;
+            $this->_iconSetsByHandle = null;
+
+            // Update icon cache for this set
+            IconManager::getInstance()->icons->refreshIconsForSet($iconSet);
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Craft::error('Failed to save icon set: ' . $e->getMessage(), __METHOD__);
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete an icon set
+     */
+    public function deleteIconSet(IconSet $iconSet): bool
+    {
+        $db = Craft::$app->getDb();
+        $transaction = $db->beginTransaction();
+
+        try {
+            // Delete all icons for this set (handled by foreign key cascade)
+            
+            // Delete the icon set record
+            $db->createCommand()
+                ->delete('{{%iconmanager_iconsets}}', ['id' => $iconSet->id])
+                ->execute();
+
+            // Clear caches
+            $this->_iconSetsById = null;
+            $this->_iconSetsByHandle = null;
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            Craft::error('Failed to delete icon set: ' . $e->getMessage(), __METHOD__);
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * Reorder icon sets
+     */
+    public function reorderIconSets(array $iconSetIds): bool
+    {
+        $db = Craft::$app->getDb();
+        $transaction = $db->beginTransaction();
+
+        try {
+            foreach ($iconSetIds as $order => $id) {
+                $db->createCommand()
+                    ->update('{{%iconmanager_iconsets}}', 
+                        ['sortOrder' => $order + 1], 
+                        ['id' => $id]
+                    )
+                    ->execute();
+            }
+
+            // Clear caches
+            $this->_iconSetsById = null;
+            $this->_iconSetsByHandle = null;
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+
+        return true;
+    }
+
+    /**
+     * Create icon set query
+     */
+    private function _createIconSetQuery(): Query
+    {
+        return (new Query())
+            ->select([
+                'id',
+                'name',
+                'handle',
+                'type',
+                'settings',
+                'enabled',
+                'sortOrder',
+                'dateCreated',
+                'dateUpdated',
+                'uid',
+            ])
+            ->from(['{{%iconmanager_iconsets}}']);
+    }
+
+    /**
+     * Create icon set model from record
+     */
+    private function _createIconSetFromRecord($record): IconSet
+    {
+        $iconSet = new IconSet();
+        $iconSet->id = $record['id'];
+        $iconSet->name = $record['name'];
+        $iconSet->handle = $record['handle'];
+        $iconSet->type = $record['type'];
+        $iconSet->settings = json_decode($record['settings'], true) ?: [];
+        $iconSet->enabled = (bool)$record['enabled'];
+        $iconSet->sortOrder = $record['sortOrder'];
+        $iconSet->dateCreated = DateTimeHelper::toDateTime($record['dateCreated']);
+        $iconSet->dateUpdated = DateTimeHelper::toDateTime($record['dateUpdated']);
+        $iconSet->uid = $record['uid'];
+
+        return $iconSet;
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "name": "lindemannrock/icon-manager",
+    "description": "Comprehensive icon management field supporting SVG libraries and icon fonts for Craft CMS",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "icon",
+        "svg",
+        "fontawesome",
+        "material icons",
+        "icon manager"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "LindemannRock",
+            "homepage": "https://lindemannrock.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0.2",
+        "craftcms/cms": "^5.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "lindemannrock\\iconmanager\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Icon Manager",
+        "handle": "icon-manager",
+        "developer": "LindemannRock",
+        "developerUrl": "https://lindemannrock.com",
+        "documentationUrl": "https://github.com/lindemannrock/icon-manager/blob/master/README.md",
+        "changelogUrl": "https://github.com/lindemannrock/icon-manager/blob/master/CHANGELOG.md",
+        "class": "lindemannrock\\iconmanager\\IconManager"
+    }
+}

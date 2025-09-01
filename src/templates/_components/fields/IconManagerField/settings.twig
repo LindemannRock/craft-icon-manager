@@ -1,0 +1,74 @@
+{#
+ # Icon Manager Field Settings
+ #
+ # @link      https://lindemannrock.com
+ # @copyright Copyright (c) 2025 LindemannRock
+ #}
+
+{% import "_includes/forms" as forms %}
+
+{{ forms.checkboxSelectField({
+    label: 'Allowed Icon Sets'|t('icon-manager'),
+    instructions: 'Choose which icon sets can be selected in this field. Leave blank to allow all enabled icon sets.'|t('icon-manager'),
+    id: 'allowedIconSets',
+    name: 'allowedIconSets',
+    options: iconSetOptions,
+    values: field.allowedIconSets,
+    showAllOption: true,
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Show Search'|t('icon-manager'),
+    instructions: 'Whether to show the search box in the icon picker.'|t('icon-manager'),
+    id: 'showSearch',
+    name: 'showSearch',
+    on: field.showSearch,
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Show Labels'|t('icon-manager'),
+    instructions: 'Whether to show icon labels in the picker.'|t('icon-manager'),
+    id: 'showLabels',
+    name: 'showLabels',
+    on: field.showLabels,
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Allow Multiple Selection'|t('icon-manager'),
+    instructions: 'Whether to allow selecting multiple icons. When enabled, the field will return an array of icons instead of a single icon.'|t('icon-manager'),
+    id: 'allowMultiple',
+    name: 'allowMultiple',
+    on: field.allowMultiple,
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Allow Custom Labels'|t('icon-manager'),
+    instructions: 'Allow editing custom labels for selected icons in the field interface.'|t('icon-manager'),
+    id: 'allowCustomLabels',
+    name: 'allowCustomLabels',
+    on: field.allowCustomLabels ?? false,
+}) }}
+
+{{ forms.selectField({
+    label: 'Icon Size'|t('icon-manager'),
+    instructions: 'The size of icons in the picker.'|t('icon-manager'),
+    id: 'iconSize',
+    name: 'iconSize',
+    value: field.iconSize,
+    options: [
+        { label: 'Small'|t('icon-manager'), value: 'small' },
+        { label: 'Medium'|t('icon-manager'), value: 'medium' },
+        { label: 'Large'|t('icon-manager'), value: 'large' },
+    ],
+}) }}
+
+{{ forms.textField({
+    label: 'Icons Per Page'|t('icon-manager'),
+    instructions: 'The number of icons to display per page in the picker.'|t('icon-manager'),
+    id: 'iconsPerPage',
+    name: 'iconsPerPage',
+    value: field.iconsPerPage,
+    type: 'number',
+    min: 10,
+    max: 500,
+}) }}

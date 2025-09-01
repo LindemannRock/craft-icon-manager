@@ -1,0 +1,52 @@
+{
+  "home": {
+    "keywords": ["house", "building", "residence"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e88a"
+  },
+  "search": {
+    "keywords": ["find", "magnifying glass", "look", "query"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e8b6"
+  },
+  "settings": {
+    "keywords": ["gear", "preferences", "options", "configuration"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e8b8"
+  },
+  "favorite": {
+    "keywords": ["heart", "love", "like", "star"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e87d"
+  },
+  "account_circle": {
+    "keywords": ["user", "person", "profile", "avatar"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e853"
+  },
+  "shopping_cart": {
+    "keywords": ["basket", "buy", "purchase", "store"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e8cc"
+  },
+  "done": {
+    "keywords": ["check", "checkmark", "complete", "success", "tick"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e876"
+  },
+  "close": {
+    "keywords": ["x", "cancel", "exit", "remove", "delete"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e5cd"
+  },
+  "menu": {
+    "keywords": ["hamburger", "navigation", "bars", "nav"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e5d2"
+  },
+  "mail": {
+    "keywords": ["email", "envelope", "message", "letter"],
+    "styles": ["filled", "outlined", "rounded", "sharp", "two-tone"],
+    "codepoint": "e158"
+  }
+}

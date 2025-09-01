@@ -1,0 +1,62 @@
+{
+  "home": {
+    "keywords": ["house", "building", "residence"],
+    "codepoint": "e88a"
+  },
+  "search": {
+    "keywords": ["find", "magnifying glass", "look", "query"],
+    "codepoint": "e8b6"
+  },
+  "settings": {
+    "keywords": ["gear", "preferences", "options", "configuration"],
+    "codepoint": "e8b8"
+  },
+  "favorite": {
+    "keywords": ["heart", "love", "like", "star"],
+    "codepoint": "e87d"
+  },
+  "person": {
+    "keywords": ["user", "account", "profile", "avatar"],
+    "codepoint": "e7fd"
+  },
+  "shopping_cart": {
+    "keywords": ["basket", "buy", "purchase", "store"],
+    "codepoint": "e8cc"
+  },
+  "check": {
+    "keywords": ["done", "checkmark", "complete", "success", "tick"],
+    "codepoint": "e5ca"
+  },
+  "close": {
+    "keywords": ["x", "cancel", "exit", "remove", "delete"],
+    "codepoint": "e5cd"
+  },
+  "menu": {
+    "keywords": ["hamburger", "navigation", "bars", "nav"],
+    "codepoint": "e5d2"
+  },
+  "mail": {
+    "keywords": ["email", "envelope", "message", "letter"],
+    "codepoint": "e158"
+  },
+  "star": {
+    "keywords": ["favorite", "rating", "bookmark"],
+    "codepoint": "e838"
+  },
+  "delete": {
+    "keywords": ["trash", "remove", "bin", "garbage"],
+    "codepoint": "e872"
+  },
+  "edit": {
+    "keywords": ["pencil", "modify", "change", "write"],
+    "codepoint": "e3c9"
+  },
+  "share": {
+    "keywords": ["social", "send", "forward"],
+    "codepoint": "e80d"
+  },
+  "download": {
+    "keywords": ["save", "arrow down", "get"],
+    "codepoint": "e2c4"
+  }
+}

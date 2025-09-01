@@ -1,0 +1,37 @@
+{% import "_includes/forms" as forms %}
+
+<h2>{{ 'Clear Icon Cache'|t('icon-manager') }}</h2>
+
+<p>{{ 'The icon cache helps improve performance by storing icon data. Clear it when you add new icons or change icon metadata.'|t('icon-manager') }}</p>
+
+<h3>{{ 'System Overview'|t('icon-manager') }}</h3>
+<ul>
+    <li>{{ 'Total Icon Sets: {count}'|t('icon-manager', { count: iconSetCount }) }}</li>
+    <li>{{ 'Total Icons Available: {count}'|t('icon-manager', { count: totalIcons }) }}</li>
+    <li>{{ 'Cache Status: {status}'|t('icon-manager', { status: cacheEnabled ? 'Enabled' : 'Disabled' }) }}</li>
+    {% if cacheEnabled %}
+        <li>{{ 'Cache Duration: {duration}'|t('icon-manager', { duration: cacheDuration }) }}</li>
+    {% endif %}
+</ul>
+
+<form method="post" accept-charset="UTF-8">
+    {{ csrfInput() }}
+    {{ actionInput('icon-manager/cache/clear') }}
+    {{ redirectInput('utilities/clear-icon-cache') }}
+    
+    <div class="buttons">
+        <button type="submit" class="btn submit">
+            {{ 'Clear Icon Cache'|t('icon-manager') }}
+        </button>
+    </div>
+</form>
+
+<hr>
+
+<h3>{{ 'When to Clear Cache'|t('icon-manager') }}</h3>
+<p>{{ 'You should clear the icon cache when:'|t('icon-manager') }}</p>
+<ul>
+    <li>{{ "You've added or removed icons from your icon folders"|t('icon-manager') }}</li>
+    <li>{{ "You've updated icon metadata or keywords"|t('icon-manager') }}</li>
+    <li>{{ 'Icons are not appearing correctly'|t('icon-manager') }}</li>
+</ul>

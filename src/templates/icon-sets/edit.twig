@@ -1,0 +1,387 @@
+{#
+ # Icon Set Edit
+ #
+ # @link      https://lindemannrock.com
+ # @copyright Copyright (c) 2025 LindemannRock
+ #}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set fullPageForm = true %}
+
+{% set title = isNew ? 'New Icon Set'|t('icon-manager') : iconSet.name %}
+
+{% set crumbs = [
+    { label: 'Icon Manager'|t('icon-manager'), url: url('icon-manager') },
+    { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
+] %}
+
+{% block actionButton %}
+    <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+{% endblock %}
+
+{% block content %}
+    {{ actionInput('icon-manager/icon-sets/save') }}
+    {% if iconSet.id %}
+        {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id) }}
+    {% else %}
+        {{ redirectInput('icon-manager/icon-sets/{id}') }}
+    {% endif %}
+    
+    {% if not isNew %}
+        {{ hiddenInput('iconSetId', iconSet.id) }}
+    {% endif %}
+
+    {{ forms.textField({
+        label: 'Name'|t('icon-manager'),
+        instructions: 'What this icon set will be called in the control panel.'|t('icon-manager'),
+        id: 'name',
+        name: 'name',
+        value: iconSet.name,
+        errors: iconSet.getErrors('name'),
+        required: true,
+        first: true,
+    }) }}
+
+    {{ forms.textField({
+        label: 'Handle'|t('icon-manager'),
+        instructions: 'How you\'ll refer to this icon set in templates.'|t('icon-manager'),
+        id: 'handle',
+        name: 'handle',
+        value: iconSet.handle,
+        errors: iconSet.getErrors('handle'),
+        required: true,
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Type'|t('icon-manager'),
+        instructions: 'The type of icon set.'|t('icon-manager'),
+        id: 'type',
+        name: 'type',
+        value: iconSet.type,
+        errors: iconSet.getErrors('type'),
+        required: true,
+        options: [
+            { label: 'Choose a type'|t('icon-manager'), value: '' },
+            { label: 'SVG Folder'|t('icon-manager'), value: 'svg-folder' },
+            { label: 'SVG Sprite'|t('icon-manager'), value: 'svg-sprite' },
+            { label: 'Font Awesome'|t('icon-manager'), value: 'font-awesome' },
+            { label: 'Material Icons'|t('icon-manager'), value: 'material-icons' },
+        ],
+    }) }}
+
+    <div id="type-settings">
+        <div id="svg-folder-settings" class="{% if iconSet.type != 'svg-folder' %}hidden{% endif %}">
+            <h2>{{ 'SVG Folder Settings'|t('icon-manager') }}</h2>
+            
+            {{ forms.selectField({
+                label: 'Folder'|t('icon-manager'),
+                instructions: 'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.'|t('icon-manager'),
+                id: 'settings-folder',
+                name: 'settings[folder]',
+                value: (iconSet.settings.folder ?? '')|trim('/', 'left'),
+                options: availableFolders,
+                required: false,
+            }) }}
+
+            {{ forms.lightswitchField({
+                label: 'Include Subfolders'|t('icon-manager'),
+                instructions: 'Whether to include icons from subfolders.'|t('icon-manager'),
+                id: 'settings-includeSubfolders',
+                name: 'settings[includeSubfolders]',
+                on: iconSet.settings.includeSubfolders ?? false,
+            }) }}
+        </div>
+        
+        <div id="svg-sprite-settings" class="{% if iconSet.type != 'svg-sprite' %}hidden{% endif %}">
+            <h2>{{ 'SVG Sprite Settings'|t('icon-manager') }}</h2>
+            
+            {{ forms.textField({
+                label: 'Sprite File'|t('icon-manager'),
+                instructions: 'The sprite file path relative to your icon sets path.'|t('icon-manager'),
+                id: 'settings-spriteFile',
+                name: 'settings[spriteFile]',
+                value: iconSet.settings.spriteFile ?? '',
+                placeholder: 'sprites/icons.svg',
+            }) }}
+
+            {{ forms.textField({
+                label: 'ID Prefix'|t('icon-manager'),
+                instructions: 'Optional prefix to remove from symbol IDs.'|t('icon-manager'),
+                id: 'settings-prefix',
+                name: 'settings[prefix]',
+                value: iconSet.settings.prefix ?? '',
+                placeholder: 'icon-',
+            }) }}
+        </div>
+        
+        <div id="font-awesome-settings" class="{% if iconSet.type != 'font-awesome' %}hidden{% endif %}">
+            <h2>{{ 'Font Awesome Settings'|t('icon-manager') }}</h2>
+            
+            {{ forms.selectField({
+                label: 'Integration Type'|t('icon-manager'),
+                instructions: 'How to integrate Font Awesome icons.'|t('icon-manager'),
+                id: 'settings-fa-type',
+                name: 'settings[type]',
+                value: iconSet.settings.type ?? 'cdn',
+                options: [
+                    { label: 'CDN'|t('icon-manager'), value: 'cdn' },
+                    { label: 'Kit'|t('icon-manager'), value: 'kit' },
+                    { label: 'Local Files'|t('icon-manager'), value: 'local' },
+                ],
+            }) }}
+            
+            <div id="fa-kit-settings" class="{% if (iconSet.settings.type ?? 'cdn') != 'kit' %}hidden{% endif %}">
+                {{ forms.textField({
+                    label: 'Kit Code'|t('icon-manager'),
+                    instructions: 'Your Font Awesome kit code (the part after kit.fontawesome.com/). Example: if your kit URL is https://kit.fontawesome.com/abc123def456.js, enter "abc123def456"'|t('icon-manager'),
+                    id: 'settings-kitCode',
+                    name: 'settings[kitCode]',
+                    value: iconSet.settings.kitCode ?? '',
+                    placeholder: 'abc123def456',
+                    required: true,
+                }) }}
+                
+                <div class="field">
+                    <div class="heading">
+                        <label>{{ 'How to find your Kit Code'|t('icon-manager') }}</label>
+                    </div>
+                    <div class="instructions">
+                        <p>{{ '1. Go to fontawesome.com and sign in to your account'|t('icon-manager') }}</p>
+                        <p>{{ '2. Navigate to "Kits" in your account dashboard'|t('icon-manager') }}</p>
+                        <p>{{ '3. Copy the code from your kit\'s embed script'|t('icon-manager') }}</p>
+                        <p>{{ 'Example: <script src="https://kit.fontawesome.com/abc123def456.js" crossorigin="anonymous"></script>'|t('icon-manager') }}</p>
+                        <p>{{ 'Just copy the "abc123def456" part'|t('icon-manager') }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="fa-cdn-settings" class="{% if (iconSet.settings.type ?? 'cdn') != 'cdn' %}hidden{% endif %}">
+                {{ forms.selectField({
+                    label: 'Version'|t('icon-manager'),
+                    instructions: 'Font Awesome version to use. Only v7 is supported.'|t('icon-manager'),
+                    id: 'settings-version',
+                    name: 'settings[version]',
+                    value: iconSet.settings.version ?? '7.0.0',
+                    options: [
+                        { label: 'Version 7.0.0', value: '7.0.0' },
+                    ],
+                }) }}
+                
+                {{ forms.selectField({
+                    label: 'License'|t('icon-manager'),
+                    instructions: 'Font Awesome license type.'|t('icon-manager'),
+                    id: 'settings-license',
+                    name: 'settings[license]',
+                    value: iconSet.settings.license ?? 'free',
+                    options: [
+                        { label: 'Free', value: 'free' },
+                        { label: 'Pro', value: 'pro' },
+                    ],
+                }) }}
+                
+                {{ forms.checkboxSelectField({
+                    label: 'Icon Styles'|t('icon-manager'),
+                    instructions: 'Which icon styles to include.'|t('icon-manager'),
+                    id: 'settings-styles',
+                    name: 'settings[styles]',
+                    values: iconSet.settings.styles ?? ['solid'],
+                    options: [
+                        { label: 'Solid', value: 'solid' },
+                        { label: 'Regular', value: 'regular' },
+                        { label: 'Light', value: 'light' },
+                        { label: 'Thin', value: 'thin' },
+                        { label: 'Duotone', value: 'duotone' },
+                        { label: 'Brands', value: 'brands' },
+                    ],
+                }) }}
+            </div>
+        </div>
+        
+        <div id="material-icons-settings" class="{% if iconSet.type != 'material-icons' %}hidden{% endif %}">
+            <h2>{{ 'Material Icons Settings'|t('icon-manager') }}</h2>
+            
+            {{ forms.selectField({
+                label: 'Icon Type'|t('icon-manager'),
+                instructions: 'Material Icons variant to use.'|t('icon-manager'),
+                id: 'settings-material-type',
+                name: 'settings[materialType]',
+                value: iconSet.settings.materialType ?? 'icons',
+                options: [
+                    { label: 'Material Icons (Classic)', value: 'icons' },
+                    { label: 'Material Symbols', value: 'symbols' },
+                ],
+            }) }}
+            
+            <div id="material-icons-styles" class="{% if (iconSet.settings.materialType ?? 'icons') != 'icons' %}hidden{% endif %}">
+                {{ forms.checkboxSelectField({
+                    label: 'Icon Styles'|t('icon-manager'),
+                    instructions: 'Which Material Icons styles to include.'|t('icon-manager'),
+                    id: 'settings-material-styles',
+                    name: 'settings[styles]',
+                    values: iconSet.settings.styles ?? ['filled'],
+                    options: [
+                        { label: 'Filled', value: 'filled' },
+                        { label: 'Outlined', value: 'outlined' },
+                        { label: 'Rounded', value: 'rounded' },
+                        { label: 'Sharp', value: 'sharp' },
+                        { label: 'Two Tone', value: 'two-tone' },
+                    ],
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    {{ forms.lightswitchField({
+        label: 'Enabled'|t('icon-manager'),
+        instructions: 'Whether this icon set should be available for selection.'|t('icon-manager'),
+        id: 'enabled',
+        name: 'enabled',
+        on: iconSet.enabled,
+    }) }}
+
+    {% if not isNew %}
+        <hr>
+        <div class="field">
+            <div class="heading">
+                <label>{{ 'Icons'|t('icon-manager') }}</label>
+                <div class="instructions">
+                    <p>{{ 'This icon set contains {count} icons.'|t('icon-manager', {count: iconSet.getIconCount()}) }}</p>
+                </div>
+            </div>
+            <button type="button" class="btn" onclick="refreshIcons()">
+                {{ 'Refresh Icons'|t('icon-manager') }}
+            </button>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% js %}
+    // Auto-generate handle from name (only for new icon sets or when handle is empty)
+    var nameField = document.getElementById('name');
+    var handleField = document.getElementById('handle');
+    var isNewIconSet = {{ isNew ? 'true' : 'false' }};
+    var handleModified = false;
+    
+    // Check if handle was manually modified
+    if (handleField) {
+        handleField.addEventListener('input', function() {
+            handleModified = true;
+        });
+    }
+    
+    // Generate handle from name (only for new icon sets or empty handles)
+    if (nameField && handleField) {
+        nameField.addEventListener('input', function() {
+            // Only auto-generate if:
+            // 1. It's a new icon set, OR
+            // 2. The handle is currently empty (user cleared it)
+            // 3. Handle hasn't been manually modified by user typing directly in handle field
+            if (isNewIconSet || handleField.value === '') {
+                var handle = this.value
+                    .toLowerCase()
+                    .replace(/[^\w\s-]/g, '') // Remove special characters
+                    .replace(/\s+/g, '-') // Replace spaces with hyphens
+                    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+                    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+                    
+                // Convert to camelCase if it contains hyphens
+                if (handle.includes('-')) {
+                    handle = handle.split('-').map(function(word, index) {
+                        if (index === 0) {
+                            return word;
+                        }
+                        return word.charAt(0).toUpperCase() + word.slice(1);
+                    }).join('');
+                }
+                
+                handleField.value = handle;
+            }
+        });
+    }
+    
+    // Handle type changes
+    var typeField = document.getElementById('type');
+    
+    if (typeField) {
+        typeField.addEventListener('change', function() {
+            var type = this.value;
+            
+            // Hide all type settings
+            var svgFolderSettings = document.getElementById('svg-folder-settings');
+            var svgSpriteSettings = document.getElementById('svg-sprite-settings');
+            var fontAwesomeSettings = document.getElementById('font-awesome-settings');
+            var materialIconsSettings = document.getElementById('material-icons-settings');
+            
+            if (svgFolderSettings) svgFolderSettings.classList.add('hidden');
+            if (svgSpriteSettings) svgSpriteSettings.classList.add('hidden');
+            if (fontAwesomeSettings) fontAwesomeSettings.classList.add('hidden');
+            if (materialIconsSettings) materialIconsSettings.classList.add('hidden');
+            
+            // Show the relevant settings
+            if (type === 'svg-folder' && svgFolderSettings) {
+                svgFolderSettings.classList.remove('hidden');
+            } else if (type === 'svg-sprite' && svgSpriteSettings) {
+                svgSpriteSettings.classList.remove('hidden');
+            } else if (type === 'font-awesome' && fontAwesomeSettings) {
+                fontAwesomeSettings.classList.remove('hidden');
+            } else if (type === 'material-icons' && materialIconsSettings) {
+                materialIconsSettings.classList.remove('hidden');
+            }
+        });
+    }
+    
+    // Handle Font Awesome type changes
+    var faTypeField = document.getElementById('settings-fa-type');
+    if (faTypeField) {
+        faTypeField.addEventListener('change', function() {
+            var faType = this.value;
+            var kitSettings = document.getElementById('fa-kit-settings');
+            var cdnSettings = document.getElementById('fa-cdn-settings');
+            
+            if (kitSettings) kitSettings.classList.add('hidden');
+            if (cdnSettings) cdnSettings.classList.add('hidden');
+            
+            if (faType === 'kit' && kitSettings) {
+                kitSettings.classList.remove('hidden');
+            } else if (faType === 'cdn' && cdnSettings) {
+                cdnSettings.classList.remove('hidden');
+            }
+        });
+    }
+    
+    // Handle Material Icons type changes
+    var materialTypeField = document.getElementById('settings-material-type');
+    if (materialTypeField) {
+        materialTypeField.addEventListener('change', function() {
+            var materialType = this.value;
+            var stylesDiv = document.getElementById('material-icons-styles');
+            
+            if (stylesDiv) {
+                if (materialType === 'icons') {
+                    stylesDiv.classList.remove('hidden');
+                } else {
+                    stylesDiv.classList.add('hidden');
+                }
+            }
+        });
+    }
+    
+    // Refresh icons function
+    window.refreshIcons = function() {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '';
+        form.innerHTML = `
+            {{ actionInput('icon-manager/icon-sets/refresh-icons')|raw }}
+            {{ hiddenInput('iconSetId', iconSet.id)|raw }}
+            {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id)|raw }}
+            {{ csrfInput()|raw }}
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    };
+{% endjs %}
