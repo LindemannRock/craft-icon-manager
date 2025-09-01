@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/LindemannRock/icon-manager/compare/v1.0.0...v1.0.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* update documentation and changelog URLs to use 'main' branch ([bff8aec](https://github.com/LindemannRock/icon-manager/commit/bff8aecd5a4998c25f05d393f71406485a36430a))
+
 ## 1.0.0 (2025-09-01)
 
 
