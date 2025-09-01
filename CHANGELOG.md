@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/LindemannRock/icon-manager/compare/v1.0.1...v1.1.0) (2025-09-01)
+
+
+### Features
+
+* add comprehensive configuration and metadata documentation ([248c3cb](https://github.com/LindemannRock/icon-manager/commit/248c3cb46c0e6f38ad0b8cf6daa5ac533c7d41ae))
+
 ## [1.0.1](https://github.com/LindemannRock/icon-manager/compare/v1.0.0...v1.0.1) (2025-09-01)
 
 
