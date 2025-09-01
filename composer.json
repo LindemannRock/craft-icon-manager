@@ -9,18 +9,31 @@
         "craftcms",
         "craft-plugin",
         "icon",
+        "icons",
         "svg",
         "fontawesome",
-        "material icons",
-        "icon manager"
+        "material-icons",
+        "icon-manager",
+        "field",
+        "ui",
+        "assets"
     ],
     "license": "proprietary",
     "authors": [
         {
-            "name": "LindemannRock",
-            "homepage": "https://lindemannrock.com"
+            "name": "Bilal Hary Lindemann",
+            "email": "bh@lindemannrock.com",
+            "homepage": "https://lindemannrock.com",
+            "role": "Developer"
         }
     ],
+    "support": {
+        "email": "support@lindemannrock.com",
+        "issues": "https://github.com/LindemannRock/icon-manager/issues",
+        "source": "https://github.com/LindemannRock/icon-manager",
+        "docs": "https://github.com/LindemannRock/icon-manager/blob/main/README.md",
+        "rss": "https://github.com/LindemannRock/icon-manager/commits/main.atom"
+    },
     "require": {
         "php": "^8.0.2",
         "craftcms/cms": "^5.0.0"

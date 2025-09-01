@@ -53,6 +53,8 @@ You can override settings in `config/icon-manager.php`:
 ```php
 <?php
 
+use craft\helpers\App;
+
 return [
     // Global settings
     '*' => [
@@ -60,31 +62,61 @@ return [
         'pluginName' => 'Icon Manager',
         
         // Default icons path
-        'iconSetsPath' => '@root/icons',
+        'iconSetsPath' => '@root/src/icons',
         
         // Icon types to enable
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => true,
-            'font-awesome' => true,
+            'font-awesome' => false,
             'material-icons' => false,
         ],
     ],
     
     // Dev environment settings
     'dev' => [
+        // Use source icons in dev
         'iconSetsPath' => '@root/src/icons',
-        'iconsPerPage' => 200,
+        
+        // Enable caching in dev for performance
         'enableCache' => true,
         'cacheDuration' => 3600, // 1 hour
+        
+        // Allow all icon types for testing
+        'enabledIconTypes' => [
+            'svg-folder' => true,
+            'svg-sprite' => true,
+            'font-awesome' => true,
+            'material-icons' => true,
+        ],
+    ],
+    
+    // Staging environment settings  
+    'staging' => [
+        // Production-ready icons path
+        'iconSetsPath' => '@webroot/dist/assets/icons',
+        
+        // Optimize for staging
+        'enableCache' => true,
+        'cacheDuration' => 86400, // 1 day
     ],
     
     // Production environment settings
     'production' => [
-        'iconSetsPath' => '@webroot/assets/icons',
+        // Production icons path
+        'iconSetsPath' => '@webroot/dist/assets/icons',
+        
+        // Optimize for production
         'enableCache' => true,
-        'cacheDuration' => 86400, // 24 hours
-        'iconsPerPage' => 100,
+        'cacheDuration' => 2592000, // 30 days
+        
+        // Only stable icon types in production
+        'enabledIconTypes' => [
+            'svg-folder' => true,
+            'svg-sprite' => false, // Beta
+            'font-awesome' => false, // Beta  
+            'material-icons' => false, // Beta
+        ],
     ],
 ];
 ```
@@ -283,7 +315,9 @@ Note: The `|raw` filter is not needed - icons are automatically rendered safely.
 
 ## Icon Metadata
 
-Add a `metadata.json` file in your icon folders to provide keywords:
+Add a `metadata.json` file in your icon folders to provide enhanced metadata:
+
+### Basic Structure
 
 ```json
 {
@@ -291,10 +325,46 @@ Add a `metadata.json` file in your icon folders to provide keywords:
         "keywords": ["favorite", "rating", "bookmark"]
     },
     "heart": {
-        "keywords": ["love", "like", "favorite"]
+        "keywords": ["love", "like", "favorite"]  
     }
 }
 ```
+
+### Advanced Structure with Multilingual Support
+
+```json
+{
+    "freshly-baked": {
+        "label": "Freshly Baked",
+        "labelAr": "مخبوز طازج", 
+        "labelEn": "Freshly Baked",
+        "search": {
+            "terms": ["fresh", "baked", "bread", "bakery", "طازج", "مخبوز", "خبز"]
+        },
+        "category": "product-features",
+        "description": "Icon representing freshly baked products"
+    }
+}
+```
+
+### Label Resolution Priority
+
+The plugin resolves icon labels in this order:
+1. **Custom field label** (highest priority) - set in the field interface
+2. **JSON metadata label** - from `label`, `labelAr`, `labelEn` based on site language
+3. **Database label** - stored label from icon set
+4. **Translation system** - Craft's translation files
+5. **Filename** (fallback) - formatted from the SVG filename
+
+### Supported Metadata Properties
+
+- **`label`** - Default display label
+- **`labelAr`** - Arabic language label  
+- **`labelEn`** - English language label
+- **`search.terms`** - Additional search keywords (supports multilingual)
+- **`category`** - Icon category for organization
+- **`description`** - Icon description for accessibility
+- **`keywords`** - Legacy search terms (still supported)
 
 ## Security
 
