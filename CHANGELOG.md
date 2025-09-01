@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/LindemannRock/icon-manager/compare/v1.1.0...v1.1.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* update license to MIT in composer.json and LICENSE.md ([56e5c45](https://github.com/LindemannRock/icon-manager/commit/56e5c4512f4ba30a0f551bcf8985cf85e7df6870))
+
 ## [1.1.0](https://github.com/LindemannRock/icon-manager/compare/v1.0.1...v1.1.0) (2025-09-01)
 
 
