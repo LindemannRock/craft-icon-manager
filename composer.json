@@ -35,8 +35,8 @@
         "handle": "icon-manager",
         "developer": "LindemannRock",
         "developerUrl": "https://lindemannrock.com",
-        "documentationUrl": "https://github.com/lindemannrock/icon-manager/blob/master/README.md",
-        "changelogUrl": "https://github.com/lindemannrock/icon-manager/blob/master/CHANGELOG.md",
+        "documentationUrl": "https://github.com/LindemannRock/icon-manager/blob/main/README.md",
+        "changelogUrl": "https://github.com/LindemannRock/icon-manager/blob/main/CHANGELOG.md",
         "class": "lindemannrock\\iconmanager\\IconManager"
     }
 }
