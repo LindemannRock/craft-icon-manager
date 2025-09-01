@@ -22,11 +22,14 @@ yarn-error.log*
 .npm
 .yarn-integrity
 
-# Build outputs
-dist/
+# Build outputs (but keep plugin assets)
 build/
 *.min.js
 *.min.css
+
+# Exclude dist/ except for plugin assets
+dist/
+!src/web/assets/*/dist/
 
 # Logs
 logs
