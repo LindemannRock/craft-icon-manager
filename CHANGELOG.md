@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/LindemannRock/icon-manager/compare/v1.1.1...v1.1.2) (2025-09-01)
+
+
+### Bug Fixes
+
+* include essential Control Panel JavaScript assets ([0616bba](https://github.com/LindemannRock/icon-manager/commit/0616bbab30a9ee406552e4b166b249131c2efca0))
+
 ## [1.1.1](https://github.com/LindemannRock/icon-manager/compare/v1.1.0...v1.1.1) (2025-09-01)
 
 
