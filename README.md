@@ -67,9 +67,9 @@ Settings can be configured in the Control Panel at Settings → Icon Manager, or
 3. **Display Settings**: Set default display options
 4. **Icon Types**: Enable/disable different icon set types
 
-### Config File Overrides
+### Config File
 
-You can override settings in `config/icon-manager.php`:
+Create a `config/icon-manager.php` file to override default settings:
 
 ```php
 <?php
@@ -143,6 +143,8 @@ return [
 ```
 
 Settings defined in the config file will override CP settings and show a warning message in the settings UI.
+
+See [Configuration Documentation](docs/CONFIGURATION.md) for all available options.
 
 #### Available Configuration Options
 
