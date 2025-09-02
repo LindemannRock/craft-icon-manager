@@ -27,13 +27,34 @@ SVG folder icons are fully stable and production-ready.
 
 ## Installation
 
-1. Install via Composer:
-   ```bash
-   cd /path/to/project
-   composer require lindemannrock/icon-manager
-   ```
+### Via Composer (Development)
 
-2. In the Control Panel, go to Settings → Plugins and click "Install" for Icon Manager.
+Until published on Packagist, install directly from the repository:
+
+```bash
+cd /path/to/project
+composer config repositories.icon-manager vcs https://github.com/LindemannRock/icon-manager
+composer require lindemannrock/icon-manager:dev-main
+```
+
+Then install the plugin:
+```bash
+./craft plugin/install icon-manager
+```
+
+### Via Composer (Production - Coming Soon)
+
+Once published on Packagist:
+
+```bash
+cd /path/to/project
+composer require lindemannrock/icon-manager
+./craft plugin/install icon-manager
+```
+
+### Via Control Panel
+
+In the Control Panel, go to Settings → Plugins and click "Install" for Icon Manager.
 
 ## Configuration
 
