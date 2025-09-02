@@ -472,10 +472,16 @@ Check if an icon exists:
 {% endif %}
 ```
 
+## Support
+
+- **Documentation**: [https://github.com/LindemannRock/icon-manager](https://github.com/LindemannRock/icon-manager)
+- **Issues**: [https://github.com/LindemannRock/icon-manager/issues](https://github.com/LindemannRock/icon-manager/issues)
+- **Email**: [support@lindemannrock.com](mailto:support@lindemannrock.com)
+
 ## License
 
-Copyright © 2025 LindemannRock. All rights reserved.
+This plugin is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-Brought to you by [LindemannRock](https://lindemannrock.com)
+Developed by [LindemannRock](https://lindemannrock.com)
