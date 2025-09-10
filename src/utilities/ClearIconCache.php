@@ -22,7 +22,8 @@ class ClearIconCache extends Utility
      */
     public static function displayName(): string
     {
-        return Craft::t('icon-manager', 'Clear Icon Cache');
+        $pluginName = IconManager::getInstance()->getSettings()->pluginName;
+        return $pluginName . ' Cache';
     }
 
     /**
@@ -36,9 +37,9 @@ class ClearIconCache extends Utility
     /**
      * @inheritdoc
      */
-    public static function iconPath(): ?string
+    public static function icon(): ?string
     {
-        return null;
+        return 'folder-grid';
     }
 
     /**
