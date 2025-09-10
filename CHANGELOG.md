@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/LindemannRock/icon-manager/compare/v1.1.3...v1.1.4) (2025-09-10)
+
+
+### Bug Fixes
+
+* update requirements for Craft CMS and PHP versions in README ([62a0be2](https://github.com/LindemannRock/icon-manager/commit/62a0be27102a85712fa97b50fb1f74d75a0e5d16))
+
 ## [1.1.3](https://github.com/LindemannRock/icon-manager/compare/v1.1.2...v1.1.3) (2025-09-10)
 
 
