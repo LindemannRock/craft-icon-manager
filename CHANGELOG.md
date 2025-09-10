@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/LindemannRock/icon-manager/compare/v1.1.2...v1.1.3) (2025-09-10)
+
+
+### Bug Fixes
+
+* update display name and icon method in ClearIconCache utility ([583dbf0](https://github.com/LindemannRock/icon-manager/commit/583dbf043c6b43b80a67f88c33ec498c62f0ad4c))
+
 ## [1.1.2](https://github.com/LindemannRock/icon-manager/compare/v1.1.1...v1.1.2) (2025-09-01)
 
 
