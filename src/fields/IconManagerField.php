@@ -18,14 +18,14 @@ use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\base\PreviewableFieldInterface;
 use craft\base\SortableFieldInterface;
-use craft\db\Query;
+use craft\base\EagerLoadingFieldInterface;
 use craft\helpers\Html;
 use craft\helpers\Json;
 
 /**
  * Icon Manager Field
  */
-class IconManagerField extends Field implements PreviewableFieldInterface, SortableFieldInterface
+class IconManagerField extends Field implements PreviewableFieldInterface, SortableFieldInterface, EagerLoadingFieldInterface
 {
     /**
      * @var array Allowed icon sets for this field
@@ -410,6 +410,25 @@ JS;
         }
 
         return $icon;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEagerLoadingMap(array $sourceElements): array|null|false
+    {
+        // For non-element fields, we just return null to indicate no eager loading needed
+        // Craft will handle the field values normally through normalizeValue()
+        return null;
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function getEagerLoadingGqlConditions(): ?array
+    {
+        // Allow all conditions for GraphQL
+        return null;
     }
 
 }
