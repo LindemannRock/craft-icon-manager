@@ -28,9 +28,9 @@ use craft\helpers\Json;
 class IconManagerField extends Field implements PreviewableFieldInterface, SortableFieldInterface, EagerLoadingFieldInterface
 {
     /**
-     * @var array Allowed icon sets for this field
+     * @var array|string Allowed icon sets for this field ('*' for all, array for specific sets)
      */
-    public array $allowedIconSets = [];
+    public array|string $allowedIconSets = '*';
 
     /**
      * @var bool Show search box
@@ -74,6 +74,19 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
     /**
      * @inheritdoc
      */
+    public static function supportedTranslationMethods(): array
+    {
+        return [
+            self::TRANSLATION_METHOD_NONE,
+            self::TRANSLATION_METHOD_SITE,
+            self::TRANSLATION_METHOD_SITE_GROUP,
+            self::TRANSLATION_METHOD_LANGUAGE,
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public static function icon(): string
     {
         return '@appicons/folder-grid.svg';
@@ -90,6 +103,14 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
     /**
      * @inheritdoc
      */
+    public static function isRequiredInSettingsForm(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function defineRules(): array
     {
         $rules = parent::defineRules();
@@ -100,6 +121,29 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
         $rules[] = [['iconsPerPage'], 'integer', 'min' => 10, 'max' => 500];
 
         return $rules;
+    }
+    
+    /**
+     * @inheritdoc
+     */
+    public function setAttributes($values, $safeOnly = true): void
+    {
+        // Handle the "All" option for allowed icon sets
+        if (isset($values['allowedIconSets'])) {
+            // Convert ['*'] array to '*' string for consistency with Verbb
+            if (is_array($values['allowedIconSets']) && count($values['allowedIconSets']) === 1 && $values['allowedIconSets'][0] === '*') {
+                $values['allowedIconSets'] = '*';
+            }
+            // If empty or null, default to '*' (All)
+            elseif (empty($values['allowedIconSets'])) {
+                $values['allowedIconSets'] = '*';
+            }
+        } else {
+            // No allowedIconSets sent - default to "All"
+            $values['allowedIconSets'] = '*';
+        }
+        
+        parent::setAttributes($values, $safeOnly);
     }
 
     /**
@@ -214,9 +258,14 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
                             'value' => $icon->value,
                         ];
                         
-                        // Include custom label if set
+                        // Include custom labels (site-specific) if set
                         if ($icon->customLabel) {
                             $iconData['customLabel'] = $icon->customLabel;
+                        }
+                        
+                        // Save site-specific custom labels array
+                        if (!empty($icon->customLabels)) {
+                            $iconData['customLabels'] = $icon->customLabels;
                         }
                         
                         $serializedIcons[] = $iconData;
@@ -236,9 +285,14 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
                 'value' => $value->value,
             ];
             
-            // Include custom label if set
+            // Include custom labels (site-specific) if set
             if ($value->customLabel) {
                 $iconData['customLabel'] = $value->customLabel;
+            }
+            
+            // Save site-specific custom labels array
+            if (!empty($value->customLabels)) {
+                $iconData['customLabels'] = $value->customLabels;
             }
             
             return Json::encode($iconData);
@@ -256,11 +310,16 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
         $id = Html::id($this->handle);
         $namespacedId = Craft::$app->getView()->namespaceInputId($id);
 
-        // Get allowed icon sets
+        // Get allowed icon sets - handle like Verbb does
         $iconSets = [];
-        if (!empty($this->allowedIconSets)) {
+        if ($this->allowedIconSets === '*') {
+            // "All" selected - show all enabled icon sets
+            $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
+        } elseif (!empty($this->allowedIconSets) && is_array($this->allowedIconSets)) {
+            // Specific icon sets selected
             $iconSets = IconManager::getInstance()->iconSets->getIconSetsByHandles($this->allowedIconSets);
         } else {
+            // Fallback to all enabled icon sets
             $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
         }
 
@@ -407,6 +466,11 @@ JS;
         // Set custom label if provided
         if (isset($data['customLabel'])) {
             $icon->customLabel = $data['customLabel'];
+        }
+        
+        // Restore site-specific custom labels array
+        if (isset($data['customLabels']) && is_array($data['customLabels'])) {
+            $icon->customLabels = $data['customLabels'];
         }
 
         return $icon;

@@ -137,31 +137,37 @@ class Icon extends Model implements \JsonSerializable
 
     /**
      * Get the display label with smart resolution
-     * Priority: 1. Custom field label (site-specific) 2. JSON file 3. Translation 4. Database label 5. Filename
+     * Priority: 1. Site-specific custom label 2. General custom label 3. JSON file 4. Database label 5. Translation 6. Filename
      */
     public function getDisplayLabel(): string
     {
-        // 1. Check for custom field label (highest priority)
+        // 1. Check for site-specific custom field label (highest priority)
+        $currentSiteId = Craft::$app->getSites()->getCurrentSite()->id;
+        if (!empty($this->customLabels) && isset($this->customLabels[$currentSiteId])) {
+            return $this->customLabels[$currentSiteId];
+        }
+        
+        // 2. Check for general custom field label (fallback)
         if ($this->customLabel) {
             return $this->customLabel;
         }
 
-        // 2. Check for JSON file label (high priority)
+        // 3. Check for JSON file label (high priority)
         if ($jsonLabel = $this->getJsonLabel()) {
             return $jsonLabel;
         }
 
-        // 3. Check database field label (medium priority)
+        // 4. Check database field label (medium priority)
         if ($this->label) {
             return $this->label;
         }
 
-        // 4. Check translation system (low priority)
+        // 5. Check translation system (low priority)
         if ($translatedLabel = $this->getTranslatedLabel()) {
             return $translatedLabel;
         }
 
-        // 5. Generate label from name (fallback)
+        // 6. Generate label from name (fallback)
         return StringHelper::titleize($this->name);
     }
 
