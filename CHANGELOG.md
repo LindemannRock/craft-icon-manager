@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/LindemannRock/icon-manager/compare/v1.2.0...v1.3.0) (2025-09-12)
+
+
+### Features
+
+* add eager loading support and fix custom label site isolation ([88a5207](https://github.com/LindemannRock/icon-manager/commit/88a520777fec519d1db17b205275b5b4f2c56e51))
+
 ## [1.2.0](https://github.com/LindemannRock/icon-manager/compare/v1.1.4...v1.2.0) (2025-09-12)
 
 
