@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/LindemannRock/icon-manager/compare/v1.1.4...v1.2.0) (2025-09-12)
+
+
+### Features
+
+* add eager loading support to IconManagerField ([5e793e6](https://github.com/LindemannRock/icon-manager/commit/5e793e6501270727641812191d48d89020bb2463))
+
 ## [1.1.4](https://github.com/LindemannRock/icon-manager/compare/v1.1.3...v1.1.4) (2025-09-10)
 
 
