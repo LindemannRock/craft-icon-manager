@@ -71,6 +71,8 @@
     {% else %}
         <p>{{ 'No icon sets exist yet.'|t('icon-manager') }}</p>
     {% endif %}
+
+    {% include 'icon-manager/_components/plugin-credit.twig' %}
 {% endblock %}
 
 {% js %}
