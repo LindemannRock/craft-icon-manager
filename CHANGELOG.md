@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/LindemannRock/icon-manager/compare/v1.3.0...v1.4.0) (2025-09-14)
+
+
+### Features
+
+* add plugin credit component to icon sets and settings pages ([3f6b68a](https://github.com/LindemannRock/icon-manager/commit/3f6b68a92f87a3b2bca93a315eae5f881c28126f))
+
 ## [1.3.0](https://github.com/LindemannRock/icon-manager/compare/v1.2.0...v1.3.0) (2025-09-12)
 
 
