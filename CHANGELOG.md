@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/LindemannRock/icon-manager/compare/v1.4.0...v1.4.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* update copyright notice and format in LICENSE file ([6e97c76](https://github.com/LindemannRock/icon-manager/commit/6e97c766f8528b67b98a7693bfd8637dc1301d71))
+
 ## [1.4.0](https://github.com/LindemannRock/icon-manager/compare/v1.3.0...v1.4.0) (2025-09-14)
 
 
