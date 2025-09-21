@@ -9,7 +9,13 @@
 {% import "_includes/forms" as forms %}
 
 {% set title = 'Settings'|t('icon-manager') %}
+{% set selectedSubnavItem = 'settings' %}
 {% set fullPageForm = true %}
+
+{% set crumbs = [
+    { label: 'Icon Manager'|t('icon-manager'), url: url('icon-manager') },
+    { label: 'Settings'|t('icon-manager'), url: url('icon-manager/settings') }
+] %}
 
 {% block content %}
     {{ actionInput('icon-manager/settings/save') }}
@@ -116,6 +122,26 @@
         on: settings.enabledIconTypes['material-icons'] ?? false,
         warning: settings.isIconTypeOverridden('material-icons') ? 'This is being overridden by the `enabledIconTypes[\'material-icons\']` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
         disabled: settings.isIconTypeOverridden('material-icons')
+    }) }}
+
+    <hr>
+
+    <h2>{{ 'Logging Settings'|t('icon-manager') }}</h2>
+
+    {{ forms.selectField({
+        label: 'Log Level'|t('icon-manager'),
+        instructions: 'Choose what types of messages to log. Higher levels include all lower levels (Error < Warning < Info < Trace)'|t('icon-manager'),
+        id: 'logLevel',
+        name: 'settings[logLevel]',
+        value: settings.logLevel,
+        options: [
+            {value: 'error', label: 'Error (Critical errors only)'|t('icon-manager')},
+            {value: 'warning', label: 'Warning (Errors and warnings)'|t('icon-manager')},
+            {value: 'info', label: 'Info (General information)'|t('icon-manager')},
+            {value: 'trace', label: 'Trace (Detailed debugging)'|t('icon-manager')}
+        ],
+        warning: settings.isOverridden('logLevel') ? 'This is being overridden by the `logLevel` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverridden('logLevel')
     }) }}
 
     {% include 'icon-manager/_components/plugin-credit.twig' %}

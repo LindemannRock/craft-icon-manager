@@ -61,6 +61,11 @@ class Settings extends Model
         'material-icons' => false,
     ];
 
+    /**
+     * @var string Log level for the plugin
+     */
+    public string $logLevel = 'error';
+
 
     /**
      * @inheritdoc
@@ -82,10 +87,11 @@ class Settings extends Model
     {
         return [
             [['iconSetsPath'], 'required'],
-            [['iconSetsPath', 'pluginName'], 'string'],
+            [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
             [['enableCache'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['enabledIconTypes'], 'safe'],
+            [['logLevel'], 'in', 'range' => ['trace', 'info', 'warning', 'error']],
         ];
     }
 
@@ -215,6 +221,7 @@ class Settings extends Model
             'enableCache' => $this->enableCache,
             'cacheDuration' => $this->cacheDuration,
             'enabledIconTypes' => Json::encode($this->enabledIconTypes),
+            'logLevel' => $this->logLevel,
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
         ];
         

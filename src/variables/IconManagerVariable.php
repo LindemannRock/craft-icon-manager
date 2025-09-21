@@ -102,11 +102,21 @@ class IconManagerVariable
     public function renderIcon(string $iconSetHandle, string $iconName, array $options = []): string
     {
         $icon = $this->getIcon($iconSetHandle, $iconName);
-        
+
         if (!$icon) {
             return '';
         }
 
         return $icon->render($options);
+    }
+
+    /**
+     * Get plugin settings
+     *
+     * @return \lindemannrock\iconmanager\models\Settings
+     */
+    public function getSettings()
+    {
+        return IconManager::getInstance()->getSettings();
     }
 }

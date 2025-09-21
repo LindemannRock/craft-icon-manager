@@ -11,6 +11,7 @@ namespace lindemannrock\iconmanager\services;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\records\IconSetRecord;
+use lindemannrock\iconmanager\traits\LoggingTrait;
 
 use Craft;
 use craft\base\Component;
@@ -24,6 +25,8 @@ use craft\helpers\StringHelper;
  */
 class IconSetsService extends Component
 {
+    use LoggingTrait;
+
     /**
      * @var IconSet[]|null
      */
@@ -136,7 +139,10 @@ class IconSetsService extends Component
         $isNew = !$iconSet->id;
 
         if ($runValidation && !$iconSet->validate()) {
-            Craft::info('Icon set not saved due to validation error.', __METHOD__);
+            $this->logWarning("Icon set validation failed", [
+                'errors' => $iconSet->getErrors(),
+                'iconSetId' => $iconSet->id
+            ]);
             return false;
         }
 
@@ -181,9 +187,21 @@ class IconSetsService extends Component
             IconManager::getInstance()->icons->refreshIconsForSet($iconSet);
 
             $transaction->commit();
+
+            // Log successful operation
+            $action = $isNew ? 'created' : 'updated';
+            $this->logInfo("Icon set {$action} successfully", [
+                'iconSetId' => $iconSet->id,
+                'name' => $iconSet->name,
+                'type' => $iconSet->type
+            ]);
+
         } catch (\Throwable $e) {
             $transaction->rollBack();
-            Craft::error('Failed to save icon set: ' . $e->getMessage(), __METHOD__);
+            $this->logError("Failed to save icon set: " . $e->getMessage(), [
+                'iconSetId' => $iconSet->id ?? 'new',
+                'name' => $iconSet->name ?? 'unknown'
+            ]);
             throw $e;
         }
 
@@ -211,9 +229,20 @@ class IconSetsService extends Component
             $this->_iconSetsByHandle = null;
 
             $transaction->commit();
+
+            // Log successful deletion
+            $this->logInfo("Icon set deleted successfully", [
+                'iconSetId' => $iconSet->id,
+                'name' => $iconSet->name,
+                'type' => $iconSet->type
+            ]);
+
         } catch (\Throwable $e) {
             $transaction->rollBack();
-            Craft::error('Failed to delete icon set: ' . $e->getMessage(), __METHOD__);
+            $this->logError("Failed to delete icon set: " . $e->getMessage(), [
+                'iconSetId' => $iconSet->id,
+                'name' => $iconSet->name
+            ]);
             throw $e;
         }
 

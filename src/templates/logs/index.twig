@@ -1,0 +1,213 @@
+{#
+ # Icon Manager Logs
+ #
+ # @link      https://lindemannrock.com
+ # @copyright Copyright (c) 2025 LindemannRock
+ #}
+
+{% extends "_layouts/cp" %}
+
+{% set title = 'Logs'|t('icon-manager') %}
+{% set selectedSubnavItem = 'logs' %}
+
+{% set crumbs = [
+    { label: "Icon Manager"|t('icon-manager'), url: url('icon-manager') },
+    { label: "Logs"|t('icon-manager'), url: url('icon-manager/logs') }
+] %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    <div class="flex" style="align-items: center; margin-bottom: 24px;">
+        <h1 style="margin: 0;">{{ (pluginName ~ " Logs")|t('icon-manager') }}</h1>
+
+        {% if filters.date and logFiles|length > 0 %}
+        <div style="margin-left: auto;">
+            <a href="{{ actionUrl('icon-manager/logs/download', { date: filters.date }) }}" class="btn" download>
+                {{ 'Download Log'|t('icon-manager') }}
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    {# Filters #}
+    <div class="pane" style="margin-bottom: 24px;">
+        <div class="flex flex-wrap" style="gap: 16px; align-items: end;">
+            <div class="field" style="flex-shrink: 0;">
+                {{ forms.selectField({
+                    label: "Date"|t('icon-manager'),
+                    id: 'date-filter',
+                    name: 'date',
+                    value: filters.date,
+                    options: logFiles,
+                    fieldAttributes: {
+                        'onchange': 'document.getElementById("search-filter").value = ""; document.getElementById("level-filter").value = "all"; this.form.submit();'
+                    }
+                }) }}
+            </div>
+
+            <div class="field" style="flex-shrink: 0;">
+                {{ forms.selectField({
+                    label: "Level"|t('icon-manager'),
+                    id: 'level-filter',
+                    name: 'level',
+                    value: filters.level,
+                    options: levels,
+                }) }}
+            </div>
+
+            <div class="field" style="flex: 1; min-width: 250px;">
+                {{ forms.textField({
+                    label: "Search"|t('icon-manager'),
+                    id: 'search-filter',
+                    name: 'search',
+                    value: filters.search,
+                    placeholder: "Search messages and context (press Enter)..."|t('icon-manager'),
+                }) }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Entries -->
+    {% if logEntries|length > 0 %}
+        <div class="log-container" style="background: #f9f9f9; border: 1px solid #e3e5e8; border-radius: 4px;">
+            {% for entry in logEntries %}
+                <div class="log-entry" data-level="{{ entry.level }}" style="padding: 12px 16px; border-bottom: 1px solid #e3e5e8; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.4;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <span style="color: #8f98a3; white-space: nowrap; font-weight: 500;">
+                            {{ entry.timestamp }}
+                        </span>
+                        <span class="log-level" data-level="{{ entry.level }}" style="
+                            padding: 2px 6px;
+                            border-radius: 3px;
+                            font-size: 11px;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            white-space: nowrap;
+                            {% if entry.level == 'error' %}
+                                background: rgba(231, 76, 60, 0.1);
+                                color: #c0392b;
+                            {% elseif entry.level == 'warning' %}
+                                background: rgba(230, 126, 34, 0.1);
+                                color: #d68910;
+                            {% elseif entry.level == 'info' %}
+                                background: rgba(52, 152, 219, 0.1);
+                                color: #2980b9;
+                            {% elseif entry.level == 'trace' %}
+                                background: rgba(155, 89, 182, 0.1);
+                                color: #8e44ad;
+                            {% endif %}
+                        ">
+                            {{ entry.level }}
+                        </span>
+                        <span style="flex: 1; word-wrap: break-word; color: #3c4043;">
+                            {{ entry.message }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.totalPages > 1 %}
+            <div style="margin-top: 24px; text-align: center;">
+                {% set baseUrl = url('icon-manager/logs', {
+                    date: filters.date,
+                    level: filters.level,
+                    search: filters.search
+                }) %}
+
+                <div class="flex" style="justify-content: center; align-items: center; gap: 8px;">
+                    {% if pagination.currentPage > 1 %}
+                        <a href="{{ baseUrl ~ '&page=' ~ (pagination.currentPage - 1) }}" class="btn">
+                            {{ 'Previous'|t('icon-manager') }}
+                        </a>
+                    {% endif %}
+
+                    <span style="padding: 8px 16px; color: #8f98a3;">
+                        {{ 'Page {current} of {total}'|t('icon-manager', {
+                            current: pagination.currentPage,
+                            total: pagination.totalPages
+                        }) }}
+                    </span>
+
+                    {% if pagination.currentPage < pagination.totalPages %}
+                        <a href="{{ baseUrl ~ '&page=' ~ (pagination.currentPage + 1) }}" class="btn">
+                            {{ 'Next'|t('icon-manager') }}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+    {% elseif logFiles|length == 0 %}
+        <div class="zilch">
+            <p>{{ 'No log files found.'|t('icon-manager') }}</p>
+            <p style="color: #8f98a3;">{{ 'Log files will appear here once the plugin starts logging activities.'|t('icon-manager') }}</p>
+        </div>
+    {% else %}
+        <div class="zilch">
+            <p>{{ 'No log entries found for the selected filters.'|t('icon-manager') }}</p>
+            <p style="color: #8f98a3;">{{ 'Try adjusting your search criteria or log level filter.'|t('icon-manager') }}</p>
+        </div>
+    {% endif %}
+
+    {# Log level information #}
+    <div class="pane" style="margin-top: 32px;">
+        <h3>{{ "Log Configuration"|t('icon-manager') }}</h3>
+        <dl style="display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; align-items: baseline;">
+            <dt><strong>{{ "Current Level"|t('icon-manager') }}:</strong></dt>
+            <dd>
+                {{ craft.iconManager.getSettings().logLevel|upper }}
+            </dd>
+
+            <dt><strong>{{ "Log Location"|t('icon-manager') }}:</strong></dt>
+            <dd><code>storage/logs/icon-manager-{date}.log</code></dd>
+
+            <dt><strong>{{ "Retention"|t('icon-manager') }}:</strong></dt>
+            <dd>{{ "30 days (automatic cleanup)"|t('icon-manager') }}</dd>
+
+            <dt><strong>{{ "Available Logs"|t('icon-manager') }}:</strong></dt>
+            <dd>{{ logFiles|length }} {{ "files"|t('icon-manager') }}</dd>
+        </dl>
+
+        <p style="margin-top: 16px;">
+            <a href="{{ cpUrl('settings/plugins/icon-manager') }}" class="btn secondary">
+                {{ "Change log level settings"|t('icon-manager') }}
+            </a>
+        </p>
+    </div>
+
+    <style>
+        .log-entry[data-level="error"] {
+            background: rgba(231, 76, 60, 0.05);
+            border-left: 3px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .log-entry[data-level="warning"] {
+            background: rgba(230, 126, 34, 0.05);
+            border-left: 3px solid rgba(230, 126, 34, 0.3);
+        }
+
+        .log-entry[data-level="info"] {
+            background: rgba(52, 152, 219, 0.05);
+            border-left: 3px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .log-entry[data-level="trace"] {
+            background: rgba(155, 89, 182, 0.08);
+            border-left: 3px solid rgba(155, 89, 182, 0.4);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-container {
+            max-height: 800px;
+            overflow-y: auto;
+        }
+    </style>
+
+{% endblock %}

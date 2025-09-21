@@ -72,6 +72,8 @@ class Install extends Migration
             'cacheDuration' => $this->integer()->notNull()->defaultValue(86400),
             // Icon types (stored as JSON)
             'enabledIconTypes' => $this->text(),
+            // Logging settings
+            'logLevel' => $this->string(20)->notNull()->defaultValue('error'),
             // System fields
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
@@ -91,6 +93,7 @@ class Install extends Migration
                 'font-awesome' => false,
                 'material-icons' => false,
             ]),
+            'logLevel' => 'error',
             'dateCreated' => Db::prepareDateForDb(new \DateTime()),
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
             'uid' => StringHelper::UUID(),

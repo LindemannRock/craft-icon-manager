@@ -12,6 +12,7 @@ use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\records\IconRecord;
+use lindemannrock\iconmanager\traits\LoggingTrait;
 
 use Craft;
 use craft\base\Component;
@@ -25,6 +26,8 @@ use craft\helpers\Db;
  */
 class IconsService extends Component
 {
+    use LoggingTrait;
+
     /**
      * @var array Cache of icons by set ID
      */
@@ -234,19 +237,23 @@ class IconsService extends Component
         }
 
         if (!is_dir($folderPath)) {
-            Craft::info('Folder path does not exist: ' . $folderPath, __METHOD__);
+            $this->logWarning("Folder path does not exist: {$folderPath}");
             return $icons;
         }
 
-        Craft::info('Scanning folder: ' . $folderPath, __METHOD__);
+        $this->logTrace("Scanning SVG folder: {$folderPath}", [
+            'iconSetId' => $iconSet->id,
+            'folder' => $folder,
+            'includeSubfolders' => $includeSubfolders
+        ]);
 
         $files = FileHelper::findFiles($folderPath, [
             'only' => ['*.svg'],
             'except' => ['_*'],
             'recursive' => $includeSubfolders,
         ]);
-        
-        Craft::info('Found ' . count($files) . ' SVG files', __METHOD__);
+
+        $this->logInfo("Found " . count($files) . " SVG files in {$folderPath}");
 
         foreach ($files as $file) {
             $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file);

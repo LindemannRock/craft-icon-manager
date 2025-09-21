@@ -51,6 +51,8 @@ class IconManager extends Plugin
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
+
+    private static bool $_logTargetRegistered = false;
     
     /**
      * @inheritdoc
@@ -170,6 +172,11 @@ class IconManager extends Plugin
             ];
 
             if (Craft::$app->getUser()->checkPermission('accessPlugin-icon-manager')) {
+                $item['subnav']['logs'] = [
+                    'label' => Craft::t('icon-manager', 'Logs'),
+                    'url' => 'icon-manager/logs',
+                ];
+
                 $item['subnav']['settings'] = [
                     'label' => Craft::t('icon-manager', 'Settings'),
                     'url' => 'icon-manager/settings',
@@ -196,6 +203,8 @@ class IconManager extends Plugin
                     'icon-manager/icon-sets/<iconSetId:\d+>' => 'icon-manager/icon-sets/edit',
                     'icon-manager/icon-sets/delete' => 'icon-manager/icon-sets/delete',
                     'icon-manager/icon-sets/refresh-icons' => 'icon-manager/icon-sets/refresh-icons',
+                    'icon-manager/logs' => 'icon-manager/logs/index',
+                    'icon-manager/logs/download' => 'icon-manager/logs/download',
                     'icon-manager/settings' => 'icon-manager/settings/index',
                     'icon-manager/settings/save' => 'icon-manager/settings/save',
                     'icon-manager/icons/render' => 'icon-manager/icons/render',
@@ -344,6 +353,11 @@ class IconManager extends Plugin
      */
     private function _registerLogTarget(): void
     {
+        // Prevent duplicate registration across requests
+        if (self::$_logTargetRegistered) {
+            return;
+        }
+
         if (Craft::$app->has('log')) {
             // Get base logs path
             $logsPath = Craft::$app->getPath()->getLogPath();
@@ -352,18 +366,34 @@ class IconManager extends Plugin
             $date = date('Y-m-d');
             $logFile = $logsPath . "/icon-manager-{$date}.log";
             
+            // Get log level from settings with fallback
+            $logLevel = $this->getSettings()->logLevel ?? 'error';
+
+            // Map log level to array of levels to include
+            $levels = match ($logLevel) {
+                'trace' => ['error', 'warning', 'info', 'trace'],
+                'info' => ['error', 'warning', 'info'],
+                'warning' => ['error', 'warning'],
+                'error' => ['error'],
+                default => ['error', 'warning', 'info']
+            };
+
             // Create a new log target instance
             $target = new \yii\log\FileTarget([
                 'logFile' => $logFile,
                 'categories' => ['icon-manager', 'icon-manager*', 'lindemannrock\iconmanager\*'],
                 'logVars' => [],
-                'levels' => ['error', 'warning', 'info'], // Include info for debugging
+                'levels' => $levels,
                 'maxFileSize' => 10240, // 10MB
-                'maxLogFiles' => 5,
+                'maxLogFiles' => 30, // Keep 30 days
+                'rotateByCopy' => false
             ]);
             
             // Add the target to the log dispatcher
             Craft::$app->getLog()->targets[] = $target;
+
+            // Mark as registered
+            self::$_logTargetRegistered = true;
         }
     }
 

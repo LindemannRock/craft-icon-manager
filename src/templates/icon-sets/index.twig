@@ -9,9 +9,11 @@
 {% import "_includes/forms" as forms %}
 
 {% set title = 'Icon Sets'|t('icon-manager') %}
+{% set selectedSubnavItem = 'icon-sets' %}
 
 {% set crumbs = [
-    { label: 'Icon Manager'|t('icon-manager'), url: url('icon-manager') }
+    { label: 'Icon Manager'|t('icon-manager'), url: url('icon-manager') },
+    { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 
 {% block actionButton %}
@@ -58,8 +60,8 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a class="delete icon" 
-                               title="{{ 'Delete'|t('app') }}" 
+                            <a class="delete icon"
+                               title="{{ 'Delete'|t('app') }}"
                                role="button"
                                aria-label="{{ 'Delete'|t('app') }}">
                             </a>
@@ -79,14 +81,14 @@
     // Handle delete clicks
     $(document).on('click', 'table.data a.delete', function(e) {
         e.preventDefault();
-        
+
         var $row = $(this).closest('tr');
         var iconSetId = $row.data('id');
         var iconSetName = $row.find('td:first-child a').text().trim();
-        
+
         var message = {{ 'Are you sure you want to delete "{name}"?'|t('icon-manager')|json_encode|raw }};
         message = message.replace('{name}', iconSetName);
-        
+
         if (confirm(message)) {
             Craft.postActionRequest('icon-manager/icon-sets/delete', {
                 iconSetId: iconSetId

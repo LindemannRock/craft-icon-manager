@@ -37,6 +37,9 @@ return [
             'font-awesome' => false,
             'material-icons' => false,
         ],
+
+        // Logging settings
+        'logLevel' => 'error', // Options: 'trace', 'info', 'warning', 'error'
     ],
     
     // Dev environment settings
@@ -55,6 +58,9 @@ return [
             'font-awesome' => true,
             'material-icons' => true,
         ],
+
+        // More detailed logging in development
+        'logLevel' => 'info',
     ],
     
     // Staging environment settings  
@@ -65,6 +71,9 @@ return [
         // Optimize for staging
         'enableCache' => true,
         'cacheDuration' => 86400, // 1 day
+
+        // Moderate logging for staging
+        'logLevel' => 'warning',
     ],
     
     // Production environment settings
@@ -80,8 +89,11 @@ return [
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => false, // Beta
-            'font-awesome' => false, // Beta  
+            'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
         ],
+
+        // Minimal logging in production
+        'logLevel' => 'error',
     ],
 ];
