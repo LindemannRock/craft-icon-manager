@@ -59,7 +59,22 @@ trait LoggingTrait
             return $message;
         }
 
-        // Add parameters as JSON if provided
-        return $message . ' | ' . json_encode($params);
+        // Substitute placeholders in the message with actual values
+        $formattedMessage = $message;
+        foreach ($params as $key => $value) {
+            $placeholder = '{' . $key . '}';
+            if (strpos($formattedMessage, $placeholder) !== false) {
+                $formattedMessage = str_replace($placeholder, (string)$value, $formattedMessage);
+                // Remove the substituted parameter from params so it's not shown in JSON context
+                unset($params[$key]);
+            }
+        }
+
+        // Add remaining parameters as JSON context if any
+        if (!empty($params)) {
+            return $formattedMessage . ' | ' . json_encode($params);
+        }
+
+        return $formattedMessage;
     }
 }

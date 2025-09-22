@@ -2,32 +2,48 @@
 /**
  * Icon Manager plugin for Craft CMS 5.x
  *
+ * Controller for viewing plugin logs
+ *
  * @link      https://lindemannrock.com
  * @copyright Copyright (c) 2025 LindemannRock
  */
 
 namespace lindemannrock\iconmanager\controllers;
 
-use lindemannrock\iconmanager\IconManager;
 use Craft;
 use craft\web\Controller;
 use craft\web\Response;
-use yii\web\NotFoundHttpException;
+use lindemannrock\iconmanager\IconManager;
+use yii\web\ForbiddenHttpException;
 
 /**
  * Logs Controller
- *
- * Handles log viewing and management
  */
 class LogsController extends Controller
 {
     /**
-     * View logs
+     * @inheritdoc
+     */
+    protected array|int|bool $allowAnonymous = false;
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action): bool
+    {
+        // Require admin access to view logs
+        if (!Craft::$app->getUser()->getIsAdmin()) {
+            throw new ForbiddenHttpException('User does not have permission to view logs');
+        }
+
+        return parent::beforeAction($action);
+    }
+
+    /**
+     * Display logs with pagination
      */
     public function actionIndex(): Response
     {
-        $this->requirePermission('accessPlugin-icon-manager');
-
         $request = Craft::$app->getRequest();
 
         // Get filter parameters
@@ -80,8 +96,6 @@ class LogsController extends Controller
      */
     public function actionDownload(): Response
     {
-        $this->requirePermission('accessPlugin-icon-manager');
-
         $date = Craft::$app->getRequest()->getRequiredParam('date');
 
         // Validate date format
@@ -92,11 +106,12 @@ class LogsController extends Controller
         $logPath = Craft::$app->getPath()->getLogPath() . "/icon-manager-{$date}.log";
 
         if (!file_exists($logPath)) {
-            throw new NotFoundHttpException('Log file not found');
+            throw new \Exception('Log file not found');
         }
 
         return Craft::$app->getResponse()->sendFile($logPath, "icon-manager-{$date}.log", [
             'mimeType' => 'text/plain',
+            'inline' => false,
         ]);
     }
 
@@ -112,27 +127,27 @@ class LogsController extends Controller
             $pattern = $logPath . '/icon-manager-*.log';
             $logFiles = glob($pattern);
 
-            if ($logFiles) {
-                // Sort by date (newest first)
-                rsort($logFiles);
-
-                foreach ($logFiles as $file) {
-                    if (preg_match('/icon-manager-(\d{4}-\d{2}-\d{2})\.log$/', basename($file), $matches)) {
-                        $date = $matches[1];
-                        $files[] = [
-                            'value' => $date,
-                            'label' => date('Y-m-d (D)', strtotime($date))
-                        ];
-                    }
+            foreach ($logFiles as $file) {
+                if (preg_match('/icon-manager-(\d{4}-\d{2}-\d{2})\.log$/', basename($file), $matches)) {
+                    $date = $matches[1];
+                    $files[$date] = [
+                        'date' => $date,
+                        'size' => filesize($file),
+                        'formattedSize' => Craft::$app->getFormatter()->asShortSize(filesize($file)),
+                        'lastModified' => filemtime($file),
+                    ];
                 }
             }
         }
 
-        return $files;
+        // Sort by date descending
+        krsort($files);
+
+        return array_values($files);
     }
 
     /**
-     * Get log entries for a specific date
+     * Get log entries for a specific date with filtering and pagination
      */
     private function _getLogEntries(string $date, string $level, string $search, int $page, int $limit): array
     {
@@ -143,24 +158,40 @@ class LogsController extends Controller
         }
 
         $entries = [];
-        $file = fopen($logPath, 'r');
+        $lineNumber = 0;
+        $filteredEntries = [];
 
-        if ($file) {
-            while (($line = fgets($file)) !== false) {
-                $entry = $this->_parseLogLine($line);
-                if ($entry && $this->_matchesFilters($entry, $level, $search)) {
-                    $entries[] = $entry;
+        // First pass: collect all filtered entries
+        if (($handle = fopen($logPath, 'r')) !== false) {
+            while (($line = fgets($handle)) !== false) {
+                $lineNumber++;
+                $entry = $this->_parsLogEntry(trim($line), $lineNumber);
+
+                if (!$entry) {
+                    continue;
                 }
+
+                // Filter by level
+                if ($level !== 'all' && $entry['level'] !== $level) {
+                    continue;
+                }
+
+                // Filter by search
+                if ($search && stripos($entry['message'] . ' ' . $entry['context'], $search) === false) {
+                    continue;
+                }
+
+                $filteredEntries[] = $entry;
             }
-            fclose($file);
+            fclose($handle);
         }
 
         // Reverse to show newest first
-        $entries = array_reverse($entries);
+        $filteredEntries = array_reverse($filteredEntries);
 
         // Apply pagination
         $offset = ($page - 1) * $limit;
-        return array_slice($entries, $offset, $limit);
+        return array_slice($filteredEntries, $offset, $limit);
     }
 
     /**
@@ -175,80 +206,68 @@ class LogsController extends Controller
         }
 
         $count = 0;
-        $file = fopen($logPath, 'r');
 
-        if ($file) {
-            while (($line = fgets($file)) !== false) {
-                $entry = $this->_parseLogLine($line);
-                if ($entry && $this->_matchesFilters($entry, $level, $search)) {
-                    $count++;
+        if (($handle = fopen($logPath, 'r')) !== false) {
+            while (($line = fgets($handle)) !== false) {
+                $entry = $this->_parsLogEntry(trim($line));
+
+                if (!$entry) {
+                    continue;
                 }
+
+                // Filter by level
+                if ($level !== 'all' && $entry['level'] !== $level) {
+                    continue;
+                }
+
+                // Filter by search
+                if ($search && stripos($entry['message'] . ' ' . $entry['context'], $search) === false) {
+                    continue;
+                }
+
+                $count++;
             }
-            fclose($file);
+            fclose($handle);
         }
 
         return $count;
     }
 
     /**
-     * Parse a log line into components
+     * Parse a log entry line
      */
-    private function _parseLogLine(string $line): ?array
+    private function _parsLogEntry(string $line, int $lineNumber = 0): ?array
     {
         // Skip empty lines
-        if (empty(trim($line))) {
+        if (empty($line)) {
             return null;
         }
 
-        // Match old Yii2 format: timestamp [ip][user][session][level][category] message
-        if (preg_match('/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+\[([^\]]*)\]\[([^\]]*)\]\[([^\]]*)\]\[([^\]]*)\]\[([^\]]*)\]\s+(.*)$/', $line, $matches)) {
+        // Parse log format: timestamp [user:id][level][category] message | context
+        // Also handle format without context (message only)
+        if (preg_match('/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+\[(.*?)\]\[(.*?)\]\[(.*?)\]\s+(.*?)(?:\s+\|\s+(.*))?$/', $line, $matches)) {
             return [
                 'timestamp' => $matches[1],
-                'ip' => $matches[2],
-                'user' => $matches[3] ?: 'guest',
-                'session' => $matches[4],
-                'level' => strtolower($matches[5]),
-                'category' => $matches[6],
-                'message' => trim($matches[7]),
-                'raw' => $line
-            ];
-        }
-
-        // Match new format: timestamp [user:id][level][category] message
-        if (preg_match('/^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+\[([^\]]+)\]\[([^\]]+)\]\[([^\]]+)\]\s+(.*)$/', $line, $matches)) {
-            return [
-                'timestamp' => $matches[1],
-                'ip' => '',
                 'user' => $matches[2],
-                'session' => '',
-                'level' => strtolower($matches[3]),
+                'level' => strtolower(str_replace('.', '', $matches[3])),
                 'category' => $matches[4],
-                'message' => trim($matches[5]),
-                'raw' => $line
+                'message' => $matches[5],
+                'context' => isset($matches[6]) ? $matches[6] : '',
+                'lineNumber' => $lineNumber,
+                'raw' => $line,
             ];
         }
 
-        return null;
-    }
-
-    /**
-     * Check if entry matches filters
-     */
-    private function _matchesFilters(array $entry, string $level, string $search): bool
-    {
-        // Level filter
-        if ($level !== 'all' && $entry['level'] !== $level) {
-            return false;
-        }
-
-        // Search filter
-        if (!empty($search)) {
-            $searchLower = strtolower($search);
-            if (stripos($entry['message'], $searchLower) === false) {
-                return false;
-            }
-        }
-
-        return true;
+        // Fallback for non-standard format
+        return [
+            'timestamp' => '',
+            'user' => '',
+            'level' => 'unknown',
+            'category' => '',
+            'message' => $line,
+            'context' => '',
+            'lineNumber' => $lineNumber,
+            'raw' => $line,
+        ];
     }
 }

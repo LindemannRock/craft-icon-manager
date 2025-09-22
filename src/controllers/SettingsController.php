@@ -72,19 +72,11 @@ class SettingsController extends Controller
         if (!$settings->isOverridden('cacheDuration')) {
             $settings->cacheDuration = isset($postedSettings['cacheDuration']) ? (int)$postedSettings['cacheDuration'] : $settings->cacheDuration;
         }
-        
-        if (!$settings->isOverridden('iconsPerPage')) {
-            $settings->iconsPerPage = isset($postedSettings['iconsPerPage']) ? (int)$postedSettings['iconsPerPage'] : $settings->iconsPerPage;
+
+        if (!$settings->isOverridden('logLevel')) {
+            $settings->logLevel = $postedSettings['logLevel'] ?? $settings->logLevel;
         }
-        
-        if (!$settings->isOverridden('showLabels')) {
-            $settings->showLabels = isset($postedSettings['showLabels']) ? (bool)$postedSettings['showLabels'] : $settings->showLabels;
-        }
-        
-        if (!$settings->isOverridden('iconSize')) {
-            $settings->iconSize = $postedSettings['iconSize'] ?? $settings->iconSize;
-        }
-        
+
         // Handle lightswitch fields for icon types
         // Lightswitches send "1" when on, nothing when off
         $enabledIconTypes = $postedSettings['enabledIconTypes'] ?? [];

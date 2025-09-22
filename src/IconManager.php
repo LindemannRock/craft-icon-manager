@@ -353,48 +353,54 @@ class IconManager extends Plugin
      */
     private function _registerLogTarget(): void
     {
-        // Prevent duplicate registration across requests
-        if (self::$_logTargetRegistered) {
+        // Skip if already configured
+        if (isset(Craft::$app->getLog()->targets['icon-manager'])) {
             return;
         }
 
-        if (Craft::$app->has('log')) {
-            // Get base logs path
-            $logsPath = Craft::$app->getPath()->getLogPath();
-            
-            // Use date-based log file naming
-            $date = date('Y-m-d');
-            $logFile = $logsPath . "/icon-manager-{$date}.log";
-            
-            // Get log level from settings with fallback
-            $logLevel = $this->getSettings()->logLevel ?? 'error';
+        // Get base logs path
+        $logsPath = Craft::$app->getPath()->getLogPath();
 
-            // Map log level to array of levels to include
-            $levels = match ($logLevel) {
-                'trace' => ['error', 'warning', 'info', 'trace'],
-                'info' => ['error', 'warning', 'info'],
-                'warning' => ['error', 'warning'],
-                'error' => ['error'],
-                default => ['error', 'warning', 'info']
-            };
+        // Use date-based log file naming
+        $date = date('Y-m-d');
+        $logFile = $logsPath . "/icon-manager-{$date}.log";
 
-            // Create a new log target instance
-            $target = new \yii\log\FileTarget([
-                'logFile' => $logFile,
-                'categories' => ['icon-manager', 'icon-manager*', 'lindemannrock\iconmanager\*'],
-                'logVars' => [],
-                'levels' => $levels,
-                'maxFileSize' => 10240, // 10MB
-                'maxLogFiles' => 30, // Keep 30 days
-                'rotateByCopy' => false
-            ]);
-            
-            // Add the target to the log dispatcher
-            Craft::$app->getLog()->targets[] = $target;
+        // Get log level from settings with fallback
+        $logLevel = $this->getSettings()->logLevel ?? 'error';
 
-            // Mark as registered
-            self::$_logTargetRegistered = true;
-        }
+        // Map log level to array of levels to include
+        $levels = match ($logLevel) {
+            'trace' => ['error', 'warning', 'info', 'trace'],
+            'info' => ['error', 'warning', 'info'],
+            'warning' => ['error', 'warning'],
+            'error' => ['error'],
+            default => ['error', 'warning', 'info']
+        };
+
+        // Create a new log target instance
+        $target = new \yii\log\FileTarget([
+            'logFile' => $logFile,
+            'categories' => ['icon-manager'],
+            'logVars' => [],
+            'levels' => $levels,
+            'maxFileSize' => 10240, // 10MB
+            'maxLogFiles' => 30, // Keep 30 days
+            'prefix' => function ($message) {
+                $user = Craft::$app->has('user', true) ? Craft::$app->getUser() : null;
+                $userId = $user && !$user->getIsGuest() ? $user->getId() : '-';
+                return "[user:{$userId}]";
+            },
+            'rotateByCopy' => false
+        ]);
+
+        // Add the target to the log dispatcher and ensure it's available immediately
+        Craft::$app->getLog()->targets['icon-manager'] = $target;
+
+        // Initialize the target immediately
+        $target->init();
+
+        // Mark as registered
+        self::$_logTargetRegistered = true;
     }
 
 }

@@ -16,14 +16,17 @@ You can override plugin settings by creating an `icon-manager.php` file in your 
 return [
     // Plugin settings
     'pluginName' => 'Icon Manager',
-    
+
     // Icon sets path
     'iconSetsPath' => '@root/src/icons',
-    
+
     // Caching settings
     'enableCache' => true,
     'cacheDuration' => 86400, // 24 hours in seconds
-    
+
+    // Logging settings
+    'logLevel' => 'info', // error, warning, info, trace
+
     // Icon types to enable
     'enabledIconTypes' => [
         'svg-folder' => true,
@@ -60,6 +63,7 @@ return [
         'iconSetsPath' => '@root/src/icons',
         'enableCache' => true,
         'cacheDuration' => 3600, // 1 hour
+        'logLevel' => 'trace', // Detailed logging for development
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => true,
@@ -80,10 +84,11 @@ return [
         'iconSetsPath' => '@webroot/dist/assets/icons',
         'enableCache' => true,
         'cacheDuration' => 2592000, // 30 days
+        'logLevel' => 'warning', // Minimal logging for production
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => false, // Beta
-            'font-awesome' => false, // Beta  
+            'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
         ],
     ],
@@ -99,6 +104,7 @@ return [
     'enableCache' => getenv('ICON_MANAGER_CACHE') === 'true',
     'cacheDuration' => (int)getenv('ICON_CACHE_DURATION') ?: 86400,
     'iconSetsPath' => getenv('ICON_SETS_PATH') ?: '@root/icons',
+    'logLevel' => getenv('ICON_LOG_LEVEL') ?: 'info',
 ];
 ```
 
@@ -116,6 +122,14 @@ return [
 
 - **enableCache**: Enable/disable icon data caching for better performance
 - **cacheDuration**: How long to cache icon data in seconds
+
+#### Logging Settings
+
+- **logLevel**: Logging verbosity level
+  - `error` - Critical errors only
+  - `warning` - Errors and warnings
+  - `info` - General information (recommended for production)
+  - `trace` - Detailed debugging with performance metrics (development only)
 
 #### Icon Type Settings
 
@@ -158,6 +172,44 @@ For production environments:
 // Limit cache duration in shared environments
 'cacheDuration' => min((int)getenv('CACHE_DURATION') ?: 86400, 604800), // Max 7 days
 ```
+
+## Logging Configuration
+
+### Log Levels and Performance
+
+Choose the appropriate log level for your environment:
+
+- **Production**: Use `warning` or `error` to minimize log volume
+- **Staging**: Use `info` for operational visibility
+- **Development**: Use `trace` for debugging and performance analysis
+
+### Log File Management
+
+- **Location**: `storage/logs/icon-manager-YYYY-MM-DD.log`
+- **Retention**: 30 days automatic cleanup
+- **File Size**: Includes file size display in CP interface
+- **Web Interface**: Access via Icon Manager → Logs in Control Panel
+
+### Environment-Specific Logging
+
+```php
+'dev' => [
+    'logLevel' => 'trace', // Full debugging
+],
+'staging' => [
+    'logLevel' => 'info', // Operations monitoring
+],
+'production' => [
+    'logLevel' => 'warning', // Errors and warnings only
+],
+```
+
+### Performance Impact
+
+- **trace**: High verbosity, includes cache operations and timing
+- **info**: Moderate verbosity, normal operations
+- **warning**: Low verbosity, problems only
+- **error**: Minimal verbosity, critical issues only
 
 ## Icon Metadata Configuration
 

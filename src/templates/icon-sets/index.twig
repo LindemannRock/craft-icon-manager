@@ -11,8 +11,9 @@
 {% set title = 'Icon Sets'|t('icon-manager') %}
 {% set selectedSubnavItem = 'icon-sets' %}
 
+{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
 {% set crumbs = [
-    { label: 'Icon Manager'|t('icon-manager'), url: url('icon-manager') },
+    { label: plugin.settings.pluginName, url: url('icon-manager') },
     { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 

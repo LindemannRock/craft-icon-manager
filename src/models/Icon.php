@@ -14,12 +14,15 @@ use craft\helpers\Html;
 use craft\helpers\StringHelper;
 use craft\helpers\Template;
 use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\traits\LoggingTrait;
 
 /**
  * Icon Model
  */
 class Icon extends Model implements \JsonSerializable
 {
+    use LoggingTrait;
+
     /**
      * Icon types
      */
@@ -285,18 +288,48 @@ class Icon extends Model implements \JsonSerializable
         $fullPath = Craft::getAlias($basePath . '/' . $this->path);
         
         if (!file_exists($fullPath)) {
-            // Log the missing icon to dedicated icon-manager.log file
-            Craft::warning(
-                "Icon file not found: {$fullPath} (base: {$basePath}, path: {$this->path})",
-                'icon-manager'
-            );
+            $this->logWarning("Icon file not found: {$this->name}", [
+                'iconId' => $this->id,
+                'expectedPath' => $fullPath,
+                'basePath' => $basePath,
+                'relativePath' => $this->path
+            ]);
             return null;
         }
 
         $svg = file_get_contents($fullPath);
-        
+
+        if ($svg === false) {
+            $this->logError("Failed to read icon file: {$this->name}", [
+                'iconId' => $this->id,
+                'filePath' => $fullPath,
+                'fileExists' => file_exists($fullPath),
+                'fileSize' => filesize($fullPath)
+            ]);
+            return null;
+        }
+
+        if (empty($svg)) {
+            $this->logWarning("Icon file is empty: {$this->name}", [
+                'iconId' => $this->id,
+                'filePath' => $fullPath,
+                'fileSize' => filesize($fullPath)
+            ]);
+            return null;
+        }
+
         // Sanitize SVG for security
-        return $this->sanitizeSvg($svg);
+        $sanitized = $this->sanitizeSvg($svg);
+
+        if (empty($sanitized) && !empty($svg)) {
+            $this->logWarning("SVG content removed during sanitization: {$this->name}", [
+                'iconId' => $this->id,
+                'originalLength' => strlen($svg),
+                'filePath' => $fullPath
+            ]);
+        }
+
+        return $sanitized;
     }
     
     /**
@@ -358,12 +391,27 @@ class Icon extends Model implements \JsonSerializable
             case self::TYPE_SVG:
                 $svg = $this->getSvg();
                 if (!$svg) {
+                    $this->logWarning("SVG content is empty for icon: {$this->name}", [
+                        'iconId' => $this->id,
+                        'iconSet' => $this->iconSetId,
+                        'path' => $this->path
+                    ]);
                     return '';
                 }
 
                 // Add classes and attributes to SVG
                 $dom = new \DOMDocument();
-                @$dom->loadHTML($svg, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                $loadResult = @$dom->loadHTML($svg, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+                if (!$loadResult) {
+                    $this->logError("Failed to parse SVG content for icon: {$this->name}", [
+                        'iconId' => $this->id,
+                        'iconSet' => $this->iconSetId,
+                        'svgLength' => strlen($svg)
+                    ]);
+                    return '';
+                }
+
                 $svgElement = $dom->getElementsByTagName('svg')->item(0);
 
                 if ($svgElement) {
@@ -414,6 +462,12 @@ class Icon extends Model implements \JsonSerializable
                     }
 
                     return Template::raw($dom->saveHTML($svgElement));
+                } else {
+                    $this->logWarning("No SVG element found in parsed content for icon: {$this->name}", [
+                        'iconId' => $this->id,
+                        'iconSet' => $this->iconSetId,
+                        'contentPreview' => substr($svg, 0, 100)
+                    ]);
                 }
                 break;
 

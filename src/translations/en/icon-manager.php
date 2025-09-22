@@ -10,7 +10,6 @@
  */
 
 return [
-    'Icon Manager' => 'Icon Manager',
     'Icon Sets' => 'Icon Sets',
     'Settings' => 'Settings',
     'Logs' => 'Logs',

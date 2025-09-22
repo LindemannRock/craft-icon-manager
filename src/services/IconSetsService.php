@@ -139,7 +139,14 @@ class IconSetsService extends Component
         $isNew = !$iconSet->id;
 
         if ($runValidation && !$iconSet->validate()) {
-            $this->logWarning("Icon set validation failed", [
+            // Format errors for readable message
+            $errorMessages = [];
+            foreach ($iconSet->getErrors() as $field => $fieldErrors) {
+                $errorMessages[] = $field . ': ' . implode(', ', $fieldErrors);
+            }
+            $errorString = implode('; ', $errorMessages);
+
+            $this->logWarning("Icon set validation failed: {$errorString}", [
                 'errors' => $iconSet->getErrors(),
                 'iconSetId' => $iconSet->id
             ]);

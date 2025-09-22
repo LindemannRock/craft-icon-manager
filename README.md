@@ -98,11 +98,14 @@ return [
     'dev' => [
         // Use source icons in dev
         'iconSetsPath' => '@root/src/icons',
-        
+
         // Enable caching in dev for performance
         'enableCache' => true,
         'cacheDuration' => 3600, // 1 hour
-        
+
+        // Detailed logging for development
+        'logLevel' => 'trace',
+
         // Allow all icon types for testing
         'enabledIconTypes' => [
             'svg-folder' => true,
@@ -126,16 +129,19 @@ return [
     'production' => [
         // Production icons path
         'iconSetsPath' => '@webroot/dist/assets/icons',
-        
+
         // Optimize for production
         'enableCache' => true,
         'cacheDuration' => 2592000, // 30 days
-        
+
+        // Minimal logging for production
+        'logLevel' => 'warning',
+
         // Only stable icon types in production
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => false, // Beta
-            'font-awesome' => false, // Beta  
+            'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
         ],
     ],
@@ -153,6 +159,7 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - **enableCache** - Whether to cache icon data for better performance
 - **cacheDuration** - How long to cache icon data, in seconds
 - **enabledIconTypes** - Enable/disable specific icon set types
+- **logLevel** - Logging verbosity: error, warning, info, or trace
 
 ### Creating Icon Sets
 
@@ -433,10 +440,40 @@ return [
 
 ## Logging
 
-Icon Manager logs warnings and errors to dedicated date-based log files:
+Icon Manager includes comprehensive logging with configurable levels:
+
+### Log Levels
+- **Error**: Critical errors only
+- **Warning**: Errors and warnings
+- **Info**: General information
+- **Trace**: Detailed debugging (includes performance metrics)
+
+### Configuration
+```php
+// config/icon-manager.php
+return [
+    'logLevel' => 'info', // error, warning, info, or trace
+];
+```
+
+### Log Files
 - **Location**: `storage/logs/icon-manager-YYYY-MM-DD.log`
-- **What's logged**: Missing icons, errors, warnings
-- **Not logged**: Info messages, routine operations
+- **Retention**: 30 days (automatic cleanup)
+- **Format**: Structured logs with context data
+- **Web Interface**: View and filter logs in CP at Icon Manager → Logs
+
+### What's Logged
+- **Error**: File system failures, SVG parsing errors, database errors
+- **Warning**: Missing icons, empty content, slow operations (>1s)
+- **Info**: Icon set operations, cache clears, major actions
+- **Trace**: Cache hits/misses, performance timing, API requests
+
+### Log Management
+Access logs through the Control Panel:
+1. Navigate to Icon Manager → Logs
+2. Filter by date, level, or search terms
+3. Download log files for external analysis
+4. View file sizes and entry counts
 
 ## Environment-Specific Paths
 

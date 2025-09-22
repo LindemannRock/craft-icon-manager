@@ -51,19 +51,63 @@ class IconsService extends Component
         if ($settings->enableCache) {
             $cacheKey = "icon-manager:icons-by-set:{$iconSetId}";
             $cacheDuration = $settings->cacheDuration;
-            
-            $icons = Craft::$app->getCache()->getOrSet($cacheKey, function() use ($iconSetId) {
-                return $this->_loadIconsFromDatabase($iconSetId);
-            }, $cacheDuration);
-            
+
+            // Check if already cached in memory
+            if (isset($this->_iconsBySetId[$iconSetId])) {
+                $this->logTrace("Memory cache hit for icon set {$iconSetId}");
+                return $this->_iconsBySetId[$iconSetId];
+            }
+
+            // Check application cache
+            $cached = Craft::$app->getCache()->get($cacheKey);
+            if ($cached !== false) {
+                // Get icon set details for better logging
+                $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+                $setName = $iconSet ? $iconSet->name : "Unknown";
+                $setType = $iconSet ? $iconSet->type : "unknown";
+
+                $this->logTrace("Application cache hit for icon set '{setName}' ({iconCount} {setType} icons)", [
+                    'setName' => $setName,
+                    'setType' => $setType,
+                    'iconCount' => count($cached),
+                    'iconSetId' => $iconSetId
+                ]);
+                $this->_iconsBySetId[$iconSetId] = $cached;
+                return $cached;
+            }
+
+            // Cache miss - load from database
+            $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+            $setName = $iconSet ? $iconSet->name : "Unknown";
+            $this->logTrace("Cache miss for icon set '{setName}' - loading from database", [
+                'iconSetId' => $iconSetId,
+                'setName' => $setName
+            ]);
+            $icons = $this->_loadIconsFromDatabase($iconSetId);
+
+            // Store in application cache
+            Craft::$app->getCache()->set($cacheKey, $icons, $cacheDuration);
+            $this->logTrace("Cached {count} icons for icon set '{setName}' (expires in {duration}s)", [
+                'count' => count($icons),
+                'setName' => $setName,
+                'duration' => $cacheDuration,
+                'iconSetId' => $iconSetId
+            ]);
+
             $this->_iconsBySetId[$iconSetId] = $icons;
             return $icons;
         }
         
         // No cache - load directly
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        $setName = $iconSet ? $iconSet->name : "Unknown";
+        $this->logTrace("Cache disabled - loading icons directly from database for set '{setName}'", [
+            'iconSetId' => $iconSetId,
+            'setName' => $setName
+        ]);
         $icons = $this->_loadIconsFromDatabase($iconSetId);
         $this->_iconsBySetId[$iconSetId] = $icons;
-        
+
         return $icons;
     }
     
@@ -72,6 +116,8 @@ class IconsService extends Component
      */
     private function _loadIconsFromDatabase(int $iconSetId): array
     {
+        $startTime = microtime(true);
+
         $results = (new Query())
             ->select([
                 'id',
@@ -94,6 +140,21 @@ class IconsService extends Component
             foreach ($results as $result) {
                 $icons[] = $this->_createIconFromRecord($result, $iconSet);
             }
+        }
+
+        $duration = microtime(true) - $startTime;
+        $this->logTrace("Loaded {count} icons from database in {duration}ms", [
+            'iconSetId' => $iconSetId,
+            'count' => count($icons),
+            'duration' => round($duration * 1000, 2)
+        ]);
+
+        // Log warning for slow operations
+        if ($duration > 1.0) {
+            $this->logWarning("Slow icon loading detected for icon set {$iconSetId}", [
+                'duration' => round($duration, 3),
+                'iconCount' => count($icons)
+            ]);
         }
 
         return $icons;
@@ -420,6 +481,11 @@ class IconsService extends Component
      */
     public function clearMemoryCache(): void
     {
+        $cacheCount = count($this->_iconsBySetId);
         $this->_iconsBySetId = [];
+
+        if ($cacheCount > 0) {
+            $this->logInfo("Cleared memory cache for {$cacheCount} icon sets");
+        }
     }
 }

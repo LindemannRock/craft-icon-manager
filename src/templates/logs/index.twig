@@ -1,18 +1,18 @@
-{#
- # Icon Manager Logs
- #
- # @link      https://lindemannrock.com
- # @copyright Copyright (c) 2025 LindemannRock
- #}
-
 {% extends "_layouts/cp" %}
-
-{% set title = 'Logs'|t('icon-manager') %}
+{% set title = "Logs"|t('icon-manager') %}
+{% set fullPageForm = false %}
 {% set selectedSubnavItem = 'logs' %}
 
+{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
 {% set crumbs = [
-    { label: "Icon Manager"|t('icon-manager'), url: url('icon-manager') },
-    { label: "Logs"|t('icon-manager'), url: url('icon-manager/logs') }
+    {
+        label: plugin.settings.pluginName,
+        url: url('icon-manager'),
+    },
+    {
+        label: 'Logs'|t('icon-manager'),
+        url: url('icon-manager/logs'),
+    },
 ] %}
 
 {% import "_includes/forms" as forms %}
@@ -24,7 +24,8 @@
         {% if filters.date and logFiles|length > 0 %}
         <div style="margin-left: auto;">
             <a href="{{ actionUrl('icon-manager/logs/download', { date: filters.date }) }}" class="btn" download>
-                {{ 'Download Log'|t('icon-manager') }}
+                <span class="icon" aria-hidden="true">{{ svg('@appicons/download.svg') }}</span>
+                {{ "Download Log"|t('icon-manager') }}
             </a>
         </div>
         {% endif %}
@@ -39,7 +40,10 @@
                     id: 'date-filter',
                     name: 'date',
                     value: filters.date,
-                    options: logFiles,
+                    options: logFiles|map(file => {
+                        label: file.date ~ ' (' ~ file.formattedSize ~ ')',
+                        value: file.date
+                    }),
                     fieldAttributes: {
                         'onchange': 'document.getElementById("search-filter").value = ""; document.getElementById("level-filter").value = "all"; this.form.submit();'
                     }
@@ -52,7 +56,7 @@
                     id: 'level-filter',
                     name: 'level',
                     value: filters.level,
-                    options: levels,
+                    options: levels|map((label, value) => { label: label, value: value }),
                 }) }}
             </div>
 
@@ -68,89 +72,123 @@
         </div>
     </div>
 
-    <!-- Log Entries -->
-    {% if logEntries|length > 0 %}
-        <div class="log-container" style="background: #f9f9f9; border: 1px solid #e3e5e8; border-radius: 4px;">
-            {% for entry in logEntries %}
-                <div class="log-entry" data-level="{{ entry.level }}" style="padding: 12px 16px; border-bottom: 1px solid #e3e5e8; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; font-size: 13px; line-height: 1.4;">
-                    <div style="display: flex; align-items: flex-start; gap: 12px;">
-                        <span style="color: #8f98a3; white-space: nowrap; font-weight: 500;">
-                            {{ entry.timestamp }}
-                        </span>
-                        <span class="log-level" data-level="{{ entry.level }}" style="
-                            padding: 2px 6px;
-                            border-radius: 3px;
-                            font-size: 11px;
-                            font-weight: 600;
-                            text-transform: uppercase;
-                            letter-spacing: 0.5px;
-                            white-space: nowrap;
-                            {% if entry.level == 'error' %}
-                                background: rgba(231, 76, 60, 0.1);
-                                color: #c0392b;
-                            {% elseif entry.level == 'warning' %}
-                                background: rgba(230, 126, 34, 0.1);
-                                color: #d68910;
-                            {% elseif entry.level == 'info' %}
-                                background: rgba(52, 152, 219, 0.1);
-                                color: #2980b9;
-                            {% elseif entry.level == 'trace' %}
-                                background: rgba(155, 89, 182, 0.1);
-                                color: #8e44ad;
-                            {% endif %}
-                        ">
-                            {{ entry.level }}
-                        </span>
-                        <span style="flex: 1; word-wrap: break-word; color: #3c4043;">
-                            {{ entry.message }}
-                        </span>
-                    </div>
-                </div>
-            {% endfor %}
+    {% if logFiles|length == 0 %}
+        <div class="pane centeralign">
+            <p class="light">{{ "No log files found. Log files are created when plugin activities occur."|t('icon-manager') }}</p>
+            <p class="light">{{ "Current log level"|t('icon-manager') }}: <strong>{{ craft.iconManager.getSettings().logLevel|upper }}</strong></p>
+            <p class="light">
+                <a href="{{ url('icon-manager/settings') }}">{{ "Change log level in settings"|t('icon-manager') }}</a>
+            </p>
         </div>
-
-        <!-- Pagination -->
-        {% if pagination.totalPages > 1 %}
-            <div style="margin-top: 24px; text-align: center;">
-                {% set baseUrl = url('icon-manager/logs', {
-                    date: filters.date,
-                    level: filters.level,
-                    search: filters.search
-                }) %}
-
-                <div class="flex" style="justify-content: center; align-items: center; gap: 8px;">
-                    {% if pagination.currentPage > 1 %}
-                        <a href="{{ baseUrl ~ '&page=' ~ (pagination.currentPage - 1) }}" class="btn">
-                            {{ 'Previous'|t('icon-manager') }}
-                        </a>
-                    {% endif %}
-
-                    <span style="padding: 8px 16px; color: #8f98a3;">
-                        {{ 'Page {current} of {total}'|t('icon-manager', {
-                            current: pagination.currentPage,
-                            total: pagination.totalPages
-                        }) }}
-                    </span>
-
-                    {% if pagination.currentPage < pagination.totalPages %}
-                        <a href="{{ baseUrl ~ '&page=' ~ (pagination.currentPage + 1) }}" class="btn">
-                            {{ 'Next'|t('icon-manager') }}
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
-
-    {% elseif logFiles|length == 0 %}
-        <div class="zilch">
-            <p>{{ 'No log files found.'|t('icon-manager') }}</p>
-            <p style="color: #8f98a3;">{{ 'Log files will appear here once the plugin starts logging activities.'|t('icon-manager') }}</p>
+    {% elseif logEntries|length == 0 %}
+        <div class="pane centeralign">
+            <p class="light">{{ "No log entries found for the selected filters."|t('icon-manager') }}</p>
+            {% if filters.level != 'all' or filters.search %}
+                <p class="light">{{ "Try adjusting your filters or selecting a different date."|t('icon-manager') }}</p>
+            {% endif %}
         </div>
     {% else %}
-        <div class="zilch">
-            <p>{{ 'No log entries found for the selected filters.'|t('icon-manager') }}</p>
-            <p style="color: #8f98a3;">{{ 'Try adjusting your search criteria or log level filter.'|t('icon-manager') }}</p>
+        {# Log entries table #}
+        <div class="tableview">
+            <table class="data fullwidth">
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">{{ "Time"|t('icon-manager') }}</th>
+                        <th style="width: 80px;">{{ "Level"|t('icon-manager') }}</th>
+                        <th style="width: 100px;">{{ "User"|t('icon-manager') }}</th>
+                        <th>{{ "Message"|t('icon-manager') }}</th>
+                        <th style="width: 60px;">#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in logEntries %}
+                        <tr class="log-entry" data-level="{{ entry.level }}">
+                            <td class="nowrap code">
+                                <time datetime="{{ entry.timestamp }}">{{ entry.timestamp|date('H:i:s') }}</time>
+                            </td>
+                            <td>
+                                {{ entry.level|upper }}
+                            </td>
+                            <td class="nowrap">
+                                {% if entry.user matches '/user:(\\d+)/' %}
+                                    {% set userId = entry.user|replace('user:', '') %}
+                                    {% set user = craft.users.id(userId).one() %}
+                                    {{ user ? user.username : 'User #' ~ userId }}
+                                {% else %}
+                                    {{ entry.user ?: 'System' }}
+                                {% endif %}
+                            </td>
+                            <td style="word-break: break-word;">
+                                <div>{{ entry.message }}</div>
+                                {% if entry.context and entry.context != '[]' %}
+                                    <details style="margin-top: 8px;">
+                                        <summary style="cursor: pointer; color: #606d7b; font-size: 12px;">{{ "Context"|t('icon-manager') }}</summary>
+                                        <div style="margin-top: 4px; padding: 8px; background: #f8f9fa; border-radius: 3px; font-family: Monaco, 'Courier New', monospace; font-size: 11px; white-space: pre-wrap; border-left: 3px solid #dee2e6;">{{ entry.context }}</div>
+                                    </details>
+                                {% endif %}
+                            </td>
+                            <td class="light code">
+                                {{ entry.lineNumber }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+
+        {# Pagination #}
+        {% if pagination.totalPages > 1 %}
+            <nav class="flex" style="justify-content: space-between; align-items: center; margin-top: 24px;">
+                <div>
+                    {% if pagination.currentPage > 1 %}
+                        <a href="{{ url('icon-manager/logs', filters|merge({page: pagination.currentPage - 1})) }}" class="btn">
+                            {{ "Previous"|t('icon-manager') }}
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="flex" style="gap: 8px; align-items: center;">
+                    {% set startPage = max(1, pagination.currentPage - 2) %}
+                    {% set endPage = min(pagination.totalPages, pagination.currentPage + 2) %}
+
+                    {% if startPage > 1 %}
+                        <a href="{{ url('icon-manager/logs', filters|merge({page: 1})) }}" class="btn {{ pagination.currentPage == 1 ? 'disabled' : '' }}">1</a>
+                        {% if startPage > 2 %}
+                            <span>…</span>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for page in range(startPage, endPage) %}
+                        <a href="{{ url('icon-manager/logs', filters|merge({page: page})) }}"
+                           class="btn {{ pagination.currentPage == page ? 'active' : '' }}">{{ page }}</a>
+                    {% endfor %}
+
+                    {% if endPage < pagination.totalPages %}
+                        {% if endPage < pagination.totalPages - 1 %}
+                            <span>…</span>
+                        {% endif %}
+                        <a href="{{ url('icon-manager/logs', filters|merge({page: pagination.totalPages})) }}"
+                           class="btn {{ pagination.currentPage == pagination.totalPages ? 'disabled' : '' }}">{{ pagination.totalPages }}</a>
+                    {% endif %}
+                </div>
+
+                <div>
+                    {% if pagination.currentPage < pagination.totalPages %}
+                        <a href="{{ url('icon-manager/logs', filters|merge({page: pagination.currentPage + 1})) }}" class="btn">
+                            {{ "Next"|t('icon-manager') }}
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+
+            <div class="centeralign" style="margin-top: 16px; color: #606d7b; font-size: 14px;">
+                {{ "Page {current} of {total}"|t('icon-manager', {
+                    current: pagination.currentPage,
+                    total: pagination.totalPages
+                }) }}
+                ({{ "{count} total entries"|t('icon-manager', { count: pagination.total }) }})
+            </div>
+        {% endif %}
     {% endif %}
 
     {# Log level information #}
@@ -173,41 +211,94 @@
         </dl>
 
         <p style="margin-top: 16px;">
-            <a href="{{ cpUrl('settings/plugins/icon-manager') }}" class="btn secondary">
+            <a href="{{ url('icon-manager/settings') }}" class="btn secondary">
                 {{ "Change log level settings"|t('icon-manager') }}
             </a>
         </p>
     </div>
 
-    <style>
-        .log-entry[data-level="error"] {
-            background: rgba(231, 76, 60, 0.05);
-            border-left: 3px solid rgba(231, 76, 60, 0.3);
-        }
-
-        .log-entry[data-level="warning"] {
-            background: rgba(230, 126, 34, 0.05);
-            border-left: 3px solid rgba(230, 126, 34, 0.3);
-        }
-
-        .log-entry[data-level="info"] {
-            background: rgba(52, 152, 219, 0.05);
-            border-left: 3px solid rgba(52, 152, 219, 0.3);
-        }
-
-        .log-entry[data-level="trace"] {
-            background: rgba(155, 89, 182, 0.08);
-            border-left: 3px solid rgba(155, 89, 182, 0.4);
-        }
-
-        .log-entry:last-child {
-            border-bottom: none;
-        }
-
-        .log-container {
-            max-height: 800px;
-            overflow-y: auto;
-        }
-    </style>
-
+    {% include 'icon-manager/_components/plugin-credit.twig' %}
 {% endblock %}
+
+{% css %}
+/* Enhance context display */
+details[open] summary {
+    margin-bottom: 4px;
+}
+
+/* Improve log level status colors */
+.status.light {
+    background: #95a5a6;
+    color: #fff;
+}
+
+/* Better pagination styling */
+.btn.active {
+    background: #0d78f2;
+    color: #fff;
+}
+
+.btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Table enhancements */
+.log-entry td {
+    vertical-align: top;
+    padding: 12px 8px;
+}
+
+.log-entry[data-level="error"] {
+    background: rgba(231, 76, 60, 0.05);
+    border-left: 3px solid rgba(231, 76, 60, 0.3);
+}
+
+.log-entry[data-level="warning"] {
+    background: rgba(243, 156, 18, 0.05);
+    border-left: 3px solid rgba(243, 156, 18, 0.3);
+}
+
+.log-entry[data-level="info"] {
+    background: rgba(52, 152, 219, 0.05);
+    border-left: 3px solid rgba(52, 152, 219, 0.3);
+}
+
+.log-entry[data-level="trace"] {
+    background: rgba(155, 89, 182, 0.08);
+    border-left: 3px solid rgba(155, 89, 182, 0.4);
+}
+{% endcss %}
+
+{% js %}
+// Instant filtering without form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const dateFilter = document.getElementById('date-filter');
+    const levelFilter = document.getElementById('level-filter');
+    const searchFilter = document.getElementById('search-filter');
+
+    // Function to apply filters by redirecting with new parameters
+    function applyFilters() {
+        const params = new URLSearchParams(window.location.search);
+
+        params.set('date', dateFilter.value);
+        params.set('level', levelFilter.value);
+        params.set('search', searchFilter.value);
+        params.delete('page'); // Reset to page 1 when filtering
+
+        window.location.href = window.location.pathname + '?' + params.toString();
+    }
+
+    // Date and level changes apply immediately
+    dateFilter.addEventListener('change', applyFilters);
+    levelFilter.addEventListener('change', applyFilters);
+
+    // Search applies on Enter key
+    searchFilter.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            applyFilters();
+        }
+    });
+});
+{% endjs %}
