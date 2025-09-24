@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.0](https://github.com/LindemannRock/icon-manager/compare/v1.4.1...v1.5.0) (2025-09-22)
+
+
+### Features
+
+* Add comprehensive logging system with web interface ([76ca4da](https://github.com/LindemannRock/icon-manager/commit/76ca4dae9b084088e115355dd244be0d57391162))
+* Add translation strings for icon manager plugin ([e3b36a7](https://github.com/LindemannRock/icon-manager/commit/e3b36a7217951713ee3e1cea271b4eaaf7e7ccde))
+* implement comprehensive logging system for Icon Manager ([06e6b9d](https://github.com/LindemannRock/icon-manager/commit/06e6b9d3e4c1dbe41db82ced56b1b956d4b64a11))
+
+
+### Bug Fixes
+
+* update .gitignore to properly exclude logs and add backup files ([69bae12](https://github.com/LindemannRock/icon-manager/commit/69bae12f1fcfc75c5ea2235ed532f4000832d79e))
+
 ## [1.4.1](https://github.com/LindemannRock/icon-manager/compare/v1.4.0...v1.4.1) (2025-09-15)
 
 

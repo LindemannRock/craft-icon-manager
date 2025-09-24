@@ -2,7 +2,7 @@
     "name": "lindemannrock/icon-manager",
     "description": "Comprehensive icon management field supporting SVG libraries and icon fonts for Craft CMS",
     "type": "craft-plugin",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "keywords": [
         "craft",
         "cms",
