@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/LindemannRock/icon-manager/compare/v1.5.0...v1.6.0) (2025-09-24)
+
+
+### Features
+
+* integrate logging library and enhance settings validation ([ddeea93](https://github.com/LindemannRock/icon-manager/commit/ddeea93f879d31154c4bbc88f915fc22168f10ef))
+
 ## [1.5.0](https://github.com/LindemannRock/icon-manager/compare/v1.4.1...v1.5.0) (2025-09-22)
 
 
