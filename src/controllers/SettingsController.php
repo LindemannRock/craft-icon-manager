@@ -51,10 +51,6 @@ class SettingsController extends Controller
         // Get settings from request (nested under 'settings' key)
         $postedSettings = $request->getBodyParam('settings', []);
         
-        // Debug logging
-        Craft::info('Posted settings: ' . json_encode($postedSettings), 'icon-manager');
-        Craft::info('Current overridden settings: ' . json_encode($settings->getOverriddenSettings()), 'icon-manager');
-        Craft::info('Current overridden icon types: ' . json_encode($settings->getOverriddenIconTypes()), 'icon-manager');
         
         // Only update non-overridden settings
         if (!$settings->isOverridden('pluginName')) {
@@ -92,10 +88,6 @@ class SettingsController extends Controller
         
         $settings->enabledIconTypes = $currentIconTypes;
         
-        // Before saving, log the current values
-        Craft::info('Settings before save - showLabels: ' . ($settings->showLabels ? 'true' : 'false'), 'icon-manager');
-        Craft::info('Settings before save - iconSize: ' . $settings->iconSize, 'icon-manager');
-        Craft::info('Settings before save - material-icons: ' . ($settings->enabledIconTypes['material-icons'] ? 'true' : 'false'), 'icon-manager');
         
         // Validate
         if (!$settings->validate()) {

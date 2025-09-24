@@ -91,8 +91,39 @@ class Settings extends Model
             [['enableCache'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['enabledIconTypes'], 'safe'],
-            [['logLevel'], 'in', 'range' => ['trace', 'info', 'warning', 'error']],
+            [['logLevel'], 'in', 'range' => ['debug', 'info', 'warning', 'error']],
+            [['logLevel'], 'validateLogLevel'],
         ];
+    }
+
+    /**
+     * Validate log level - debug requires devMode
+     */
+    public function validateLogLevel($attribute, $params, $validator)
+    {
+        $logLevel = $this->$attribute;
+
+        // Reset session warning when devMode is true - allows warning to show again if devMode changes
+        if (Craft::$app->getConfig()->getGeneral()->devMode) {
+            Craft::$app->getSession()->remove('im_debug_config_warning');
+        }
+
+        // Debug level is only allowed when devMode is enabled - auto-fallback to info
+        if ($logLevel === 'debug' && !Craft::$app->getConfig()->getGeneral()->devMode) {
+            $this->$attribute = 'info';
+
+            // Only log warning once per session for config overrides
+            if ($this->isOverriddenByConfig('logLevel')) {
+                if (Craft::$app->getSession()->get('im_debug_config_warning') === null) {
+                    Craft::warning('Log level "debug" from config file changed to "info" because devMode is disabled. Please update your config/icon-manager.php file.', 'icon-manager');
+                    Craft::$app->getSession()->set('im_debug_config_warning', true);
+                }
+            } else {
+                // Database setting - save the correction
+                Craft::warning('Log level automatically changed from "debug" to "info" because devMode is disabled. This setting has been saved.', 'icon-manager');
+                $this->saveToDatabase();
+            }
+        }
     }
 
     /**
@@ -183,7 +214,7 @@ class Settings extends Model
                     if ($setting === 'enabledIconTypes' && is_array($value)) {
                         // Track which specific icon types are overridden
                         $settings->_overriddenIconTypes = array_keys($value);
-                        
+
                         // Only override the icon types that are in the config
                         // Keep database values for non-specified icon types
                         foreach ($value as $iconType => $enabled) {
@@ -197,7 +228,13 @@ class Settings extends Model
                 }
             }
         }
-        
+
+        // IMPORTANT: Validate settings after config overrides are applied
+        // This will trigger validateLogLevel and other validation methods
+        if (!$settings->validate()) {
+            Craft::error('Icon Manager settings validation failed: ' . print_r($settings->getErrors(), true), 'icon-manager');
+        }
+
         return $settings;
     }
     
@@ -280,5 +317,68 @@ class Settings extends Model
     public function getOverriddenIconTypes(): array
     {
         return $this->_overriddenIconTypes;
+    }
+
+    /**
+     * Check if a setting is being overridden by config file
+     *
+     * @param string $attribute The setting attribute name
+     * @return bool
+     */
+    public function isOverriddenByConfig(string $attribute): bool
+    {
+        // Get the config file path
+        $configPath = \Craft::$app->getPath()->getConfigPath() . '/icon-manager.php';
+
+        if (!file_exists($configPath)) {
+            return false;
+        }
+
+        // Load the raw config file
+        $rawConfig = require $configPath;
+
+        // Check if this attribute is set in the config file (root level or environment level)
+        $hasRootConfig = array_key_exists($attribute, $rawConfig);
+        $env = \Craft::$app->getConfig()->getGeneral()->env ?? '*';
+        $hasEnvConfig = isset($rawConfig[$env]) && is_array($rawConfig[$env]) && array_key_exists($attribute, $rawConfig[$env]);
+
+        if (!$hasRootConfig && !$hasEnvConfig) {
+            return false;
+        }
+
+
+        return true;
+    }
+
+    /**
+     * Get the raw config value (for display in settings form)
+     *
+     * @param string $attribute The setting attribute name
+     * @return mixed|null
+     */
+    public function getRawConfigValue(string $attribute)
+    {
+        // Get the config file path
+        $configPath = \Craft::$app->getPath()->getConfigPath() . '/icon-manager.php';
+
+        if (!file_exists($configPath)) {
+            return null;
+        }
+
+        // Load the raw config file
+        $rawConfig = require $configPath;
+
+        // Check environment-specific settings first (highest priority)
+        $env = \Craft::$app->getConfig()->getGeneral()->env ?? '*';
+        if (isset($rawConfig[$env]) && is_array($rawConfig[$env]) && array_key_exists($attribute, $rawConfig[$env])) {
+            return $rawConfig[$env][$attribute];
+        }
+
+        // Check root level
+        if (array_key_exists($attribute, $rawConfig)) {
+            return $rawConfig[$attribute];
+        }
+
+        return null;
     }
 }

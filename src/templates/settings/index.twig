@@ -29,8 +29,8 @@
         name: 'settings[pluginName]',
         value: settings.pluginName ?? 'Icon Manager',
         placeholder: 'Icon Manager',
-        warning: settings.isOverridden('pluginName') ? 'This is being overridden by the `pluginName` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
-        disabled: settings.isOverridden('pluginName'),
+        warning: settings.isOverriddenByConfig('pluginName') ? 'This is being overridden by the `pluginName` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverriddenByConfig('pluginName'),
         fieldAttributes: {
             style: 'margin-top: 0;'
         }
@@ -49,8 +49,8 @@
         suggestEnvVars: true,
         suggestAliases: true,
         required: true,
-        warning: settings.isOverridden('iconSetsPath') ? 'This is being overridden by the `iconSetsPath` setting in the `config/icon-manager.php` file.'|t('icon-manager') : 'All icon sets will look for icons relative to this path.',
-        disabled: settings.isOverridden('iconSetsPath')
+        warning: settings.isOverriddenByConfig('iconSetsPath') ? 'This is being overridden by the `iconSetsPath` setting in the `config/icon-manager.php` file.'|t('icon-manager') : 'All icon sets will look for icons relative to this path.',
+        disabled: settings.isOverriddenByConfig('iconSetsPath')
     }) }}
 
     <hr>
@@ -63,8 +63,8 @@
         id: 'enableCache',
         name: 'settings[enableCache]',
         on: settings.enableCache,
-        warning: settings.isOverridden('enableCache') ? 'This is being overridden by the `enableCache` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
-        disabled: settings.isOverridden('enableCache')
+        warning: settings.isOverriddenByConfig('enableCache') ? 'This is being overridden by the `enableCache` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverriddenByConfig('enableCache')
     }) }}
 
     {{ forms.textField({
@@ -75,8 +75,8 @@
         value: settings.cacheDuration,
         type: 'number',
         min: 0,
-        warning: settings.isOverridden('cacheDuration') ? 'This is being overridden by the `cacheDuration` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
-        disabled: settings.isOverridden('cacheDuration')
+        warning: settings.isOverriddenByConfig('cacheDuration') ? 'This is being overridden by the `cacheDuration` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverriddenByConfig('cacheDuration')
     }) }}
 
     <hr>
@@ -129,20 +129,30 @@
 
     <h2>{{ 'Logging Settings'|t('icon-manager') }}</h2>
 
+    {% set logOptions = [
+        {value: 'error', label: 'Error (Critical errors only)'|t('icon-manager')},
+        {value: 'warning', label: 'Warning (Errors and warnings)'|t('icon-manager')},
+        {value: 'info', label: 'Info (General information)'|t('icon-manager')},
+    ] %}
+
+    {% if craft.app.config.general.devMode %}
+        {% set logOptions = logOptions|merge([
+            {value: 'debug', label: 'Debug (Detailed debugging)'|t('icon-manager')}
+        ]) %}
+    {% endif %}
+
+
     {{ forms.selectField({
         label: 'Log Level'|t('icon-manager'),
-        instructions: 'Choose what types of messages to log. Higher levels include all lower levels (Error < Warning < Info < Trace)'|t('icon-manager'),
+        instructions: craft.app.config.general.devMode ?
+            'Choose what types of messages to log. Higher levels include all lower levels (Error < Warning < Info < Debug)'|t('icon-manager') :
+            'Choose what types of messages to log. Debug level requires devMode to be enabled.'|t('icon-manager'),
         id: 'logLevel',
         name: 'settings[logLevel]',
         value: settings.logLevel,
-        options: [
-            {value: 'error', label: 'Error (Critical errors only)'|t('icon-manager')},
-            {value: 'warning', label: 'Warning (Errors and warnings)'|t('icon-manager')},
-            {value: 'info', label: 'Info (General information)'|t('icon-manager')},
-            {value: 'trace', label: 'Trace (Detailed debugging)'|t('icon-manager')}
-        ],
-        warning: settings.isOverridden('logLevel') ? 'This is being overridden by the `logLevel` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
-        disabled: settings.isOverridden('logLevel')
+        options: logOptions,
+        warning: settings.isOverriddenByConfig('logLevel') ? 'This is being overridden by the `logLevel` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverriddenByConfig('logLevel')
     }) }}
 
     {% include 'icon-manager/_components/plugin-credit.twig' %}

@@ -30,6 +30,7 @@ use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\services\IconSetsService;
 use lindemannrock\iconmanager\utilities\ClearIconCache;
 use lindemannrock\iconmanager\variables\IconManagerVariable;
+use lindemannrock\logginglibrary\LoggingLibrary;
 use yii\base\Event;
 use craft\console\Application as ConsoleApplication;
 use craft\services\Utilities;
@@ -171,12 +172,15 @@ class IconManager extends Plugin
                 ],
             ];
 
-            if (Craft::$app->getUser()->checkPermission('accessPlugin-icon-manager')) {
-                $item['subnav']['logs'] = [
-                    'label' => Craft::t('icon-manager', 'Logs'),
-                    'url' => 'icon-manager/logs',
-                ];
+            // Add logs section using the logging library (only if installed)
+            if (Craft::$app->getPlugins()->isPluginInstalled('logging-library') &&
+                Craft::$app->getPlugins()->isPluginEnabled('logging-library')) {
+                $item = LoggingLibrary::addLogsNav($item, $this->handle, [
+                    'accessPlugin-icon-manager'
+                ]);
+            }
 
+            if (Craft::$app->getUser()->checkPermission('accessPlugin-icon-manager')) {
                 $item['subnav']['settings'] = [
                     'label' => Craft::t('icon-manager', 'Settings'),
                     'url' => 'icon-manager/settings',
@@ -203,8 +207,8 @@ class IconManager extends Plugin
                     'icon-manager/icon-sets/<iconSetId:\d+>' => 'icon-manager/icon-sets/edit',
                     'icon-manager/icon-sets/delete' => 'icon-manager/icon-sets/delete',
                     'icon-manager/icon-sets/refresh-icons' => 'icon-manager/icon-sets/refresh-icons',
-                    'icon-manager/logs' => 'icon-manager/logs/index',
-                    'icon-manager/logs/download' => 'icon-manager/logs/download',
+                    'icon-manager/logs' => 'logging-library/logs/index',
+                    'icon-manager/logs/download' => 'logging-library/logs/download',
                     'icon-manager/settings' => 'icon-manager/settings/index',
                     'icon-manager/settings/save' => 'icon-manager/settings/save',
                     'icon-manager/icons/render' => 'icon-manager/icons/render',
@@ -353,54 +357,16 @@ class IconManager extends Plugin
      */
     private function _registerLogTarget(): void
     {
-        // Skip if already configured
-        if (isset(Craft::$app->getLog()->targets['icon-manager'])) {
-            return;
-        }
+        // Configure logging using the new logging library
+        $settings = $this->getSettings();
 
-        // Get base logs path
-        $logsPath = Craft::$app->getPath()->getLogPath();
-
-        // Use date-based log file naming
-        $date = date('Y-m-d');
-        $logFile = $logsPath . "/icon-manager-{$date}.log";
-
-        // Get log level from settings with fallback
-        $logLevel = $this->getSettings()->logLevel ?? 'error';
-
-        // Map log level to array of levels to include
-        $levels = match ($logLevel) {
-            'trace' => ['error', 'warning', 'info', 'trace'],
-            'info' => ['error', 'warning', 'info'],
-            'warning' => ['error', 'warning'],
-            'error' => ['error'],
-            default => ['error', 'warning', 'info']
-        };
-
-        // Create a new log target instance
-        $target = new \yii\log\FileTarget([
-            'logFile' => $logFile,
-            'categories' => ['icon-manager'],
-            'logVars' => [],
-            'levels' => $levels,
-            'maxFileSize' => 10240, // 10MB
-            'maxLogFiles' => 30, // Keep 30 days
-            'prefix' => function ($message) {
-                $user = Craft::$app->has('user', true) ? Craft::$app->getUser() : null;
-                $userId = $user && !$user->getIsGuest() ? $user->getId() : '-';
-                return "[user:{$userId}]";
-            },
-            'rotateByCopy' => false
+        LoggingLibrary::configure([
+            'pluginHandle' => $this->handle,
+            'pluginName' => $this->name,
+            'logLevel' => $settings->logLevel,
+            'enableLogViewer' => true,
+            'permissions' => ['iconManager:viewLogs'],
         ]);
-
-        // Add the target to the log dispatcher and ensure it's available immediately
-        Craft::$app->getLog()->targets['icon-manager'] = $target;
-
-        // Initialize the target immediately
-        $target->init();
-
-        // Mark as registered
-        self::$_logTargetRegistered = true;
     }
 
 }
