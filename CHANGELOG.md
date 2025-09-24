@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.5](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.4...v1.6.5) (2025-09-24)
+
+
+### Bug Fixes
+
+* enable log viewer for all environments ([2e98842](https://github.com/LindemannRock/craft-icon-manager/commit/2e9884263cc6cebf90ebde0709742526779cf9f6))
+
 ## [1.6.4](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.3...v1.6.4) (2025-09-24)
 
 
