@@ -104,7 +104,7 @@ class Settings extends Model
         $logLevel = $this->$attribute;
 
         // Reset session warning when devMode is true - allows warning to show again if devMode changes
-        if (Craft::$app->getConfig()->getGeneral()->devMode) {
+        if (Craft::$app->getConfig()->getGeneral()->devMode && !Craft::$app->getRequest()->getIsConsoleRequest()) {
             Craft::$app->getSession()->remove('im_debug_config_warning');
         }
 
@@ -114,9 +114,15 @@ class Settings extends Model
 
             // Only log warning once per session for config overrides
             if ($this->isOverriddenByConfig('logLevel')) {
-                if (Craft::$app->getSession()->get('im_debug_config_warning') === null) {
+                if (!Craft::$app->getRequest()->getIsConsoleRequest()) {
+                    // Web request - use session to prevent duplicate warnings
+                    if (Craft::$app->getSession()->get('im_debug_config_warning') === null) {
+                        Craft::warning('Log level "debug" from config file changed to "info" because devMode is disabled. Please update your config/icon-manager.php file.', 'icon-manager');
+                        Craft::$app->getSession()->set('im_debug_config_warning', true);
+                    }
+                } else {
+                    // Console request - just log without session
                     Craft::warning('Log level "debug" from config file changed to "info" because devMode is disabled. Please update your config/icon-manager.php file.', 'icon-manager');
-                    Craft::$app->getSession()->set('im_debug_config_warning', true);
                 }
             } else {
                 // Database setting - save the correction
