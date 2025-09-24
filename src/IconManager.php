@@ -364,7 +364,7 @@ class IconManager extends Plugin
             'pluginHandle' => $this->handle,
             'pluginName' => $this->name,
             'logLevel' => $settings->logLevel,
-            'enableLogViewer' => true, // Keep file logging enabled - Servd will auto-capture from /storage/logs
+            'enableLogViewer' => !isset($_ENV['SERVD_PROJECT_SLUG']), // Disable on Servd - edge servers can't write to /storage/logs
             'permissions' => ['iconManager:viewLogs'],
         ]);
     }
