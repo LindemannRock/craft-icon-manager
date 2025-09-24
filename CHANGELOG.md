@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.1...v1.6.2) (2025-09-24)
+
+
+### Bug Fixes
+
+* prevent duplicate log warnings for console requests in Settings model ([2d7613a](https://github.com/LindemannRock/craft-icon-manager/commit/2d7613ae2a990db9c4130f502c9c3d8d0d50c2be))
+
 ## [1.6.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.0...v1.6.1) (2025-09-24)
 
 
