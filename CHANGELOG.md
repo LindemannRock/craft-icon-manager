@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.6](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.5...v1.6.6) (2025-09-24)
+
+
+### Bug Fixes
+
+* disable log viewer on Servd edge servers ([3e6a9a0](https://github.com/LindemannRock/craft-icon-manager/commit/3e6a9a06cb959b3fa8cb065734b62eead9779d5c))
+
 ## [1.6.5](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.4...v1.6.5) (2025-09-24)
 
 
