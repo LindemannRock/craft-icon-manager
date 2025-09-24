@@ -1,5 +1,5 @@
 {
-    "name": "lindemannrock/icon-manager",
+    "name": "lindemannrock/craft-icon-manager",
     "description": "Comprehensive icon management field supporting SVG libraries and icon fonts for Craft CMS",
     "type": "craft-plugin",
     "version": "1.6.0",
@@ -29,14 +29,21 @@
     ],
     "support": {
         "email": "support@lindemannrock.com",
-        "issues": "https://github.com/LindemannRock/icon-manager/issues",
-        "source": "https://github.com/LindemannRock/icon-manager",
-        "docs": "https://github.com/LindemannRock/icon-manager/blob/main/README.md",
-        "rss": "https://github.com/LindemannRock/icon-manager/commits/main.atom"
+        "issues": "https://github.com/LindemannRock/craft-icon-manager/issues",
+        "source": "https://github.com/LindemannRock/craft-icon-manager",
+        "docs": "https://github.com/LindemannRock/craft-icon-manager/blob/main/README.md",
+        "rss": "https://github.com/LindemannRock/craft-icon-manager/commits/main.atom"
     },
     "require": {
         "php": "^8.0.2",
-        "craftcms/cms": "^5.0.0"
+        "craftcms/cms": "^5.0.0",
+        "lindemannrock/craft-logging-library": "^1.0"
+    },
+    "repositories": {
+        "logging-library": {
+            "type": "vcs",
+            "url": "https://github.com/LindemannRock/craft-logging-library.git"
+        }
     },
     "autoload": {
         "psr-4": {
@@ -48,8 +55,8 @@
         "handle": "icon-manager",
         "developer": "LindemannRock",
         "developerUrl": "https://lindemannrock.com",
-        "documentationUrl": "https://github.com/LindemannRock/icon-manager/blob/main/README.md",
-        "changelogUrl": "https://github.com/LindemannRock/icon-manager/blob/main/CHANGELOG.md",
+        "documentationUrl": "https://github.com/LindemannRock/craft-icon-manager/blob/main/README.md",
+        "changelogUrl": "https://github.com/LindemannRock/craft-icon-manager/blob/main/CHANGELOG.md",
         "class": "lindemannrock\\iconmanager\\IconManager"
     }
 }

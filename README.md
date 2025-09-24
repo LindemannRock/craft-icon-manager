@@ -33,7 +33,7 @@ Until published on Packagist, install directly from the repository:
 
 ```bash
 cd /path/to/project
-composer config repositories.icon-manager vcs https://github.com/LindemannRock/icon-manager
+composer config repositories.icon-manager vcs https://github.com/LindemannRock/craft-icon-manager
 composer require lindemannrock/icon-manager:dev-main
 ```
 
@@ -511,8 +511,8 @@ Check if an icon exists:
 
 ## Support
 
-- **Documentation**: [https://github.com/LindemannRock/icon-manager](https://github.com/LindemannRock/icon-manager)
-- **Issues**: [https://github.com/LindemannRock/icon-manager/issues](https://github.com/LindemannRock/icon-manager/issues)
+- **Documentation**: [https://github.com/LindemannRock/craft-icon-manager](https://github.com/LindemannRock/craft-icon-manager)
+- **Issues**: [https://github.com/LindemannRock/craft-icon-manager/issues](https://github.com/LindemannRock/craft-icon-manager/issues)
 - **Email**: [support@lindemannrock.com](mailto:support@lindemannrock.com)
 
 ## License
