@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.4](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.3...v1.6.4) (2025-09-24)
+
+
+### Bug Fixes
+
+* update log viewer disable condition for Servd environment ([718c391](https://github.com/LindemannRock/craft-icon-manager/commit/718c39131d698d7531c447f3ddc1cbd8a21ec1ba))
+
 ## [1.6.3](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.2...v1.6.3) (2025-09-24)
 
 
