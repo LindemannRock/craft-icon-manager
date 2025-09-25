@@ -67,7 +67,7 @@ class ClearIconCache extends Utility
             $duration = round($cacheDuration / 60) . ' ' . Craft::t('icon-manager', 'minutes');
         }
         
-        return Craft::$app->getView()->renderTemplate('icon-manager/_utilities/clear-cache', [
+        return Craft::$app->getView()->renderTemplate('icon-manager/utilities/index', [
             'iconSetCount' => count($iconSets),
             'totalIcons' => $totalIcons,
             'cacheEnabled' => $settings->enableCache,
