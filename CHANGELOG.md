@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.6...v1.7.0) (2025-09-25)
+
+
+### Features
+
+* add Clear Icon Cache utility template and update rendering path ([6abf77f](https://github.com/LindemannRock/craft-icon-manager/commit/6abf77fb6db30bd6c3af593f39ba280a01f3e89a))
+
+
+### Bug Fixes
+
+* disable log viewer on Servd edge servers ([b8ac3c7](https://github.com/LindemannRock/craft-icon-manager/commit/b8ac3c79b68e0683360b3c163026940c359391d9))
+
 ## [1.6.6](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.5...v1.6.6) (2025-09-24)
 
 
