@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.0...v1.7.1) (2025-09-25)
+
+
+### Miscellaneous Chores
+
+* **docs:** correct formatting and update log level settings in README ([eceae47](https://github.com/LindemannRock/craft-icon-manager/commit/eceae471237b9880148352fa3fce4ebbdae083ee))
+
 ## [1.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.6...v1.7.0) (2025-09-25)
 
 
