@@ -15,7 +15,7 @@ A comprehensive icon management field supporting SVG libraries and icon fonts fo
 
 ⚠️ **Beta Features** - The following features are currently in testing and finalization:
 - **SVG Sprite support** - Basic functionality implemented, advanced features pending
-- **Material Icons** - Core integration complete, variable fonts being refined  
+- **Material Icons** - Core integration complete, variable fonts being refined
 - **Font Awesome** - Free icons working, Pro/Kit support in development
 
 SVG folder icons are fully stable and production-ready.
@@ -81,10 +81,10 @@ return [
     '*' => [
         // Plugin display name
         'pluginName' => 'Icon Manager',
-        
+
         // Default icons path
         'iconSetsPath' => '@root/src/icons',
-        
+
         // Icon types to enable
         'enabledIconTypes' => [
             'svg-folder' => true,
@@ -93,7 +93,7 @@ return [
             'material-icons' => false,
         ],
     ],
-    
+
     // Dev environment settings
     'dev' => [
         // Use source icons in dev
@@ -104,7 +104,7 @@ return [
         'cacheDuration' => 3600, // 1 hour
 
         // Detailed logging for development
-        'logLevel' => 'trace',
+        'logLevel' => 'debug',
 
         // Allow all icon types for testing
         'enabledIconTypes' => [
@@ -114,17 +114,17 @@ return [
             'material-icons' => true,
         ],
     ],
-    
-    // Staging environment settings  
+
+    // Staging environment settings
     'staging' => [
         // Production-ready icons path
         'iconSetsPath' => '@webroot/dist/assets/icons',
-        
+
         // Optimize for staging
         'enableCache' => true,
         'cacheDuration' => 86400, // 1 day
     ],
-    
+
     // Production environment settings
     'production' => [
         // Production icons path
@@ -159,7 +159,7 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - **enableCache** - Whether to cache icon data for better performance
 - **cacheDuration** - How long to cache icon data, in seconds
 - **enabledIconTypes** - Enable/disable specific icon set types
-- **logLevel** - Logging verbosity: error, warning, info, or trace
+- **logLevel** - Logging verbosity: error, warning, info, or debug
 
 ### Creating Icon Sets
 
@@ -254,7 +254,7 @@ Note: The `|raw` filter is not needed - icons are automatically rendered safely.
 {% if icon %}
     {# Render with default settings #}
     {{ icon.render() }}
-    
+
     {# Render with custom attributes #}
     {{ icon.render({
         width: 32,
@@ -262,10 +262,10 @@ Note: The `|raw` filter is not needed - icons are automatically rendered safely.
         class: 'icon-custom',
         'aria-label': 'Star rating'
     }) }}
-    
+
     {# Get raw SVG content #}
     {{ icon.getContent() }}
-    
+
     {# Access icon properties #}
     <div data-icon="{{ icon.name }}" data-set="{{ icon.iconSet.handle }}">
         {{ icon.render() }}
@@ -329,15 +329,15 @@ Note: The `|raw` filter is not needed - icons are automatically rendered safely.
     # Dimensions
     width: 24,
     height: 24,
-    
+
     # CSS class
     class: 'custom-icon-class',
-    
+
     # Additional attributes
     'data-icon': icon.name,
     'aria-label': 'Icon description',
     'role': 'img',
-    
+
     # Style attribute
     style: 'fill: currentColor;'
 }) }}
@@ -355,7 +355,7 @@ Add a `metadata.json` file in your icon folders to provide enhanced metadata:
         "keywords": ["favorite", "rating", "bookmark"]
     },
     "heart": {
-        "keywords": ["love", "like", "favorite"]  
+        "keywords": ["love", "like", "favorite"]
     }
 }
 ```
@@ -366,7 +366,7 @@ Add a `metadata.json` file in your icon folders to provide enhanced metadata:
 {
     "freshly-baked": {
         "label": "Freshly Baked",
-        "labelAr": "مخبوز طازج", 
+        "labelAr": "مخبوز طازج",
         "labelEn": "Freshly Baked",
         "search": {
             "terms": ["fresh", "baked", "bread", "bakery", "طازج", "مخبوز", "خبز"]
@@ -389,7 +389,7 @@ The plugin resolves icon labels in this order:
 ### Supported Metadata Properties
 
 - **`label`** - Default display label
-- **`labelAr`** - Arabic language label  
+- **`labelAr`** - Arabic language label
 - **`labelEn`** - English language label
 - **`search.terms`** - Additional search keywords (supports multilingual)
 - **`category`** - Icon category for organization
@@ -446,13 +446,13 @@ Icon Manager includes comprehensive logging with configurable levels:
 - **Error**: Critical errors only
 - **Warning**: Errors and warnings
 - **Info**: General information
-- **Trace**: Detailed debugging (includes performance metrics)
+- **Debug**: Detailed debugging (includes performance metrics)
 
 ### Configuration
 ```php
 // config/icon-manager.php
 return [
-    'logLevel' => 'info', // error, warning, info, or trace
+    'logLevel' => 'info', // error, warning, info, or debug
 ];
 ```
 
@@ -466,7 +466,7 @@ return [
 - **Error**: File system failures, SVG parsing errors, database errors
 - **Warning**: Missing icons, empty content, slow operations (>1s)
 - **Info**: Icon set operations, cache clears, major actions
-- **Trace**: Cache hits/misses, performance timing, API requests
+- **Debug**: Cache hits/misses, performance timing, API requests
 
 ### Log Management
 Access logs through the Control Panel:
