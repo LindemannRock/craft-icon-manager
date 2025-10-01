@@ -27,7 +27,6 @@ class CacheController extends Controller
     public function actionClear(): mixed
     {
         $this->requirePostRequest();
-        $this->requireAdmin();
         
         try {
             $this->logInfo("Starting icon cache clearing operation");

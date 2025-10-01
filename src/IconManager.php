@@ -307,9 +307,12 @@ class IconManager extends Plugin
             ClearCaches::class,
             ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
             function(RegisterCacheOptionsEvent $event) {
+                $settings = $this->getSettings();
+                $pluginName = $settings->pluginName ?? 'Icon Manager';
+
                 $event->options[] = [
                     'key' => 'icon-manager-cache',
-                    'label' => Craft::t('icon-manager', 'Icon Manager cache'),
+                    'label' => Craft::t('icon-manager', '{pluginName} cache', ['pluginName' => $pluginName]),
                     'action' => function() {
                         $this->_clearIconCache();
                     },
