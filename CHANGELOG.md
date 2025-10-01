@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.1...v1.8.0) (2025-10-01)
+
+
+### Features
+
+* Convert Icon Manager to custom file-based cache storage ([f071d03](https://github.com/LindemannRock/craft-icon-manager/commit/f071d03956b37a62b43108d99192e8b2b6ae8e80))
+* Redesign Icon Manager utilities page and improve cache UX ([ab4811d](https://github.com/LindemannRock/craft-icon-manager/commit/ab4811d918ae8fcff5f5f5bda8e4eeda54488756))
+
+
+### Bug Fixes
+
+* update PHP requirement from ^8.0.2 to ^8.2 in composer.json ([327b028](https://github.com/LindemannRock/craft-icon-manager/commit/327b028abfeb0780c9c51a08f70f469a92ba9e8d))
+
 ## [1.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.0...v1.7.1) (2025-09-25)
 
 
