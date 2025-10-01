@@ -323,31 +323,35 @@ class IconManager extends Plugin
      */
     private function _clearIconCache(): void
     {
-        $iconSets = $this->iconSets->getAllIconSets();
-        
-        foreach ($iconSets as $iconSet) {
-            // Clear cache for each icon set
-            $cacheKey = "icon-manager:icons-by-set:{$iconSet->id}";
-            Craft::$app->getCache()->delete($cacheKey);
-        }
-        
-        // Clear Font Awesome caches
-        $faVersions = ['v7'];
-        $faLicenses = ['free', 'pro'];
-        foreach ($faVersions as $version) {
-            foreach ($faLicenses as $license) {
-                $cacheKey = "icon-manager:fa-definitions:{$version}:{$license}";
-                Craft::$app->getCache()->delete($cacheKey);
+        $runtimePath = Craft::$app->path->getRuntimePath();
+
+        // Clear icon set caches from custom file storage
+        $iconsCachePath = $runtimePath . '/icon-manager/icons/';
+        if (is_dir($iconsCachePath)) {
+            $cacheFiles = glob($iconsCachePath . '*.cache');
+            foreach ($cacheFiles as $file) {
+                @unlink($file);
             }
         }
-        
-        // Clear Material Icons caches
-        $materialTypes = ['icons', 'symbols'];
-        foreach ($materialTypes as $type) {
-            $cacheKey = "icon-manager:material-{$type}:definitions";
-            Craft::$app->getCache()->delete($cacheKey);
+
+        // Clear Font Awesome caches from custom file storage
+        $faCachePath = $runtimePath . '/icon-manager/fontawesome/';
+        if (is_dir($faCachePath)) {
+            $cacheFiles = glob($faCachePath . '*.cache');
+            foreach ($cacheFiles as $file) {
+                @unlink($file);
+            }
         }
-        
+
+        // Clear Material Icons caches from custom file storage
+        $materialCachePath = $runtimePath . '/icon-manager/material/';
+        if (is_dir($materialCachePath)) {
+            $cacheFiles = glob($materialCachePath . '*.cache');
+            foreach ($cacheFiles as $file) {
+                @unlink($file);
+            }
+        }
+
         // Clear memory caches
         $this->icons->clearMemoryCache();
     }

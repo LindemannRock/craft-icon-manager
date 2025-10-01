@@ -32,53 +32,55 @@ class CacheController extends Controller
         try {
             $this->logInfo("Starting icon cache clearing operation");
 
-            $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
-            $clearedCount = 0;
+            $runtimePath = Craft::$app->path->getRuntimePath();
+            $totalCleared = 0;
 
-            // Clear icon set caches
-            foreach ($iconSets as $iconSet) {
-                $cacheKey = "icon-manager:icons-by-set:{$iconSet->id}";
-                if (Craft::$app->getCache()->delete($cacheKey)) {
-                    $clearedCount++;
+            // Clear icon set caches from custom file storage
+            $iconsCachePath = $runtimePath . '/icon-manager/icons/';
+            $iconsCacheCount = 0;
+            if (is_dir($iconsCachePath)) {
+                $cacheFiles = glob($iconsCachePath . '*.cache');
+                foreach ($cacheFiles as $file) {
+                    if (@unlink($file)) {
+                        $iconsCacheCount++;
+                    }
                 }
             }
+            $this->logTrace("Cleared {$iconsCacheCount} icon set cache files");
 
-            $this->logTrace("Cleared {$clearedCount} icon set caches");
-
-            // Clear Font Awesome caches
-            $faVersions = ['v7'];
-            $faLicenses = ['free', 'pro'];
+            // Clear Font Awesome caches from custom file storage
+            $faCachePath = $runtimePath . '/icon-manager/fontawesome/';
             $faCacheCount = 0;
-            foreach ($faVersions as $version) {
-                foreach ($faLicenses as $license) {
-                    $cacheKey = "icon-manager:fa-definitions:{$version}:{$license}";
-                    if (Craft::$app->getCache()->delete($cacheKey)) {
+            if (is_dir($faCachePath)) {
+                $cacheFiles = glob($faCachePath . '*.cache');
+                foreach ($cacheFiles as $file) {
+                    if (@unlink($file)) {
                         $faCacheCount++;
                     }
                 }
             }
+            $this->logTrace("Cleared {$faCacheCount} Font Awesome cache files");
 
-            $this->logTrace("Cleared {$faCacheCount} Font Awesome caches");
-
-            // Clear Material Icons caches
-            $materialTypes = ['icons', 'symbols'];
+            // Clear Material Icons caches from custom file storage
+            $materialCachePath = $runtimePath . '/icon-manager/material/';
             $materialCacheCount = 0;
-            foreach ($materialTypes as $type) {
-                $cacheKey = "icon-manager:material-{$type}:definitions";
-                if (Craft::$app->getCache()->delete($cacheKey)) {
-                    $materialCacheCount++;
+            if (is_dir($materialCachePath)) {
+                $cacheFiles = glob($materialCachePath . '*.cache');
+                foreach ($cacheFiles as $file) {
+                    if (@unlink($file)) {
+                        $materialCacheCount++;
+                    }
                 }
             }
-
-            $this->logTrace("Cleared {$materialCacheCount} Material Icons caches");
+            $this->logTrace("Cleared {$materialCacheCount} Material Icons cache files");
 
             // Clear memory caches
             IconManager::getInstance()->icons->clearMemoryCache();
 
-            $totalCleared = $clearedCount + $faCacheCount + $materialCacheCount;
+            $totalCleared = $iconsCacheCount + $faCacheCount + $materialCacheCount;
             $this->logInfo("Icon cache cleared successfully", [
                 'totalCaches' => $totalCleared,
-                'iconSets' => $clearedCount,
+                'iconSets' => $iconsCacheCount,
                 'fontAwesome' => $faCacheCount,
                 'materialIcons' => $materialCacheCount
             ]);

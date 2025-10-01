@@ -191,18 +191,38 @@ class MaterialIcons
     private function loadIconDefinitions(string $type): array
     {
         $settings = IconManager::getInstance()->getSettings();
-        
+
         // Skip cache if disabled
         if (!$settings->enableCache) {
             return $this->loadIconDefinitionsFromFile($type);
         }
-        
-        $cacheKey = "icon-manager:material-{$type}:definitions";
-        $cacheDuration = $settings->cacheDuration;
-        
-        return Craft::$app->getCache()->getOrSet($cacheKey, function() use ($type) {
-            return $this->loadIconDefinitionsFromFile($type);
-        }, $cacheDuration) ?? [];
+
+        // Check custom file cache
+        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/material/';
+        $cacheFile = $cachePath . "{$type}.cache";
+
+        if (file_exists($cacheFile)) {
+            // Check if cache is expired
+            $mtime = filemtime($cacheFile);
+            if (time() - $mtime <= $settings->cacheDuration) {
+                $data = file_get_contents($cacheFile);
+                return unserialize($data) ?? [];
+            }
+            // Cache expired, delete it
+            @unlink($cacheFile);
+        }
+
+        // Load from file and cache it
+        $definitions = $this->loadIconDefinitionsFromFile($type);
+
+        // Create directory if it doesn't exist
+        if (!is_dir($cachePath)) {
+            \craft\helpers\FileHelper::createDirectory($cachePath);
+        }
+
+        file_put_contents($cacheFile, serialize($definitions));
+
+        return $definitions;
     }
     
     private function loadIconDefinitionsFromFile(string $type): array

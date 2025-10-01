@@ -49,7 +49,6 @@ class IconsService extends Component
         
         // Use cache if enabled
         if ($settings->enableCache) {
-            $cacheKey = "icon-manager:icons-by-set:{$iconSetId}";
             $cacheDuration = $settings->cacheDuration;
 
             // Check if already cached in memory
@@ -58,15 +57,15 @@ class IconsService extends Component
                 return $this->_iconsBySetId[$iconSetId];
             }
 
-            // Check application cache
-            $cached = Craft::$app->getCache()->get($cacheKey);
-            if ($cached !== false) {
+            // Check custom file cache
+            $cached = $this->_getCachedIcons($iconSetId);
+            if ($cached !== null) {
                 // Get icon set details for better logging
                 $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
                 $setName = $iconSet ? $iconSet->name : "Unknown";
                 $setType = $iconSet ? $iconSet->type : "unknown";
 
-                $this->logTrace("Application cache hit for icon set '{setName}' ({iconCount} {setType} icons)", [
+                $this->logTrace("File cache hit for icon set '{setName}' ({iconCount} {setType} icons)", [
                     'setName' => $setName,
                     'setType' => $setType,
                     'iconCount' => count($cached),
@@ -85,8 +84,8 @@ class IconsService extends Component
             ]);
             $icons = $this->_loadIconsFromDatabase($iconSetId);
 
-            // Store in application cache
-            Craft::$app->getCache()->set($cacheKey, $icons, $cacheDuration);
+            // Store in custom file cache
+            $this->_cacheIcons($iconSetId, $icons, $cacheDuration);
             $this->logTrace("Cached {count} icons for icon set '{setName}' (expires in {duration}s)", [
                 'count' => count($icons),
                 'setName' => $setName,
@@ -190,10 +189,13 @@ class IconsService extends Component
         $transaction = $db->beginTransaction();
 
         try {
-            // Clear cache for this icon set
-            $cacheKey = "icon-manager:icons-by-set:{$iconSet->id}";
-            Craft::$app->getCache()->delete($cacheKey);
-            
+            // Clear custom file cache for this icon set
+            $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+            $cacheFile = $cachePath . 'set_' . $iconSet->id . '.cache';
+            if (file_exists($cacheFile)) {
+                @unlink($cacheFile);
+            }
+
             // Clear memory cache
             unset($this->_iconsBySetId[$iconSet->id]);
             
@@ -487,5 +489,45 @@ class IconsService extends Component
         if ($cacheCount > 0) {
             $this->logInfo("Cleared memory cache for {$cacheCount} icon sets");
         }
+    }
+
+    /**
+     * Get cached icons from custom file cache
+     */
+    private function _getCachedIcons(int $iconSetId): ?array
+    {
+        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+        $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
+
+        if (!file_exists($cacheFile)) {
+            return null;
+        }
+
+        // Check if cache is expired
+        $mtime = filemtime($cacheFile);
+        $settings = IconManager::getInstance()->getSettings();
+        if (time() - $mtime > $settings->cacheDuration) {
+            @unlink($cacheFile);
+            return null;
+        }
+
+        $data = file_get_contents($cacheFile);
+        return unserialize($data);
+    }
+
+    /**
+     * Cache icons to custom file cache
+     */
+    private function _cacheIcons(int $iconSetId, array $icons, int $duration): void
+    {
+        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+
+        // Create directory if it doesn't exist
+        if (!is_dir($cachePath)) {
+            FileHelper::createDirectory($cachePath);
+        }
+
+        $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
+        file_put_contents($cacheFile, serialize($icons));
     }
 }

@@ -250,18 +250,38 @@ class FontAwesome
     private function loadIconDefinitions(string $version, string $license): array
     {
         $settings = IconManager::getInstance()->getSettings();
-        
+
         // Skip cache if disabled
         if (!$settings->enableCache) {
             return $this->loadIconDefinitionsFromFile($version, $license);
         }
-        
-        $cacheKey = "icon-manager:fa-definitions:{$version}:{$license}";
-        $cacheDuration = $settings->cacheDuration;
-        
-        return Craft::$app->getCache()->getOrSet($cacheKey, function() use ($version, $license) {
-            return $this->loadIconDefinitionsFromFile($version, $license);
-        }, $cacheDuration) ?? [];
+
+        // Check custom file cache
+        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/fontawesome/';
+        $cacheFile = $cachePath . "{$version}_{$license}.cache";
+
+        if (file_exists($cacheFile)) {
+            // Check if cache is expired
+            $mtime = filemtime($cacheFile);
+            if (time() - $mtime <= $settings->cacheDuration) {
+                $data = file_get_contents($cacheFile);
+                return unserialize($data) ?? [];
+            }
+            // Cache expired, delete it
+            @unlink($cacheFile);
+        }
+
+        // Load from file and cache it
+        $definitions = $this->loadIconDefinitionsFromFile($version, $license);
+
+        // Create directory if it doesn't exist
+        if (!is_dir($cachePath)) {
+            \craft\helpers\FileHelper::createDirectory($cachePath);
+        }
+
+        file_put_contents($cacheFile, serialize($definitions));
+
+        return $definitions;
     }
     
     private function loadIconDefinitionsFromFile(string $version, string $license): array
