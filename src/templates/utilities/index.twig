@@ -165,9 +165,28 @@
 
         <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
 
+        <div style="margin-bottom: 24px;">
+            <h3 style="margin-bottom: 8px;">{{ "Icon Management"|t('icon-manager') }}</h3>
+            <p class="light" style="margin-bottom: 16px;">{{ "Refresh all icon sets to fetch new icons from their sources (CDNs, APIs, directories)."|t('icon-manager') }}</p>
+
+            <form method="post" accept-charset="UTF-8">
+                {{ csrfInput() }}
+                {{ actionInput('icon-manager/utilities/refresh-all-icons') }}
+                {{ redirectInput('utilities/clear-icon-cache') }}
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="submit" class="btn submit">
+                        {{ "Refresh All Icons"|t('icon-manager') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
+
         <div>
             <h3 style="margin-bottom: 8px;">{{ "Cache Management"|t('icon-manager') }}</h3>
-            <p class="light" style="margin-bottom: 16px;">{{ "Rebuild icon cache to reload data from source. Useful after adding new icons or updating icon sets."|t('icon-manager') }}</p>
+            <p class="light" style="margin-bottom: 16px;">{{ "Rebuild icon cache to reload data from cache. Useful after clearing cache or troubleshooting."|t('icon-manager') }}</p>
 
             <form method="post" accept-charset="UTF-8">
                 {{ csrfInput() }}
@@ -175,7 +194,7 @@
                 {{ redirectInput('utilities/clear-icon-cache') }}
 
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="submit" class="btn submit">
+                    <button type="submit" class="btn">
                         {{ "Rebuild Icon Cache"|t('icon-manager') }}
                         {% if cacheEnabled %}
                             ({{ (cacheStats.icons + cacheStats.fontawesome + cacheStats.material) }})
