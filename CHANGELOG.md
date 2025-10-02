@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.8.0...v1.9.0) (2025-10-02)
+
+
+### Features
+
+* add refresh all icons button to utilities page ([1d22674](https://github.com/LindemannRock/craft-icon-manager/commit/1d226743f25168b44ebc618ba8a5198ed0be57aa))
+
 ## [1.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.1...v1.8.0) (2025-10-01)
 
 
