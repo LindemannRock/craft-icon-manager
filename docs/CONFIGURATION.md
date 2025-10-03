@@ -173,6 +173,58 @@ For production environments:
 'cacheDuration' => min((int)getenv('CACHE_DURATION') ?: 86400, 604800), // Max 7 days
 ```
 
+## SVG Security
+
+Icon Manager automatically sanitizes all SVG content at render time to prevent XSS attacks and malicious code execution.
+
+### What Gets Sanitized
+
+The following are automatically removed from SVG output:
+
+- `<script>` tags
+- Event handlers (onclick, onload, onmouseover, etc.)
+- `javascript:` protocols in hrefs
+- Data URLs with script content
+- External script references
+
+### Implementation Details
+
+Sanitization is implemented in the `Icon` model and occurs when rendering:
+
+```php
+// In src/models/Icon.php
+private function sanitizeSvg(?string $svg): ?string
+{
+    // Removes scripts, event handlers, and malicious protocols
+    // Original files remain unchanged on disk
+}
+```
+
+### Important Notes
+
+1. **Runtime Sanitization**: Sanitization happens at render time, not when files are uploaded or saved
+2. **Source Preservation**: Original SVG files on disk remain unchanged
+3. **No Manual Filtering**: You don't need to use `|raw` filter in templates - output is automatically marked safe
+4. **Visual Elements Preserved**: Clip-paths, masks, filters, and other visual elements are NOT removed as they don't pose security risks
+
+### Security Best Practices
+
+While Icon Manager sanitizes output, follow these practices for enhanced security:
+
+1. **Trusted Sources**: Only use icons from trusted sources
+2. **File Permissions**: Restrict write access to icon directories
+3. **Regular Updates**: Keep the plugin updated for latest security fixes
+4. **Content Auditing**: Periodically review icon sets for suspicious content
+
+### Comparison with Other Solutions
+
+Unlike some icon plugins that output SVG content raw without sanitization, Icon Manager provides:
+
+- **Automatic Protection**: No manual sanitization required
+- **Preserved Design**: Visual elements aren't stripped
+- **Template Safety**: No need for `|raw` filter management
+- **Source Integrity**: Original files remain untouched
+
 ## Logging Configuration
 
 ### Log Levels and Performance

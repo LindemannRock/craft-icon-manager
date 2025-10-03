@@ -398,13 +398,51 @@ The plugin resolves icon labels in this order:
 
 ## Security
 
-All SVG content is automatically sanitized to remove potentially malicious code:
-- Script tags are removed
-- Event handlers (onclick, onmouseover, etc.) are stripped
-- JavaScript protocols in hrefs are blocked
-- Malicious data URLs are prevented
+Icon Manager provides automatic SVG sanitization to protect against XSS (Cross-Site Scripting) attacks and malicious code injection.
 
-This ensures icons are safe to use without the `|raw` filter.
+### Automatic Sanitization
+
+All SVG content is automatically sanitized at render time to remove potentially malicious code:
+
+- **Script Tags**: All `<script>` tags are removed
+- **Event Handlers**: JavaScript event handlers (onclick, onmouseover, onload, etc.) are stripped
+- **JavaScript Protocols**: `javascript:` protocols in hrefs are blocked and replaced with `#`
+- **Malicious Data URLs**: Data URLs containing script content are prevented
+- **External Scripts**: Remote script references are removed
+
+### How It Works
+
+Sanitization occurs when SVG content is rendered via:
+- `{{ icon.render() }}` - Full icon rendering with attributes
+- `{{ icon.svg }}` - Raw SVG content
+- `{{ icon.content }}` - Alias for SVG content
+
+The original SVG files remain unchanged on disk. Sanitization is applied only at render time, ensuring your source files are preserved while output is safe.
+
+### What's Not Sanitized
+
+Icon Manager focuses on security sanitization. The following are **not** automatically removed as they don't pose security risks:
+
+- Clip-paths and masks (visual elements)
+- Filters and effects (visual styling)
+- Embedded fonts (typography)
+- Metadata and comments (documentation)
+
+These elements are preserved because they're part of the SVG's visual design and don't execute code.
+
+### Template Safety
+
+Because sanitization is automatic, you **do not need** to use Twig's `|raw` filter:
+
+```twig
+{# ✓ Correct - automatically safe #}
+{{ icon.render() }}
+
+{# ✗ Not needed - redundant #}
+{{ icon.render()|raw }}
+```
+
+The plugin automatically marks output as safe using Twig's `Template::raw()` after sanitization is complete.
 
 ## Field Settings
 
