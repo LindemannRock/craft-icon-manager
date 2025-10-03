@@ -119,4 +119,14 @@ class IconManagerVariable
     {
         return IconManager::getInstance()->getSettings();
     }
+
+    /**
+     * Get SVG optimizer service
+     *
+     * @return \lindemannrock\iconmanager\services\SvgOptimizerService
+     */
+    public function getSvgOptimizer()
+    {
+        return IconManager::getInstance()->svgOptimizer;
+    }
 }

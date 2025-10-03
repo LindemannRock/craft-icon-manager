@@ -28,6 +28,7 @@ use lindemannrock\iconmanager\fields\IconManagerField;
 use lindemannrock\iconmanager\models\Settings;
 use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\services\IconSetsService;
+use lindemannrock\iconmanager\services\SvgOptimizerService;
 use lindemannrock\iconmanager\utilities\ClearIconCache;
 use lindemannrock\iconmanager\variables\IconManagerVariable;
 use lindemannrock\logginglibrary\LoggingLibrary;
@@ -44,6 +45,7 @@ use craft\services\Utilities;
  *
  * @property-read IconsService $icons
  * @property-read IconSetsService $iconSets
+ * @property-read SvgOptimizerService $svgOptimizer
  * @property-read Settings $settings
  * @method Settings getSettings()
  */
@@ -64,6 +66,7 @@ class IconManager extends Plugin
             'components' => [
                 'icons' => IconsService::class,
                 'iconSets' => IconSetsService::class,
+                'svgOptimizer' => SvgOptimizerService::class,
             ],
         ];
     }
@@ -204,6 +207,7 @@ class IconManager extends Plugin
                     'icon-manager' => 'icon-manager/icon-sets/index',
                     'icon-manager/icon-sets' => 'icon-manager/icon-sets/index',
                     'icon-manager/icon-sets/new' => 'icon-manager/icon-sets/edit',
+                    'icon-manager/icon-sets/<iconSetId:\d+>/optimize' => 'icon-manager/icon-sets/optimize',
                     'icon-manager/icon-sets/<iconSetId:\d+>' => 'icon-manager/icon-sets/edit',
                     'icon-manager/icon-sets/delete' => 'icon-manager/icon-sets/delete',
                     'icon-manager/icon-sets/refresh-icons' => 'icon-manager/icon-sets/refresh-icons',

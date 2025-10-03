@@ -23,7 +23,7 @@ SVG folder icons are fully stable and production-ready.
 ## Requirements
 
 - Craft CMS 5.0 or greater
-- PHP 8.2 or greater
+- PHP 8.3 or greater
 
 ## Installation
 

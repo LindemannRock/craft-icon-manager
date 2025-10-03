@@ -18,8 +18,37 @@
     { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 
+{% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+    {% set tabs = {
+        settings: { label: "Settings"|t('icon-manager'), url: '#settings' },
+        optimization: { label: "SVG Optimization"|t('icon-manager'), url: '#optimization' }
+    } %}
+    {% set selectedTab = 'settings' %}
+{% endif %}
+
 {% block actionButton %}
-    <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+    <div id="save-button-container">
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+    </div>
+
+    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+        {% set isDevEnvironment = craft.app.config.general.devMode or (craft.app.env in ['local', 'dev', 'development']) %}
+        {% set totalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.largeFiles + scanResult.issues.widthHeight %}
+        {% if isDevEnvironment and totalIssues > 0 %}
+            <div id="optimization-button-container" style="display: none;">
+                <form method="post" accept-charset="UTF-8">
+                    {{ csrfInput() }}
+                    {{ actionInput('icon-manager/icon-sets/apply-optimizations') }}
+                    {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id ~ '#optimization') }}
+                    {{ hiddenInput('iconSetId', iconSet.id) }}
+
+                    <button type="submit" class="btn submit" onclick="return confirm('{{ 'This will create a backup and optimize all SVG files. Continue?'|t('icon-manager') }}');">
+                        {{ "Apply Optimizations"|t('icon-manager') }}
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -29,10 +58,13 @@
     {% else %}
         {{ redirectInput('icon-manager/icon-sets/{id}') }}
     {% endif %}
-    
+
     {% if not isNew %}
         {{ hiddenInput('iconSetId', iconSet.id) }}
     {% endif %}
+
+    {# Settings Tab #}
+    <div id="settings">
 
     {{ forms.textField({
         label: 'Name'|t('icon-manager'),
@@ -258,9 +290,66 @@
             </button>
         </div>
     {% endif %}
+
+    </div>{# end settings tab #}
+
+    {# SVG Optimization Tab #}
+    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+    <div id="optimization" class="hidden">
+        {% include 'icon-manager/icon-sets/_optimization-tab.twig' %}
+    </div>
+    {% endif %}
+
 {% endblock %}
 
 {% js %}
+    // Handle tab-specific action button visibility
+    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+    function updateActionButton() {
+        var saveButtonContainer = document.getElementById('save-button-container');
+        var optimizationButtonContainer = document.getElementById('optimization-button-container');
+        var hash = window.location.hash;
+
+        // If on optimization tab but no optimization button exists (no issues), hide save button
+        if (!optimizationButtonContainer) {
+            if (saveButtonContainer) {
+                if (hash === '#optimization') {
+                    saveButtonContainer.style.display = 'none';
+                } else {
+                    saveButtonContainer.style.display = 'block';
+                }
+            }
+            return;
+        }
+
+        // Otherwise, swap between save and optimization buttons
+        if (saveButtonContainer && optimizationButtonContainer) {
+            if (hash === '#optimization') {
+                // Show optimization button, hide save button
+                saveButtonContainer.style.display = 'none';
+                optimizationButtonContainer.style.display = 'block';
+            } else {
+                // Show save button, hide optimization button
+                saveButtonContainer.style.display = 'block';
+                optimizationButtonContainer.style.display = 'none';
+            }
+        }
+    }
+
+    // Update on page load
+    updateActionButton();
+
+    // Update on hash change (when switching tabs)
+    window.addEventListener('hashchange', updateActionButton);
+
+    // Update when clicking on tab links
+    document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+        link.addEventListener('click', function() {
+            setTimeout(updateActionButton, 10);
+        });
+    });
+    {% endif %}
+
     // Auto-generate handle from name (only for new icon sets or when handle is empty)
     var nameField = document.getElementById('name');
     var handleField = document.getElementById('handle');

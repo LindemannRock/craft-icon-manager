@@ -35,9 +35,10 @@
         "rss": "https://github.com/LindemannRock/craft-icon-manager/commits/main.atom"
     },
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "craftcms/cms": "^5.0.0",
-        "lindemannrock/craft-logging-library": "^1.0"
+        "lindemannrock/craft-logging-library": "^1.0",
+        "mathiasreker/php-svg-optimizer": "^7.0"
     },
     "repositories": {
         "logging-library": {
