@@ -60,7 +60,7 @@ class IconsController extends Controller
     }
     
     /**
-     * Get icon data for JavaScript
+     * Get icon data for JavaScript (single icon - kept for backwards compatibility)
      */
     public function actionGetData(): Response
     {
@@ -97,6 +97,70 @@ class IconsController extends Controller
                 'keywords' => $icon->keywords,
                 'type' => $icon->type,
             ]
+        ]);
+    }
+
+    /**
+     * Get all icons for a field in a single batch request
+     */
+    public function actionGetIconsForField(): Response
+    {
+        $this->requireAcceptsJson();
+
+        $request = Craft::$app->getRequest();
+        $fieldId = $request->getRequiredParam('fieldId');
+
+        $this->logTrace("Batch icons request for field: {$fieldId}");
+
+        // Get the field
+        $field = Craft::$app->getFields()->getFieldById($fieldId);
+        if (!$field) {
+            $this->logWarning("Field not found: {$fieldId}");
+            return $this->asJson(['error' => 'Field not found']);
+        }
+
+        // Get allowed icon sets for this field
+        $iconSets = [];
+        if ($field->allowedIconSets === '*') {
+            $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
+        } elseif (!empty($field->allowedIconSets) && is_array($field->allowedIconSets)) {
+            $iconSets = IconManager::getInstance()->iconSets->getIconSetsByHandles($field->allowedIconSets);
+        } else {
+            $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
+        }
+
+        // Collect all icons with their content
+        $iconsData = [];
+        $iconCount = 0;
+
+        foreach ($iconSets as $iconSet) {
+            // Skip Font Awesome Kits (they use manual input)
+            if ($iconSet->type === 'font-awesome' && isset($iconSet->settings['type']) && $iconSet->settings['type'] === 'kit') {
+                continue;
+            }
+
+            $icons = IconManager::getInstance()->icons->getIconsBySetId($iconSet->id);
+            foreach ($icons as $icon) {
+                $iconArray = $icon->toPickerArray();
+
+                // Add the SVG content (what we removed from toPickerArray)
+                // But now it's in a single batch request, not embedded in HTML
+                try {
+                    $iconArray['content'] = $icon->getContent();
+                } catch (\Exception $e) {
+                    $iconArray['content'] = null;
+                }
+
+                $iconsData[] = $iconArray;
+                $iconCount++;
+            }
+        }
+
+        $this->logTrace("Returning {$iconCount} icons for field {$fieldId}");
+
+        return $this->asJson([
+            'success' => true,
+            'icons' => $iconsData,
         ]);
     }
 }

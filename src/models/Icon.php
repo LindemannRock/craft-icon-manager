@@ -107,20 +107,16 @@ class Icon extends Model implements \JsonSerializable
     }
     
     /**
-     * Get JSON data for picker with content
+     * Get JSON data for picker without content (loaded via AJAX on-demand)
      */
     public function toPickerArray(): array
     {
         $data = $this->jsonSerialize();
-        
-        // Include the SVG content for the picker
-        try {
-            $data['content'] = $this->getContent();
-        } catch (\Exception $e) {
-            // If content can't be loaded, it will be loaded via AJAX
-            $data['content'] = null;
-        }
-        
+
+        // Don't preload content - let the picker load it via AJAX on-demand
+        // This prevents massive HTML payloads (was causing 12MB+ HTML files)
+        $data['content'] = null;
+
         return $data;
     }
 

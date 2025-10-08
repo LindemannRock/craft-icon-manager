@@ -9,14 +9,16 @@
     IconManager.IconPicker = function(fieldId, settings) {
         this.fieldId = fieldId;
         this.settings = settings || {};
-        this.icons = settings.icons || [];
+        this.icons = []; // Will be loaded via AJAX
         this.showSearch = settings.showSearch !== false;
         this.showLabels = settings.showLabels !== false;
         this.iconSize = settings.iconSize || 'medium';
         this.iconsPerPage = settings.iconsPerPage || 100;
         this.allowMultiple = settings.allowMultiple === true;
         this.selectedIcons = []; // For multi-selection
-        
+        this.iconsLoaded = false; // Track if icons have been loaded
+        this.iconsLoading = false; // Track if icons are currently loading
+
         this.init();
     };
 
@@ -134,26 +136,36 @@
         
         showPicker: function() {
             this.$picker.classList.remove('hidden');
-            
+
             // Store the current value when opening picker
             this.savedValue = this.getCurrentValue();
             if (this.allowMultiple) {
                 this.savedSelectedIcons = this.selectedIcons.slice();
             }
-            
+
+            // Load icons if not already loaded
+            if (!this.iconsLoaded && !this.iconsLoading) {
+                this.fetchIconsForField();
+            } else {
+                // Icons already loaded, just display them
+                this.showIconsInPicker();
+            }
+        },
+
+        showIconsInPicker: function() {
             // Hide tabs for empty icon sets
             this.hideEmptyIconSets();
-            
+
             // If there's a current value, switch to its icon set
             var currentValue = this.getCurrentValue();
             var targetIconSet = null;
-            
+
             if (this.allowMultiple && this.selectedIcons.length > 0) {
                 targetIconSet = this.selectedIcons[0].iconSetHandle;
             } else if (currentValue && currentValue.iconSetHandle) {
                 targetIconSet = currentValue.iconSetHandle;
             }
-            
+
             if (targetIconSet) {
                 this.switchTab(targetIconSet);
                 this.updateDropdownCount(targetIconSet);
@@ -170,9 +182,59 @@
                     }
                 }
             }
-            
+
             this.loadIcons();
             this.updateIconCounts();
+        },
+
+        fetchIconsForField: function() {
+            var self = this;
+            this.iconsLoading = true;
+
+            // Show loading state
+            var $grids = this.$picker.querySelectorAll('.icon-manager-grid');
+            $grids.forEach(function($grid) {
+                var $gridInner = $grid.querySelector('.icon-manager-grid-inner');
+                if ($gridInner) {
+                    $gridInner.innerHTML = '<div class="icon-manager-loading">Loading icons...</div>';
+                }
+            });
+
+            // Fetch all icons for this field in one batch request
+            fetch(Craft.getCpUrl('icon-manager/icons/get-icons-for-field'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': Craft.csrfTokenValue,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    fieldId: this.settings.fieldId
+                })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success && data.icons) {
+                    self.icons = data.icons;
+                    self.iconsLoaded = true;
+                    self.iconsLoading = false;
+                    self.showIconsInPicker();
+                } else {
+                    console.error('Failed to load icons:', data.error || 'Unknown error');
+                    self.iconsLoading = false;
+                }
+            })
+            .catch(function(error) {
+                console.error('Failed to load icons:', error);
+                self.iconsLoading = false;
+                // Show error state
+                $grids.forEach(function($grid) {
+                    var $gridInner = $grid.querySelector('.icon-manager-grid-inner');
+                    if ($gridInner) {
+                        $gridInner.innerHTML = '<div class="icon-manager-error">Failed to load icons. Please try again.</div>';
+                    }
+                });
+            });
         },
         
         hidePicker: function() {
@@ -274,41 +336,13 @@
                     
                     var $iconDiv = document.createElement('div');
                     $iconDiv.className = 'icon-manager-grid-item-icon';
-                    
-                    // Load the actual icon SVG
+
+                    // Display the icon SVG (already loaded in batch)
                     if (icon.content) {
-                        // If content is already loaded, use it
                         $iconDiv.innerHTML = icon.content;
                     } else {
-                        // Show placeholder while loading
+                        // Fallback placeholder if content somehow missing
                         $iconDiv.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="12" y="16" text-anchor="middle" font-size="10">' + icon.name.charAt(0).toUpperCase() + '</text></svg>';
-                        
-                        // Load icon content via AJAX
-                        (function(iconDiv, iconData) {
-                            fetch(Craft.getCpUrl('icon-manager/icons/get-data'), {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-Token': Craft.csrfTokenValue,
-                                    'Accept': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    iconSet: iconData.iconSetHandle,
-                                    icon: iconData.name
-                                })
-                            })
-                            .then(function(response) { return response.json(); })
-                            .then(function(data) {
-                                if (data.success && data.icon && data.icon.content) {
-                                    iconDiv.innerHTML = data.icon.content;
-                                    // Cache the content
-                                    iconData.content = data.icon.content;
-                                }
-                            })
-                            .catch(function(error) {
-                                console.error('Failed to load icon:', error);
-                            });
-                        })($iconDiv, icon);
                     }
                     
                     $item.appendChild($iconDiv);

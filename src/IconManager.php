@@ -217,6 +217,7 @@ class IconManager extends Plugin
                     'icon-manager/settings/save' => 'icon-manager/settings/save',
                     'icon-manager/icons/render' => 'icon-manager/icons/render',
                     'icon-manager/icons/get-data' => 'icon-manager/icons/get-data',
+                    'icon-manager/icons/get-icons-for-field' => 'icon-manager/icons/get-icons-for-field',
                     'icon-manager/cache/clear' => 'icon-manager/cache/clear',
                 ]);
             }

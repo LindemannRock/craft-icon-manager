@@ -323,28 +323,14 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
             $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
         }
 
-        // Prepare icon data for JavaScript
-        $iconsData = [];
-        foreach ($iconSets as $iconSet) {
-            // Skip loading icons for Font Awesome Kits (they use manual input)
-            if ($iconSet->type === 'font-awesome' && isset($iconSet->settings['type']) && $iconSet->settings['type'] === 'kit') {
-                continue;
-            }
-            
-            $icons = IconManager::getInstance()->icons->getIconsBySetId($iconSet->id);
-            foreach ($icons as $icon) {
-                $iconsData[] = $icon->toPickerArray();
-            }
-        }
-
-        $iconsDataJson = Json::encode($iconsData);
+        // Don't pass icon data - let JavaScript fetch it via AJAX in a single batch request
         $showSearchJson = $this->showSearch ? 'true' : 'false';
         $showLabelsJson = $this->showLabels ? 'true' : 'false';
         $allowMultipleJson = $this->allowMultiple ? 'true' : 'false';
-        
+
         $js = <<<JS
 new IconManager.IconPicker('$namespacedId', {
-    icons: $iconsDataJson,
+    fieldId: {$this->id},
     showSearch: $showSearchJson,
     showLabels: $showLabelsJson,
     iconSize: '{$this->iconSize}',
@@ -355,9 +341,9 @@ JS;
 
         // Register asset bundle
         Craft::$app->getView()->registerAssetBundle(IconManagerFieldAsset::class);
-        
+
         // Font Awesome Kit support temporarily disabled
-        
+
         // Register field-specific JavaScript
         Craft::$app->getView()->registerJs($js);
 
