@@ -1,0 +1,12 @@
+{
+  "name": "icon-manager",
+  "version": "1.0.0",
+  "description": "Build tools for Icon Manager plugin",
+  "scripts": {
+    "minify": "npm run minify:js",
+    "minify:js": "terser src/web/assets/field/dist/IconManagerField.js -o src/web/assets/field/dist/IconManagerField.min.js -c -m"
+  },
+  "devDependencies": {
+    "terser": "^5.31.6"
+  }
+}

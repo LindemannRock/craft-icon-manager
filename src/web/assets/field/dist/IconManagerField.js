@@ -19,6 +19,11 @@
         this.iconsLoaded = false; // Track if icons have been loaded
         this.iconsLoading = false; // Track if icons are currently loading
 
+        // Virtual scrolling properties
+        this.virtualScrollBatchSize = 50; // Render 50 icons at a time
+        this.virtualScrollRenderedIcons = {}; // Track rendered icons per grid {iconSetHandle: count}
+        this.virtualScrollObservers = {}; // Track intersection observers per grid
+
         this.init();
     };
 
@@ -308,60 +313,20 @@
                     return true;
                 });
                 
-                // Add icons
-                iconsToShow.forEach(function(icon) {
-                    var $item = document.createElement('div');
-                    $item.className = 'icon-manager-grid-item';
-                    
-                    // Check if this is the currently selected icon
-                    var isSelected = false;
-                    if (self.allowMultiple) {
-                        // Check if this icon is in the selected icons array
-                        isSelected = self.selectedIcons.some(function(selectedIcon) {
-                            return selectedIcon.iconSetHandle === icon.iconSetHandle && 
-                                   selectedIcon.name === icon.name;
-                        });
-                    } else {
-                        // Single selection check
-                        isSelected = self.currentValue && 
-                                   self.currentValue.iconSetHandle === icon.iconSetHandle && 
-                                   self.currentValue.name === icon.name;
-                    }
-                    
-                    if (isSelected) {
-                        $item.className += ' selected';
-                    }
-                    
-                    $item.dataset.iconData = JSON.stringify(icon);
-                    
-                    var $iconDiv = document.createElement('div');
-                    $iconDiv.className = 'icon-manager-grid-item-icon';
+                // Virtual scrolling: Only render initial batch of icons
+                // Store all icons for this grid
+                $grid.dataset.iconsToShow = JSON.stringify(iconsToShow);
 
-                    // Display the icon SVG (already loaded in batch)
-                    if (icon.content) {
-                        $iconDiv.innerHTML = icon.content;
-                    } else {
-                        // Fallback placeholder if content somehow missing
-                        $iconDiv.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="12" y="16" text-anchor="middle" font-size="10">' + icon.name.charAt(0).toUpperCase() + '</text></svg>';
-                    }
-                    
-                    $item.appendChild($iconDiv);
-                    
-                    if (self.showLabels) {
-                        var $label = document.createElement('div');
-                        $label.className = 'icon-manager-grid-item-label';
-                        $label.textContent = icon.label || icon.name;
-                        $item.appendChild($label);
-                    }
-                    
-                    // Click to select
-                    $item.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        self.selectIcon(icon);
-                    });
-                    
-                    $gridInner.appendChild($item);
-                });
+                // Reset virtual scroll counter for this grid
+                self.virtualScrollRenderedIcons[iconSetHandle] = 0;
+
+                // Render initial batch
+                self.renderIconBatch($gridInner, iconsToShow, iconSetHandle, self.virtualScrollBatchSize);
+
+                // Setup intersection observer for infinite scroll if there are more icons
+                if (iconsToShow.length > self.virtualScrollBatchSize) {
+                    self.setupVirtualScrollObserver($gridInner, iconsToShow, iconSetHandle);
+                }
                 
                 // Show/hide empty state
                 if (iconsToShow.length === 0) {
@@ -1108,6 +1073,159 @@
             } else if ($selectedIcon) {
                 $selectedIcon.outerHTML = html;
             }
+        },
+
+        /**
+         * Render a batch of icons (for virtual scrolling)
+         */
+        renderIconBatch: function($gridInner, iconsToShow, iconSetHandle, count) {
+            var self = this;
+            var startIndex = this.virtualScrollRenderedIcons[iconSetHandle] || 0;
+            var endIndex = Math.min(startIndex + count, iconsToShow.length);
+
+            for (var i = startIndex; i < endIndex; i++) {
+                var icon = iconsToShow[i];
+                var $item = this.createIconElement(icon);
+                $gridInner.appendChild($item);
+            }
+
+            // Update counter
+            this.virtualScrollRenderedIcons[iconSetHandle] = endIndex;
+
+            return endIndex < iconsToShow.length; // Returns true if there are more icons to render
+        },
+
+        /**
+         * Create a single icon DOM element
+         */
+        createIconElement: function(icon) {
+            var self = this;
+            var $item = document.createElement('div');
+            $item.className = 'icon-manager-grid-item';
+
+            // Check if this is the currently selected icon
+            var isSelected = false;
+            if (this.allowMultiple) {
+                // Check if this icon is in the selected icons array
+                isSelected = this.selectedIcons.some(function(selectedIcon) {
+                    return selectedIcon.iconSetHandle === icon.iconSetHandle &&
+                           selectedIcon.name === icon.name;
+                });
+            } else {
+                // Single selection check
+                isSelected = this.currentValue &&
+                           this.currentValue.iconSetHandle === icon.iconSetHandle &&
+                           this.currentValue.name === icon.name;
+            }
+
+            if (isSelected) {
+                $item.className += ' selected';
+            }
+
+            $item.dataset.iconData = JSON.stringify(icon);
+
+            var $iconDiv = document.createElement('div');
+            $iconDiv.className = 'icon-manager-grid-item-icon';
+
+            // Display the icon SVG (already loaded in batch)
+            if (icon.content) {
+                $iconDiv.innerHTML = icon.content;
+            } else {
+                // Fallback placeholder if content somehow missing
+                $iconDiv.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="12" y="16" text-anchor="middle" font-size="10">' + icon.name.charAt(0).toUpperCase() + '</text></svg>';
+            }
+
+            $item.appendChild($iconDiv);
+
+            if (this.showLabels) {
+                var $label = document.createElement('div');
+                $label.className = 'icon-manager-grid-item-label';
+                $label.textContent = icon.label || icon.name;
+                $item.appendChild($label);
+            }
+
+            // Click to select
+            $item.addEventListener('click', function(e) {
+                e.preventDefault();
+                self.selectIcon(icon);
+            });
+
+            return $item;
+        },
+
+        /**
+         * Setup intersection observer for virtual scrolling
+         */
+        setupVirtualScrollObserver: function($gridInner, iconsToShow, iconSetHandle) {
+            var self = this;
+
+            // Disconnect existing observer if any
+            if (this.virtualScrollObservers[iconSetHandle]) {
+                this.virtualScrollObservers[iconSetHandle].disconnect();
+            }
+
+            // Create a loading indicator
+            var $loadingIndicator = document.createElement('div');
+            $loadingIndicator.className = 'virtual-scroll-loading';
+            $loadingIndicator.style.padding = '2rem';
+            $loadingIndicator.style.textAlign = 'center';
+            $loadingIndicator.style.color = '#6b7280';
+            $loadingIndicator.style.fontSize = '0.875rem';
+            $loadingIndicator.style.fontWeight = '500';
+            $loadingIndicator.innerHTML = 'Loading more icons...';
+            $gridInner.appendChild($loadingIndicator);
+
+            // Create a sentinel element at the bottom
+            var $sentinel = document.createElement('div');
+            $sentinel.className = 'virtual-scroll-sentinel';
+            $sentinel.style.height = '1px';
+            $sentinel.style.width = '100%';
+            $gridInner.appendChild($sentinel);
+
+            // Create intersection observer
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        // User scrolled to bottom, load more icons
+                        // Insert new icons BEFORE the loading indicator
+                        var hasMore = self.renderIconBatchBeforeElement($gridInner, iconsToShow, iconSetHandle, self.virtualScrollBatchSize, $loadingIndicator);
+
+                        // If no more icons, disconnect observer and remove sentinel + loading
+                        if (!hasMore) {
+                            observer.disconnect();
+                            $sentinel.remove();
+                            $loadingIndicator.remove();
+                        }
+                    }
+                });
+            }, {
+                root: null, // Use viewport instead of container
+                rootMargin: '200px', // Start loading 200px before reaching the bottom
+                threshold: 0.1
+            });
+
+            observer.observe($sentinel);
+            this.virtualScrollObservers[iconSetHandle] = observer;
+        },
+
+        /**
+         * Render a batch of icons before a specific element (for virtual scrolling with loading indicator)
+         */
+        renderIconBatchBeforeElement: function($gridInner, iconsToShow, iconSetHandle, count, $beforeElement) {
+            var self = this;
+            var startIndex = this.virtualScrollRenderedIcons[iconSetHandle] || 0;
+            var endIndex = Math.min(startIndex + count, iconsToShow.length);
+
+            for (var i = startIndex; i < endIndex; i++) {
+                var icon = iconsToShow[i];
+                var $item = this.createIconElement(icon);
+                $gridInner.insertBefore($item, $beforeElement);
+            }
+
+            // Update counter
+            this.virtualScrollRenderedIcons[iconSetHandle] = endIndex;
+
+            return endIndex < iconsToShow.length; // Returns true if there are more icons to render
         }
     };
 })();
