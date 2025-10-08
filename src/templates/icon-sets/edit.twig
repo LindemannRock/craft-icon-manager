@@ -282,7 +282,7 @@
             <div class="heading">
                 <label>{{ 'Icons'|t('icon-manager') }}</label>
                 <div class="instructions">
-                    <p>{{ 'This icon set contains {count} icons.'|t('icon-manager', {count: iconSet.getIconCount()}) }}</p>
+                    <p>{{ 'This icon set contains {count} icons.'|t('icon-manager', {count: iconSet.getIconCount()|number_format}) }}</p>
                 </div>
             </div>
             <button type="button" class="btn" onclick="refreshIcons()">

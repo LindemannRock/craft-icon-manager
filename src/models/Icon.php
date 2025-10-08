@@ -354,14 +354,47 @@ class Icon extends Model implements \JsonSerializable
     }
     
     /**
-     * Get the icon's content (alias for getSvg for now)
-     * 
+     * Get the icon's content for display
+     * - For SVG icons: returns full SVG markup
+     * - For font icons (Material Icons): returns HTML with icon name as ligature
+     * - For sprite icons: returns use reference
+     *
      * @return \Twig\Markup|null
      */
     public function getContent()
     {
-        $svg = $this->getSvg();
-        return $svg ? Template::raw($svg) : null;
+        switch ($this->type) {
+            case self::TYPE_SVG:
+                $svg = $this->getSvg();
+                return $svg ? Template::raw($svg) : null;
+
+            case self::TYPE_FONT:
+                // For font icons (Material Icons), return the icon as a span with the icon name
+                $iconName = $this->path ?? $this->name;
+
+                // Material Symbols use the icon name directly
+                if (isset($this->metadata['materialType']) && $this->metadata['materialType'] === 'symbols') {
+                    $iconName = $this->metadata['iconName'] ?? $iconName;
+                }
+                // Material Icons classic also use the icon name
+                elseif (isset($this->metadata['materialType']) && $this->metadata['materialType'] === 'icons') {
+                    $iconName = $this->metadata['iconName'] ?? $iconName;
+                }
+
+                $className = $this->value ?? 'material-icons';
+                $html = Html::tag('span', $iconName, ['class' => $className]);
+                return Template::raw($html);
+
+            case self::TYPE_SPRITE:
+                // For sprite icons, return an SVG use reference
+                $html = Html::beginTag('svg', ['class' => 'icon']) .
+                        Html::tag('use', '', ['href' => '#' . $this->value]) .
+                        Html::endTag('svg');
+                return Template::raw($html);
+
+            default:
+                return null;
+        }
     }
 
     /**

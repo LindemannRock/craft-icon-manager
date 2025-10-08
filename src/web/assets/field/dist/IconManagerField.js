@@ -223,6 +223,12 @@
                     self.icons = data.icons;
                     self.iconsLoaded = true;
                     self.iconsLoading = false;
+
+                    // Load required fonts/CSS for font-based icons (Material Icons, Font Awesome)
+                    if (data.fonts && data.fonts.length > 0) {
+                        self.loadFonts(data.fonts);
+                    }
+
                     self.showIconsInPicker();
                 } else {
                     console.error('Failed to load icons:', data.error || 'Unknown error');
@@ -770,20 +776,20 @@
                 }
             });
             
-            // Update count displays for tabs
+            // Update count displays for tabs with number formatting
             var $counts = this.$picker.querySelectorAll('.icon-count');
             $counts.forEach(function($count) {
                 var iconSet = $count.dataset.iconSet;
                 var count = counts[iconSet] || 0;
-                $count.textContent = '(' + count + ')';
+                $count.textContent = '(' + count.toLocaleString() + ')';
             });
-            
-            // Update dropdown count if present
+
+            // Update dropdown count if present with number formatting
             var $dropdownCount = this.$picker.querySelector('.icon-count-dropdown');
             if ($dropdownCount) {
                 var currentSet = $dropdownCount.dataset.iconSet;
                 var count = counts[currentSet] || 0;
-                $dropdownCount.textContent = '(' + count + ' icons)';
+                $dropdownCount.textContent = '(' + count.toLocaleString() + ' icons)';
             }
             
             // If searching and current tab has no results, switch to first tab with results
@@ -1226,6 +1232,37 @@
             this.virtualScrollRenderedIcons[iconSetHandle] = endIndex;
 
             return endIndex < iconsToShow.length; // Returns true if there are more icons to render
+        },
+
+        /**
+         * Load fonts/CSS required for font-based icons (Material Icons, Font Awesome)
+         */
+        loadFonts: function(fonts) {
+            fonts.forEach(function(font) {
+                if (font.type === 'remote' && font.url) {
+                    // Check if this font CSS is already loaded
+                    var existingLink = document.querySelector('link[href="' + font.url + '"]');
+                    if (!existingLink) {
+                        var link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = font.url;
+                        link.crossOrigin = 'anonymous';
+                        document.head.appendChild(link);
+                    }
+                } else if (font.type === 'inline' && font.css) {
+                    // Inject inline CSS
+                    var existingStyle = document.querySelector('style[data-icon-manager-inline]');
+                    if (!existingStyle) {
+                        var style = document.createElement('style');
+                        style.setAttribute('data-icon-manager-inline', 'true');
+                        style.textContent = font.css;
+                        document.head.appendChild(style);
+                    } else {
+                        // Append to existing inline styles
+                        existingStyle.textContent += '\n' + font.css;
+                    }
+                }
+            });
         }
     };
 })();

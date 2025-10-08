@@ -51,7 +51,7 @@
                             {{ iconSet.getTypeLabel() }}
                         </td>
                         <td>
-                            {{ iconSet.getIconCount() }}
+                            {{ iconSet.getIconCount()|number_format }}
                         </td>
                         <td>
                             {% if iconSet.enabled %}

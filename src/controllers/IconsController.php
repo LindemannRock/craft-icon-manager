@@ -129,8 +129,9 @@ class IconsController extends Controller
             $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
         }
 
-        // Collect all icons with their content
+        // Collect all icons with their content and required assets (fonts/CSS)
         $iconsData = [];
+        $fonts = [];
         $iconCount = 0;
 
         foreach ($iconSets as $iconSet) {
@@ -139,11 +140,32 @@ class IconsController extends Controller
                 continue;
             }
 
+            // Get required assets for this icon set (Material Icons fonts, etc.)
+            if ($iconSet->type === 'material-icons') {
+                $handler = new \lindemannrock\iconmanager\iconsets\MaterialIcons($iconSet);
+                $assets = $handler->getAssets();
+
+                foreach ($assets as $asset) {
+                    if ($asset['type'] === 'css' && isset($asset['url'])) {
+                        $fonts[] = [
+                            'type' => 'remote',
+                            'url' => $asset['url'],
+                        ];
+                    } elseif ($asset['type'] === 'css' && isset($asset['inline'])) {
+                        // Add inline CSS as a data attribute for JS to inject
+                        $fonts[] = [
+                            'type' => 'inline',
+                            'css' => $asset['inline'],
+                        ];
+                    }
+                }
+            }
+
             $icons = IconManager::getInstance()->icons->getIconsBySetId($iconSet->id);
             foreach ($icons as $icon) {
                 $iconArray = $icon->toPickerArray();
 
-                // Add the SVG content (what we removed from toPickerArray)
+                // Add the icon content (SVG markup or font HTML)
                 // But now it's in a single batch request, not embedded in HTML
                 try {
                     $iconArray['content'] = $icon->getContent();
@@ -161,6 +183,7 @@ class IconsController extends Controller
         return $this->asJson([
             'success' => true,
             'icons' => $iconsData,
+            'fonts' => array_values(array_unique($fonts, SORT_REGULAR)),
         ]);
     }
 }
