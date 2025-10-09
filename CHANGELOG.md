@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.9.0...v1.10.0) (2025-10-09)
+
+
+### Features
+
+* add viewLogs and editSettings permissions to Icon Manager ([a300cc9](https://github.com/LindemannRock/craft-icon-manager/commit/a300cc94f85c9aaa9ed2c9ab281ddec1fdc11a6d))
+* add WebFont support with proper font loading and icon type filtering ([ec1f9f2](https://github.com/LindemannRock/craft-icon-manager/commit/ec1f9f2a0b0077983b5b3cf4c244d38af61a7bd5))
+* implement Material Icons support with style filtering and performance optimizations ([0c58d7e](https://github.com/LindemannRock/craft-icon-manager/commit/0c58d7e1d1acf2fe9b45c68321e01c3b4c1c3b5c))
+* Implement robust SVG optimization with php-svg-optimizer library ([0d78f60](https://github.com/LindemannRock/craft-icon-manager/commit/0d78f60c136a04bfa56961dd9053f64069435143))
+* implement virtual scrolling for icon picker grid ([ed08ef7](https://github.com/LindemannRock/craft-icon-manager/commit/ed08ef727b88633005e75188e10843c103e101ca))
+* Improve SVGO optimization with smart issue detection and presets ([64a7f24](https://github.com/LindemannRock/craft-icon-manager/commit/64a7f24f436ab62bff754cf2cc8bc18da74b5a37))
+
+
+### Bug Fixes
+
+* logging configuration to use correct log levels ([fa554a7](https://github.com/LindemannRock/craft-icon-manager/commit/fa554a7bbc832d51749042e12ef5487ab7a91f05))
+* replace inline icon embedding with single batch AJAX request ([58f7256](https://github.com/LindemannRock/craft-icon-manager/commit/58f72562574b8ac8eeb6010feee3db51df61603d))
+
 ## [1.9.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.8.0...v1.9.0) (2025-10-02)
 
 
