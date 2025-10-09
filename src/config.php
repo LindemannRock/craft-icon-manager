@@ -40,7 +40,7 @@ return [
         ],
 
         // Logging settings
-        'logLevel' => 'error', // Options: 'trace', 'info', 'warning', 'error'
+        'logLevel' => 'error', // Options: 'debug', 'info', 'warning', 'error'
     ],
 
     // Dev environment settings

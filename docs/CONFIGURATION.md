@@ -25,7 +25,7 @@ return [
     'cacheDuration' => 86400, // 24 hours in seconds
 
     // Logging settings
-    'logLevel' => 'info', // error, warning, info, trace
+    'logLevel' => 'info', // error, warning, info, debug
 
     // Icon types to enable
     'enabledIconTypes' => [
@@ -65,7 +65,7 @@ return [
         'iconSetsPath' => '@root/src/icons',
         'enableCache' => true,
         'cacheDuration' => 3600, // 1 hour
-        'logLevel' => 'trace', // Detailed logging for development
+        'logLevel' => 'debug', // Detailed logging for development
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => true,
@@ -133,7 +133,7 @@ return [
   - `error` - Critical errors only
   - `warning` - Errors and warnings
   - `info` - General information (recommended for production)
-  - `trace` - Detailed debugging with performance metrics (development only)
+  - `debug` - Detailed debugging with performance metrics (development only)
 
 #### Icon Type Settings
 
@@ -238,7 +238,7 @@ Choose the appropriate log level for your environment:
 
 - **Production**: Use `warning` or `error` to minimize log volume
 - **Staging**: Use `info` for operational visibility
-- **Development**: Use `trace` for debugging and performance analysis
+- **Development**: Use `debug` for debugging and performance analysis
 
 ### Log File Management
 
@@ -251,7 +251,7 @@ Choose the appropriate log level for your environment:
 
 ```php
 'dev' => [
-    'logLevel' => 'trace', // Full debugging
+    'logLevel' => 'debug', // Full debugging
 ],
 'staging' => [
     'logLevel' => 'info', // Operations monitoring
@@ -263,7 +263,7 @@ Choose the appropriate log level for your environment:
 
 ### Performance Impact
 
-- **trace**: High verbosity, includes cache operations and timing
+- **debug**: High verbosity, includes cache operations and timing
 - **info**: Moderate verbosity, normal operations
 - **warning**: Low verbosity, problems only
 - **error**: Minimal verbosity, critical issues only
