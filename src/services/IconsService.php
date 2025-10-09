@@ -155,7 +155,7 @@ class IconsService extends Component
 
         try {
             // Clear custom file cache for this icon set
-            $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+            $cachePath = $this->_getCachePath($iconSet);
             $cacheFile = $cachePath . 'set_' . $iconSet->id . '.cache';
             if (file_exists($cacheFile)) {
                 @unlink($cacheFile);
@@ -428,11 +428,36 @@ class IconsService extends Component
     }
 
     /**
+     * Get cache path for icon set based on type
+     */
+    private function _getCachePath(IconSet $iconSet): string
+    {
+        $basePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/';
+
+        // Organize cache by icon type
+        $typeMap = [
+            'svg-folder' => 'svg-folder',
+            'svg-sprite' => 'svg-sprite',
+            'material-icons' => 'material-icons',
+            'font-awesome' => 'font-awesome',
+            'web-font' => 'web-font',
+        ];
+
+        $typeFolder = $typeMap[$iconSet->type] ?? 'other';
+        return $basePath . $typeFolder . '/';
+    }
+
+    /**
      * Get cached icons from custom file cache
      */
     private function _getCachedIcons(int $iconSetId): ?array
     {
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if (!$iconSet) {
+            return null;
+        }
+
+        $cachePath = $this->_getCachePath($iconSet);
         $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
 
         if (!file_exists($cacheFile)) {
@@ -456,7 +481,12 @@ class IconsService extends Component
      */
     private function _cacheIcons(int $iconSetId, array $icons, int $duration): void
     {
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if (!$iconSet) {
+            return;
+        }
+
+        $cachePath = $this->_getCachePath($iconSet);
 
         // Create directory if it doesn't exist
         if (!is_dir($cachePath)) {

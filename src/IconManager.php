@@ -341,30 +341,17 @@ class IconManager extends Plugin
     {
         $runtimePath = Craft::$app->path->getRuntimePath();
 
-        // Clear icon set caches from custom file storage
-        $iconsCachePath = $runtimePath . '/icon-manager/icons/';
-        if (is_dir($iconsCachePath)) {
-            $cacheFiles = glob($iconsCachePath . '*.cache');
-            foreach ($cacheFiles as $file) {
-                @unlink($file);
-            }
-        }
+        // Clear all cache folders organized by type
+        $cacheBasePath = $runtimePath . '/icon-manager/cache/';
+        $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
 
-        // Clear Font Awesome caches from custom file storage
-        $faCachePath = $runtimePath . '/icon-manager/fontawesome/';
-        if (is_dir($faCachePath)) {
-            $cacheFiles = glob($faCachePath . '*.cache');
-            foreach ($cacheFiles as $file) {
-                @unlink($file);
-            }
-        }
-
-        // Clear Material Icons caches from custom file storage
-        $materialCachePath = $runtimePath . '/icon-manager/material/';
-        if (is_dir($materialCachePath)) {
-            $cacheFiles = glob($materialCachePath . '*.cache');
-            foreach ($cacheFiles as $file) {
-                @unlink($file);
+        foreach ($cacheTypes as $type) {
+            $cachePath = $cacheBasePath . $type . '/';
+            if (is_dir($cachePath)) {
+                $cacheFiles = glob($cachePath . '*.cache');
+                foreach ($cacheFiles as $file) {
+                    @unlink($file);
+                }
             }
         }
 

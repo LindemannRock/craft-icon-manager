@@ -73,24 +73,20 @@ class ClearIconCache extends Utility
         // Count cache files
         $runtimePath = Craft::$app->path->getRuntimePath();
         $cacheStats = [
-            'icons' => 0,
-            'fontawesome' => 0,
-            'material' => 0,
+            'svg-folder' => 0,
+            'svg-sprite' => 0,
+            'material-icons' => 0,
+            'font-awesome' => 0,
+            'web-font' => 0,
         ];
 
-        $iconsCachePath = $runtimePath . '/icon-manager/icons/';
-        if (is_dir($iconsCachePath)) {
-            $cacheStats['icons'] = count(glob($iconsCachePath . '*.cache'));
-        }
-
-        $faCachePath = $runtimePath . '/icon-manager/fontawesome/';
-        if (is_dir($faCachePath)) {
-            $cacheStats['fontawesome'] = count(glob($faCachePath . '*.cache'));
-        }
-
-        $materialCachePath = $runtimePath . '/icon-manager/material/';
-        if (is_dir($materialCachePath)) {
-            $cacheStats['material'] = count(glob($materialCachePath . '*.cache'));
+        // Count cache files organized by type
+        $cacheBasePath = $runtimePath . '/icon-manager/cache/';
+        foreach (array_keys($cacheStats) as $type) {
+            $cachePath = $cacheBasePath . $type . '/';
+            if (is_dir($cachePath)) {
+                $cacheStats[$type] = count(glob($cachePath . '*.cache'));
+            }
         }
 
         return Craft::$app->getView()->renderTemplate('icon-manager/utilities/index', [

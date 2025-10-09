@@ -207,8 +207,8 @@ class MaterialIcons
             return $this->loadIconDefinitionsFromFile($type);
         }
 
-        // Check custom file cache
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/material/';
+        // Check custom file cache (organized by icon type)
+        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/material-icons/';
         $cacheFile = $cachePath . "{$type}.cache";
 
         if (file_exists($cacheFile)) {
