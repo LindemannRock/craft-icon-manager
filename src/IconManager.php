@@ -179,11 +179,11 @@ class IconManager extends Plugin
             if (Craft::$app->getPlugins()->isPluginInstalled('logging-library') &&
                 Craft::$app->getPlugins()->isPluginEnabled('logging-library')) {
                 $item = LoggingLibrary::addLogsNav($item, $this->handle, [
-                    'accessPlugin-icon-manager'
+                    'iconManager:viewLogs'
                 ]);
             }
 
-            if (Craft::$app->getUser()->checkPermission('accessPlugin-icon-manager')) {
+            if (Craft::$app->getUser()->checkPermission('iconManager:editSettings')) {
                 $item['subnav']['settings'] = [
                     'label' => Craft::t('icon-manager', 'Settings'),
                     'url' => 'icon-manager/settings',
@@ -270,6 +270,12 @@ class IconManager extends Plugin
                     'permissions' => [
                         'iconManager:manageIconSets' => [
                             'label' => Craft::t('icon-manager', 'Manage icon sets'),
+                        ],
+                        'iconManager:viewLogs' => [
+                            'label' => Craft::t('icon-manager', 'View logs'),
+                        ],
+                        'iconManager:editSettings' => [
+                            'label' => Craft::t('icon-manager', 'Edit plugin settings'),
                         ],
                     ],
                 ];
@@ -373,11 +379,12 @@ class IconManager extends Plugin
     {
         // Configure logging using the new logging library
         $settings = $this->getSettings();
+        $logLevel = $settings->logLevel ?? 'info';
 
         LoggingLibrary::configure([
             'pluginHandle' => $this->handle,
             'pluginName' => $this->name,
-            'logLevel' => $settings->logLevel,
+            'logLevel' => $logLevel,
             'permissions' => ['iconManager:viewLogs'],
         ]);
     }
