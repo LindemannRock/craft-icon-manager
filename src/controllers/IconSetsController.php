@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\controllers;
 
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\IconSet;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 use Craft;
 use craft\web\Controller;
@@ -20,6 +21,7 @@ use yii\web\Response;
  */
 class IconSetsController extends Controller
 {
+    use LoggingTrait;
     /**
      * Icon sets index
      */
@@ -194,7 +196,7 @@ class IconSetsController extends Controller
         }
 
         // Debug - log the actual type
-        Craft::info("Icon set type: {$iconSet->type}", __METHOD__);
+        $this->logDebug("Icon set type: {$iconSet->type}");
 
         // Only allow SVG folder icon sets
         if ($iconSet->type !== 'folder' && $iconSet->type !== 'svg-folder') {
@@ -424,7 +426,7 @@ class IconSetsController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Craft::error('Could not save optimized SVGs: ' . $e->getMessage(), __METHOD__);
+            $this->logError('Could not save optimized SVGs: ' . $e->getMessage());
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
         }
     }

@@ -230,7 +230,7 @@ class Icon extends Model implements \JsonSerializable
             return null;
         } catch (\Exception $e) {
             // Log error but don't break
-            Craft::warning("Failed to parse JSON label file: {$jsonPath}", 'icon-manager');
+            $this->logWarning("Failed to parse JSON label file: {$jsonPath}");
             return null;
         }
     }
@@ -398,7 +398,7 @@ class Icon extends Model implements \JsonSerializable
                     $useRawHtml = true;
 
                     // Debug log with more detail
-                    Craft::info("WebFont icon {$this->name}: unicode={$unicode} (0x" . dechex($unicode) . "), char bytes=" . bin2hex($iconContent) . ", value={$this->value}", 'icon-manager');
+                    $this->logDebug("WebFont icon {$this->name}: unicode={$unicode} (0x" . dechex($unicode) . "), char bytes=" . bin2hex($iconContent) . ", value={$this->value}");
                 }
 
                 // For WebFont icons, use the base CSS prefix from value (e.g., "icon")
