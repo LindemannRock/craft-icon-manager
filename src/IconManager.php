@@ -46,6 +46,7 @@ use craft\services\Utilities;
  * @property-read IconsService $icons
  * @property-read IconSetsService $iconSets
  * @property-read SvgOptimizerService $svgOptimizer
+ * @property-read SvgoService $svgo
  * @property-read Settings $settings
  * @method Settings getSettings()
  */
@@ -56,7 +57,7 @@ class IconManager extends Plugin
     public bool $hasCpSection = true;
 
     private static bool $_logTargetRegistered = false;
-    
+
     /**
      * @inheritdoc
      */
@@ -67,6 +68,7 @@ class IconManager extends Plugin
                 'icons' => IconsService::class,
                 'iconSets' => IconSetsService::class,
                 'svgOptimizer' => SvgOptimizerService::class,
+                'svgo' => \lindemannrock\iconmanager\services\SvgoService::class,
             ],
         ];
     }

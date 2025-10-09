@@ -40,6 +40,28 @@
 
 {% block content %}
 
+    {# SVGO Availability Notice #}
+    {% set svgoAvailable = craft.iconManager.svgo.isAvailable() %}
+    {% if svgoAvailable %}
+    <div class="pane" style="margin-bottom: 32px; padding: 20px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #10b981;">
+        <div style="display: flex; align-items: start; gap: 16px;">
+            <div style="font-size: 32px; color: #059669;">✓</div>
+            <div style="flex: 1;">
+                <h3 style="margin: 0 0 8px 0; color: #065f46; font-size: 16px;">{{ "SVGO Available"|t('icon-manager') }}</h3>
+                <p style="margin: 0 0 12px 0; color: #047857; font-size: 14px;">
+                    {{ "SVGO is installed in your project. You can use it for advanced SVG optimization via the command line."|t('icon-manager') }}
+                </p>
+                <div style="background: #064e3b; color: #d1fae5; padding: 12px 16px; border-radius: 6px; font-family: monospace; font-size: 13px;">
+                    ./craft icon-manager/optimize --set={{ iconSet.id }} --engine=svgo
+                </div>
+                <div style="margin-top: 12px; font-size: 13px; color: #047857;">
+                    <strong>{{ "Note:"|t('icon-manager') }}</strong> {{ "The button above uses the PHP optimizer. Use the command line for SVGO optimization."|t('icon-manager') }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {# Summary Stats #}
     <div style="margin-bottom: 32px;">
         <h2>{{ "Optimization Overview"|t('icon-manager') }}</h2>

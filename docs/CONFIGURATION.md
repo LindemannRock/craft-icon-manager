@@ -268,6 +268,64 @@ Choose the appropriate log level for your environment:
 - **warning**: Low verbosity, problems only
 - **error**: Minimal verbosity, critical issues only
 
+## SVG Optimization Configuration
+
+Icon Manager supports SVGO for advanced SVG optimization. See the [SVG Optimization section in README](../README.md#svg-optimization) for full details.
+
+### SVGO Configuration File
+
+Create a `svgo.config.js` file in your project root for custom optimization settings:
+
+```javascript
+export default {
+    plugins: [
+        {
+            name: 'preset-default',
+            params: {
+                overrides: {
+                    convertColors: false,  // Preserve colors for CSS control
+                    mergePaths: false,     // Keep paths separate for animations
+                    removeViewBox: false,  // Keep viewBox for responsive sizing
+                },
+            },
+        },
+        'removeDimensions',        // Remove fixed width/height
+        'removeEmptyContainers',   // Clean up empty groups
+        'removeEditorsNSData',     // Remove editor metadata (Figma, Sketch, etc.)
+    ],
+};
+```
+
+### Optimization Presets
+
+If no `svgo.config.js` file exists, Icon Manager offers built-in presets:
+
+1. **Safe** - Removes only metadata and comments, preserves all visual elements
+2. **Balanced** - Safe + cleanup IDs and remove hidden elements
+3. **Aggressive** - Balanced + merge paths and convert colors (may affect dynamic styling)
+4. **Default** - Use SVGO's default optimization settings
+
+In direct command mode (with `--set` flag), the Safe preset is automatically used if no config file is found.
+
+### Issue Detection Configuration
+
+The plugin automatically detects optimization opportunities:
+
+**Flagged as Issues:**
+- Empty or unused clip-paths and masks
+- Comments and metadata
+- Inline styles that prevent CSS overrides
+- Width/height attributes (should use viewBox)
+
+**Flagged as Warnings:**
+- Large files (>10KB) - may be normal for complex icons
+
+**Not Flagged:**
+- Functional clip-paths and masks that are actually used
+- ViewBox attributes (these are desirable)
+
+No configuration needed - detection is automatic and intelligent.
+
 ## Icon Metadata Configuration
 
 You can also configure icon metadata files alongside your icon configuration. See the main README for details on `metadata.json` structure and multilingual label support.

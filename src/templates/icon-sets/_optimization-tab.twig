@@ -42,8 +42,8 @@
         <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
             <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.clipPaths }}</div>
             <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Clip-Paths"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Can cause rendering issues"|t('icon-manager') }}</div>
+                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Unused Clip-Paths"|t('icon-manager') }}</div>
+                <div style="font-size: 13px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
@@ -52,8 +52,8 @@
         <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
             <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.masks }}</div>
             <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Masks"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "May impact performance"|t('icon-manager') }}</div>
+                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Unused Masks"|t('icon-manager') }}</div>
+                <div style="font-size: 13px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
@@ -90,10 +90,10 @@
 
         {% if scanResult.issues.largeFiles > 0 %}
         <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.largeFiles }}</div>
+            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fef3c7; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #d97706;">{{ scanResult.issues.largeFiles }}</div>
             <div style="flex: 1;">
                 <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Large Files"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Files over 10KB"|t('icon-manager') }}</div>
+                <div style="font-size: 13px; color: #6b7280;">{{ "Over 10KB (may be normal for complex icons)"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
@@ -125,11 +125,11 @@
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">{{ "Size"|t('icon-manager') }}</th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Clip"|t('icon-manager') }}
-                            <span class="info" style="margin-left: 4px;">{{ 'Can cause rendering issues in some browsers'|t('icon-manager') }}</span>
+                            <span class="info" style="margin-left: 4px;">{{ 'Empty or unused clip-paths'|t('icon-manager') }}</span>
                         </th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Mask"|t('icon-manager') }}
-                            <span class="info" style="margin-left: 4px;">{{ 'May impact rendering performance'|t('icon-manager') }}</span>
+                            <span class="info" style="margin-left: 4px;">{{ 'Empty or unused masks'|t('icon-manager') }}</span>
                         </th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Filter"|t('icon-manager') }}
@@ -145,7 +145,7 @@
                         </th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Large"|t('icon-manager') }}
-                            <span class="info" style="margin-left: 4px;">{{ 'Files over 10KB that could be optimized'|t('icon-manager') }}</span>
+                            <span class="info" style="margin-left: 4px;">{{ 'Files over 10KB (may be normal for complex icons)'|t('icon-manager') }}</span>
                         </th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "W/H"|t('icon-manager') }}

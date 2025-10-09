@@ -138,15 +138,47 @@ class SvgOptimizerService extends Component
             return $result;
         }
 
-        // Check for clip-paths
-        if (preg_match_all('/<clipPath/i', $content, $matches)) {
-            $result['issues']['clipPaths'] = count($matches[0]);
-        }
+        // Check for problematic clip-paths (empty or unused)
+        $clipPathIssues = 0;
+        if (preg_match_all('/<clipPath[^>]*id\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)<\/clipPath>/is', $content, $clipMatches, PREG_SET_ORDER)) {
+            foreach ($clipMatches as $match) {
+                $clipId = $match[1];
+                $clipContent = trim($match[2]);
 
-        // Check for masks
-        if (preg_match_all('/<mask/i', $content, $matches)) {
-            $result['issues']['masks'] = count($matches[0]);
+                // Empty clip-path
+                if (empty($clipContent)) {
+                    $clipPathIssues++;
+                    continue;
+                }
+
+                // Unused clip-path (not referenced anywhere)
+                if (!preg_match('/clip-path\s*[:=]\s*["\']?\s*url\s*\(\s*#' . preg_quote($clipId, '/') . '\s*\)/i', $content)) {
+                    $clipPathIssues++;
+                }
+            }
         }
+        $result['issues']['clipPaths'] = $clipPathIssues;
+
+        // Check for problematic masks (empty or unused)
+        $maskIssues = 0;
+        if (preg_match_all('/<mask[^>]*id\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)<\/mask>/is', $content, $maskMatches, PREG_SET_ORDER)) {
+            foreach ($maskMatches as $match) {
+                $maskId = $match[1];
+                $maskContent = trim($match[2]);
+
+                // Empty mask
+                if (empty($maskContent)) {
+                    $maskIssues++;
+                    continue;
+                }
+
+                // Unused mask (not referenced anywhere)
+                if (!preg_match('/mask\s*[:=]\s*["\']?\s*url\s*\(\s*#' . preg_quote($maskId, '/') . '\s*\)/i', $content)) {
+                    $maskIssues++;
+                }
+            }
+        }
+        $result['issues']['masks'] = $maskIssues;
 
         // Check for filters
         if (preg_match_all('/<filter/i', $content, $matches)) {
@@ -254,9 +286,10 @@ class SvgOptimizerService extends Component
      * Optimize all SVG files in an icon set
      *
      * @param object $iconSet The icon set to optimize
+     * @param bool $createBackup Whether to create a backup before optimization
      * @return array Result with success status, count, and backup path
      */
-    public function optimizeIconSet($iconSet): array
+    public function optimizeIconSet($iconSet, bool $createBackup = true): array
     {
         $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
         $folder = $iconSet->settings['folder'] ?? '';
@@ -271,17 +304,10 @@ class SvgOptimizerService extends Component
 
         // Get all SVG files
         $svgFiles = $this->getSvgFiles($folderPath);
-        $optimizedCount = 0;
 
-        foreach ($svgFiles as $filePath) {
-            if ($this->optimizeSvgFile($filePath)) {
-                $optimizedCount++;
-            }
-        }
-
-        // Only create backup if files were actually optimized
+        // Create backup before optimization if requested and files exist
         $backupPath = null;
-        if ($optimizedCount > 0) {
+        if ($createBackup && count($svgFiles) > 0) {
             $backupPath = $this->createBackup($folderPath, $iconSet->name);
             if (!$backupPath) {
                 return [
@@ -291,9 +317,22 @@ class SvgOptimizerService extends Component
             }
         }
 
+        $optimizedCount = 0;
+        $skippedCount = 0;
+        foreach ($svgFiles as $filePath) {
+            if ($this->optimizeSvgFile($filePath)) {
+                $optimizedCount++;
+            } else {
+                $skippedCount++;
+            }
+        }
+
         return [
             'success' => true,
-            'filesOptimized' => $optimizedCount,
+            'total' => count($svgFiles),
+            'optimized' => $optimizedCount,
+            'skipped' => $skippedCount,
+            'filesOptimized' => $optimizedCount, // Keep for backward compatibility
             'backupPath' => $backupPath,
         ];
     }
