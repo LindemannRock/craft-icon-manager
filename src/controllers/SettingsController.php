@@ -24,12 +24,14 @@ class SettingsController extends Controller
      */
     public function actionIndex(): Response
     {
+        $this->requirePermission('iconManager:editSettings');
+
         $plugin = IconManager::getInstance();
-        
+
         // Force reload settings to ensure we have fresh data from database
         $plugin->reloadSettings();
         $settings = $plugin->getSettings();
-        
+
         return $this->renderTemplate('icon-manager/settings', [
             'plugin' => $plugin,
             'settings' => $settings,
@@ -43,6 +45,7 @@ class SettingsController extends Controller
     public function actionSave(): ?Response
     {
         $this->requirePostRequest();
+        $this->requirePermission('iconManager:editSettings');
         
         $request = Craft::$app->getRequest();
         $plugin = IconManager::getInstance();

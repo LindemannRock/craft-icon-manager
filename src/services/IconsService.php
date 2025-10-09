@@ -12,7 +12,7 @@ use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\records\IconRecord;
-use lindemannrock\iconmanager\traits\LoggingTrait;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 use Craft;
 use craft\base\Component;
@@ -53,57 +53,27 @@ class IconsService extends Component
 
             // Check if already cached in memory
             if (isset($this->_iconsBySetId[$iconSetId])) {
-                $this->logTrace("Memory cache hit for icon set {$iconSetId}");
                 return $this->_iconsBySetId[$iconSetId];
             }
 
             // Check custom file cache
             $cached = $this->_getCachedIcons($iconSetId);
             if ($cached !== null) {
-                // Get icon set details for better logging
-                $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-                $setName = $iconSet ? $iconSet->name : "Unknown";
-                $setType = $iconSet ? $iconSet->type : "unknown";
-
-                $this->logTrace("File cache hit for icon set '{setName}' ({iconCount} {setType} icons)", [
-                    'setName' => $setName,
-                    'setType' => $setType,
-                    'iconCount' => count($cached),
-                    'iconSetId' => $iconSetId
-                ]);
                 $this->_iconsBySetId[$iconSetId] = $cached;
                 return $cached;
             }
 
             // Cache miss - load from database
-            $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-            $setName = $iconSet ? $iconSet->name : "Unknown";
-            $this->logTrace("Cache miss for icon set '{setName}' - loading from database", [
-                'iconSetId' => $iconSetId,
-                'setName' => $setName
-            ]);
             $icons = $this->_loadIconsFromDatabase($iconSetId);
 
             // Store in custom file cache
             $this->_cacheIcons($iconSetId, $icons, $cacheDuration);
-            $this->logTrace("Cached {count} icons for icon set '{setName}' (expires in {duration}s)", [
-                'count' => count($icons),
-                'setName' => $setName,
-                'duration' => $cacheDuration,
-                'iconSetId' => $iconSetId
-            ]);
 
             $this->_iconsBySetId[$iconSetId] = $icons;
             return $icons;
         }
-        
+
         // No cache - load directly
-        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-        $setName = $iconSet ? $iconSet->name : "Unknown";
-        $this->logTrace("Cache disabled - loading icons directly from database for set '{setName}'", [
-            'iconSetId' => $iconSetId,
-            'setName' => $setName
-        ]);
         $icons = $this->_loadIconsFromDatabase($iconSetId);
         $this->_iconsBySetId[$iconSetId] = $icons;
 
@@ -142,11 +112,6 @@ class IconsService extends Component
         }
 
         $duration = microtime(true) - $startTime;
-        $this->logTrace("Loaded {count} icons from database in {duration}ms", [
-            'iconSetId' => $iconSetId,
-            'count' => count($icons),
-            'duration' => round($duration * 1000, 2)
-        ]);
 
         // Log warning for slow operations
         if ($duration > 1.0) {
@@ -190,7 +155,7 @@ class IconsService extends Component
 
         try {
             // Clear custom file cache for this icon set
-            $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+            $cachePath = $this->_getCachePath($iconSet);
             $cacheFile = $cachePath . 'set_' . $iconSet->id . '.cache';
             if (file_exists($cacheFile)) {
                 @unlink($cacheFile);
@@ -275,6 +240,8 @@ class IconsService extends Component
                 return $this->_getFontAwesomeIcons($iconSet);
             case 'material-icons':
                 return $this->_getMaterialIcons($iconSet);
+            case 'web-font':
+                return $this->_getWebFontIcons($iconSet);
             default:
                 return [];
         }
@@ -303,12 +270,6 @@ class IconsService extends Component
             $this->logWarning("Folder path does not exist: {$folderPath}");
             return $icons;
         }
-
-        $this->logTrace("Scanning SVG folder: {$folderPath}", [
-            'iconSetId' => $iconSet->id,
-            'folder' => $folder,
-            'includeSubfolders' => $includeSubfolders
-        ]);
 
         $files = FileHelper::findFiles($folderPath, [
             'only' => ['*.svg'],
@@ -344,54 +305,21 @@ class IconsService extends Component
     }
 
     /**
-     * Scan SVG sprite for icons
+     * Get icons from SVG sprite
      */
     private function _scanSvgSprite(IconSet $iconSet): array
     {
+        $iconObjects = \lindemannrock\iconmanager\iconsets\SvgSprite::getIcons($iconSet);
+
+        // Convert Icon objects to arrays for database storage
         $icons = [];
-        $settings = $iconSet->getTypeSettings();
-        $spriteFile = $settings['spriteFile'] ?? '';
-        $prefix = $settings['prefix'] ?? '';
-
-        if (empty($spriteFile)) {
-            return $icons;
-        }
-
-        $basePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath();
-        $spritePath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $spriteFile);
-
-        if (!file_exists($spritePath)) {
-            return $icons;
-        }
-
-        // Parse SVG sprite file
-        $dom = new \DOMDocument();
-        @$dom->load($spritePath);
-        $symbols = $dom->getElementsByTagName('symbol');
-
-        foreach ($symbols as $symbol) {
-            $id = $symbol->getAttribute('id');
-            if (empty($id)) {
-                continue;
-            }
-
-            // Remove prefix if present
-            $name = $prefix && str_starts_with($id, $prefix) 
-                ? substr($id, strlen($prefix)) 
-                : $id;
-
-            $label = StringHelper::titleize($name);
-
+        foreach ($iconObjects as $icon) {
             $icons[] = [
-                'name' => $name,
-                'label' => $label,
-                'path' => '',
-                'keywords' => [$name],
-                'metadata' => [
-                    'type' => Icon::TYPE_SPRITE,
-                    'spriteId' => $id,
-                    'spriteFile' => $spriteFile,
-                ],
+                'name' => $icon->name,
+                'label' => $icon->label,
+                'path' => $icon->path,
+                'keywords' => $icon->keywords,
+                'metadata' => $icon->metadata,
             ];
         }
 
@@ -469,7 +397,15 @@ class IconsService extends Component
                 $icon->value = $metadata['spriteId'] ?? $icon->name;
                 break;
             case Icon::TYPE_FONT:
-                $icon->value = $metadata['className'] ?? $icon->name;
+                // For WebFont icons with unicode, use cssPrefix for the base class
+                // For Material Icons, use the className
+                if (isset($metadata['unicode'])) {
+                    // Extract base prefix from className (e.g., "icon" from "icon-glyph-e933")
+                    $className = $metadata['className'] ?? 'icon';
+                    $icon->value = preg_replace('/-.*$/', '', $className);
+                } else {
+                    $icon->value = $metadata['className'] ?? $icon->name;
+                }
                 break;
             default:
                 $icon->value = $icon->name;
@@ -492,11 +428,36 @@ class IconsService extends Component
     }
 
     /**
+     * Get cache path for icon set based on type
+     */
+    private function _getCachePath(IconSet $iconSet): string
+    {
+        $basePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/';
+
+        // Organize cache by icon type
+        $typeMap = [
+            'svg-folder' => 'svg-folder',
+            'svg-sprite' => 'svg-sprite',
+            'material-icons' => 'material-icons',
+            'font-awesome' => 'font-awesome',
+            'web-font' => 'web-font',
+        ];
+
+        $typeFolder = $typeMap[$iconSet->type] ?? 'other';
+        return $basePath . $typeFolder . '/';
+    }
+
+    /**
      * Get cached icons from custom file cache
      */
     private function _getCachedIcons(int $iconSetId): ?array
     {
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if (!$iconSet) {
+            return null;
+        }
+
+        $cachePath = $this->_getCachePath($iconSet);
         $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
 
         if (!file_exists($cacheFile)) {
@@ -520,7 +481,12 @@ class IconsService extends Component
      */
     private function _cacheIcons(int $iconSetId, array $icons, int $duration): void
     {
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/icons/';
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if (!$iconSet) {
+            return;
+        }
+
+        $cachePath = $this->_getCachePath($iconSet);
 
         // Create directory if it doesn't exist
         if (!is_dir($cachePath)) {
@@ -529,5 +495,27 @@ class IconsService extends Component
 
         $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
         file_put_contents($cacheFile, serialize($icons));
+    }
+
+    /**
+     * Get WebFont icons
+     */
+    private function _getWebFontIcons(IconSet $iconSet): array
+    {
+        $iconObjects = \lindemannrock\iconmanager\iconsets\WebFont::getIcons($iconSet);
+
+        // Convert Icon objects to arrays for database storage
+        $icons = [];
+        foreach ($iconObjects as $icon) {
+            $icons[] = [
+                'name' => $icon->name,
+                'label' => $icon->label,
+                'path' => $icon->path,
+                'keywords' => $icon->keywords,
+                'metadata' => $icon->metadata,
+            ];
+        }
+
+        return $icons;
     }
 }

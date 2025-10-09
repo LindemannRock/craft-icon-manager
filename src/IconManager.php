@@ -28,6 +28,7 @@ use lindemannrock\iconmanager\fields\IconManagerField;
 use lindemannrock\iconmanager\models\Settings;
 use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\services\IconSetsService;
+use lindemannrock\iconmanager\services\SvgOptimizerService;
 use lindemannrock\iconmanager\utilities\ClearIconCache;
 use lindemannrock\iconmanager\variables\IconManagerVariable;
 use lindemannrock\logginglibrary\LoggingLibrary;
@@ -44,6 +45,8 @@ use craft\services\Utilities;
  *
  * @property-read IconsService $icons
  * @property-read IconSetsService $iconSets
+ * @property-read SvgOptimizerService $svgOptimizer
+ * @property-read SvgoService $svgo
  * @property-read Settings $settings
  * @method Settings getSettings()
  */
@@ -54,7 +57,7 @@ class IconManager extends Plugin
     public bool $hasCpSection = true;
 
     private static bool $_logTargetRegistered = false;
-    
+
     /**
      * @inheritdoc
      */
@@ -64,6 +67,8 @@ class IconManager extends Plugin
             'components' => [
                 'icons' => IconsService::class,
                 'iconSets' => IconSetsService::class,
+                'svgOptimizer' => SvgOptimizerService::class,
+                'svgo' => \lindemannrock\iconmanager\services\SvgoService::class,
             ],
         ];
     }
@@ -176,11 +181,11 @@ class IconManager extends Plugin
             if (Craft::$app->getPlugins()->isPluginInstalled('logging-library') &&
                 Craft::$app->getPlugins()->isPluginEnabled('logging-library')) {
                 $item = LoggingLibrary::addLogsNav($item, $this->handle, [
-                    'accessPlugin-icon-manager'
+                    'iconManager:viewLogs'
                 ]);
             }
 
-            if (Craft::$app->getUser()->checkPermission('accessPlugin-icon-manager')) {
+            if (Craft::$app->getUser()->checkPermission('iconManager:editSettings')) {
                 $item['subnav']['settings'] = [
                     'label' => Craft::t('icon-manager', 'Settings'),
                     'url' => 'icon-manager/settings',
@@ -204,6 +209,7 @@ class IconManager extends Plugin
                     'icon-manager' => 'icon-manager/icon-sets/index',
                     'icon-manager/icon-sets' => 'icon-manager/icon-sets/index',
                     'icon-manager/icon-sets/new' => 'icon-manager/icon-sets/edit',
+                    'icon-manager/icon-sets/<iconSetId:\d+>/optimize' => 'icon-manager/icon-sets/optimize',
                     'icon-manager/icon-sets/<iconSetId:\d+>' => 'icon-manager/icon-sets/edit',
                     'icon-manager/icon-sets/delete' => 'icon-manager/icon-sets/delete',
                     'icon-manager/icon-sets/refresh-icons' => 'icon-manager/icon-sets/refresh-icons',
@@ -213,6 +219,9 @@ class IconManager extends Plugin
                     'icon-manager/settings/save' => 'icon-manager/settings/save',
                     'icon-manager/icons/render' => 'icon-manager/icons/render',
                     'icon-manager/icons/get-data' => 'icon-manager/icons/get-data',
+                    'icon-manager/icons/get-icons-for-field' => 'icon-manager/icons/get-icons-for-field',
+                    'icon-manager/icons/serve-font' => 'icon-manager/icons/serve-font',
+                    'icon-manager/icons/serve-sprite' => 'icon-manager/icons/serve-sprite',
                     'icon-manager/cache/clear' => 'icon-manager/cache/clear',
                 ]);
             }
@@ -263,6 +272,12 @@ class IconManager extends Plugin
                     'permissions' => [
                         'iconManager:manageIconSets' => [
                             'label' => Craft::t('icon-manager', 'Manage icon sets'),
+                        ],
+                        'iconManager:viewLogs' => [
+                            'label' => Craft::t('icon-manager', 'View logs'),
+                        ],
+                        'iconManager:editSettings' => [
+                            'label' => Craft::t('icon-manager', 'Edit plugin settings'),
                         ],
                     ],
                 ];
@@ -328,30 +343,17 @@ class IconManager extends Plugin
     {
         $runtimePath = Craft::$app->path->getRuntimePath();
 
-        // Clear icon set caches from custom file storage
-        $iconsCachePath = $runtimePath . '/icon-manager/icons/';
-        if (is_dir($iconsCachePath)) {
-            $cacheFiles = glob($iconsCachePath . '*.cache');
-            foreach ($cacheFiles as $file) {
-                @unlink($file);
-            }
-        }
+        // Clear all cache folders organized by type
+        $cacheBasePath = $runtimePath . '/icon-manager/cache/';
+        $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
 
-        // Clear Font Awesome caches from custom file storage
-        $faCachePath = $runtimePath . '/icon-manager/fontawesome/';
-        if (is_dir($faCachePath)) {
-            $cacheFiles = glob($faCachePath . '*.cache');
-            foreach ($cacheFiles as $file) {
-                @unlink($file);
-            }
-        }
-
-        // Clear Material Icons caches from custom file storage
-        $materialCachePath = $runtimePath . '/icon-manager/material/';
-        if (is_dir($materialCachePath)) {
-            $cacheFiles = glob($materialCachePath . '*.cache');
-            foreach ($cacheFiles as $file) {
-                @unlink($file);
+        foreach ($cacheTypes as $type) {
+            $cachePath = $cacheBasePath . $type . '/';
+            if (is_dir($cachePath)) {
+                $cacheFiles = glob($cachePath . '*.cache');
+                foreach ($cacheFiles as $file) {
+                    @unlink($file);
+                }
             }
         }
 
@@ -366,11 +368,12 @@ class IconManager extends Plugin
     {
         // Configure logging using the new logging library
         $settings = $this->getSettings();
+        $logLevel = $settings->logLevel ?? 'info';
 
         LoggingLibrary::configure([
             'pluginHandle' => $this->handle,
             'pluginName' => $this->name,
-            'logLevel' => $settings->logLevel,
+            'logLevel' => $logLevel,
             'permissions' => ['iconManager:viewLogs'],
         ]);
     }

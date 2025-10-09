@@ -92,6 +92,7 @@ class Install extends Migration
                 'svg-sprite' => true,
                 'font-awesome' => false,
                 'material-icons' => false,
+                'web-font' => false,
             ]),
             'logLevel' => 'error',
             'dateCreated' => Db::prepareDateForDb(new \DateTime()),

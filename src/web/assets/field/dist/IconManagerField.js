@@ -9,14 +9,21 @@
     IconManager.IconPicker = function(fieldId, settings) {
         this.fieldId = fieldId;
         this.settings = settings || {};
-        this.icons = settings.icons || [];
+        this.icons = []; // Will be loaded via AJAX
         this.showSearch = settings.showSearch !== false;
         this.showLabels = settings.showLabels !== false;
         this.iconSize = settings.iconSize || 'medium';
         this.iconsPerPage = settings.iconsPerPage || 100;
         this.allowMultiple = settings.allowMultiple === true;
         this.selectedIcons = []; // For multi-selection
-        
+        this.iconsLoaded = false; // Track if icons have been loaded
+        this.iconsLoading = false; // Track if icons are currently loading
+
+        // Virtual scrolling properties
+        this.virtualScrollBatchSize = 50; // Render 50 icons at a time
+        this.virtualScrollRenderedIcons = {}; // Track rendered icons per grid {iconSetHandle: count}
+        this.virtualScrollObservers = {}; // Track intersection observers per grid
+
         this.init();
     };
 
@@ -24,14 +31,17 @@
         init: function() {
             this.$field = document.getElementById(this.fieldId);
             if (!this.$field) return;
-            
+
             this.$input = this.$field.querySelector('input[type="hidden"]');
             this.$selectBtn = this.$field.querySelector('.icon-manager-select-btn');
             this.$clearBtn = this.$field.querySelector('.icon-manager-clear-btn');
             this.$picker = this.$field.querySelector('.icon-manager-picker');
             this.$cancelBtn = this.$picker.querySelector('.icon-manager-cancel-btn');
             this.$customLabelInput = this.$field.querySelector('.icon-manager-custom-label-input');
-            
+
+            // Load fonts for any saved icons on page init
+            this.loadInitialFonts();
+
             this.bindEvents();
         },
         
@@ -49,6 +59,25 @@
             // Handle custom label input changes
             this.bindCustomLabelInputs();
             
+            // Make the selected icon area clickable to open picker
+            var $selected = this.$field.querySelector('.icon-manager-selected');
+            if ($selected) {
+                $selected.addEventListener('click', function(e) {
+                    // Don't trigger if clicking buttons or inputs in the actions area
+                    if (e.target.closest('.icon-manager-actions')) {
+                        return;
+                    }
+                    // Don't trigger if clicking custom label input
+                    if (e.target.classList.contains('icon-manager-custom-label-input')) {
+                        return;
+                    }
+                    e.preventDefault();
+                    self.togglePicker();
+                });
+                // Add pointer cursor to indicate clickability
+                $selected.style.cursor = 'pointer';
+            }
+
             // Select button (toggle picker)
             if (this.$selectBtn) {
                 this.$selectBtn.addEventListener('click', function(e) {
@@ -56,11 +85,12 @@
                     self.togglePicker();
                 });
             }
-            
+
             // Clear button
             if (this.$clearBtn) {
                 this.$clearBtn.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation(); // Prevent triggering the selected area click
                     self.clearSelection();
                 });
             }
@@ -109,6 +139,7 @@
             $tabs.forEach(function($tab) {
                 $tab.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation(); // Prevent closing the picker
                     self.switchTab($tab.dataset.iconSet);
                 });
             });
@@ -123,7 +154,12 @@
             }
             
             // Font Awesome Kit support temporarily disabled
-            
+
+            // Prevent all clicks inside the picker from bubbling
+            this.$picker.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
             // Click outside to close
             document.addEventListener('click', function(e) {
                 if (!self.$field.contains(e.target)) {
@@ -134,26 +170,39 @@
         
         showPicker: function() {
             this.$picker.classList.remove('hidden');
-            
+
             // Store the current value when opening picker
             this.savedValue = this.getCurrentValue();
             if (this.allowMultiple) {
                 this.savedSelectedIcons = this.selectedIcons.slice();
             }
-            
+
+            // Load icons if not already loaded
+            if (!this.iconsLoaded && !this.iconsLoading) {
+                this.fetchIconsForField();
+            } else {
+                // Icons already loaded, just display them
+                this.showIconsInPicker();
+            }
+
+            // Focus search input for better UX
+            this.focusSearchInput();
+        },
+
+        showIconsInPicker: function() {
             // Hide tabs for empty icon sets
             this.hideEmptyIconSets();
-            
+
             // If there's a current value, switch to its icon set
             var currentValue = this.getCurrentValue();
             var targetIconSet = null;
-            
+
             if (this.allowMultiple && this.selectedIcons.length > 0) {
                 targetIconSet = this.selectedIcons[0].iconSetHandle;
             } else if (currentValue && currentValue.iconSetHandle) {
                 targetIconSet = currentValue.iconSetHandle;
             }
-            
+
             if (targetIconSet) {
                 this.switchTab(targetIconSet);
                 this.updateDropdownCount(targetIconSet);
@@ -170,9 +219,70 @@
                     }
                 }
             }
-            
+
             this.loadIcons();
             this.updateIconCounts();
+        },
+
+        fetchIconsForField: function() {
+            var self = this;
+            this.iconsLoading = true;
+
+            // Show loading state
+            var $grids = this.$picker.querySelectorAll('.icon-manager-grid');
+            $grids.forEach(function($grid) {
+                var $gridInner = $grid.querySelector('.icon-manager-grid-inner');
+                if ($gridInner) {
+                    $gridInner.innerHTML = '<div class="icon-manager-loading">Loading icons...</div>';
+                }
+            });
+
+            // Fetch all icons for this field in one batch request
+            fetch(Craft.getCpUrl('icon-manager/icons/get-icons-for-field'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': Craft.csrfTokenValue,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    fieldId: this.settings.fieldId
+                })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success && data.icons) {
+                    self.icons = data.icons;
+                    self.iconsLoaded = true;
+                    self.iconsLoading = false;
+
+                    // Load required fonts/CSS for font-based icons (Material Icons, Font Awesome)
+                    if (data.fonts && data.fonts.length > 0) {
+                        self.loadFonts(data.fonts);
+                    }
+
+                    // Load required sprites for sprite icon sets
+                    if (data.sprites && data.sprites.length > 0) {
+                        self.loadSprites(data.sprites);
+                    }
+
+                    self.showIconsInPicker();
+                } else {
+                    console.error('Failed to load icons:', data.error || 'Unknown error');
+                    self.iconsLoading = false;
+                }
+            })
+            .catch(function(error) {
+                console.error('Failed to load icons:', error);
+                self.iconsLoading = false;
+                // Show error state
+                $grids.forEach(function($grid) {
+                    var $gridInner = $grid.querySelector('.icon-manager-grid-inner');
+                    if ($gridInner) {
+                        $gridInner.innerHTML = '<div class="icon-manager-error">Failed to load icons. Please try again.</div>';
+                    }
+                });
+            });
         },
         
         hidePicker: function() {
@@ -246,88 +356,20 @@
                     return true;
                 });
                 
-                // Add icons
-                iconsToShow.forEach(function(icon) {
-                    var $item = document.createElement('div');
-                    $item.className = 'icon-manager-grid-item';
-                    
-                    // Check if this is the currently selected icon
-                    var isSelected = false;
-                    if (self.allowMultiple) {
-                        // Check if this icon is in the selected icons array
-                        isSelected = self.selectedIcons.some(function(selectedIcon) {
-                            return selectedIcon.iconSetHandle === icon.iconSetHandle && 
-                                   selectedIcon.name === icon.name;
-                        });
-                    } else {
-                        // Single selection check
-                        isSelected = self.currentValue && 
-                                   self.currentValue.iconSetHandle === icon.iconSetHandle && 
-                                   self.currentValue.name === icon.name;
-                    }
-                    
-                    if (isSelected) {
-                        $item.className += ' selected';
-                    }
-                    
-                    $item.dataset.iconData = JSON.stringify(icon);
-                    
-                    var $iconDiv = document.createElement('div');
-                    $iconDiv.className = 'icon-manager-grid-item-icon';
-                    
-                    // Load the actual icon SVG
-                    if (icon.content) {
-                        // If content is already loaded, use it
-                        $iconDiv.innerHTML = icon.content;
-                    } else {
-                        // Show placeholder while loading
-                        $iconDiv.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="12" y="16" text-anchor="middle" font-size="10">' + icon.name.charAt(0).toUpperCase() + '</text></svg>';
-                        
-                        // Load icon content via AJAX
-                        (function(iconDiv, iconData) {
-                            fetch(Craft.getCpUrl('icon-manager/icons/get-data'), {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-Token': Craft.csrfTokenValue,
-                                    'Accept': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    iconSet: iconData.iconSetHandle,
-                                    icon: iconData.name
-                                })
-                            })
-                            .then(function(response) { return response.json(); })
-                            .then(function(data) {
-                                if (data.success && data.icon && data.icon.content) {
-                                    iconDiv.innerHTML = data.icon.content;
-                                    // Cache the content
-                                    iconData.content = data.icon.content;
-                                }
-                            })
-                            .catch(function(error) {
-                                console.error('Failed to load icon:', error);
-                            });
-                        })($iconDiv, icon);
-                    }
-                    
-                    $item.appendChild($iconDiv);
-                    
-                    if (self.showLabels) {
-                        var $label = document.createElement('div');
-                        $label.className = 'icon-manager-grid-item-label';
-                        $label.textContent = icon.label || icon.name;
-                        $item.appendChild($label);
-                    }
-                    
-                    // Click to select
-                    $item.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        self.selectIcon(icon);
-                    });
-                    
-                    $gridInner.appendChild($item);
-                });
+                // Virtual scrolling: Only render initial batch of icons
+                // Store all icons for this grid
+                $grid.dataset.iconsToShow = JSON.stringify(iconsToShow);
+
+                // Reset virtual scroll counter for this grid
+                self.virtualScrollRenderedIcons[iconSetHandle] = 0;
+
+                // Render initial batch
+                self.renderIconBatch($gridInner, iconsToShow, iconSetHandle, self.virtualScrollBatchSize);
+
+                // Setup intersection observer for infinite scroll if there are more icons
+                if (iconsToShow.length > self.virtualScrollBatchSize) {
+                    self.setupVirtualScrollObserver($gridInner, iconsToShow, iconSetHandle);
+                }
                 
                 // Show/hide empty state
                 if (iconsToShow.length === 0) {
@@ -486,13 +528,16 @@
                 
                 if ($placeholder) {
                     // Determine icon size based on field settings
-                    var iconSize = 48; // default medium
+                    var iconSize = 48; // default medium (SVGs)
+                    var fontIconSize = 48; // default medium (fonts)
                     if (this.iconSize === 'small') {
                         iconSize = 32;
+                        fontIconSize = 32;
                     } else if (this.iconSize === 'large') {
                         iconSize = 64;
+                        fontIconSize = 54; // Font icons 10px smaller
                     }
-                    
+
                     // Replace placeholder with selected icon display
                     var html = '<div class="icon-manager-selected-icon">';
                     if (icon.content) {
@@ -501,14 +546,19 @@
                         tempDiv.innerHTML = icon.content;
                         var svg = tempDiv.querySelector('svg');
                         var fontIcon = tempDiv.querySelector('i');
-                        
+                        var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
                         if (svg) {
                             svg.setAttribute('width', iconSize);
                             svg.setAttribute('height', iconSize);
                             html += tempDiv.innerHTML;
                         } else if (fontIcon && icon.isFontAwesome) {
-                            // For Font Awesome icons, set a larger font size
-                            fontIcon.style.fontSize = (iconSize / 24) + 'rem';
+                            // For Font Awesome icons, set font size
+                            fontIcon.style.fontSize = fontIconSize + 'px';
+                            html += tempDiv.innerHTML;
+                        } else if (webFontIcon) {
+                            // For WebFont and Material Icons, set font size
+                            webFontIcon.style.fontSize = fontIconSize + 'px';
                             html += tempDiv.innerHTML;
                         } else {
                             html += icon.content;
@@ -571,11 +621,19 @@
                 // Update display
                 var $selected = this.$field.querySelector('.icon-manager-selected');
                 var $selectedIcon = $selected.querySelector('.icon-manager-selected-icon');
-                
+
                 if ($selectedIcon) {
+                    // Determine icon size based on field settings
+                    var iconSize = 48; // default medium
+                    if (this.iconSize === 'small') {
+                        iconSize = 32;
+                    } else if (this.iconSize === 'large') {
+                        iconSize = 64;
+                    }
+
                     // Replace with placeholder
                     var html = '<div class="icon-manager-placeholder">';
-                    html += '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
+                    html += '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
                     html += '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>';
                     html += '<line x1="9" y1="9" x2="15" y2="15"></line>';
                     html += '<line x1="15" y1="9" x2="9" y2="15"></line>';
@@ -584,7 +642,7 @@
                     html += '</div>';
                     $selectedIcon.outerHTML = html;
                 }
-                
+
                 // Update button text
                 this.$selectBtn.textContent = Craft.t('icon-manager', 'Select Icons');
             }
@@ -604,11 +662,14 @@
         updateMultipleDisplay: function() {
             var self = this;
             var $selected = this.$field.querySelector('.icon-manager-selected');
-            var iconSize = 48; // default medium
+            var iconSize = 48; // default medium (SVGs)
+            var fontIconSize = 48; // default medium (fonts)
             if (this.iconSize === 'small') {
                 iconSize = 32;
+                fontIconSize = 32;
             } else if (this.iconSize === 'large') {
                 iconSize = 64;
+                fontIconSize = 54; // Font icons 10px smaller
             }
             
             // Clear current display
@@ -655,9 +716,16 @@
                         var tempDiv = document.createElement('div');
                         tempDiv.innerHTML = iconData.content;
                         var svg = tempDiv.querySelector('svg');
+                        var fontIcon = tempDiv.querySelector('i');
+                        var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
                         if (svg) {
                             svg.setAttribute('width', iconSize);
                             svg.setAttribute('height', iconSize);
+                        } else if (fontIcon) {
+                            fontIcon.style.fontSize = fontIconSize + 'px';
+                        } else if (webFontIcon) {
+                            webFontIcon.style.fontSize = fontIconSize + 'px';
                         }
                         gridHtml += tempDiv.innerHTML;
                     } else {
@@ -771,20 +839,20 @@
                 }
             });
             
-            // Update count displays for tabs
+            // Update count displays for tabs with number formatting
             var $counts = this.$picker.querySelectorAll('.icon-count');
             $counts.forEach(function($count) {
                 var iconSet = $count.dataset.iconSet;
                 var count = counts[iconSet] || 0;
-                $count.textContent = '(' + count + ')';
+                $count.textContent = '(' + count.toLocaleString() + ')';
             });
-            
-            // Update dropdown count if present
+
+            // Update dropdown count if present with number formatting
             var $dropdownCount = this.$picker.querySelector('.icon-count-dropdown');
             if ($dropdownCount) {
                 var currentSet = $dropdownCount.dataset.iconSet;
                 var count = counts[currentSet] || 0;
-                $dropdownCount.textContent = '(' + count + ' icons)';
+                $dropdownCount.textContent = '(' + count.toLocaleString() + ' icons)';
             }
             
             // If searching and current tab has no results, switch to first tab with results
@@ -971,8 +1039,16 @@
             } else {
                 // No value - show placeholder
                 if ($selectedIcon) {
+                    // Determine icon size based on field settings
+                    var iconSize = 48; // default medium
+                    if (this.iconSize === 'small') {
+                        iconSize = 32;
+                    } else if (this.iconSize === 'large') {
+                        iconSize = 64;
+                    }
+
                     var html = '<div class="icon-manager-placeholder">';
-                    html += '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
+                    html += '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
                     html += '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>';
                     html += '<line x1="9" y1="9" x2="15" y2="15"></line>';
                     html += '<line x1="15" y1="9" x2="9" y2="15"></line>';
@@ -1043,21 +1119,31 @@
         
         displayIcon: function(icon, $selected, $selectedIcon, $placeholder) {
             // Determine icon size based on field settings
-            var iconSize = 48; // default medium
+            var iconSize = 48; // default medium (SVGs)
+            var fontIconSize = 48; // default medium (fonts)
             if (this.iconSize === 'small') {
                 iconSize = 32;
+                fontIconSize = 32;
             } else if (this.iconSize === 'large') {
                 iconSize = 64;
+                fontIconSize = 54; // Font icons 10px smaller
             }
-            
+
             var html = '<div class="icon-manager-selected-icon">';
             if (icon.content) {
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = icon.content;
                 var svg = tempDiv.querySelector('svg');
+                var fontIcon = tempDiv.querySelector('i');
+                var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
                 if (svg) {
                     svg.setAttribute('width', iconSize);
                     svg.setAttribute('height', iconSize);
+                } else if (fontIcon) {
+                    fontIcon.style.fontSize = fontIconSize + 'px';
+                } else if (webFontIcon) {
+                    webFontIcon.style.fontSize = fontIconSize + 'px';
                 }
                 html += tempDiv.innerHTML;
             } else {
@@ -1074,6 +1160,277 @@
             } else if ($selectedIcon) {
                 $selectedIcon.outerHTML = html;
             }
+        },
+
+        /**
+         * Render a batch of icons (for virtual scrolling)
+         */
+        renderIconBatch: function($gridInner, iconsToShow, iconSetHandle, count) {
+            var self = this;
+            var startIndex = this.virtualScrollRenderedIcons[iconSetHandle] || 0;
+            var endIndex = Math.min(startIndex + count, iconsToShow.length);
+
+            for (var i = startIndex; i < endIndex; i++) {
+                var icon = iconsToShow[i];
+                var $item = this.createIconElement(icon);
+                $gridInner.appendChild($item);
+            }
+
+            // Update counter
+            this.virtualScrollRenderedIcons[iconSetHandle] = endIndex;
+
+            return endIndex < iconsToShow.length; // Returns true if there are more icons to render
+        },
+
+        /**
+         * Create a single icon DOM element
+         */
+        createIconElement: function(icon) {
+            var self = this;
+            var $item = document.createElement('div');
+            $item.className = 'icon-manager-grid-item';
+
+            // Check if this is the currently selected icon
+            var isSelected = false;
+            if (this.allowMultiple) {
+                // Check if this icon is in the selected icons array
+                isSelected = this.selectedIcons.some(function(selectedIcon) {
+                    return selectedIcon.iconSetHandle === icon.iconSetHandle &&
+                           selectedIcon.name === icon.name;
+                });
+            } else {
+                // Single selection check
+                isSelected = this.currentValue &&
+                           this.currentValue.iconSetHandle === icon.iconSetHandle &&
+                           this.currentValue.name === icon.name;
+            }
+
+            if (isSelected) {
+                $item.className += ' selected';
+            }
+
+            $item.dataset.iconData = JSON.stringify(icon);
+
+            var $iconDiv = document.createElement('div');
+            $iconDiv.className = 'icon-manager-grid-item-icon';
+
+            // Determine icon size based on field settings
+            var iconSize = 48; // default medium (SVGs)
+            var fontIconSize = 48; // default medium (fonts)
+            if (this.iconSize === 'small') {
+                iconSize = 32;
+                fontIconSize = 32;
+            } else if (this.iconSize === 'large') {
+                iconSize = 64;
+                fontIconSize = 54; // Font icons 10px smaller
+            }
+
+            // Display the icon (already loaded in batch)
+            if (icon.content) {
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = icon.content;
+                var svg = tempDiv.querySelector('svg');
+                var fontIcon = tempDiv.querySelector('i');
+                var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
+                if (svg) {
+                    svg.setAttribute('width', iconSize);
+                    svg.setAttribute('height', iconSize);
+                } else if (fontIcon) {
+                    fontIcon.style.fontSize = fontIconSize + 'px';
+                } else if (webFontIcon) {
+                    webFontIcon.style.fontSize = fontIconSize + 'px';
+                }
+                $iconDiv.innerHTML = tempDiv.innerHTML;
+            } else {
+                // Fallback placeholder if content somehow missing
+                $iconDiv.innerHTML = '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="12" y="16" text-anchor="middle" font-size="10">' + icon.name.charAt(0).toUpperCase() + '</text></svg>';
+            }
+
+            $item.appendChild($iconDiv);
+
+            if (this.showLabels) {
+                var $label = document.createElement('div');
+                $label.className = 'icon-manager-grid-item-label';
+                $label.textContent = icon.label || icon.name;
+                $item.appendChild($label);
+            }
+
+            // Click to select
+            $item.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent event from bubbling
+                self.selectIcon(icon);
+            });
+
+            return $item;
+        },
+
+        /**
+         * Setup intersection observer for virtual scrolling
+         */
+        setupVirtualScrollObserver: function($gridInner, iconsToShow, iconSetHandle) {
+            var self = this;
+
+            // Disconnect existing observer if any
+            if (this.virtualScrollObservers[iconSetHandle]) {
+                this.virtualScrollObservers[iconSetHandle].disconnect();
+            }
+
+            // Create a loading indicator
+            var $loadingIndicator = document.createElement('div');
+            $loadingIndicator.className = 'virtual-scroll-loading';
+            $loadingIndicator.style.padding = '2rem';
+            $loadingIndicator.style.textAlign = 'center';
+            $loadingIndicator.style.color = '#6b7280';
+            $loadingIndicator.style.fontSize = '0.875rem';
+            $loadingIndicator.style.fontWeight = '500';
+            $loadingIndicator.innerHTML = 'Loading more icons...';
+            $gridInner.appendChild($loadingIndicator);
+
+            // Create a sentinel element at the bottom
+            var $sentinel = document.createElement('div');
+            $sentinel.className = 'virtual-scroll-sentinel';
+            $sentinel.style.height = '1px';
+            $sentinel.style.width = '100%';
+            $gridInner.appendChild($sentinel);
+
+            // Create intersection observer
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        // User scrolled to bottom, load more icons
+                        // Insert new icons BEFORE the loading indicator
+                        var hasMore = self.renderIconBatchBeforeElement($gridInner, iconsToShow, iconSetHandle, self.virtualScrollBatchSize, $loadingIndicator);
+
+                        // If no more icons, disconnect observer and remove sentinel + loading
+                        if (!hasMore) {
+                            observer.disconnect();
+                            $sentinel.remove();
+                            $loadingIndicator.remove();
+                        }
+                    }
+                });
+            }, {
+                root: null, // Use viewport instead of container
+                rootMargin: '200px', // Start loading 200px before reaching the bottom
+                threshold: 0.1
+            });
+
+            observer.observe($sentinel);
+            this.virtualScrollObservers[iconSetHandle] = observer;
+        },
+
+        /**
+         * Render a batch of icons before a specific element (for virtual scrolling with loading indicator)
+         */
+        renderIconBatchBeforeElement: function($gridInner, iconsToShow, iconSetHandle, count, $beforeElement) {
+            var self = this;
+            var startIndex = this.virtualScrollRenderedIcons[iconSetHandle] || 0;
+            var endIndex = Math.min(startIndex + count, iconsToShow.length);
+
+            for (var i = startIndex; i < endIndex; i++) {
+                var icon = iconsToShow[i];
+                var $item = this.createIconElement(icon);
+                $gridInner.insertBefore($item, $beforeElement);
+            }
+
+            // Update counter
+            this.virtualScrollRenderedIcons[iconSetHandle] = endIndex;
+
+            return endIndex < iconsToShow.length; // Returns true if there are more icons to render
+        },
+
+        /**
+         * Load fonts/CSS required for font-based icons (Material Icons, Font Awesome)
+         */
+        loadFonts: function(fonts) {
+            fonts.forEach(function(font) {
+                if (font.type === 'remote' && font.url) {
+                    // Check if this font CSS is already loaded
+                    var existingLink = document.querySelector('link[href="' + font.url + '"]');
+                    if (!existingLink) {
+                        var link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = font.url;
+                        link.crossOrigin = 'anonymous';
+                        document.head.appendChild(link);
+                    }
+                } else if (font.type === 'inline' && font.css) {
+                    // Inject inline CSS
+                    var existingStyle = document.querySelector('style[data-icon-manager-inline]');
+                    if (!existingStyle) {
+                        var style = document.createElement('style');
+                        style.setAttribute('data-icon-manager-inline', 'true');
+                        style.textContent = font.css;
+                        document.head.appendChild(style);
+                    } else {
+                        // Append to existing inline styles
+                        existingStyle.textContent += '\n' + font.css;
+                    }
+                }
+            });
+        },
+
+        /**
+         * Load sprite SVG files and inject them into the DOM
+         */
+        loadSprites: function(sprites) {
+            var self = this;
+            sprites.forEach(function(sprite) {
+                // Check if this sprite is already loaded
+                var existingSprite = document.getElementById('icon-manager-sprite-' + sprite.name);
+                if (!existingSprite) {
+                    // Fetch the sprite SVG file
+                    fetch(sprite.url)
+                        .then(function(response) { return response.text(); })
+                        .then(function(svgContent) {
+                            self.injectSprite(sprite.name, svgContent);
+                        })
+                        .catch(function(error) {
+                            console.error('Failed to load sprite:', sprite.name, error);
+                        });
+                }
+            });
+        },
+
+        /**
+         * Inject sprite SVG into the DOM (hidden)
+         */
+        injectSprite: function(spriteName, svgContent) {
+            // Strip out any <style> tags to prevent CSS pollution
+            svgContent = svgContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+
+            var div = document.createElement('div');
+            div.id = 'icon-manager-sprite-' + spriteName;
+            div.style.display = 'none';
+            div.innerHTML = svgContent;
+            document.body.insertBefore(div, document.body.firstChild);
+
+            console.log('Injected sprite:', spriteName);
+        },
+
+        /**
+         * Focus the search input when picker opens
+         */
+        focusSearchInput: function() {
+            var $searchInput = this.$picker.querySelector('.icon-manager-search-input');
+            if ($searchInput) {
+                // Use setTimeout to ensure the picker is fully visible first
+                setTimeout(function() {
+                    $searchInput.focus();
+                }, 100);
+            }
+        },
+
+        /**
+         * Load fonts for saved icons on page init
+         */
+        loadInitialFonts: function() {
+            // Don't load anything on page init - fonts/sprites will load when picker opens
+            // This prevents downloading large font files (like Material Icons 3.7MB) on every page load
+            // Sprites are already injected via the template for selected icons
+            return;
         }
     };
 })();

@@ -4,7 +4,7 @@ A comprehensive icon management field supporting SVG libraries and icon fonts fo
 
 ## Features
 
-- **Multiple Icon Formats**: Support for SVG files, SVG sprites, Font Awesome, and Material Icons
+- **Multiple Icon Formats**: Support for SVG files, SVG sprites, Font Awesome, Material Icons, and custom web fonts
 - **Intuitive Interface**: Searchable icon picker with preview, tabs/dropdown for multiple sets
 - **Flexible Configuration**: Configure icon sets and field settings (size, labels, search)
 - **Performance Optimized**: Built-in caching for fast icon loading
@@ -17,13 +17,14 @@ A comprehensive icon management field supporting SVG libraries and icon fonts fo
 - **SVG Sprite support** - Basic functionality implemented, advanced features pending
 - **Material Icons** - Core integration complete, variable fonts being refined
 - **Font Awesome** - Free icons working, Pro/Kit support in development
+- **Web Font** - Custom icon font support (TTF, WOFF, OTF) with glyph extraction
 
 SVG folder icons are fully stable and production-ready.
 
 ## Requirements
 
 - Craft CMS 5.0 or greater
-- PHP 8.2 or greater
+- PHP 8.3 or greater
 
 ## Installation
 
@@ -91,6 +92,7 @@ return [
             'svg-sprite' => true,
             'font-awesome' => false,
             'material-icons' => false,
+            'web-font' => false,
         ],
     ],
 
@@ -112,6 +114,7 @@ return [
             'svg-sprite' => true,
             'font-awesome' => true,
             'material-icons' => true,
+            'web-font' => true,
         ],
     ],
 
@@ -143,6 +146,7 @@ return [
             'svg-sprite' => false, // Beta
             'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
+            'web-font' => false, // Beta
         ],
     ],
 ];
@@ -178,8 +182,11 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
   - Any other SVG icon library
 
 #### SVG Sprite
-- Point to an SVG sprite file
-- Set optional ID prefix
+- Point to an SVG sprite file containing multiple `<symbol>` elements
+- Set optional ID prefix for icon references
+- **Performance**: Sprite file is loaded once and injected into the page DOM, allowing all icons to reference the same sprite
+- **Best for**: Projects using many icons from the same set (e.g., 10+ icons)
+- Supports standard SVG sprite format with `<symbol id="icon-name">` structure
 
 #### Font Awesome
 - Supports Font Awesome v7 (latest)
@@ -191,6 +198,16 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - Material Icons (classic) with all styles
 - Material Symbols with variable font support
 - Configurable axes (weight, fill, optical size)
+- **Performance Note**: Automatically loads Google Fonts font file (~3.7 MB) containing all 3,800+ icons. The font file is cached by the browser after first load, but represents a significant initial download.
+  - **Alternative**: For better performance, download SVG versions of only the icons you need from [Google Fonts](https://fonts.google.com/icons) and add them to an SVG folder or sprite icon set instead.
+
+#### Web Font
+- Custom icon fonts (TTF, WOFF, OTF supported)
+- Automatic glyph extraction with unicode mapping
+- @font-face CSS generation and serving
+- Configurable CSS prefix for icon classes
+- **Performance**: Font file is served through Craft and cached by the browser after first load. Font size depends on the number of glyphs in your custom font.
+- **Note**: WOFF2 not currently supported - use TTF or WOFF formats
 
 ## Usage
 
@@ -220,11 +237,18 @@ Add an Icon field to any element:
 {% if entry.multipleIconsField %}
     {% for icon in entry.multipleIconsField %}
         {{ icon.render({ size: 24, class: 'icon-item' }) }}
-        {% if icon.customLabel %}
-            <span>{{ icon.customLabel }}</span>
-        {% endif %}
+        <span>{{ icon.displayLabel }}</span>
     {% endfor %}
 {% endif %}
+
+{# displayLabel provides smart label resolution:
+   1. Site-specific custom label (if set)
+   2. General custom label (if set)
+   3. JSON metadata label
+   4. Database label
+   5. Translation
+   6. Formatted filename (fallback)
+#}
 ```
 
 Note: The `|raw` filter is not needed - icons are automatically rendered safely.
@@ -452,6 +476,8 @@ Controls the display size of icons in both the field preview and picker:
 - **Medium**: 48x48 pixels (default)
 - **Large**: 64x64 pixels
 
+Note: Font-based icons (Material Icons, Font Awesome, Web Fonts) are rendered 10px smaller than SVG icons for visual balance, as they typically have less padding in their bounding boxes.
+
 ### Show Labels
 When enabled, displays icon names below icons in the picker and field preview.
 
@@ -530,6 +556,159 @@ return [
 ```
 
 Icons are stored with relative paths in the database, so changing `iconSetsPath` instantly updates all icon locations without rescanning.
+
+## SVG Optimization
+
+Icon Manager supports two SVG optimization engines with intelligent issue detection:
+
+### Issue Detection
+
+The plugin scans SVG files and identifies:
+
+**Real Issues (Red):**
+- **Unused Clip-Paths**: Empty or unreferenced clip-path definitions that can be removed
+- **Unused Masks**: Empty or unreferenced mask definitions that can be removed
+- **Comments**: Metadata and comments that increase file size
+- **Filters**: Complex effects that may slow rendering
+- **Inline Styles**: Styles that are harder to override with CSS
+- **Width/Height Attributes**: Should use viewBox for responsive SVGs
+
+**Warnings (Yellow):**
+- **Large Files**: Files over 10KB (may be normal for complex icons)
+
+**Not Flagged as Issues:**
+- Functional clip-paths and masks that are actually used in the SVG
+- ViewBox attributes (these are good for responsiveness)
+
+### PHP Optimizer (Default)
+
+Uses [mathiasreker/php-svg-optimizer](https://github.com/mathiasreker/php-svg-optimizer) and works out of the box. Available in the Control Panel via Icon Manager → Icon Sets → [Set] → Optimize.
+
+**Features:**
+- No additional installation required
+- Works in CP interface
+- Safe for production use
+- Limited optimization capabilities
+- Best for basic cleanup (metadata, comments, whitespace)
+
+**Limitations:**
+- Cannot optimize clip-paths, masks, or complex SVG features
+- Limited file size reduction on already-clean SVGs
+
+### SVGO (Advanced)
+
+Uses [SVGO](https://github.com/svg/svgo) for advanced optimization with full configuration control. Requires Node.js installation.
+
+**Installation:**
+
+```bash
+# Using npm
+npm install --save-dev svgo
+
+# Using yarn
+yarn add --dev svgo
+
+# Using pnpm
+pnpm add -D svgo
+```
+
+**Usage:**
+
+```bash
+# Interactive mode - prompts for icon set, engine, and optimization preset
+./craft icon-manager/optimize
+
+# Check if SVGO is available
+./craft icon-manager/optimize/check
+
+# Direct command with specific icon set
+./craft icon-manager/optimize --set=3 --engine=svgo
+
+# Use custom config file
+./craft icon-manager/optimize --set=3 --engine=svgo --config=my-svgo.config.js
+
+# Skip backup creation
+./craft icon-manager/optimize --set=3 --engine=svgo --noBackup
+
+# Dry run (see what would be optimized without making changes)
+./craft icon-manager/optimize --set=3 --engine=svgo --dryRun
+```
+
+**Interactive Mode:**
+
+When running `./craft icon-manager/optimize` without flags, the command will:
+1. List available SVG folder icon sets
+2. Let you choose an icon set
+3. Show available engines (PHP or SVGO)
+4. If SVGO is selected and no config file exists, offer optimization presets:
+   - **Safe**: Remove metadata, comments (preserves visual elements)
+   - **Balanced**: Safe + cleanup IDs, remove hidden elements
+   - **Aggressive**: Balanced + merge paths, convert colors (may affect styling)
+   - **Default**: Use SVGO defaults
+5. Ask if you want to create a backup before optimization
+6. Show real-time progress during optimization
+
+**Configuration:**
+
+Create a `svgo.config.js` file in your project root for custom optimization:
+
+```javascript
+export default {
+    plugins: [
+        {
+            name: 'preset-default',
+            params: {
+                overrides: {
+                    convertColors: false,  // Preserve colors
+                    mergePaths: false,     // Don't merge paths
+                    removeViewBox: false,  // Keep viewBox
+                },
+            },
+        },
+        'removeDimensions',        // Remove width/height
+        'removeEmptyContainers',   // Clean up empty elements
+        'removeEditorsNSData',     // Remove editor metadata
+    ],
+};
+```
+
+See `docs/svgo.config.example.js` for a complete configuration example.
+
+**Auto-Configuration:**
+
+If no `svgo.config.js` is found:
+- **Interactive mode**: Prompts you to choose an optimization preset
+- **Direct command mode**: Automatically uses the "Safe" preset to prevent breaking SVGs
+
+**Progress Output:**
+
+SVGO shows real-time progress during optimization:
+```
+Processing (1/123): icon-name.svg...
+  ✓ Optimized
+Processing (2/123): another-icon.svg...
+  - Skipped (already optimized)
+```
+
+**Automatic Backups:**
+
+Before optimization, a backup is automatically created (unless `--noBackup` is used):
+- Stored in `storage/backups/icon-manager/`
+- Named with timestamp: `icon-set-name-YYYY-MM-DD-HHMMSS.zip`
+- Can be restored from Icon Manager → Icon Sets → [Set] → Optimize tab (dev mode only)
+
+**When to Use SVGO:**
+- Need to optimize clip-paths, masks, or file size
+- Want custom configuration per project
+- Running optimization in CI/CD pipelines
+- Have complex SVGs that need specific handling
+- PHP optimizer finds "nothing to optimize"
+
+**When to Use PHP Optimizer:**
+- Want to optimize directly in the CP
+- Don't have Node.js in your environment
+- Need simple, reliable optimization
+- Only need basic cleanup (comments, metadata)
 
 ## Missing Icon Handling
 

@@ -256,8 +256,8 @@ class FontAwesome
             return $this->loadIconDefinitionsFromFile($version, $license);
         }
 
-        // Check custom file cache
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/fontawesome/';
+        // Check custom file cache (organized by icon type)
+        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/font-awesome/';
         $cacheFile = $cachePath . "{$version}_{$license}.cache";
 
         if (file_exists($cacheFile)) {

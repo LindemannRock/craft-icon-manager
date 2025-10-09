@@ -91,9 +91,19 @@ class MaterialIcons
                 
                 $icons[] = $icon;
             } else {
-                // Material Icons classic - create for each available style
-                $styles = $iconData['styles'] ?? [self::STYLE_FILLED];
-                
+                // Material Icons classic - create for each enabled style
+                // Get user-selected styles from settings, or default to filled
+                $selectedStyles = $settings['styles'] ?? [self::STYLE_FILLED];
+
+                // Only include styles that are both available AND selected by user
+                $availableStyles = $iconData['styles'] ?? [self::STYLE_FILLED];
+                $styles = array_intersect($availableStyles, $selectedStyles);
+
+                // If no intersection (shouldn't happen), fall back to filled
+                if (empty($styles)) {
+                    $styles = [self::STYLE_FILLED];
+                }
+
                 foreach ($styles as $style) {
                     $classPrefix = $this->getClassPrefix($style);
                     
@@ -197,8 +207,8 @@ class MaterialIcons
             return $this->loadIconDefinitionsFromFile($type);
         }
 
-        // Check custom file cache
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/material/';
+        // Check custom file cache (organized by icon type)
+        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/material-icons/';
         $cacheFile = $cachePath . "{$type}.cache";
 
         if (file_exists($cacheFile)) {

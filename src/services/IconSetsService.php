@@ -11,7 +11,7 @@ namespace lindemannrock\iconmanager\services;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\records\IconSetRecord;
-use lindemannrock\iconmanager\traits\LoggingTrait;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 use Craft;
 use craft\base\Component;
@@ -74,13 +74,30 @@ class IconSetsService extends Component
     }
 
     /**
-     * Get all enabled icon sets
-     * 
+     * Get all enabled icon sets (only icon sets where enabled=true)
+     *
      * @return IconSet[]
      */
     public function getAllEnabledIconSets(): array
     {
         return array_filter($this->getAllIconSets(), fn($iconSet) => $iconSet->enabled);
+    }
+
+    /**
+     * Get all enabled icon sets with allowed types
+     * (filters by both enabled flag AND whether the icon type is enabled in settings)
+     *
+     * @return IconSet[]
+     */
+    public function getAllEnabledIconSetsWithAllowedTypes(): array
+    {
+        $settings = IconManager::getInstance()->getSettings();
+        $enabledTypes = $settings->enabledIconTypes ?? [];
+
+        return array_filter($this->getAllEnabledIconSets(), function($iconSet) use ($enabledTypes) {
+            // Check if this icon set's type is enabled in settings
+            return ($enabledTypes[$iconSet->type] ?? false) === true;
+        });
     }
 
     /**

@@ -8,8 +8,28 @@
 {% import "_includes/forms" as forms %}
 
 <div id="{{ id }}" class="icon-manager-field icon-size-{{ field.iconSize }}">
-    <input type="hidden" name="{{ name }}" value="{{ value ? value|json_encode }}" data-allow-multiple="{{ field.allowMultiple ? 'true' : 'false' }}">
-    
+    {# Inject sprites for any sprite icon sets being used #}
+    {% set spriteIconSets = [] %}
+    {% if value %}
+        {% if field.allowMultiple %}
+            {% for icon in value %}
+                {% if icon.type == 'sprite' and icon.iconSetHandle not in spriteIconSets %}
+                    {% set spriteIconSets = spriteIconSets|merge([icon.iconSetHandle]) %}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% if value.type == 'sprite' %}
+                {% set spriteIconSets = [value.iconSetHandle] %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+    {% for spriteHandle in spriteIconSets %}
+        {{ craft.iconManager.injectSprite(spriteHandle)|raw }}
+    {% endfor %}
+
+    <input type="hidden" name="{{ name }}" value="{{ value ? value|json_encode }}" data-allow-multiple="{{ field.allowMultiple ? 'true' : 'false' }}" data-field-id="{{ field.id }}">
+
     <div class="icon-manager-selected">
         {% if field.allowMultiple %}
             {# Multiple icon selection display #}
@@ -19,7 +39,7 @@
                     {% for icon in value %}
                         <div class="icon-manager-selected-icon">
                             {% if icon.exists() %}
-                                {{ icon.render({ size: iconSize })|raw }}
+                                {{ icon.render({ size: iconSize, skipFonts: true })|raw }}
                             {% else %}
                                 <div class="icon-manager-missing" title="{{ 'Icon file not found: {path}'|t('icon-manager', { path: icon.path }) }}">
                                     <svg width="{{ iconSize }}" height="{{ iconSize }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -52,7 +72,7 @@
                 <div class="icon-manager-selected-icon">
                     {% set iconSize = field.iconSize == 'small' ? 32 : (field.iconSize == 'large' ? 64 : 48) %}
                     {% if value.exists() %}
-                        {{ value.render({ size: iconSize })|raw }}
+                        {{ value.render({ size: iconSize, skipFonts: true })|raw }}
                     {% else %}
                         <div class="icon-manager-missing" title="{{ 'Icon file not found: {path}'|t('icon-manager', { path: value.path }) }}">
                             <svg width="{{ iconSize }}" height="{{ iconSize }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -191,7 +211,7 @@
                                 {% set iconSize = 24 %}
                                 <div class="icon-preview-image">
                                     {% if icon.exists() %}
-                                        {{ icon.render({ size: iconSize })|raw }}
+                                        {{ icon.render({ size: iconSize, skipFonts: true })|raw }}
                                     {% else %}
                                         <svg width="{{ iconSize }}" height="{{ iconSize }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -681,18 +701,22 @@
 }
 
 .icon-manager-field.icon-size-large .icon-manager-grid-item-icon {
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 72px;
 }
 
-.icon-manager-field.icon-size-large .icon-manager-grid-item-icon svg,
-.icon-manager-field.icon-size-large .icon-manager-grid-item-icon i {
-    width: 48px !important;
-    height: 48px !important;
+.icon-manager-field.icon-size-large .icon-manager-grid-item-icon svg {
+    width: 64px !important;
+    height: 64px !important;
+}
+
+.icon-manager-field.icon-size-large .icon-manager-grid-item-icon i,
+.icon-manager-field.icon-size-large .icon-manager-grid-item-icon span {
+    font-size: 54px !important;
 }
 
 .icon-manager-field.icon-size-large .icon-manager-grid-inner {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }
 
 /* Field preview icon sizes */

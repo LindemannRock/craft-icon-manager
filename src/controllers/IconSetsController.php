@@ -25,7 +25,8 @@ class IconSetsController extends Controller
      */
     public function actionIndex(): Response
     {
-        $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
+        // Only show icon sets whose types are enabled in settings
+        $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
 
         return $this->renderTemplate('icon-manager/icon-sets/index', [
             'iconSets' => $iconSets,
@@ -50,11 +51,21 @@ class IconSetsController extends Controller
             }
         }
 
-        return $this->renderTemplate('icon-manager/icon-sets/edit', [
+        $templateVars = [
             'iconSet' => $iconSet,
             'isNew' => !$iconSet->id,
             'availableFolders' => $iconSet->getAvailableFolders(),
-        ]);
+            'availableFonts' => \lindemannrock\iconmanager\iconsets\WebFont::getAvailableFonts(),
+            'availableSprites' => \lindemannrock\iconmanager\iconsets\SvgSprite::getAvailableSprites(),
+        ];
+
+        // Add optimization data for existing SVG folder icon sets
+        if ($iconSet->id && in_array($iconSet->type, ['svg-folder', 'folder'])) {
+            $templateVars['scanResult'] = IconManager::getInstance()->svgOptimizer->scanIconSet($iconSet);
+            $templateVars['backups'] = IconManager::getInstance()->svgOptimizer->listBackups($iconSet->name);
+        }
+
+        return $this->renderTemplate('icon-manager/icon-sets/edit', $templateVars);
     }
 
     /**
@@ -153,21 +164,303 @@ class IconSetsController extends Controller
     public function actionRefreshIcons(): Response
     {
         $this->requirePostRequest();
-        
+
         $iconSetId = Craft::$app->getRequest()->getRequiredBodyParam('iconSetId');
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-        
+
         if (!$iconSet) {
             throw new \yii\web\NotFoundHttpException('Icon set not found');
         }
-        
+
         try {
             IconManager::getInstance()->icons->refreshIconsForSet($iconSet);
             Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Icons refreshed.'));
         } catch (\Exception $e) {
             Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not refresh icons: {error}', ['error' => $e->getMessage()]));
         }
-        
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Optimize SVG files for an icon set
+     */
+    public function actionOptimize(int $iconSetId): Response
+    {
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+
+        if (!$iconSet) {
+            throw new \yii\web\NotFoundHttpException('Icon set not found');
+        }
+
+        // Debug - log the actual type
+        Craft::info("Icon set type: {$iconSet->type}", __METHOD__);
+
+        // Only allow SVG folder icon sets
+        if ($iconSet->type !== 'folder' && $iconSet->type !== 'svg-folder') {
+            Craft::$app->getSession()->setError(Craft::t('icon-manager', 'SVG optimization is only available for folder-based icon sets. Type: ' . $iconSet->type));
+            return $this->redirect('icon-manager/icon-sets/' . $iconSetId);
+        }
+
+        // Scan this specific icon set
+        $scanResult = IconManager::getInstance()->svgOptimizer->scanIconSet($iconSet);
+
+        // Get backups list
+        $backups = IconManager::getInstance()->svgOptimizer->listBackups($iconSet->name);
+
+        return $this->renderTemplate('icon-manager/icon-sets/optimize', [
+            'iconSet' => $iconSet,
+            'scanResult' => $scanResult,
+            'backups' => $backups,
+        ]);
+    }
+
+    /**
+     * Apply optimizations to SVG files
+     */
+    public function actionApplyOptimizations(): Response
+    {
+        $this->requirePostRequest();
+
+        // Check if optimization is allowed in this environment
+        if (!$this->isOptimizationAllowed()) {
+            Craft::$app->getSession()->setError(
+                Craft::t('icon-manager', 'SVG optimization is only available in local/development environments.')
+            );
+            return $this->redirectToPostedUrl();
+        }
+
+        $iconSetId = Craft::$app->getRequest()->getRequiredBodyParam('iconSetId');
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+
+        if (!$iconSet) {
+            throw new \yii\web\NotFoundHttpException('Icon set not found');
+        }
+
+        try {
+            $result = IconManager::getInstance()->svgOptimizer->optimizeIconSet($iconSet);
+
+            if ($result['success']) {
+                Craft::$app->getSession()->setNotice(
+                    Craft::t('icon-manager', 'Optimized {count} SVG files. Backup created at: {backup}', [
+                        'count' => $result['filesOptimized'],
+                        'backup' => $result['backupPath']
+                    ])
+                );
+            } else {
+                Craft::$app->getSession()->setError(
+                    Craft::t('icon-manager', 'Optimization failed: {error}', ['error' => $result['error']])
+                );
+            }
+        } catch (\Exception $e) {
+            Craft::$app->getSession()->setError(
+                Craft::t('icon-manager', 'Could not optimize SVGs: {error}', ['error' => $e->getMessage()])
+            );
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Check if SVG optimization is allowed in current environment
+     */
+    private function isOptimizationAllowed(): bool
+    {
+        // Allow if devMode is enabled
+        if (Craft::$app->config->general->devMode) {
+            return true;
+        }
+
+        // Check CRAFT_ENVIRONMENT or ENVIRONMENT variables
+        $environment = getenv('CRAFT_ENVIRONMENT') ?: getenv('ENVIRONMENT');
+        if ($environment) {
+            $allowedEnvironments = ['local', 'dev', 'development'];
+            return in_array(strtolower($environment), $allowedEnvironments);
+        }
+
+        // Default to not allowed
+        return false;
+    }
+
+    /**
+     * Restore icon set from backup
+     */
+    public function actionRestoreBackup(): Response
+    {
+        $this->requirePostRequest();
+
+        if (!$this->isOptimizationAllowed()) {
+            Craft::$app->getSession()->setError(
+                Craft::t('icon-manager', 'Backup restoration is only available in local/development environments.')
+            );
+            return $this->redirectToPostedUrl();
+        }
+
+        $iconSetId = Craft::$app->getRequest()->getRequiredBodyParam('iconSetId');
+        $backupPath = Craft::$app->getRequest()->getRequiredBodyParam('backupPath');
+
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if (!$iconSet) {
+            throw new \yii\web\NotFoundHttpException('Icon set not found');
+        }
+
+        try {
+            $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+            $folder = $iconSet->settings['folder'] ?? '';
+            $targetPath = Craft::getAlias($basePath . '/' . $folder);
+
+            if (IconManager::getInstance()->svgOptimizer->restoreFromBackup($backupPath, $targetPath)) {
+                Craft::$app->getSession()->setNotice(
+                    Craft::t('icon-manager', 'Icon set restored from backup successfully.')
+                );
+            } else {
+                Craft::$app->getSession()->setError(
+                    Craft::t('icon-manager', 'Failed to restore from backup.')
+                );
+            }
+        } catch (\Exception $e) {
+            Craft::$app->getSession()->setError(
+                Craft::t('icon-manager', 'Could not restore backup: {error}', ['error' => $e->getMessage()])
+            );
+        }
+
+        return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Get SVG files for client-side optimization
+     */
+    public function actionGetSvgFiles(): Response
+    {
+        $this->requirePostRequest();
+
+        $request = Craft::$app->getRequest();
+        $iconSetId = $request->getBodyParam('iconSetId');
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+
+        if (!$iconSet) {
+            return $this->asJson(['success' => false, 'error' => 'Icon set not found']);
+        }
+
+        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+        $folder = $iconSet->settings['folder'] ?? '';
+        $folderPath = Craft::getAlias($basePath . '/' . $folder);
+
+        if (!is_dir($folderPath)) {
+            return $this->asJson(['success' => false, 'error' => 'Folder not found']);
+        }
+
+        // Get all SVG files
+        $files = [];
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($folderPath, \RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
+                $relativePath = str_replace($folderPath . '/', '', $file->getPathname());
+                $content = file_get_contents($file->getPathname());
+
+                $files[] = [
+                    'path' => $file->getPathname(),
+                    'relativePath' => $relativePath,
+                    'content' => $content
+                ];
+            }
+        }
+
+        return $this->asJson(['success' => true, 'files' => $files]);
+    }
+
+    /**
+     * Save optimized SVG files
+     */
+    public function actionSaveOptimizedSvgs(): Response
+    {
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
+
+        if (!$this->isOptimizationAllowed()) {
+            return $this->asJson([
+                'success' => false,
+                'error' => 'SVG optimization is only available in local/development environments.'
+            ]);
+        }
+
+        $request = Craft::$app->getRequest();
+        $iconSetId = $request->getBodyParam('iconSetId');
+        $files = $request->getBodyParam('files', []);
+
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if (!$iconSet) {
+            return $this->asJson(['success' => false, 'error' => 'Icon set not found']);
+        }
+
+        try {
+            $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+            $folder = $iconSet->settings['folder'] ?? '';
+            $folderPath = Craft::getAlias($basePath . '/' . $folder);
+
+            // Create backup first
+            $backupPath = IconManager::getInstance()->svgOptimizer->createBackupPublic($folderPath, $iconSet->name);
+            if (!$backupPath) {
+                return $this->asJson(['success' => false, 'error' => 'Failed to create backup']);
+            }
+
+            // Save optimized files
+            $savedCount = 0;
+            foreach ($files as $file) {
+                if (isset($file['path']) && isset($file['content'])) {
+                    if (file_put_contents($file['path'], $file['content']) !== false) {
+                        $savedCount++;
+                    }
+                }
+            }
+
+            return $this->asJson([
+                'success' => true,
+                'filesSaved' => $savedCount,
+                'backupPath' => $backupPath
+            ]);
+
+        } catch (\Exception $e) {
+            Craft::error('Could not save optimized SVGs: ' . $e->getMessage(), __METHOD__);
+            return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Delete a backup
+     */
+    public function actionDeleteBackup(): Response
+    {
+        $this->requirePostRequest();
+
+        if (!$this->isOptimizationAllowed()) {
+            Craft::$app->getSession()->setError(
+                Craft::t('icon-manager', 'Backup deletion is only available in local/development environments.')
+            );
+            return $this->redirectToPostedUrl();
+        }
+
+        $backupPath = Craft::$app->getRequest()->getRequiredBodyParam('backupPath');
+
+        try {
+            if (IconManager::getInstance()->svgOptimizer->deleteBackup($backupPath)) {
+                Craft::$app->getSession()->setNotice(
+                    Craft::t('icon-manager', 'Backup deleted successfully.')
+                );
+            } else {
+                Craft::$app->getSession()->setError(
+                    Craft::t('icon-manager', 'Failed to delete backup.')
+                );
+            }
+        } catch (\Exception $e) {
+            Craft::$app->getSession()->setError(
+                Craft::t('icon-manager', 'Could not delete backup: {error}', ['error' => $e->getMessage()])
+            );
+        }
+
         return $this->redirectToPostedUrl();
     }
 }

@@ -20,54 +20,56 @@ return [
     '*' => [
         // Plugin display name
         'pluginName' => 'Icon Manager',
-        
+
         // Default icons path
         'iconSetsPath' => '@root/src/icons',
-        
+
         // Whether to enable icon caching
         'enableCache' => true,
-        
+
         // Cache duration in seconds
         'cacheDuration' => 86400, // 24 hours
-        
+
         // Default icon set types to enable
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => true,
             'font-awesome' => false,
             'material-icons' => false,
+            'web-font' => false,
         ],
 
         // Logging settings
-        'logLevel' => 'error', // Options: 'trace', 'info', 'warning', 'error'
+        'logLevel' => 'error', // Options: 'debug', 'info', 'warning', 'error'
     ],
-    
+
     // Dev environment settings
     'dev' => [
         // Use source icons in dev
         'iconSetsPath' => '@root/src/icons',
-        
+
         // Enable caching in dev for performance
         'enableCache' => true,
         'cacheDuration' => 3600, // 1 hour
-        
+
         // Allow all icon types for testing
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => true,
             'font-awesome' => true,
             'material-icons' => true,
+            'web-font' => true,
         ],
 
         // More detailed logging in development
         'logLevel' => 'info',
     ],
-    
-    // Staging environment settings  
+
+    // Staging environment settings
     'staging' => [
         // Production-ready icons path
         'iconSetsPath' => '@webroot/dist/assets/icons',
-        
+
         // Optimize for staging
         'enableCache' => true,
         'cacheDuration' => 86400, // 1 day
@@ -75,22 +77,23 @@ return [
         // Moderate logging for staging
         'logLevel' => 'warning',
     ],
-    
+
     // Production environment settings
     'production' => [
         // Production icons path
         'iconSetsPath' => '@webroot/dist/assets/icons',
-        
+
         // Optimize for production
         'enableCache' => true,
         'cacheDuration' => 2592000, // 30 days
-        
+
         // Only stable icon types in production
         'enabledIconTypes' => [
             'svg-folder' => true,
             'svg-sprite' => false, // Beta
             'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
+            'web-font' => false, // Beta
         ],
 
         // Minimal logging in production
