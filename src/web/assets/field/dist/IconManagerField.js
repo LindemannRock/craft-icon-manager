@@ -31,14 +31,17 @@
         init: function() {
             this.$field = document.getElementById(this.fieldId);
             if (!this.$field) return;
-            
+
             this.$input = this.$field.querySelector('input[type="hidden"]');
             this.$selectBtn = this.$field.querySelector('.icon-manager-select-btn');
             this.$clearBtn = this.$field.querySelector('.icon-manager-clear-btn');
             this.$picker = this.$field.querySelector('.icon-manager-picker');
             this.$cancelBtn = this.$picker.querySelector('.icon-manager-cancel-btn');
             this.$customLabelInput = this.$field.querySelector('.icon-manager-custom-label-input');
-            
+
+            // Load fonts for any saved icons on page init
+            this.loadInitialFonts();
+
             this.bindEvents();
         },
         
@@ -56,6 +59,25 @@
             // Handle custom label input changes
             this.bindCustomLabelInputs();
             
+            // Make the selected icon area clickable to open picker
+            var $selected = this.$field.querySelector('.icon-manager-selected');
+            if ($selected) {
+                $selected.addEventListener('click', function(e) {
+                    // Don't trigger if clicking buttons or inputs in the actions area
+                    if (e.target.closest('.icon-manager-actions')) {
+                        return;
+                    }
+                    // Don't trigger if clicking custom label input
+                    if (e.target.classList.contains('icon-manager-custom-label-input')) {
+                        return;
+                    }
+                    e.preventDefault();
+                    self.togglePicker();
+                });
+                // Add pointer cursor to indicate clickability
+                $selected.style.cursor = 'pointer';
+            }
+
             // Select button (toggle picker)
             if (this.$selectBtn) {
                 this.$selectBtn.addEventListener('click', function(e) {
@@ -63,11 +85,12 @@
                     self.togglePicker();
                 });
             }
-            
+
             // Clear button
             if (this.$clearBtn) {
                 this.$clearBtn.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation(); // Prevent triggering the selected area click
                     self.clearSelection();
                 });
             }
@@ -116,6 +139,7 @@
             $tabs.forEach(function($tab) {
                 $tab.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation(); // Prevent closing the picker
                     self.switchTab($tab.dataset.iconSet);
                 });
             });
@@ -130,7 +154,12 @@
             }
             
             // Font Awesome Kit support temporarily disabled
-            
+
+            // Prevent all clicks inside the picker from bubbling
+            this.$picker.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
             // Click outside to close
             document.addEventListener('click', function(e) {
                 if (!self.$field.contains(e.target)) {
@@ -155,6 +184,9 @@
                 // Icons already loaded, just display them
                 this.showIconsInPicker();
             }
+
+            // Focus search input for better UX
+            this.focusSearchInput();
         },
 
         showIconsInPicker: function() {
@@ -491,13 +523,16 @@
                 
                 if ($placeholder) {
                     // Determine icon size based on field settings
-                    var iconSize = 48; // default medium
+                    var iconSize = 48; // default medium (SVGs)
+                    var fontIconSize = 48; // default medium (fonts)
                     if (this.iconSize === 'small') {
                         iconSize = 32;
+                        fontIconSize = 32;
                     } else if (this.iconSize === 'large') {
                         iconSize = 64;
+                        fontIconSize = 54; // Font icons 10px smaller
                     }
-                    
+
                     // Replace placeholder with selected icon display
                     var html = '<div class="icon-manager-selected-icon">';
                     if (icon.content) {
@@ -506,14 +541,19 @@
                         tempDiv.innerHTML = icon.content;
                         var svg = tempDiv.querySelector('svg');
                         var fontIcon = tempDiv.querySelector('i');
-                        
+                        var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
                         if (svg) {
                             svg.setAttribute('width', iconSize);
                             svg.setAttribute('height', iconSize);
                             html += tempDiv.innerHTML;
                         } else if (fontIcon && icon.isFontAwesome) {
-                            // For Font Awesome icons, set a larger font size
-                            fontIcon.style.fontSize = (iconSize / 24) + 'rem';
+                            // For Font Awesome icons, set font size
+                            fontIcon.style.fontSize = fontIconSize + 'px';
+                            html += tempDiv.innerHTML;
+                        } else if (webFontIcon) {
+                            // For WebFont and Material Icons, set font size
+                            webFontIcon.style.fontSize = fontIconSize + 'px';
                             html += tempDiv.innerHTML;
                         } else {
                             html += icon.content;
@@ -576,11 +616,19 @@
                 // Update display
                 var $selected = this.$field.querySelector('.icon-manager-selected');
                 var $selectedIcon = $selected.querySelector('.icon-manager-selected-icon');
-                
+
                 if ($selectedIcon) {
+                    // Determine icon size based on field settings
+                    var iconSize = 48; // default medium
+                    if (this.iconSize === 'small') {
+                        iconSize = 32;
+                    } else if (this.iconSize === 'large') {
+                        iconSize = 64;
+                    }
+
                     // Replace with placeholder
                     var html = '<div class="icon-manager-placeholder">';
-                    html += '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
+                    html += '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
                     html += '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>';
                     html += '<line x1="9" y1="9" x2="15" y2="15"></line>';
                     html += '<line x1="15" y1="9" x2="9" y2="15"></line>';
@@ -589,7 +637,7 @@
                     html += '</div>';
                     $selectedIcon.outerHTML = html;
                 }
-                
+
                 // Update button text
                 this.$selectBtn.textContent = Craft.t('icon-manager', 'Select Icons');
             }
@@ -609,11 +657,14 @@
         updateMultipleDisplay: function() {
             var self = this;
             var $selected = this.$field.querySelector('.icon-manager-selected');
-            var iconSize = 48; // default medium
+            var iconSize = 48; // default medium (SVGs)
+            var fontIconSize = 48; // default medium (fonts)
             if (this.iconSize === 'small') {
                 iconSize = 32;
+                fontIconSize = 32;
             } else if (this.iconSize === 'large') {
                 iconSize = 64;
+                fontIconSize = 54; // Font icons 10px smaller
             }
             
             // Clear current display
@@ -660,9 +711,16 @@
                         var tempDiv = document.createElement('div');
                         tempDiv.innerHTML = iconData.content;
                         var svg = tempDiv.querySelector('svg');
+                        var fontIcon = tempDiv.querySelector('i');
+                        var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
                         if (svg) {
                             svg.setAttribute('width', iconSize);
                             svg.setAttribute('height', iconSize);
+                        } else if (fontIcon) {
+                            fontIcon.style.fontSize = fontIconSize + 'px';
+                        } else if (webFontIcon) {
+                            webFontIcon.style.fontSize = fontIconSize + 'px';
                         }
                         gridHtml += tempDiv.innerHTML;
                     } else {
@@ -976,8 +1034,16 @@
             } else {
                 // No value - show placeholder
                 if ($selectedIcon) {
+                    // Determine icon size based on field settings
+                    var iconSize = 48; // default medium
+                    if (this.iconSize === 'small') {
+                        iconSize = 32;
+                    } else if (this.iconSize === 'large') {
+                        iconSize = 64;
+                    }
+
                     var html = '<div class="icon-manager-placeholder">';
-                    html += '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
+                    html += '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">';
                     html += '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>';
                     html += '<line x1="9" y1="9" x2="15" y2="15"></line>';
                     html += '<line x1="15" y1="9" x2="9" y2="15"></line>';
@@ -1048,21 +1114,31 @@
         
         displayIcon: function(icon, $selected, $selectedIcon, $placeholder) {
             // Determine icon size based on field settings
-            var iconSize = 48; // default medium
+            var iconSize = 48; // default medium (SVGs)
+            var fontIconSize = 48; // default medium (fonts)
             if (this.iconSize === 'small') {
                 iconSize = 32;
+                fontIconSize = 32;
             } else if (this.iconSize === 'large') {
                 iconSize = 64;
+                fontIconSize = 54; // Font icons 10px smaller
             }
-            
+
             var html = '<div class="icon-manager-selected-icon">';
             if (icon.content) {
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = icon.content;
                 var svg = tempDiv.querySelector('svg');
+                var fontIcon = tempDiv.querySelector('i');
+                var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
                 if (svg) {
                     svg.setAttribute('width', iconSize);
                     svg.setAttribute('height', iconSize);
+                } else if (fontIcon) {
+                    fontIcon.style.fontSize = fontIconSize + 'px';
+                } else if (webFontIcon) {
+                    webFontIcon.style.fontSize = fontIconSize + 'px';
                 }
                 html += tempDiv.innerHTML;
             } else {
@@ -1133,12 +1209,37 @@
             var $iconDiv = document.createElement('div');
             $iconDiv.className = 'icon-manager-grid-item-icon';
 
-            // Display the icon SVG (already loaded in batch)
+            // Determine icon size based on field settings
+            var iconSize = 48; // default medium (SVGs)
+            var fontIconSize = 48; // default medium (fonts)
+            if (this.iconSize === 'small') {
+                iconSize = 32;
+                fontIconSize = 32;
+            } else if (this.iconSize === 'large') {
+                iconSize = 64;
+                fontIconSize = 54; // Font icons 10px smaller
+            }
+
+            // Display the icon (already loaded in batch)
             if (icon.content) {
-                $iconDiv.innerHTML = icon.content;
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = icon.content;
+                var svg = tempDiv.querySelector('svg');
+                var fontIcon = tempDiv.querySelector('i');
+                var webFontIcon = tempDiv.querySelector('span.icon, span[class*="material-"]');
+
+                if (svg) {
+                    svg.setAttribute('width', iconSize);
+                    svg.setAttribute('height', iconSize);
+                } else if (fontIcon) {
+                    fontIcon.style.fontSize = fontIconSize + 'px';
+                } else if (webFontIcon) {
+                    webFontIcon.style.fontSize = fontIconSize + 'px';
+                }
+                $iconDiv.innerHTML = tempDiv.innerHTML;
             } else {
                 // Fallback placeholder if content somehow missing
-                $iconDiv.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="12" y="16" text-anchor="middle" font-size="10">' + icon.name.charAt(0).toUpperCase() + '</text></svg>';
+                $iconDiv.innerHTML = '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="12" y="16" text-anchor="middle" font-size="10">' + icon.name.charAt(0).toUpperCase() + '</text></svg>';
             }
 
             $item.appendChild($iconDiv);
@@ -1153,6 +1254,7 @@
             // Click to select
             $item.addEventListener('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation(); // Prevent event from bubbling
                 self.selectIcon(icon);
             });
 
@@ -1262,6 +1364,48 @@
                         existingStyle.textContent += '\n' + font.css;
                     }
                 }
+            });
+        },
+
+        /**
+         * Focus the search input when picker opens
+         */
+        focusSearchInput: function() {
+            var $searchInput = this.$picker.querySelector('.icon-manager-search-input');
+            if ($searchInput) {
+                // Use setTimeout to ensure the picker is fully visible first
+                setTimeout(function() {
+                    $searchInput.focus();
+                }, 100);
+            }
+        },
+
+        /**
+         * Load fonts for saved icons on page init
+         */
+        loadInitialFonts: function() {
+            var fieldId = this.$input.dataset.fieldId;
+            if (!fieldId) return;
+
+            // Fetch fonts needed for this field's saved icons
+            fetch(Craft.getCpUrl('icon-manager/icons/get-icons-for-field'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': Craft.csrfTokenValue,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ fieldId: fieldId })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success && data.fonts && data.fonts.length > 0) {
+                    this.loadFonts(data.fonts);
+                }
+            }.bind(this))
+            .catch(function(error) {
+                // Silently fail - fonts will load when picker opens
+                console.debug('Could not preload fonts:', error);
             });
         }
     };

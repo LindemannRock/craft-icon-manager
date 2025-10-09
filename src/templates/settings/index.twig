@@ -125,6 +125,16 @@
         disabled: settings.isIconTypeOverridden('material-icons')
     }) }}
 
+    {{ forms.lightswitchField({
+        label: 'Web Font'|t('icon-manager'),
+        instructions: 'Enable custom icon fonts (TTF, WOFF, WOFF2, OTF)'|t('icon-manager'),
+        id: 'enabledIconTypes-web-font',
+        name: 'settings[enabledIconTypes][web-font]',
+        on: settings.enabledIconTypes['web-font'] ?? false,
+        warning: settings.isIconTypeOverridden('web-font') ? 'This is being overridden by the `enabledIconTypes[\'web-font\']` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isIconTypeOverridden('web-font')
+    }) }}
+
     <hr>
 
     <h2>{{ 'Logging Settings'|t('icon-manager') }}</h2>

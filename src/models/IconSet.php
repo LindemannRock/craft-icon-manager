@@ -81,7 +81,7 @@ class IconSet extends Model
             [['name', 'handle', 'type'], 'required'],
             [['name', 'handle'], 'string', 'max' => 255],
             [['handle'], 'match', 'pattern' => '/^[a-zA-Z][a-zA-Z0-9_]*$/'],
-            [['type'], 'in', 'range' => ['svg-folder', 'svg-sprite', 'font-awesome', 'material-icons', 'custom']],
+            [['type'], 'in', 'range' => ['svg-folder', 'svg-sprite', 'font-awesome', 'material-icons', 'web-font', 'custom']],
             [['enabled'], 'boolean'],
             [['sortOrder'], 'integer'],
             [['settings'], 'safe'],
@@ -98,6 +98,7 @@ class IconSet extends Model
             'svg-sprite' => Craft::t('icon-manager', 'SVG Sprite'),
             'font-awesome' => Craft::t('icon-manager', 'Font Awesome'),
             'material-icons' => Craft::t('icon-manager', 'Material Icons'),
+            'web-font' => Craft::t('icon-manager', 'Web Font'),
             'custom' => Craft::t('icon-manager', 'Custom'),
             default => $this->type,
         };
@@ -212,7 +213,19 @@ class IconSet extends Model
             $icons = IconManager::getInstance()->icons->getIconsBySetId($this->id);
             return count($icons);
         }
-        
+
         return 0;
+    }
+
+    /**
+     * Get WebFont CSS for this icon set (if it's a web-font type)
+     */
+    public function getWebFontCss(): ?string
+    {
+        if ($this->type !== 'web-font') {
+            return null;
+        }
+
+        return \lindemannrock\iconmanager\iconsets\WebFont::getFontFaceCss($this);
     }
 }

@@ -151,17 +151,15 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
      */
     public function getSettingsHtml(): ?string
     {
-        // Get all available icon sets
-        $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
+        // Get all enabled icon sets with allowed types (filters by both enabled flag AND enabled icon types)
+        $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
         $iconSetOptions = [];
 
         foreach ($iconSets as $iconSet) {
-            if ($iconSet->enabled) {
-                $iconSetOptions[] = [
-                    'label' => $iconSet->name,
-                    'value' => $iconSet->handle,
-                ];
-            }
+            $iconSetOptions[] = [
+                'label' => $iconSet->name,
+                'value' => $iconSet->handle,
+            ];
         }
 
         return Craft::$app->getView()->renderTemplate('icon-manager/_components/fields/IconManagerField/settings', [

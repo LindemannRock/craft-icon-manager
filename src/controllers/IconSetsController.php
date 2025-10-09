@@ -25,7 +25,8 @@ class IconSetsController extends Controller
      */
     public function actionIndex(): Response
     {
-        $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
+        // Only show icon sets whose types are enabled in settings
+        $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
 
         return $this->renderTemplate('icon-manager/icon-sets/index', [
             'iconSets' => $iconSets,
@@ -54,6 +55,7 @@ class IconSetsController extends Controller
             'iconSet' => $iconSet,
             'isNew' => !$iconSet->id,
             'availableFolders' => $iconSet->getAvailableFolders(),
+            'availableFonts' => \lindemannrock\iconmanager\iconsets\WebFont::getAvailableFonts(),
         ];
 
         // Add optimization data for existing SVG folder icon sets

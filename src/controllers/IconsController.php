@@ -119,14 +119,20 @@ class IconsController extends Controller
             return $this->asJson(['error' => 'Field not found']);
         }
 
-        // Get allowed icon sets for this field
+        // Get allowed icon sets for this field (only icon sets with enabled types)
         $iconSets = [];
         if ($field->allowedIconSets === '*') {
-            $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
+            $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
         } elseif (!empty($field->allowedIconSets) && is_array($field->allowedIconSets)) {
             $iconSets = IconManager::getInstance()->iconSets->getIconSetsByHandles($field->allowedIconSets);
+            // Filter to only include icon sets with enabled types
+            $settings = IconManager::getInstance()->getSettings();
+            $enabledTypes = $settings->enabledIconTypes ?? [];
+            $iconSets = array_filter($iconSets, function($iconSet) use ($enabledTypes) {
+                return $iconSet->enabled && (($enabledTypes[$iconSet->type] ?? false) === true);
+            });
         } else {
-            $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSets();
+            $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
         }
 
         // Collect all icons with their content and required assets (fonts/CSS)
@@ -140,7 +146,7 @@ class IconsController extends Controller
                 continue;
             }
 
-            // Get required assets for this icon set (Material Icons fonts, etc.)
+            // Get required assets for this icon set (Material Icons, WebFont, etc.)
             if ($iconSet->type === 'material-icons') {
                 $handler = new \lindemannrock\iconmanager\iconsets\MaterialIcons($iconSet);
                 $assets = $handler->getAssets();
@@ -153,6 +159,17 @@ class IconsController extends Controller
                         ];
                     } elseif ($asset['type'] === 'css' && isset($asset['inline'])) {
                         // Add inline CSS as a data attribute for JS to inject
+                        $fonts[] = [
+                            'type' => 'inline',
+                            'css' => $asset['inline'],
+                        ];
+                    }
+                }
+            } elseif ($iconSet->type === 'web-font') {
+                $assets = \lindemannrock\iconmanager\iconsets\WebFont::getAssets($iconSet);
+
+                foreach ($assets as $asset) {
+                    if ($asset['type'] === 'css' && isset($asset['inline'])) {
                         $fonts[] = [
                             'type' => 'inline',
                             'css' => $asset['inline'],
@@ -184,6 +201,55 @@ class IconsController extends Controller
             'success' => true,
             'icons' => $iconsData,
             'fonts' => array_values(array_unique($fonts, SORT_REGULAR)),
+        ]);
+    }
+
+    /**
+     * Serve a web font file
+     */
+    public function actionServeFont(): Response
+    {
+        $iconSetHandle = Craft::$app->getRequest()->getQueryParam('iconSet');
+        $fileName = Craft::$app->getRequest()->getQueryParam('file');
+
+        if (!$iconSetHandle || !$fileName) {
+            throw new \yii\web\NotFoundHttpException('Invalid parameters');
+        }
+
+        // Get icon set
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($iconSetHandle);
+        if (!$iconSet || $iconSet->type !== 'web-font') {
+            throw new \yii\web\NotFoundHttpException('Icon set not found');
+        }
+
+        // Get font file path
+        $settings = $iconSet->settings ?? [];
+        $fontFile = $settings['fontFile'] ?? null;
+
+        if (!$fontFile || basename($fontFile) !== $fileName) {
+            throw new \yii\web\NotFoundHttpException('Font file not found');
+        }
+
+        $fontPath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $fontFile;
+
+        if (!file_exists($fontPath)) {
+            throw new \yii\web\NotFoundHttpException('Font file does not exist');
+        }
+
+        // Determine MIME type
+        $ext = pathinfo($fontFile, PATHINFO_EXTENSION);
+        $mimeType = match(strtolower($ext)) {
+            'woff2' => 'font/woff2',
+            'woff' => 'font/woff',
+            'ttf' => 'font/ttf',
+            'otf' => 'font/otf',
+            default => 'application/octet-stream'
+        };
+
+        // Return font file
+        return Craft::$app->getResponse()->sendFile($fontPath, $fileName, [
+            'mimeType' => $mimeType,
+            'inline' => true
         ]);
     }
 }

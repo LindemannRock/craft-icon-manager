@@ -36,6 +36,7 @@ return [
             'svg-sprite' => true,
             'font-awesome' => false,
             'material-icons' => false,
+            'web-font' => false,
         ],
 
         // Logging settings
@@ -57,6 +58,7 @@ return [
             'svg-sprite' => true,
             'font-awesome' => true,
             'material-icons' => true,
+            'web-font' => true,
         ],
 
         // More detailed logging in development
@@ -91,6 +93,7 @@ return [
             'svg-sprite' => false, // Beta
             'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
+            'web-font' => false, // Beta
         ],
 
         // Minimal logging in production

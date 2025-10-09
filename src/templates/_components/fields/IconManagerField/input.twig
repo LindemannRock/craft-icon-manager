@@ -8,8 +8,8 @@
 {% import "_includes/forms" as forms %}
 
 <div id="{{ id }}" class="icon-manager-field icon-size-{{ field.iconSize }}">
-    <input type="hidden" name="{{ name }}" value="{{ value ? value|json_encode }}" data-allow-multiple="{{ field.allowMultiple ? 'true' : 'false' }}">
-    
+    <input type="hidden" name="{{ name }}" value="{{ value ? value|json_encode }}" data-allow-multiple="{{ field.allowMultiple ? 'true' : 'false' }}" data-field-id="{{ field.id }}">
+
     <div class="icon-manager-selected">
         {% if field.allowMultiple %}
             {# Multiple icon selection display #}
@@ -681,18 +681,22 @@
 }
 
 .icon-manager-field.icon-size-large .icon-manager-grid-item-icon {
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 72px;
 }
 
-.icon-manager-field.icon-size-large .icon-manager-grid-item-icon svg,
-.icon-manager-field.icon-size-large .icon-manager-grid-item-icon i {
-    width: 48px !important;
-    height: 48px !important;
+.icon-manager-field.icon-size-large .icon-manager-grid-item-icon svg {
+    width: 64px !important;
+    height: 64px !important;
+}
+
+.icon-manager-field.icon-size-large .icon-manager-grid-item-icon i,
+.icon-manager-field.icon-size-large .icon-manager-grid-item-icon span {
+    font-size: 54px !important;
 }
 
 .icon-manager-field.icon-size-large .icon-manager-grid-inner {
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }
 
 /* Field preview icon sizes */

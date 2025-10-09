@@ -275,6 +275,8 @@ class IconsService extends Component
                 return $this->_getFontAwesomeIcons($iconSet);
             case 'material-icons':
                 return $this->_getMaterialIcons($iconSet);
+            case 'web-font':
+                return $this->_getWebFontIcons($iconSet);
             default:
                 return [];
         }
@@ -469,7 +471,15 @@ class IconsService extends Component
                 $icon->value = $metadata['spriteId'] ?? $icon->name;
                 break;
             case Icon::TYPE_FONT:
-                $icon->value = $metadata['className'] ?? $icon->name;
+                // For WebFont icons with unicode, use cssPrefix for the base class
+                // For Material Icons, use the className
+                if (isset($metadata['unicode'])) {
+                    // Extract base prefix from className (e.g., "icon" from "icon-glyph-e933")
+                    $className = $metadata['className'] ?? 'icon';
+                    $icon->value = preg_replace('/-.*$/', '', $className);
+                } else {
+                    $icon->value = $metadata['className'] ?? $icon->name;
+                }
                 break;
             default:
                 $icon->value = $icon->name;
@@ -529,5 +539,27 @@ class IconsService extends Component
 
         $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
         file_put_contents($cacheFile, serialize($icons));
+    }
+
+    /**
+     * Get WebFont icons
+     */
+    private function _getWebFontIcons(IconSet $iconSet): array
+    {
+        $iconObjects = \lindemannrock\iconmanager\iconsets\WebFont::getIcons($iconSet);
+
+        // Convert Icon objects to arrays for database storage
+        $icons = [];
+        foreach ($iconObjects as $icon) {
+            $icons[] = [
+                'name' => $icon->name,
+                'label' => $icon->label,
+                'path' => $icon->path,
+                'keywords' => $icon->keywords,
+                'metadata' => $icon->metadata,
+            ];
+        }
+
+        return $icons;
     }
 }

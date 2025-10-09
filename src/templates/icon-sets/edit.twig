@@ -87,6 +87,31 @@
         required: true,
     }) }}
 
+    {% set settings = plugin.settings %}
+    {% set typeOptions = [
+        { label: 'Choose a type'|t('icon-manager'), value: '' }
+    ] %}
+
+    {% if settings.enabledIconTypes['svg-folder'] ?? true %}
+        {% set typeOptions = typeOptions|merge([{ label: 'SVG Folder'|t('icon-manager'), value: 'svg-folder' }]) %}
+    {% endif %}
+
+    {% if settings.enabledIconTypes['svg-sprite'] ?? true %}
+        {% set typeOptions = typeOptions|merge([{ label: 'SVG Sprite'|t('icon-manager'), value: 'svg-sprite' }]) %}
+    {% endif %}
+
+    {% if settings.enabledIconTypes['font-awesome'] ?? false %}
+        {% set typeOptions = typeOptions|merge([{ label: 'Font Awesome'|t('icon-manager'), value: 'font-awesome' }]) %}
+    {% endif %}
+
+    {% if settings.enabledIconTypes['material-icons'] ?? false %}
+        {% set typeOptions = typeOptions|merge([{ label: 'Material Icons'|t('icon-manager'), value: 'material-icons' }]) %}
+    {% endif %}
+
+    {% if settings.enabledIconTypes['web-font'] ?? false %}
+        {% set typeOptions = typeOptions|merge([{ label: 'Web Font'|t('icon-manager'), value: 'web-font' }]) %}
+    {% endif %}
+
     {{ forms.selectField({
         label: 'Type'|t('icon-manager'),
         instructions: 'The type of icon set.'|t('icon-manager'),
@@ -95,13 +120,7 @@
         value: iconSet.type,
         errors: iconSet.getErrors('type'),
         required: true,
-        options: [
-            { label: 'Choose a type'|t('icon-manager'), value: '' },
-            { label: 'SVG Folder'|t('icon-manager'), value: 'svg-folder' },
-            { label: 'SVG Sprite'|t('icon-manager'), value: 'svg-sprite' },
-            { label: 'Font Awesome'|t('icon-manager'), value: 'font-awesome' },
-            { label: 'Material Icons'|t('icon-manager'), value: 'material-icons' },
-        ],
+        options: typeOptions,
     }) }}
 
     <div id="type-settings">
@@ -264,6 +283,41 @@
                 }) }}
             </div>
         </div>
+
+        <div id="web-font-settings" class="{% if iconSet.type != 'web-font' %}hidden{% endif %}">
+            <h2>{{ 'Web Font Settings'|t('icon-manager') }}</h2>
+
+            {{ forms.selectField({
+                label: 'Font File'|t('icon-manager'),
+                instructions: 'Select your font file. This is relative to your Icons Path setting.'|t('icon-manager'),
+                id: 'settings-fontFile',
+                name: 'settings[fontFile]',
+                value: iconSet.settings.fontFile ?? '',
+                options: availableFonts ?? [],
+                required: true,
+            }) }}
+
+            {{ forms.textField({
+                label: 'CSS Prefix'|t('icon-manager'),
+                instructions: 'CSS class prefix for icons (e.g., "icon" will generate "icon-home", "icon-settings", etc.)'|t('icon-manager'),
+                id: 'settings-cssPrefix',
+                name: 'settings[cssPrefix]',
+                value: iconSet.settings.cssPrefix ?? 'icon',
+                placeholder: 'icon',
+            }) }}
+
+            <div class="field">
+                <div class="heading">
+                    <label>{{ 'Optional Metadata'|t('icon-manager') }}</label>
+                </div>
+                <div class="instructions">
+                    <p>{{ 'You can add a metadata JSON file alongside your font to provide keywords for search.'|t('icon-manager') }}</p>
+                    <p>{{ 'Name it the same as your font file with "-metadata.json" suffix.'|t('icon-manager') }}</p>
+                    <p>{{ 'Example: If your font is "my-icons.woff", create "my-icons-metadata.json"'|t('icon-manager') }}</p>
+                    <p>{{ 'Format: { "icon-name": ["keyword1", "keyword2"], ... }'|t('icon-manager') }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <hr>
@@ -405,12 +459,14 @@
             var svgSpriteSettings = document.getElementById('svg-sprite-settings');
             var fontAwesomeSettings = document.getElementById('font-awesome-settings');
             var materialIconsSettings = document.getElementById('material-icons-settings');
-            
+            var webFontSettings = document.getElementById('web-font-settings');
+
             if (svgFolderSettings) svgFolderSettings.classList.add('hidden');
             if (svgSpriteSettings) svgSpriteSettings.classList.add('hidden');
             if (fontAwesomeSettings) fontAwesomeSettings.classList.add('hidden');
             if (materialIconsSettings) materialIconsSettings.classList.add('hidden');
-            
+            if (webFontSettings) webFontSettings.classList.add('hidden');
+
             // Show the relevant settings
             if (type === 'svg-folder' && svgFolderSettings) {
                 svgFolderSettings.classList.remove('hidden');
@@ -420,6 +476,8 @@
                 fontAwesomeSettings.classList.remove('hidden');
             } else if (type === 'material-icons' && materialIconsSettings) {
                 materialIconsSettings.classList.remove('hidden');
+            } else if (type === 'web-font' && webFontSettings) {
+                webFontSettings.classList.remove('hidden');
             }
         });
     }
