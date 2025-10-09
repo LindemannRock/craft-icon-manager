@@ -4,7 +4,7 @@ A comprehensive icon management field supporting SVG libraries and icon fonts fo
 
 ## Features
 
-- **Multiple Icon Formats**: Support for SVG files, SVG sprites, Font Awesome, and Material Icons
+- **Multiple Icon Formats**: Support for SVG files, SVG sprites, Font Awesome, Material Icons, and custom web fonts
 - **Intuitive Interface**: Searchable icon picker with preview, tabs/dropdown for multiple sets
 - **Flexible Configuration**: Configure icon sets and field settings (size, labels, search)
 - **Performance Optimized**: Built-in caching for fast icon loading
@@ -17,6 +17,7 @@ A comprehensive icon management field supporting SVG libraries and icon fonts fo
 - **SVG Sprite support** - Basic functionality implemented, advanced features pending
 - **Material Icons** - Core integration complete, variable fonts being refined
 - **Font Awesome** - Free icons working, Pro/Kit support in development
+- **Web Font** - Custom icon font support (TTF, WOFF, OTF) with glyph extraction
 
 SVG folder icons are fully stable and production-ready.
 
@@ -91,6 +92,7 @@ return [
             'svg-sprite' => true,
             'font-awesome' => false,
             'material-icons' => false,
+            'web-font' => false,
         ],
     ],
 
@@ -112,6 +114,7 @@ return [
             'svg-sprite' => true,
             'font-awesome' => true,
             'material-icons' => true,
+            'web-font' => true,
         ],
     ],
 
@@ -143,6 +146,7 @@ return [
             'svg-sprite' => false, // Beta
             'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
+            'web-font' => false, // Beta
         ],
     ],
 ];
@@ -192,6 +196,13 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - Material Symbols with variable font support
 - Configurable axes (weight, fill, optical size)
 
+#### Web Font
+- Custom icon fonts (TTF, WOFF, OTF supported)
+- Automatic glyph extraction with unicode mapping
+- @font-face CSS generation and serving
+- Configurable CSS prefix for icon classes
+- Note: WOFF2 not currently supported - use TTF or WOFF formats
+
 ## Usage
 
 ### Field Type
@@ -220,11 +231,18 @@ Add an Icon field to any element:
 {% if entry.multipleIconsField %}
     {% for icon in entry.multipleIconsField %}
         {{ icon.render({ size: 24, class: 'icon-item' }) }}
-        {% if icon.customLabel %}
-            <span>{{ icon.customLabel }}</span>
-        {% endif %}
+        <span>{{ icon.displayLabel }}</span>
     {% endfor %}
 {% endif %}
+
+{# displayLabel provides smart label resolution:
+   1. Site-specific custom label (if set)
+   2. General custom label (if set)
+   3. JSON metadata label
+   4. Database label
+   5. Translation
+   6. Formatted filename (fallback)
+#}
 ```
 
 Note: The `|raw` filter is not needed - icons are automatically rendered safely.
@@ -451,6 +469,8 @@ Controls the display size of icons in both the field preview and picker:
 - **Small**: 32x32 pixels
 - **Medium**: 48x48 pixels (default)
 - **Large**: 64x64 pixels
+
+Note: Font-based icons (Material Icons, Font Awesome, Web Fonts) are rendered 10px smaller than SVG icons for visual balance, as they typically have less padding in their bounding boxes.
 
 ### Show Labels
 When enabled, displays icon names below icons in the picker and field preview.

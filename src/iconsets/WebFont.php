@@ -19,8 +19,9 @@ use FontLib\Font;
 /**
  * WebFont Icon Set Handler
  *
- * Supports custom icon fonts (TTF, WOFF, WOFF2, OTF)
+ * Supports custom icon fonts (TTF, WOFF, OTF)
  * Automatically extracts glyph information from font files
+ * Note: WOFF2 not supported due to Brotli compression - use TTF or WOFF
  */
 class WebFont
 {
@@ -242,7 +243,7 @@ CSS;
         }
 
         $fonts = FileHelper::findFiles($iconsPath, [
-            'only' => ['*.ttf', '*.woff', '*.woff2', '*.otf'],
+            'only' => ['*.ttf', '*.woff', '*.otf'],
             'recursive' => true,
         ]);
 

@@ -33,6 +33,7 @@ return [
         'svg-sprite' => true,
         'font-awesome' => false,
         'material-icons' => false,
+        'web-font' => false,
     ],
 ];
 ```
@@ -55,9 +56,10 @@ return [
             'svg-sprite' => true,
             'font-awesome' => false,
             'material-icons' => false,
+            'web-font' => false,
         ],
     ],
-    
+
     // Development environment
     'dev' => [
         'iconSetsPath' => '@root/src/icons',
@@ -69,6 +71,7 @@ return [
             'svg-sprite' => true,
             'font-awesome' => true,
             'material-icons' => true,
+            'web-font' => true,
         ],
     ],
     
@@ -90,6 +93,7 @@ return [
             'svg-sprite' => false, // Beta
             'font-awesome' => false, // Beta
             'material-icons' => false, // Beta
+            'web-font' => false, // Beta
         ],
     ],
 ];
@@ -138,6 +142,7 @@ return [
   - `svg-sprite` - SVG sprite files (beta)
   - `font-awesome` - Font Awesome icons (beta)
   - `material-icons` - Material Icons and Material Symbols (beta)
+  - `web-font` - Custom web fonts with glyph extraction (beta)
 
 ### Precedence
 
