@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.0...v1.10.1) (2025-10-09)
+
+
+### Bug Fixes
+
+* logging to use LoggingLibrary trait consistently ([55b73af](https://github.com/LindemannRock/craft-icon-manager/commit/55b73af79fc44b79f986f0b35963077caffd1a28))
+
 ## [1.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.9.0...v1.10.0) (2025-10-09)
 
 
