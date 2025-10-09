@@ -148,14 +148,15 @@
         
         <div id="svg-sprite-settings" class="{% if iconSet.type != 'svg-sprite' %}hidden{% endif %}">
             <h2>{{ 'SVG Sprite Settings'|t('icon-manager') }}</h2>
-            
-            {{ forms.textField({
+
+            {{ forms.selectField({
                 label: 'Sprite File'|t('icon-manager'),
-                instructions: 'The sprite file path relative to your icon sets path.'|t('icon-manager'),
+                instructions: 'Select the SVG sprite file. Sprite files must contain <symbol> elements.'|t('icon-manager'),
                 id: 'settings-spriteFile',
                 name: 'settings[spriteFile]',
                 value: iconSet.settings.spriteFile ?? '',
-                placeholder: 'sprites/icons.svg',
+                options: availableSprites,
+                required: false,
             }) }}
 
             {{ forms.textField({

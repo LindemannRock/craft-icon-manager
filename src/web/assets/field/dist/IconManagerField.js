@@ -261,6 +261,11 @@
                         self.loadFonts(data.fonts);
                     }
 
+                    // Load required sprites for sprite icon sets
+                    if (data.sprites && data.sprites.length > 0) {
+                        self.loadSprites(data.sprites);
+                    }
+
                     self.showIconsInPicker();
                 } else {
                     console.error('Failed to load icons:', data.error || 'Unknown error');
@@ -1368,6 +1373,44 @@
         },
 
         /**
+         * Load sprite SVG files and inject them into the DOM
+         */
+        loadSprites: function(sprites) {
+            var self = this;
+            sprites.forEach(function(sprite) {
+                // Check if this sprite is already loaded
+                var existingSprite = document.getElementById('icon-manager-sprite-' + sprite.name);
+                if (!existingSprite) {
+                    // Fetch the sprite SVG file
+                    fetch(sprite.url)
+                        .then(function(response) { return response.text(); })
+                        .then(function(svgContent) {
+                            self.injectSprite(sprite.name, svgContent);
+                        })
+                        .catch(function(error) {
+                            console.error('Failed to load sprite:', sprite.name, error);
+                        });
+                }
+            });
+        },
+
+        /**
+         * Inject sprite SVG into the DOM (hidden)
+         */
+        injectSprite: function(spriteName, svgContent) {
+            // Strip out any <style> tags to prevent CSS pollution
+            svgContent = svgContent.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
+
+            var div = document.createElement('div');
+            div.id = 'icon-manager-sprite-' + spriteName;
+            div.style.display = 'none';
+            div.innerHTML = svgContent;
+            document.body.insertBefore(div, document.body.firstChild);
+
+            console.log('Injected sprite:', spriteName);
+        },
+
+        /**
          * Focus the search input when picker opens
          */
         focusSearchInput: function() {
@@ -1384,29 +1427,10 @@
          * Load fonts for saved icons on page init
          */
         loadInitialFonts: function() {
-            var fieldId = this.$input.dataset.fieldId;
-            if (!fieldId) return;
-
-            // Fetch fonts needed for this field's saved icons
-            fetch(Craft.getCpUrl('icon-manager/icons/get-icons-for-field'), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': Craft.csrfTokenValue,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ fieldId: fieldId })
-            })
-            .then(function(response) { return response.json(); })
-            .then(function(data) {
-                if (data.success && data.fonts && data.fonts.length > 0) {
-                    this.loadFonts(data.fonts);
-                }
-            }.bind(this))
-            .catch(function(error) {
-                // Silently fail - fonts will load when picker opens
-                console.debug('Could not preload fonts:', error);
-            });
+            // Don't load anything on page init - fonts/sprites will load when picker opens
+            // This prevents downloading large font files (like Material Icons 3.7MB) on every page load
+            // Sprites are already injected via the template for selected icons
+            return;
         }
     };
 })();

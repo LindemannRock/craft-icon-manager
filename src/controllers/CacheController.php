@@ -11,7 +11,7 @@ namespace lindemannrock\iconmanager\controllers;
 use Craft;
 use craft\web\Controller;
 use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\traits\LoggingTrait;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\Response;
 
 /**
@@ -45,7 +45,6 @@ class CacheController extends Controller
                     }
                 }
             }
-            $this->logTrace("Cleared {$iconsCacheCount} icon set cache files");
 
             // Clear Font Awesome caches from custom file storage
             $faCachePath = $runtimePath . '/icon-manager/fontawesome/';
@@ -58,7 +57,6 @@ class CacheController extends Controller
                     }
                 }
             }
-            $this->logTrace("Cleared {$faCacheCount} Font Awesome cache files");
 
             // Clear Material Icons caches from custom file storage
             $materialCachePath = $runtimePath . '/icon-manager/material/';
@@ -71,7 +69,6 @@ class CacheController extends Controller
                     }
                 }
             }
-            $this->logTrace("Cleared {$materialCacheCount} Material Icons cache files");
 
             // Clear memory caches
             IconManager::getInstance()->icons->clearMemoryCache();

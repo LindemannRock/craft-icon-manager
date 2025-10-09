@@ -219,6 +219,7 @@ class IconManager extends Plugin
                     'icon-manager/icons/get-data' => 'icon-manager/icons/get-data',
                     'icon-manager/icons/get-icons-for-field' => 'icon-manager/icons/get-icons-for-field',
                     'icon-manager/icons/serve-font' => 'icon-manager/icons/serve-font',
+                    'icon-manager/icons/serve-sprite' => 'icon-manager/icons/serve-sprite',
                     'icon-manager/cache/clear' => 'icon-manager/cache/clear',
                 ]);
             }

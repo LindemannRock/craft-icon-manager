@@ -182,8 +182,11 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
   - Any other SVG icon library
 
 #### SVG Sprite
-- Point to an SVG sprite file
-- Set optional ID prefix
+- Point to an SVG sprite file containing multiple `<symbol>` elements
+- Set optional ID prefix for icon references
+- **Performance**: Sprite file is loaded once and injected into the page DOM, allowing all icons to reference the same sprite
+- **Best for**: Projects using many icons from the same set (e.g., 10+ icons)
+- Supports standard SVG sprite format with `<symbol id="icon-name">` structure
 
 #### Font Awesome
 - Supports Font Awesome v7 (latest)
@@ -195,13 +198,16 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - Material Icons (classic) with all styles
 - Material Symbols with variable font support
 - Configurable axes (weight, fill, optical size)
+- **Performance Note**: Automatically loads Google Fonts font file (~3.7 MB) containing all 3,800+ icons. The font file is cached by the browser after first load, but represents a significant initial download.
+  - **Alternative**: For better performance, download SVG versions of only the icons you need from [Google Fonts](https://fonts.google.com/icons) and add them to an SVG folder or sprite icon set instead.
 
 #### Web Font
 - Custom icon fonts (TTF, WOFF, OTF supported)
 - Automatic glyph extraction with unicode mapping
 - @font-face CSS generation and serving
 - Configurable CSS prefix for icon classes
-- Note: WOFF2 not currently supported - use TTF or WOFF formats
+- **Performance**: Font file is served through Craft and cached by the browser after first load. Font size depends on the number of glyphs in your custom font.
+- **Note**: WOFF2 not currently supported - use TTF or WOFF formats
 
 ## Usage
 

@@ -11,7 +11,7 @@ namespace lindemannrock\iconmanager\services;
 use Craft;
 use craft\base\Component;
 use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\traits\LoggingTrait;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 use MathiasReker\PhpSvgOptimizer\Service\Facade\SvgOptimizerFacade;
 
 /**

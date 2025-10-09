@@ -29,6 +29,7 @@ class Icon extends Model implements \JsonSerializable
     const TYPE_SVG = 'svg';
     const TYPE_SPRITE = 'sprite';
     const TYPE_FONT = 'font';
+    const TYPE_GLYPH = 'glyph';
 
     /**
      * @var int|null ID
@@ -105,7 +106,7 @@ class Icon extends Model implements \JsonSerializable
             'keywords' => $this->keywords,
         ];
     }
-
+    
     /**
      * Get JSON data for picker without content (loaded via AJAX on-demand)
      */
@@ -128,7 +129,7 @@ class Icon extends Model implements \JsonSerializable
         return [
             [['iconSetId', 'type', 'name', 'value'], 'required'],
             [['iconSetId'], 'integer'],
-            [['type'], 'in', 'range' => [self::TYPE_SVG, self::TYPE_SPRITE, self::TYPE_FONT]],
+            [['type'], 'in', 'range' => [self::TYPE_SVG, self::TYPE_SPRITE, self::TYPE_FONT, self::TYPE_GLYPH]],
             [['name', 'label', 'value', 'path'], 'string'],
             [['keywords', 'metadata'], 'safe'],
         ];
@@ -145,7 +146,7 @@ class Icon extends Model implements \JsonSerializable
         if (!empty($this->customLabels) && isset($this->customLabels[$currentSiteId])) {
             return $this->customLabels[$currentSiteId];
         }
-
+        
         // 2. Check for general custom field label (fallback)
         if ($this->customLabel) {
             return $this->customLabel;
@@ -180,7 +181,7 @@ class Icon extends Model implements \JsonSerializable
             $currentSite = Craft::$app->getSites()->getCurrentSite();
             $siteId = $currentSite->id;
         }
-
+        
         // Return site-specific custom label
         if (!empty($this->customLabels) && isset($this->customLabels[$siteId])) {
             return $this->customLabels[$siteId];
@@ -243,7 +244,7 @@ class Icon extends Model implements \JsonSerializable
         try {
             // Try to translate the icon name using your translation system
             $translated = Craft::t('alhatab', $this->name);
-
+            
             // If translation exists (not the same as the original key), use it
             if ($translated !== $this->name) {
                 return $translated;
@@ -292,7 +293,7 @@ class Icon extends Model implements \JsonSerializable
         // Build the full path using current config
         $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
         $fullPath = Craft::getAlias($basePath . '/' . $this->path);
-
+        
         if (!file_exists($fullPath)) {
             $this->logWarning("Icon file not found: {$this->name}", [
                 'iconId' => $this->id,
@@ -337,7 +338,7 @@ class Icon extends Model implements \JsonSerializable
 
         return $sanitized;
     }
-
+    
     /**
      * Sanitize SVG content to prevent XSS attacks
      */
@@ -346,23 +347,23 @@ class Icon extends Model implements \JsonSerializable
         if (!$svg) {
             return null;
         }
-
+        
         // Remove any script tags
         $svg = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi', '', $svg);
-
+        
         // Remove event handlers
         $svg = preg_replace('/\son\w+\s*=\s*["\'][^"\']*["\']/i', '', $svg);
         $svg = preg_replace('/\son\w+\s*=\s*[^\s>]*/i', '', $svg);
-
+        
         // Remove javascript: protocol
         $svg = preg_replace('/href\s*=\s*["\']?\s*javascript:[^"\']*["\']?/i', 'href="#"', $svg);
-
+        
         // Remove data: URLs with script content
         $svg = preg_replace('/src\s*=\s*["\']?\s*data:[^"\']*script[^"\']*["\']?/i', 'src=""', $svg);
-
+        
         return $svg;
     }
-
+    
     /**
      * Get the icon's content for display
      * - For SVG icons: returns full SVG markup
@@ -396,9 +397,6 @@ class Icon extends Model implements \JsonSerializable
                     $unicode = $this->metadata['unicode'];
                     $iconContent = mb_chr($unicode, 'UTF-8');
                     $useRawHtml = true;
-
-                    // Debug log with more detail
-                    Craft::info("WebFont icon {$this->name}: unicode={$unicode} (0x" . dechex($unicode) . "), char bytes=" . bin2hex($iconContent) . ", value={$this->value}", 'icon-manager');
                 }
 
                 // For WebFont icons, use the base CSS prefix from value (e.g., "icon")
@@ -421,6 +419,29 @@ class Icon extends Model implements \JsonSerializable
                         Html::endTag('svg');
                 return Template::raw($html);
 
+            case self::TYPE_GLYPH:
+                // For glyph icons, return unicode HTML entity wrapped in span for JS compatibility
+                $glyph = $this->getGlyph();
+
+                // Get the icon class name for Material Icons
+                $className = 'material-icons';
+                if (isset($this->metadata['materialType']) && $this->metadata['materialType'] === 'symbols') {
+                    $className = 'material-symbols-outlined';
+                } elseif (isset($this->metadata['style'])) {
+                    $style = $this->metadata['style'];
+                    $styleMap = [
+                        'filled' => 'material-icons',
+                        'outlined' => 'material-icons-outlined',
+                        'rounded' => 'material-icons-round',
+                        'sharp' => 'material-icons-sharp',
+                        'two-tone' => 'material-icons-two-tone',
+                    ];
+                    $className = $styleMap[$style] ?? 'material-icons';
+                }
+
+                $html = Html::tag('span', $glyph, ['class' => $className]);
+                return Template::raw($html);
+
             default:
                 return null;
         }
@@ -433,8 +454,8 @@ class Icon extends Model implements \JsonSerializable
      */
     public function render(array $options = [])
     {
-        // Register fonts for font-based icons before rendering
-        if ($this->type === self::TYPE_FONT && $this->iconSetHandle) {
+        // Register fonts for font-based and glyph icons before rendering
+        if (($this->type === self::TYPE_FONT || $this->type === self::TYPE_GLYPH) && $this->iconSetHandle) {
             $this->_registerFonts();
         }
 
@@ -458,10 +479,10 @@ class Icon extends Model implements \JsonSerializable
         $size = $options['size'] ?? null;
         $width = $options['width'] ?? null;
         $height = $options['height'] ?? null;
-
+        
         // Remove these from options so they don't get added as attributes
         unset($options['class'], $options['size'], $options['width'], $options['height']);
-
+        
         // Remaining options become attributes
         $attributes = $options;
 
@@ -506,7 +527,7 @@ class Icon extends Model implements \JsonSerializable
                         // Get original dimensions from SVG
                         $originalWidth = $svgElement->getAttribute('width') ?: null;
                         $originalHeight = $svgElement->getAttribute('height') ?: null;
-
+                        
                         // Calculate proportional dimensions
                         if ($width && $height) {
                             // Both specified - use as-is
@@ -519,7 +540,7 @@ class Icon extends Model implements \JsonSerializable
                             $svgElement->setAttribute('width', $width);
                             $svgElement->setAttribute('height', $calculatedHeight);
                         } elseif ($height && $originalWidth && $originalHeight) {
-                            // Height specified, calculate proportional width
+                            // Height specified, calculate proportional width  
                             $aspectRatio = $originalWidth / $originalHeight;
                             $calculatedWidth = round($height * $aspectRatio, 1);
                             $svgElement->setAttribute('width', $calculatedWidth);
@@ -562,6 +583,36 @@ class Icon extends Model implements \JsonSerializable
                 );
                 return Template::raw($html);
 
+            case self::TYPE_GLYPH:
+                // Render glyph as unicode HTML entity wrapped in span
+                $glyph = $this->getGlyph();
+
+                // Get the icon class name for Material Icons
+                $glyphClass = 'material-icons';
+                if (isset($this->metadata['materialType']) && $this->metadata['materialType'] === 'symbols') {
+                    $glyphClass = 'material-symbols-outlined';
+                } elseif (isset($this->metadata['style'])) {
+                    $style = $this->metadata['style'];
+                    $styleMap = [
+                        'filled' => 'material-icons',
+                        'outlined' => 'material-icons-outlined',
+                        'rounded' => 'material-icons-round',
+                        'sharp' => 'material-icons-sharp',
+                        'two-tone' => 'material-icons-two-tone',
+                    ];
+                    $glyphClass = $styleMap[$style] ?? 'material-icons';
+                }
+
+                $attributes['class'] = trim($glyphClass . ' ' . $class);
+
+                // Apply size if specified
+                if ($size) {
+                    $attributes['style'] = 'font-size: ' . $size . 'px';
+                }
+
+                $html = Html::tag('span', $glyph, $attributes);
+                return Template::raw($html);
+
             case self::TYPE_FONT:
                 $attributes['class'] = trim($this->value . ' ' . $class);
 
@@ -597,6 +648,48 @@ class Icon extends Model implements \JsonSerializable
     }
 
     /**
+     * Get glyph unicode entity
+     */
+    public function getGlyph(string $format = 'charHex'): ?string
+    {
+        if ($this->type === self::TYPE_GLYPH) {
+            $parts = explode(':', $this->value);
+            $glyphName = $parts[0] ?? null;
+            $glyphId = $parts[1] ?? null;
+
+            if ($format === 'decimal') {
+                return $glyphId;
+            }
+
+            if ($format === 'hex') {
+                return dechex($glyphId);
+            }
+
+            if ($format === 'char') {
+                return '&#' . $glyphId . ';';
+            }
+
+            // Default: charHex format
+            return '&#x' . dechex($glyphId) . ';';
+        }
+
+        return null;
+    }
+
+    /**
+     * Get glyph name
+     */
+    public function getGlyphName(): ?string
+    {
+        if ($this->type === self::TYPE_GLYPH) {
+            $parts = explode(':', $this->value);
+            return $parts[0] ?? null;
+        }
+
+        return null;
+    }
+
+    /**
      * Register fonts for this icon (called before rendering)
      */
     private function _registerFonts(): void
@@ -615,14 +708,37 @@ class Icon extends Model implements \JsonSerializable
 
         $view = Craft::$app->getView();
 
-        // Material Icons - register Google Fonts
+        // Material Icons - register Google Fonts for glyphs with subsetting
         if ($iconSet->type === 'material-icons') {
-            $view->registerCssFile('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block', [
-                'crossorigin' => 'anonymous'
-            ]);
-            $view->registerCssFile('https://fonts.googleapis.com/icon?family=Material+Icons&display=block', [
-                'crossorigin' => 'anonymous'
-            ]);
+            // Use subsetting to load only the required icon
+            $iconName = $this->getGlyphName();
+
+            if ($iconName) {
+                // Material Symbols supports icon_names parameter for subsetting
+                $settings = $iconSet->settings ?? [];
+                $materialType = $settings['materialType'] ?? 'symbols';
+
+                if ($materialType === 'symbols') {
+                    // Use subsetting for Material Symbols
+                    $fontUrl = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=' . urlencode($iconName) . '&display=block';
+                    $view->registerCssFile($fontUrl, ['crossorigin' => 'anonymous']);
+
+                    // Add default font variation settings
+                    $view->registerCss('.material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }');
+                } else {
+                    // Material Icons classic - load full font (no subsetting available)
+                    $handler = new \lindemannrock\iconmanager\iconsets\MaterialIcons($iconSet);
+                    $assets = $handler->getAssets();
+
+                    foreach ($assets as $asset) {
+                        if ($asset['type'] === 'css' && isset($asset['url'])) {
+                            $view->registerCssFile($asset['url'], $asset['attributes'] ?? []);
+                        } elseif ($asset['type'] === 'css' && isset($asset['inline'])) {
+                            $view->registerCss($asset['inline']);
+                        }
+                    }
+                }
+            }
         }
         // WebFont - register @font-face CSS
         elseif ($iconSet->type === 'web-font') {
@@ -652,7 +768,7 @@ class Icon extends Model implements \JsonSerializable
             return;
         }
 
-        // Get sprite content and inject it
+        // Get sprite file path
         $settings = $iconSet->settings ?? [];
         $spriteFile = $settings['spriteFile'] ?? null;
 
@@ -663,9 +779,11 @@ class Icon extends Model implements \JsonSerializable
         $spritePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $spriteFile;
 
         if (!file_exists($spritePath)) {
+            Craft::error("Sprite file not found: {$spritePath}", 'icon-manager');
             return;
         }
 
+        // Read sprite content
         $spriteContent = @file_get_contents($spritePath);
         if (!$spriteContent) {
             return;
@@ -674,9 +792,21 @@ class Icon extends Model implements \JsonSerializable
         // Strip any <style> tags to prevent CSS pollution
         $spriteContent = preg_replace('/<style[^>]*>[\s\S]*?<\/style>/i', '', $spriteContent);
 
-        // Inject sprite into page
+        // Inject sprite into page body (hidden)
+        // Use registerJs to inject via JavaScript since registerHtml doesn't work in CP
         $view = Craft::$app->getView();
-        $view->registerHtml('<div style="display:none;">' . $spriteContent . '</div>', \yii\web\View::POS_BEGIN);
+        $spriteHtml = '<div id="icon-manager-sprite-' . $this->iconSetHandle . '" style="display:none;">' . $spriteContent . '</div>';
+
+        // Escape for JavaScript
+        $escapedHtml = json_encode($spriteHtml);
+
+        $js = "if (!document.getElementById('icon-manager-sprite-{$this->iconSetHandle}')) {
+            var div = document.createElement('div');
+            div.innerHTML = {$escapedHtml};
+            document.body.insertBefore(div.firstChild, document.body.firstChild);
+        }";
+
+        $view->registerJs($js, \yii\web\View::POS_READY);
 
         $registeredSprites[$this->iconSetHandle] = true;
     }
@@ -687,7 +817,7 @@ class Icon extends Model implements \JsonSerializable
     public function matchesKeywords(string $search): bool
     {
         $search = strtolower($search);
-
+        
         // Check name
         if (str_contains(strtolower($this->name), $search)) {
             return true;
@@ -707,7 +837,7 @@ class Icon extends Model implements \JsonSerializable
 
         return false;
     }
-
+    
     /**
      * Get the icon set this icon belongs to
      */

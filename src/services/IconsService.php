@@ -12,7 +12,7 @@ use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\records\IconRecord;
-use lindemannrock\iconmanager\traits\LoggingTrait;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 use Craft;
 use craft\base\Component;
@@ -53,57 +53,27 @@ class IconsService extends Component
 
             // Check if already cached in memory
             if (isset($this->_iconsBySetId[$iconSetId])) {
-                $this->logTrace("Memory cache hit for icon set {$iconSetId}");
                 return $this->_iconsBySetId[$iconSetId];
             }
 
             // Check custom file cache
             $cached = $this->_getCachedIcons($iconSetId);
             if ($cached !== null) {
-                // Get icon set details for better logging
-                $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-                $setName = $iconSet ? $iconSet->name : "Unknown";
-                $setType = $iconSet ? $iconSet->type : "unknown";
-
-                $this->logTrace("File cache hit for icon set '{setName}' ({iconCount} {setType} icons)", [
-                    'setName' => $setName,
-                    'setType' => $setType,
-                    'iconCount' => count($cached),
-                    'iconSetId' => $iconSetId
-                ]);
                 $this->_iconsBySetId[$iconSetId] = $cached;
                 return $cached;
             }
 
             // Cache miss - load from database
-            $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-            $setName = $iconSet ? $iconSet->name : "Unknown";
-            $this->logTrace("Cache miss for icon set '{setName}' - loading from database", [
-                'iconSetId' => $iconSetId,
-                'setName' => $setName
-            ]);
             $icons = $this->_loadIconsFromDatabase($iconSetId);
 
             // Store in custom file cache
             $this->_cacheIcons($iconSetId, $icons, $cacheDuration);
-            $this->logTrace("Cached {count} icons for icon set '{setName}' (expires in {duration}s)", [
-                'count' => count($icons),
-                'setName' => $setName,
-                'duration' => $cacheDuration,
-                'iconSetId' => $iconSetId
-            ]);
 
             $this->_iconsBySetId[$iconSetId] = $icons;
             return $icons;
         }
-        
+
         // No cache - load directly
-        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-        $setName = $iconSet ? $iconSet->name : "Unknown";
-        $this->logTrace("Cache disabled - loading icons directly from database for set '{setName}'", [
-            'iconSetId' => $iconSetId,
-            'setName' => $setName
-        ]);
         $icons = $this->_loadIconsFromDatabase($iconSetId);
         $this->_iconsBySetId[$iconSetId] = $icons;
 
@@ -142,11 +112,6 @@ class IconsService extends Component
         }
 
         $duration = microtime(true) - $startTime;
-        $this->logTrace("Loaded {count} icons from database in {duration}ms", [
-            'iconSetId' => $iconSetId,
-            'count' => count($icons),
-            'duration' => round($duration * 1000, 2)
-        ]);
 
         // Log warning for slow operations
         if ($duration > 1.0) {
@@ -306,12 +271,6 @@ class IconsService extends Component
             return $icons;
         }
 
-        $this->logTrace("Scanning SVG folder: {$folderPath}", [
-            'iconSetId' => $iconSet->id,
-            'folder' => $folder,
-            'includeSubfolders' => $includeSubfolders
-        ]);
-
         $files = FileHelper::findFiles($folderPath, [
             'only' => ['*.svg'],
             'except' => ['_*'],
@@ -346,54 +305,21 @@ class IconsService extends Component
     }
 
     /**
-     * Scan SVG sprite for icons
+     * Get icons from SVG sprite
      */
     private function _scanSvgSprite(IconSet $iconSet): array
     {
+        $iconObjects = \lindemannrock\iconmanager\iconsets\SvgSprite::getIcons($iconSet);
+
+        // Convert Icon objects to arrays for database storage
         $icons = [];
-        $settings = $iconSet->getTypeSettings();
-        $spriteFile = $settings['spriteFile'] ?? '';
-        $prefix = $settings['prefix'] ?? '';
-
-        if (empty($spriteFile)) {
-            return $icons;
-        }
-
-        $basePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath();
-        $spritePath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $spriteFile);
-
-        if (!file_exists($spritePath)) {
-            return $icons;
-        }
-
-        // Parse SVG sprite file
-        $dom = new \DOMDocument();
-        @$dom->load($spritePath);
-        $symbols = $dom->getElementsByTagName('symbol');
-
-        foreach ($symbols as $symbol) {
-            $id = $symbol->getAttribute('id');
-            if (empty($id)) {
-                continue;
-            }
-
-            // Remove prefix if present
-            $name = $prefix && str_starts_with($id, $prefix) 
-                ? substr($id, strlen($prefix)) 
-                : $id;
-
-            $label = StringHelper::titleize($name);
-
+        foreach ($iconObjects as $icon) {
             $icons[] = [
-                'name' => $name,
-                'label' => $label,
-                'path' => '',
-                'keywords' => [$name],
-                'metadata' => [
-                    'type' => Icon::TYPE_SPRITE,
-                    'spriteId' => $id,
-                    'spriteFile' => $spriteFile,
-                ],
+                'name' => $icon->name,
+                'label' => $icon->label,
+                'path' => $icon->path,
+                'keywords' => $icon->keywords,
+                'metadata' => $icon->metadata,
             ];
         }
 

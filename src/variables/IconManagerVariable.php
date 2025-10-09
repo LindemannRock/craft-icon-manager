@@ -129,4 +129,42 @@ class IconManagerVariable
     {
         return IconManager::getInstance()->svgOptimizer;
     }
+
+    /**
+     * Inject a sprite SVG inline
+     *
+     * @param string $iconSetHandle
+     * @return string
+     */
+    public function injectSprite(string $iconSetHandle): string
+    {
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($iconSetHandle);
+        if (!$iconSet || $iconSet->type !== 'svg-sprite') {
+            return '';
+        }
+
+        $settings = $iconSet->settings ?? [];
+        $spriteFile = $settings['spriteFile'] ?? null;
+
+        if (!$spriteFile) {
+            return '';
+        }
+
+        $spritePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $spriteFile;
+
+        if (!file_exists($spritePath)) {
+            return '';
+        }
+
+        $spriteContent = @file_get_contents($spritePath);
+        if (!$spriteContent) {
+            return '';
+        }
+
+        // Strip any <style> tags to prevent CSS pollution
+        $spriteContent = preg_replace('/<style[^>]*>[\s\S]*?<\/style>/i', '', $spriteContent);
+
+        // Return the sprite wrapped in a hidden div
+        return '<div style="display:none;">' . $spriteContent . '</div>';
+    }
 }

@@ -9,7 +9,7 @@
 namespace lindemannrock\iconmanager\controllers;
 
 use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\traits\LoggingTrait;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 use Craft;
 use craft\web\Controller;
@@ -25,7 +25,7 @@ class IconsController extends Controller
     /**
      * @var array|bool|int Allow anonymous access
      */
-    protected array|bool|int $allowAnonymous = ['render'];
+    protected array|bool|int $allowAnonymous = ['render', 'serve-sprite'];
 
     /**
      * Render an icon
@@ -35,13 +35,6 @@ class IconsController extends Controller
         $request = Craft::$app->getRequest();
         $iconSetHandle = $request->getRequiredParam('iconSet');
         $iconName = $request->getRequiredParam('icon');
-
-        $this->logTrace("Icon render request: {$iconSetHandle}:{$iconName}", [
-            'iconSet' => $iconSetHandle,
-            'icon' => $iconName,
-            'userAgent' => $request->getUserAgent(),
-            'ip' => $request->getUserIP()
-        ]);
 
         $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($iconSetHandle);
         if (!$iconSet || !$iconSet->enabled) {
@@ -70,12 +63,6 @@ class IconsController extends Controller
         $iconSetHandle = $request->getRequiredParam('iconSet');
         $iconName = $request->getRequiredParam('icon');
 
-        $this->logTrace("Icon data request (AJAX): {$iconSetHandle}:{$iconName}", [
-            'iconSet' => $iconSetHandle,
-            'icon' => $iconName,
-            'requestType' => 'ajax-data'
-        ]);
-
         $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($iconSetHandle);
         if (!$iconSet || !$iconSet->enabled) {
             $this->logWarning("Icon data request failed - icon set not found: {$iconSetHandle}");
@@ -101,6 +88,75 @@ class IconsController extends Controller
     }
 
     /**
+     * Get fonts/sprites needed for selected icons (lightweight endpoint for page init)
+     */
+    public function actionGetAssetsForSelectedIcons(): Response
+    {
+        $this->requireAcceptsJson();
+
+        $request = Craft::$app->getRequest();
+        $selectedIcons = $request->getParam('selectedIcons', []);
+
+        $fonts = [];
+        $sprites = [];
+
+        // Get unique icon set handles from selected icons
+        $iconSetHandles = array_unique(array_column($selectedIcons, 'iconSetHandle'));
+
+        foreach ($iconSetHandles as $handle) {
+            $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($handle);
+            if (!$iconSet) {
+                continue;
+            }
+
+            // Get required assets for this icon set
+            if ($iconSet->type === 'material-icons') {
+                $handler = new \lindemannrock\iconmanager\iconsets\MaterialIcons($iconSet);
+                $assets = $handler->getAssets();
+
+                foreach ($assets as $asset) {
+                    if ($asset['type'] === 'css' && isset($asset['url'])) {
+                        $fonts[] = [
+                            'type' => 'remote',
+                            'url' => $asset['url'],
+                        ];
+                    } elseif ($asset['type'] === 'css' && isset($asset['inline'])) {
+                        $fonts[] = [
+                            'type' => 'inline',
+                            'css' => $asset['inline'],
+                        ];
+                    }
+                }
+            } elseif ($iconSet->type === 'web-font') {
+                $assets = \lindemannrock\iconmanager\iconsets\WebFont::getAssets($iconSet);
+
+                foreach ($assets as $asset) {
+                    if ($asset['type'] === 'css' && isset($asset['inline'])) {
+                        $fonts[] = [
+                            'type' => 'inline',
+                            'css' => $asset['inline'],
+                        ];
+                    }
+                }
+            } elseif ($iconSet->type === 'svg-sprite') {
+                $spriteUrl = \lindemannrock\iconmanager\iconsets\SvgSprite::getSpriteUrl($iconSet);
+                if ($spriteUrl) {
+                    $sprites[] = [
+                        'name' => $iconSet->handle,
+                        'url' => $spriteUrl,
+                    ];
+                }
+            }
+        }
+
+        return $this->asJson([
+            'success' => true,
+            'fonts' => array_values(array_unique($fonts, SORT_REGULAR)),
+            'sprites' => array_values(array_unique($sprites, SORT_REGULAR)),
+        ]);
+    }
+
+    /**
      * Get all icons for a field in a single batch request
      */
     public function actionGetIconsForField(): Response
@@ -109,8 +165,6 @@ class IconsController extends Controller
 
         $request = Craft::$app->getRequest();
         $fieldId = $request->getRequiredParam('fieldId');
-
-        $this->logTrace("Batch icons request for field: {$fieldId}");
 
         // Get the field
         $field = Craft::$app->getFields()->getFieldById($fieldId);
@@ -135,9 +189,10 @@ class IconsController extends Controller
             $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
         }
 
-        // Collect all icons with their content and required assets (fonts/CSS)
+        // Collect all icons with their content and required assets (fonts/CSS/sprites)
         $iconsData = [];
         $fonts = [];
+        $sprites = [];
         $iconCount = 0;
 
         foreach ($iconSets as $iconSet) {
@@ -176,6 +231,15 @@ class IconsController extends Controller
                         ];
                     }
                 }
+            } elseif ($iconSet->type === 'svg-sprite') {
+                // Get sprite URL for this icon set
+                $spriteUrl = \lindemannrock\iconmanager\iconsets\SvgSprite::getSpriteUrl($iconSet);
+                if ($spriteUrl) {
+                    $sprites[] = [
+                        'name' => $iconSet->handle,
+                        'url' => $spriteUrl,
+                    ];
+                }
             }
 
             $icons = IconManager::getInstance()->icons->getIconsBySetId($iconSet->id);
@@ -195,12 +259,11 @@ class IconsController extends Controller
             }
         }
 
-        $this->logTrace("Returning {$iconCount} icons for field {$fieldId}");
-
         return $this->asJson([
             'success' => true,
             'icons' => $iconsData,
             'fonts' => array_values(array_unique($fonts, SORT_REGULAR)),
+            'sprites' => array_values(array_unique($sprites, SORT_REGULAR)),
         ]);
     }
 
@@ -249,6 +312,45 @@ class IconsController extends Controller
         // Return font file
         return Craft::$app->getResponse()->sendFile($fontPath, $fileName, [
             'mimeType' => $mimeType,
+            'inline' => true
+        ]);
+    }
+
+    /**
+     * Serve an SVG sprite file
+     */
+    public function actionServeSprite(): Response
+    {
+        $iconSetHandle = Craft::$app->getRequest()->getQueryParam('iconSet');
+        $fileName = Craft::$app->getRequest()->getQueryParam('file');
+
+        if (!$iconSetHandle || !$fileName) {
+            throw new \yii\web\NotFoundHttpException('Invalid parameters');
+        }
+
+        // Get icon set
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($iconSetHandle);
+        if (!$iconSet || $iconSet->type !== 'svg-sprite') {
+            throw new \yii\web\NotFoundHttpException('Icon set not found');
+        }
+
+        // Get sprite file path
+        $settings = $iconSet->settings ?? [];
+        $spriteFile = $settings['spriteFile'] ?? null;
+
+        if (!$spriteFile || basename($spriteFile) !== $fileName) {
+            throw new \yii\web\NotFoundHttpException('Sprite file not found');
+        }
+
+        $spritePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $spriteFile;
+
+        if (!file_exists($spritePath)) {
+            throw new \yii\web\NotFoundHttpException('Sprite file does not exist');
+        }
+
+        // Return sprite file
+        return Craft::$app->getResponse()->sendFile($spritePath, $fileName, [
+            'mimeType' => 'image/svg+xml',
             'inline' => true
         ]);
     }

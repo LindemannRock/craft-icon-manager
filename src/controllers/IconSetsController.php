@@ -56,6 +56,7 @@ class IconSetsController extends Controller
             'isNew' => !$iconSet->id,
             'availableFolders' => $iconSet->getAvailableFolders(),
             'availableFonts' => \lindemannrock\iconmanager\iconsets\WebFont::getAvailableFonts(),
+            'availableSprites' => \lindemannrock\iconmanager\iconsets\SvgSprite::getAvailableSprites(),
         ];
 
         // Add optimization data for existing SVG folder icon sets

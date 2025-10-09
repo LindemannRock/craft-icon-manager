@@ -436,7 +436,7 @@ JS;
 
         // Get the full icon data from the service
         $icon = IconManager::getInstance()->icons->getIcon($data['iconSetHandle'], $data['name']);
-        
+
         if (!$icon) {
             // Create a basic icon if not found in cache
             $icon = new Icon([

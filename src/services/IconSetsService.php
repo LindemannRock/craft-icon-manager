@@ -11,7 +11,7 @@ namespace lindemannrock\iconmanager\services;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\records\IconSetRecord;
-use lindemannrock\iconmanager\traits\LoggingTrait;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 use Craft;
 use craft\base\Component;
