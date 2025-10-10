@@ -79,7 +79,7 @@ class SvgOptimizerService extends Component
         ];
 
         if (!is_dir($folderPath)) {
-            $this->logWarning("Icon set folder not found: {$folderPath}");
+            $this->logWarning("Icon set folder not found", ['folderPath' => $folderPath]);
             return $result;
         }
 
@@ -376,7 +376,7 @@ class SvgOptimizerService extends Component
             return false;
         }
 
-        $this->logInfo("Created backup at: {$backupPath}");
+        $this->logInfo("Created backup", ['backupPath' => $backupPath]);
         return $backupPath;
     }
 
@@ -478,7 +478,10 @@ class SvgOptimizerService extends Component
             // Write optimized content back to file
             return file_put_contents($filePath, $optimizedContent) !== false;
         } catch (\Exception $e) {
-            $this->logError("Failed to optimize SVG file {$filePath}: " . $e->getMessage());
+            $this->logError("Failed to optimize SVG file", [
+                'filePath' => $filePath,
+                'error' => $e->getMessage()
+            ]);
             return false;
         }
     }

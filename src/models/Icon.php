@@ -230,7 +230,7 @@ class Icon extends Model implements \JsonSerializable
             return null;
         } catch (\Exception $e) {
             // Log error but don't break
-            $this->logWarning("Failed to parse JSON label file: {$jsonPath}");
+            $this->logWarning("Failed to parse JSON label file", ['jsonPath' => $jsonPath]);
             return null;
         }
     }
@@ -398,7 +398,13 @@ class Icon extends Model implements \JsonSerializable
                     $useRawHtml = true;
 
                     // Debug log with more detail
-                    $this->logDebug("WebFont icon {$this->name}: unicode={$unicode} (0x" . dechex($unicode) . "), char bytes=" . bin2hex($iconContent) . ", value={$this->value}");
+                    $this->logDebug("WebFont icon details", [
+                        'iconName' => $this->name,
+                        'unicode' => $unicode,
+                        'unicodeHex' => '0x' . dechex($unicode),
+                        'charBytes' => bin2hex($iconContent),
+                        'value' => $this->value
+                    ]);
                 }
 
                 // For WebFont icons, use the base CSS prefix from value (e.g., "icon")

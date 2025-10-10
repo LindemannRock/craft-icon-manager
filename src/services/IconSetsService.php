@@ -163,7 +163,8 @@ class IconSetsService extends Component
             }
             $errorString = implode('; ', $errorMessages);
 
-            $this->logWarning("Icon set validation failed: {$errorString}", [
+            $this->logWarning("Icon set validation failed", [
+                'errors' => $errorString,
                 'errors' => $iconSet->getErrors(),
                 'iconSetId' => $iconSet->id
             ]);
@@ -214,7 +215,8 @@ class IconSetsService extends Component
 
             // Log successful operation
             $action = $isNew ? 'created' : 'updated';
-            $this->logInfo("Icon set {$action} successfully", [
+            $this->logInfo("Icon set operation successful", [
+                'action' => $action,
                 'iconSetId' => $iconSet->id,
                 'name' => $iconSet->name,
                 'type' => $iconSet->type
@@ -222,7 +224,8 @@ class IconSetsService extends Component
 
         } catch (\Throwable $e) {
             $transaction->rollBack();
-            $this->logError("Failed to save icon set: " . $e->getMessage(), [
+            $this->logError("Failed to save icon set", [
+                'error' => $e->getMessage(),
                 'iconSetId' => $iconSet->id ?? 'new',
                 'name' => $iconSet->name ?? 'unknown'
             ]);
@@ -263,7 +266,8 @@ class IconSetsService extends Component
 
         } catch (\Throwable $e) {
             $transaction->rollBack();
-            $this->logError("Failed to delete icon set: " . $e->getMessage(), [
+            $this->logError("Failed to delete icon set", [
+                'error' => $e->getMessage(),
                 'iconSetId' => $iconSet->id,
                 'name' => $iconSet->name
             ]);

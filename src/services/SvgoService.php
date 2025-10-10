@@ -180,7 +180,8 @@ class SvgoService extends Component
             ]);
         }
 
-        $this->logInfo("Starting SVGO optimization for icon set: {$iconSet->name}", [
+        $this->logInfo("Starting SVGO optimization for icon set", [
+            'iconSetName' => $iconSet->name,
             'iconSetId' => $iconSet->id,
             'totalFiles' => $total,
         ]);
@@ -218,7 +219,8 @@ class SvgoService extends Component
             } catch (\Exception $e) {
                 $errors++;
                 echo "  ✗ Error\n";
-                $this->logError("Error optimizing file with SVGO: " . $e->getMessage(), [
+                $this->logError("Error optimizing file with SVGO", [
+                    'error' => $e->getMessage(),
                     'file' => $filename,
                     'path' => $file,
                     'error' => $e->getMessage(),
@@ -229,7 +231,8 @@ class SvgoService extends Component
             }
         }
 
-        $this->logInfo("SVGO optimization completed for icon set: {$iconSet->name}", [
+        $this->logInfo("SVGO optimization completed for icon set", [
+            'iconSetName' => $iconSet->name,
             'iconSetId' => $iconSet->id,
             'total' => $total,
             'optimized' => $optimized,
