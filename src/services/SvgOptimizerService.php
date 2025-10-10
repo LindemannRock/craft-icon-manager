@@ -185,8 +185,8 @@ class SvgOptimizerService extends Component
             $result['issues']['filters'] = count($matches[0]);
         }
 
-        // Check for comments
-        if (preg_match_all('/<!--.*?-->/s', $content, $matches)) {
+        // Check for comments (exclude legal/license comments with <!--! ... -->)
+        if (preg_match_all('/<!--(?!!).*?-->/s', $content, $matches)) {
             $result['issues']['comments'] = count($matches[0]);
         }
 
@@ -434,6 +434,16 @@ class SvgOptimizerService extends Component
             // Normalize whitespace in original content for comparison
             $originalNormalized = preg_replace('/\s+/', ' ', trim($content));
 
+            // Preserve legal/license comments (<!--! ... -->) before optimization
+            $legalComments = [];
+            if (preg_match_all('/<!--!.*?-->/s', $content, $matches)) {
+                $legalComments = $matches[0];
+                // Temporarily replace with placeholders
+                foreach ($legalComments as $index => $comment) {
+                    $content = str_replace($comment, "<!--LEGAL_COMMENT_PLACEHOLDER_{$index}-->", $content);
+                }
+            }
+
             // Step 1: Use php-svg-optimizer library for basic optimization
             $optimizedContent = SvgOptimizerFacade::fromString($content)
                 ->withRules(
@@ -454,6 +464,11 @@ class SvgOptimizerService extends Component
                 )
                 ->optimize()
                 ->getContent();
+
+            // Restore legal comments
+            foreach ($legalComments as $index => $comment) {
+                $optimizedContent = str_replace("<!--LEGAL_COMMENT_PLACEHOLDER_{$index}-->", $comment, $optimizedContent);
+            }
 
             // Step 2: Convert CSS classes to inline attributes (not handled by library)
             $optimizedContent = $this->convertCssClassesToAttributes($optimizedContent);
