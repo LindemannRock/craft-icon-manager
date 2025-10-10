@@ -34,6 +34,15 @@ class IconsService extends Component
     private array $_iconsBySetId = [];
 
     /**
+     * Initialize the service
+     */
+    public function init(): void
+    {
+        parent::init();
+        $this->setLoggingHandle('icon-manager');
+    }
+
+    /**
      * Get all icons for an icon set
      * 
      * @param int $iconSetId
@@ -151,6 +160,13 @@ class IconsService extends Component
      */
     public function refreshIconsForSet(IconSet $iconSet): void
     {
+        $this->logInfo("START refreshIconsForSet", [
+            'iconSetId' => $iconSet->id,
+            'iconSetHandle' => $iconSet->handle,
+            'iconSetType' => $iconSet->type,
+            'iconSetName' => $iconSet->name
+        ]);
+
         $db = Craft::$app->getDb();
         $transaction = $db->beginTransaction();
 
@@ -164,7 +180,7 @@ class IconsService extends Component
 
             // Clear memory cache
             unset($this->_iconsBySetId[$iconSet->id]);
-            
+
             // Delete existing icons
             $db->createCommand()
                 ->delete('{{%iconmanager_icons}}', ['iconSetId' => $iconSet->id])
@@ -232,6 +248,12 @@ class IconsService extends Component
      */
     private function _scanIconsForSet(IconSet $iconSet): array
     {
+        $this->logInfo("Scanning icons for icon set", [
+            'iconSetHandle' => $iconSet->handle,
+            'iconSetType' => $iconSet->type,
+            'iconSetName' => $iconSet->name
+        ]);
+
         switch ($iconSet->type) {
             case 'svg-folder':
                 return $this->_scanSvgFolder($iconSet);
