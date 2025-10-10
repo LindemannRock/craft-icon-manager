@@ -18,11 +18,18 @@
     { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 
-{% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
+{% if not isNew %}
     {% set tabs = {
         settings: { label: "Settings"|t('icon-manager'), url: '#settings' },
-        optimization: { label: "SVG Optimization"|t('icon-manager'), url: '#optimization' }
+        preview: { label: "Preview"|t('icon-manager'), url: '#preview' }
     } %}
+
+    {% if iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
+        {% set tabs = tabs|merge({
+            optimization: { label: "SVG Optimization"|t('icon-manager'), url: '#optimization' }
+        }) %}
+    {% endif %}
+
     {% set selectedTab = 'settings' %}
 {% endif %}
 
@@ -348,6 +355,13 @@
 
     </div>{# end settings tab #}
 
+    {# Preview Tab #}
+    {% if not isNew %}
+    <div id="preview" class="hidden">
+        {% include 'icon-manager/icon-sets/_preview-tab.twig' %}
+    </div>
+    {% endif %}
+
     {# SVG Optimization Tab #}
     {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
     <div id="optimization" class="hidden">
@@ -359,33 +373,26 @@
 
 {% js %}
     // Handle tab-specific action button visibility
-    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+    {% if not isNew %}
     function updateActionButton() {
         var saveButtonContainer = document.getElementById('save-button-container');
         var optimizationButtonContainer = document.getElementById('optimization-button-container');
         var hash = window.location.hash;
 
-        // If on optimization tab but no optimization button exists (no issues), hide save button
-        if (!optimizationButtonContainer) {
-            if (saveButtonContainer) {
-                if (hash === '#optimization') {
-                    saveButtonContainer.style.display = 'none';
-                } else {
-                    saveButtonContainer.style.display = 'block';
-                }
+        // Hide save button on Preview and Optimization tabs
+        if (saveButtonContainer) {
+            if (hash === '#preview' || hash === '#optimization') {
+                saveButtonContainer.style.display = 'none';
+            } else {
+                saveButtonContainer.style.display = 'block';
             }
-            return;
         }
 
-        // Otherwise, swap between save and optimization buttons
-        if (saveButtonContainer && optimizationButtonContainer) {
+        // Show optimization button only on optimization tab
+        if (optimizationButtonContainer) {
             if (hash === '#optimization') {
-                // Show optimization button, hide save button
-                saveButtonContainer.style.display = 'none';
                 optimizationButtonContainer.style.display = 'block';
             } else {
-                // Show save button, hide optimization button
-                saveButtonContainer.style.display = 'block';
                 optimizationButtonContainer.style.display = 'none';
             }
         }

@@ -175,6 +175,7 @@
             <table class="data fullwidth" style="font-size: 13px; border-collapse: collapse; border: 1px solid #e5e7eb;">
                 <thead>
                     <tr style="background: #f9fafb;">
+                        <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb; width: 60px;">{{ "Preview"|t('icon-manager') }}</th>
                         <th style="padding: 10px 12px; text-align: left; border: 1px solid #e5e7eb;">{{ "File Name"|t('icon-manager') }}</th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">{{ "Size"|t('icon-manager') }}</th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
@@ -213,6 +214,16 @@
 
                         {% if hasIssues %}
                         <tr>
+                            <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb; vertical-align: middle;">
+                                {% set svgPreview = craft.iconManager.svgOptimizer.getSvgPreview(iconSet, icon.path) %}
+                                {% if svgPreview %}
+                                    <div style="width: 32px; height: 32px; margin: 0 auto; color: #374151; display: flex; align-items: center; justify-content: center;">
+                                        {{ svgPreview|raw }}
+                                    </div>
+                                {% else %}
+                                    <span style="color: #9ca3af; font-size: 11px;">—</span>
+                                {% endif %}
+                            </td>
                             <td style="padding: 8px 12px; border: 1px solid #e5e7eb;">
                                 <code style="font-size: 12px;">{{ icon.path }}</code>
                             </td>

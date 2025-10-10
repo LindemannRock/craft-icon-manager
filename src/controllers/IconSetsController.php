@@ -61,6 +61,11 @@ class IconSetsController extends Controller
             'availableSprites' => \lindemannrock\iconmanager\iconsets\SvgSprite::getAvailableSprites(),
         ];
 
+        // Add icons for preview tab
+        if ($iconSet->id) {
+            $templateVars['icons'] = IconManager::getInstance()->icons->getIconsBySetId($iconSet->id);
+        }
+
         // Add optimization data for existing SVG folder icon sets
         if ($iconSet->id && in_array($iconSet->type, ['svg-folder', 'folder'])) {
             $templateVars['scanResult'] = IconManager::getInstance()->svgOptimizer->scanIconSet($iconSet);

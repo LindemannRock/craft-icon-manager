@@ -202,7 +202,7 @@ class SvgOptimizerService extends Component
                         $propLower = strtolower($prop);
 
                         // Only count if it's NOT a CSS-only property
-                        if (!in_array($propLower, ['mix-blend-mode', 'opacity', 'filter', 'transform', 'clip-path'])) {
+                        if (!in_array($propLower, ['mix-blend-mode', 'opacity', 'filter', 'transform', 'clip-path', 'isolation'])) {
                             $hasConvertibleStyles = true;
                             break;
                         }
@@ -280,6 +280,26 @@ class SvgOptimizerService extends Component
             return number_format($bytes / 1024, 2) . ' KB';
         }
         return $bytes . ' B';
+    }
+
+    /**
+     * Get SVG content for preview (for optimization table)
+     *
+     * @param object $iconSet The icon set
+     * @param string $relativePath Relative path to the SVG file
+     * @return string|null SVG content or null if not found
+     */
+    public function getSvgPreview($iconSet, string $relativePath): ?string
+    {
+        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+        $folder = $iconSet->settings['folder'] ?? '';
+        $fullPath = Craft::getAlias($basePath . '/' . $folder . '/' . $relativePath);
+
+        if (file_exists($fullPath)) {
+            return file_get_contents($fullPath);
+        }
+
+        return null;
     }
 
     /**
@@ -651,7 +671,7 @@ class SvgOptimizerService extends Component
                                 $convertedProps[] = $propLower;
                             }
                         } else {
-                            // CSS-only properties that must stay in style attribute
+                            // CSS-only properties that must stay in style attribute (like isolation, mix-blend-mode, etc.)
                             $remainingProps[] = $declaration;
                         }
                     }
