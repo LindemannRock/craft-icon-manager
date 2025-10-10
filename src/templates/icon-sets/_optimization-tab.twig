@@ -63,14 +63,16 @@
 
         <!-- Total Issues Card -->
         {% set totalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.largeFiles + scanResult.issues.widthHeight %}
+        {% set criticalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.widthHeight %}
+        {% set hasRedIssues = criticalIssues > 0 %}
         <div class="pane" style="padding: 24px; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); display: flex; flex-direction: column; height: 100%;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <div style="width: 12px; height: 12px; border-radius: 50%; background: {% if totalIssues > 0 %}#f59e0b{% else %}#10b981{% endif %};"></div>
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: {% if totalIssues == 0 %}#10b981{% elseif hasRedIssues %}#dc2626{% else %}#f59e0b{% endif %};"></div>
                 <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">{{ "Issues Found"|t('icon-manager') }}</h4>
             </div>
             <div style="flex: 1; display: flex; flex-direction: column;">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-                    <div style="font-size: 28px; font-weight: 700; color: {% if totalIssues > 0 %}#f59e0b{% else %}#10b981{% endif %}; line-height: 1;">{{ totalIssues|number_format }}</div>
+                    <div style="font-size: 28px; font-weight: 700; color: {% if totalIssues == 0 %}#10b981{% elseif hasRedIssues %}#dc2626{% else %}#f59e0b{% endif %}; line-height: 1;">{{ totalIssues|number_format }}</div>
                     {% if totalIssues == 0 %}
                     <div style="padding: 3px 10px; border-radius: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: white; background: #10b981;">
                         {{ 'Clean'|t('icon-manager') }}
@@ -90,8 +92,8 @@
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
         {% if scanResult.issues.clipPaths > 0 %}
-        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
-            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.clipPaths }}</div>
+        <div class="pane" style="padding: 18px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 16px;">
+            <div style="width: 60px; height: 60px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.clipPaths|number_format }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Unused Clip-Paths"|t('icon-manager') }}</div>
                 <div style="font-size: 12px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
@@ -100,8 +102,8 @@
         {% endif %}
 
         {% if scanResult.issues.masks > 0 %}
-        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
-            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.masks }}</div>
+        <div class="pane" style="padding: 18px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 16px;">
+            <div style="width: 60px; height: 60px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.masks|number_format }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Unused Masks"|t('icon-manager') }}</div>
                 <div style="font-size: 12px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
@@ -110,8 +112,8 @@
         {% endif %}
 
         {% if scanResult.issues.filters > 0 %}
-        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
-            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.filters }}</div>
+        <div class="pane" style="padding: 18px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 16px;">
+            <div style="width: 60px; height: 60px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.filters|number_format }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Filters"|t('icon-manager') }}</div>
                 <div style="font-size: 12px; color: #6b7280;">{{ "Can slow down rendering"|t('icon-manager') }}</div>
@@ -120,8 +122,8 @@
         {% endif %}
 
         {% if scanResult.issues.comments > 0 %}
-        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
-            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.comments }}</div>
+        <div class="pane" style="padding: 18px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 16px;">
+            <div style="width: 60px; height: 60px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.comments|number_format }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Comments"|t('icon-manager') }}</div>
                 <div style="font-size: 12px; color: #6b7280;">{{ "Unnecessary metadata"|t('icon-manager') }}</div>
@@ -130,8 +132,8 @@
         {% endif %}
 
         {% if scanResult.issues.inlineStyles > 0 %}
-        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
-            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.inlineStyles }}</div>
+        <div class="pane" style="padding: 18px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 16px;">
+            <div style="width: 60px; height: 60px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.inlineStyles|number_format }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Inline Styles"|t('icon-manager') }}</div>
                 <div style="font-size: 12px; color: #6b7280;">{{ "Harder to override with CSS"|t('icon-manager') }}</div>
@@ -140,8 +142,8 @@
         {% endif %}
 
         {% if scanResult.issues.largeFiles > 0 %}
-        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fefcf3 100%); display: flex; align-items: center; gap: 14px;">
-            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fef3c7; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #d97706; flex-shrink: 0;">{{ scanResult.issues.largeFiles }}</div>
+        <div class="pane" style="padding: 18px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fefcf3 100%); display: flex; align-items: center; gap: 16px;">
+            <div style="width: 60px; height: 60px; border-radius: 10px; background: #fef3c7; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #d97706; flex-shrink: 0;">{{ scanResult.issues.largeFiles|number_format }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Large Files"|t('icon-manager') }}</div>
                 <div style="font-size: 12px; color: #6b7280;">{{ "Over 10KB (may be normal)"|t('icon-manager') }}</div>
@@ -150,8 +152,8 @@
         {% endif %}
 
         {% if scanResult.issues.widthHeight > 0 %}
-        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
-            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.widthHeight }}</div>
+        <div class="pane" style="padding: 18px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 16px;">
+            <div style="width: 60px; height: 60px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.widthHeight|number_format }}</div>
             <div style="flex: 1; min-width: 0;">
                 <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Width/Height"|t('icon-manager') }}</div>
                 <div style="font-size: 12px; color: #6b7280;">{{ "Should use viewBox instead"|t('icon-manager') }}</div>
