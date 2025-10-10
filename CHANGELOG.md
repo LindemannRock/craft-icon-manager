@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.11.0...v1.12.0) (2025-10-10)
+
+
+### Features
+
+* Add global SVG optimization settings with UI controls ([114f784](https://github.com/LindemannRock/craft-icon-manager/commit/114f784755de22b92852b2d1320ea62fd785aa22))
+
 ## [1.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.1...v1.11.0) (2025-10-10)
 
 
