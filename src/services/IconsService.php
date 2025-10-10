@@ -160,13 +160,6 @@ class IconsService extends Component
      */
     public function refreshIconsForSet(IconSet $iconSet): void
     {
-        $this->logInfo("START refreshIconsForSet", [
-            'iconSetId' => $iconSet->id,
-            'iconSetHandle' => $iconSet->handle,
-            'iconSetType' => $iconSet->type,
-            'iconSetName' => $iconSet->name
-        ]);
-
         $db = Craft::$app->getDb();
         $transaction = $db->beginTransaction();
 
@@ -248,12 +241,6 @@ class IconsService extends Component
      */
     private function _scanIconsForSet(IconSet $iconSet): array
     {
-        $this->logInfo("Scanning icons for icon set", [
-            'iconSetHandle' => $iconSet->handle,
-            'iconSetType' => $iconSet->type,
-            'iconSetName' => $iconSet->name
-        ]);
-
         switch ($iconSet->type) {
             case 'svg-folder':
                 return $this->_scanSvgFolder($iconSet);
