@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.12.0...v1.13.0) (2025-10-10)
+
+
+### Features
+
+* Enhance issue display logic and improve UI for optimization tab ([20af172](https://github.com/LindemannRock/craft-icon-manager/commit/20af172060247f062b9c4fedd0d977821a17df9f))
+
 ## [1.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.11.0...v1.12.0) (2025-10-10)
 
 
