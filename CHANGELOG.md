@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.2...v1.14.0) (2025-10-10)
+
+
+### Features
+
+* Add icon preview tab and improve SVG optimization ([b3a0d84](https://github.com/LindemannRock/craft-icon-manager/commit/b3a0d84520871479f72db50c9dc96a3c4fe205e3))
+
 ## [1.13.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.1...v1.13.2) (2025-10-10)
 
 
