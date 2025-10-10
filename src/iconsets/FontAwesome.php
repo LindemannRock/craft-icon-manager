@@ -23,7 +23,7 @@ use Throwable;
 
 /**
  * Font Awesome icon set handler
- * 
+ *
  * Supports:
  * - Font Awesome Free (v5/v6)
  * - Font Awesome Pro (v5/v6) via API key
@@ -33,6 +33,26 @@ use Throwable;
  */
 class FontAwesome
 {
+    /**
+     * Static logging helper with structured context support
+     * Mimics LoggingTrait format for consistency
+     */
+    protected static function log(string $level, string $message, array $context = []): void
+    {
+        $formattedMessage = $message;
+        if (!empty($context)) {
+            $formattedMessage .= ' | ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        match($level) {
+            'info' => Craft::info($formattedMessage, 'icon-manager'),
+            'warning' => Craft::warning($formattedMessage, 'icon-manager'),
+            'error' => Craft::error($formattedMessage, 'icon-manager'),
+            'debug' => Craft::debug($formattedMessage, 'icon-manager'),
+            default => Craft::info($formattedMessage, 'icon-manager'),
+        };
+    }
+
     // Constants
     // =========================================================================
 
@@ -69,23 +89,34 @@ class FontAwesome
     {
         $icons = [];
         $settings = $this->iconSet->settings;
-        
+
         $type = $settings['type'] ?? self::TYPE_CDN;
-        
+
+        self::log('debug', 'Loading Font Awesome icons', [
+            'iconSetHandle' => $this->iconSet->handle,
+            'type' => $type
+        ]);
+
         switch ($type) {
             case self::TYPE_KIT:
                 $icons = $this->getKitIcons($settings);
                 break;
-                
+
             case self::TYPE_CDN:
                 $icons = $this->getCdnIcons($settings);
                 break;
-                
+
             case self::TYPE_LOCAL:
                 $icons = $this->getLocalIcons($settings);
                 break;
         }
-        
+
+        self::log('info', 'Loaded icons from Font Awesome', [
+            'count' => count($icons),
+            'iconSetHandle' => $this->iconSet->handle,
+            'type' => $type
+        ]);
+
         return $icons;
     }
 
@@ -161,6 +192,10 @@ class FontAwesome
     {
         // Kits handle icon loading dynamically via JavaScript
         // We can't predict which icons are available without the kit JS
+        $kitCode = $settings['kitCode'] ?? '';
+        self::log('info', 'Font Awesome Kit icons load dynamically via JavaScript', [
+            'kitCode' => $kitCode ? substr($kitCode, 0, 8) . '...' : 'not configured'
+        ]);
         return [];
     }
     
@@ -287,15 +322,21 @@ class FontAwesome
     private function loadIconDefinitionsFromFile(string $version, string $license): array
     {
         $definitions = [];
-        
+
         // Path to bundled icon definitions (v7 only)
         $definitionsPath = __DIR__ . "/../json/fontawesome/v7/{$license}/icons.json";
-        
+
         if (file_exists($definitionsPath)) {
             $json = file_get_contents($definitionsPath);
             $definitions = Json::decode($json);
+        } else {
+            self::log('warning', 'Font Awesome definition file not found', [
+                'version' => $version,
+                'license' => $license,
+                'path' => $definitionsPath
+            ]);
         }
-        
+
         return $definitions;
     }
     
