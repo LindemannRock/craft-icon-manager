@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.1...v1.11.0) (2025-10-10)
+
+
+### Features
+
+* **logging:** Add structured context support to static icon set classes ([08da80d](https://github.com/LindemannRock/craft-icon-manager/commit/08da80d3d20be64b506eb6131f3e9fb3acac6e99))
+* **logging:** Add structured logging to MaterialIcons and FontAwesome handlers ([6c0a974](https://github.com/LindemannRock/craft-icon-manager/commit/6c0a9745e1549e4b0bb9f33e459d4d5ac6c6cff7))
+
+
+### Bug Fixes
+
+* Initialize logging handle in IconsService ([2806b38](https://github.com/LindemannRock/craft-icon-manager/commit/2806b38e3e4a10f2da42b2800b829bea6ded4541))
+
 ## [1.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.0...v1.10.1) (2025-10-09)
 
 
