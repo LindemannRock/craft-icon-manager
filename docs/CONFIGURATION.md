@@ -24,6 +24,10 @@ return [
     'enableCache' => true,
     'cacheDuration' => 86400, // 24 hours in seconds
 
+    // SVG Optimization settings
+    'enableOptimization' => true,          // Enable optimization features
+    'enableOptimizationBackup' => true,    // Auto-backup before optimization
+
     // Logging settings
     'logLevel' => 'info', // error, warning, info, debug
 
@@ -126,6 +130,14 @@ return [
 
 - **enableCache**: Enable/disable icon data caching for better performance
 - **cacheDuration**: How long to cache icon data in seconds
+
+#### SVG Optimization Settings
+
+- **enableOptimization**: Enable/disable SVG optimization features globally (default: true)
+  - When disabled, hides optimization UI, blocks optimization commands, and shows helpful messages
+- **enableOptimizationBackup**: Automatically create backups before applying optimizations (default: true)
+  - Backups are stored in `storage/backups/icon-manager/` with timestamps
+  - Can be restored via Control Panel (dev mode only) or manually
 
 #### Logging Settings
 

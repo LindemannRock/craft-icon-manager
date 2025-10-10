@@ -131,6 +131,16 @@ class IconManagerVariable
     }
 
     /**
+     * Get SVGO service
+     *
+     * @return \lindemannrock\iconmanager\services\SvgoService
+     */
+    public function getSvgo()
+    {
+        return IconManager::getInstance()->svgo;
+    }
+
+    /**
      * Inject a sprite SVG inline
      *
      * @param string $iconSetHandle

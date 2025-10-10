@@ -66,6 +66,16 @@ class Settings extends Model
      */
     public string $logLevel = 'error';
 
+    /**
+     * @var bool Enable SVG optimization features
+     */
+    public bool $enableOptimization = true;
+
+    /**
+     * @var bool Enable automatic backups before optimization
+     */
+    public bool $enableOptimizationBackup = true;
+
 
     /**
      * @inheritdoc
@@ -88,7 +98,7 @@ class Settings extends Model
         return [
             [['iconSetsPath'], 'required'],
             [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
-            [['enableCache'], 'boolean'],
+            [['enableCache', 'enableOptimization', 'enableOptimizationBackup'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['enabledIconTypes'], 'safe'],
             [['logLevel'], 'in', 'range' => ['debug', 'info', 'warning', 'error']],
@@ -184,7 +194,7 @@ class Settings extends Model
             unset($row['id'], $row['dateCreated'], $row['dateUpdated'], $row['uid']);
             
             // Convert numeric boolean values to actual booleans
-            $booleanFields = ['enableCache'];
+            $booleanFields = ['enableCache', 'enableOptimization', 'enableOptimizationBackup'];
             foreach ($booleanFields as $field) {
                 if (isset($row[$field])) {
                     $row[$field] = (bool) $row[$field];
@@ -265,6 +275,8 @@ class Settings extends Model
             'cacheDuration' => $this->cacheDuration,
             'enabledIconTypes' => Json::encode($this->enabledIconTypes),
             'logLevel' => $this->logLevel,
+            'enableOptimization' => $this->enableOptimization,
+            'enableOptimizationBackup' => $this->enableOptimizationBackup,
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
         ];
         

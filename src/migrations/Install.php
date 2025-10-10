@@ -72,6 +72,9 @@ class Install extends Migration
             'cacheDuration' => $this->integer()->notNull()->defaultValue(86400),
             // Icon types (stored as JSON)
             'enabledIconTypes' => $this->text(),
+            // Optimization settings
+            'enableOptimization' => $this->boolean()->notNull()->defaultValue(true),
+            'enableOptimizationBackup' => $this->boolean()->notNull()->defaultValue(true),
             // Logging settings
             'logLevel' => $this->string(20)->notNull()->defaultValue('error'),
             // System fields
@@ -94,6 +97,8 @@ class Install extends Migration
                 'material-icons' => false,
                 'web-font' => false,
             ]),
+            'enableOptimization' => true,
+            'enableOptimizationBackup' => true,
             'logLevel' => 'error',
             'dateCreated' => Db::prepareDateForDb(new \DateTime()),
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),

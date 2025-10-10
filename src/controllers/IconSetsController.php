@@ -189,6 +189,12 @@ class IconSetsController extends Controller
      */
     public function actionOptimize(int $iconSetId): Response
     {
+        // Check if optimization is enabled
+        if (!IconManager::getInstance()->getSettings()->enableOptimization) {
+            Craft::$app->getSession()->setError(Craft::t('icon-manager', 'SVG optimization is disabled. Enable it in settings or config file.'));
+            return $this->redirect('icon-manager/icon-sets/' . $iconSetId);
+        }
+
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
 
         if (!$iconSet) {

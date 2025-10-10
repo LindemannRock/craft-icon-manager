@@ -163,6 +163,8 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - **enableCache** - Whether to cache icon data for better performance
 - **cacheDuration** - How long to cache icon data, in seconds
 - **enabledIconTypes** - Enable/disable specific icon set types
+- **enableOptimization** - Enable/disable SVG optimization features (default: true)
+- **enableOptimizationBackup** - Automatically create backups before optimization (default: true)
 - **logLevel** - Logging verbosity: error, warning, info, or debug
 
 ### Creating Icon Sets
@@ -559,7 +561,32 @@ Icons are stored with relative paths in the database, so changing `iconSetsPath`
 
 ## SVG Optimization
 
-Icon Manager supports two SVG optimization engines with intelligent issue detection:
+Icon Manager supports two SVG optimization engines with intelligent issue detection.
+
+### Enabling/Disabling Optimization
+
+SVG optimization can be controlled globally via settings or config file:
+
+**Via Control Panel:**
+1. Go to Icon Manager → Settings → SVG Optimization
+2. Toggle "Enable Optimization" and "Enable Automatic Backups"
+
+**Via Config File:**
+```php
+// config/icon-manager.php
+return [
+    'enableOptimization' => true,          // Enable optimization features
+    'enableOptimizationBackup' => true,    // Auto-backup before optimization
+];
+```
+
+When disabled:
+- Optimization tab hidden in Icon Sets
+- Optimize column hidden in Icon Sets table
+- CLI commands show instructions on how to enable
+- Utilities page displays disabled message with settings link
+
+### Optimization Features
 
 ### Issue Detection
 

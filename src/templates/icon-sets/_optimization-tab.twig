@@ -9,25 +9,76 @@
     </div>
 {% else %}
 
+{# SVGO Availability Notice #}
+{% set svgoAvailable = craft.iconManager.svgo.isAvailable() %}
+{% if svgoAvailable %}
+<div style="margin-bottom: 32px;">
+    <div class="pane" style="padding: 0; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px solid #e2e8f0; overflow: hidden;">
+        <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: #10b981; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700;">✓</div>
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 4px 0; color: #374151; font-size: 16px; font-weight: 600;">{{ "SVGO Available"|t('icon-manager') }}</h3>
+                    <p style="margin: 0; color: #6b7280; font-size: 13px; line-height: 1.5;">{{ "The Apply Optimizations button uses the PHP optimizer. For better results, use SVGO via command line."|t('icon-manager') }}</p>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 20px 24px; background: rgba(255,255,255,0.6);">
+            <div style="background: #475569; color: #e2e8f0; padding: 14px 16px; border-radius: 6px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 13px; border: 1px solid #64748b;">
+                <span style="color: #94a3b8;">$</span> ./craft icon-manager/optimize --set={{ iconSet.id }} --engine=svgo
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {# Summary Stats #}
 <div style="margin-bottom: 32px;">
     <h2>{{ "Optimization Overview"|t('icon-manager') }}</h2>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px;">
-        <div class="pane" style="padding: 20px; margin: 0;">
-            <div style="font-size: 32px; font-weight: 700; color: #059669; margin-bottom: 8px;">{{ scanResult.totalIcons }}</div>
-            <div style="font-size: 14px; color: #6b7280;">{{ "Total SVG Files"|t('icon-manager') }}</div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; align-items: stretch;">
+        <!-- Total SVG Files Card -->
+        <div class="pane" style="padding: 24px; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); display: flex; flex-direction: column; height: 100%;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #059669;"></div>
+                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">{{ "SVG Files"|t('icon-manager') }}</h4>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="font-size: 28px; font-weight: 700; color: #059669; line-height: 1; margin-bottom: 8px;">{{ scanResult.totalIcons|number_format }}</div>
+                <div style="font-size: 14px; color: #4b5563;">{{ "Total files scanned"|t('icon-manager') }}</div>
+            </div>
         </div>
 
-        <div class="pane" style="padding: 20px; margin: 0;">
-            <div style="font-size: 32px; font-weight: 700; color: #0ea5e9; margin-bottom: 8px;">{{ craft.iconManager.svgOptimizer.formatFileSize(scanResult.totalSize) }}</div>
-            <div style="font-size: 14px; color: #6b7280;">{{ "Total Size"|t('icon-manager') }}</div>
+        <!-- Total Size Card -->
+        <div class="pane" style="padding: 24px; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); display: flex; flex-direction: column; height: 100%;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: #0ea5e9;"></div>
+                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">{{ "Total Size"|t('icon-manager') }}</h4>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1; margin-bottom: 8px;">{{ craft.iconManager.svgOptimizer.formatFileSize(scanResult.totalSize) }}</div>
+                <div style="font-size: 14px; color: #4b5563;">{{ "Combined file size"|t('icon-manager') }}</div>
+            </div>
         </div>
 
-        <div class="pane" style="padding: 20px; margin: 0;">
-            {% set totalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.largeFiles + scanResult.issues.widthHeight %}
-            <div style="font-size: 32px; font-weight: 700; color: {% if totalIssues > 0 %}#dc2626{% else %}#10b981{% endif %}; margin-bottom: 8px;">{{ totalIssues }}</div>
-            <div style="font-size: 14px; color: #6b7280;">{{ "Total Issues"|t('icon-manager') }}</div>
+        <!-- Total Issues Card -->
+        {% set totalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.largeFiles + scanResult.issues.widthHeight %}
+        <div class="pane" style="padding: 24px; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); display: flex; flex-direction: column; height: 100%;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <div style="width: 12px; height: 12px; border-radius: 50%; background: {% if totalIssues > 0 %}#f59e0b{% else %}#10b981{% endif %};"></div>
+                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">{{ "Issues Found"|t('icon-manager') }}</h4>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                    <div style="font-size: 28px; font-weight: 700; color: {% if totalIssues > 0 %}#f59e0b{% else %}#10b981{% endif %}; line-height: 1;">{{ totalIssues|number_format }}</div>
+                    {% if totalIssues == 0 %}
+                    <div style="padding: 3px 10px; border-radius: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: white; background: #10b981;">
+                        {{ 'Clean'|t('icon-manager') }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div style="font-size: 14px; color: #4b5563;">{{ "Optimization opportunities"|t('icon-manager') }}</div>
+            </div>
         </div>
     </div>
 </div>
@@ -35,75 +86,75 @@
 {# Issues Found #}
 {% if totalIssues > 0 %}
 <div style="margin-bottom: 32px;">
-    <h2>{{ "Issues Found"|t('icon-manager') }}</h2>
+    <h2>{{ "Issue Breakdown"|t('icon-manager') }}</h2>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
         {% if scanResult.issues.clipPaths > 0 %}
-        <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.clipPaths }}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Unused Clip-Paths"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
+        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.clipPaths }}</div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Unused Clip-Paths"|t('icon-manager') }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
 
         {% if scanResult.issues.masks > 0 %}
-        <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.masks }}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Unused Masks"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
+        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.masks }}</div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Unused Masks"|t('icon-manager') }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ "Empty or unreferenced"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
 
         {% if scanResult.issues.filters > 0 %}
-        <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.filters }}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Filters"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Can slow down rendering"|t('icon-manager') }}</div>
+        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.filters }}</div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Filters"|t('icon-manager') }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ "Can slow down rendering"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
 
         {% if scanResult.issues.comments > 0 %}
-        <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.comments }}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Comments"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Unnecessary metadata"|t('icon-manager') }}</div>
+        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.comments }}</div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Comments"|t('icon-manager') }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ "Unnecessary metadata"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
 
         {% if scanResult.issues.inlineStyles > 0 %}
-        <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.inlineStyles }}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Inline Styles"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Harder to override with CSS"|t('icon-manager') }}</div>
+        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.inlineStyles }}</div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Inline Styles"|t('icon-manager') }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ "Harder to override with CSS"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
 
         {% if scanResult.issues.largeFiles > 0 %}
-        <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fef3c7; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #d97706;">{{ scanResult.issues.largeFiles }}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Large Files"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Over 10KB (may be normal for complex icons)"|t('icon-manager') }}</div>
+        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fefcf3 100%); display: flex; align-items: center; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fef3c7; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #d97706; flex-shrink: 0;">{{ scanResult.issues.largeFiles }}</div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Large Files"|t('icon-manager') }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ "Over 10KB (may be normal)"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
 
         {% if scanResult.issues.widthHeight > 0 %}
-        <div class="pane" style="padding: 20px; margin: 0; display: flex; align-items: center; gap: 16px;">
-            <div style="width: 64px; height: 64px; border-radius: 12px; background: #fee2e2; display: flex; align-items: center; justify-content: center; padding: 8px; font-size: 22px; font-weight: 700; color: #dc2626;">{{ scanResult.issues.widthHeight }}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; font-size: 15px; color: #1f2937; margin-bottom: 4px;">{{ "Width/Height"|t('icon-manager') }}</div>
-                <div style="font-size: 13px; color: #6b7280;">{{ "Should use viewBox instead"|t('icon-manager') }}</div>
+        <div class="pane" style="padding: 16px 20px; margin-block: 0; background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); display: flex; align-items: center; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 10px; background: #fee2e2; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626; flex-shrink: 0;">{{ scanResult.issues.widthHeight }}</div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 2px;">{{ "Width/Height"|t('icon-manager') }}</div>
+                <div style="font-size: 12px; color: #6b7280;">{{ "Should use viewBox instead"|t('icon-manager') }}</div>
             </div>
         </div>
         {% endif %}
@@ -225,8 +276,7 @@
 {% else %}
 {# No Issues Found #}
 <div class="pane" style="padding: 60px; text-align: center; margin-bottom: 32px;">
-    <p style="color: #10b981; font-size: 64px; margin: 0;">✓</p>
-    <p style="font-size: 20px; font-weight: 600; margin: 16px 0 8px 0; color: #059669;">{{ "No Issues Found"|t('icon-manager') }}</p>
+    <p style="font-size: 20px; font-weight: 600; margin: 0 0 8px 0; color: #059669;">{{ "No Issues Found"|t('icon-manager') }}</p>
     <p class="light">{{ "All SVG files in this icon set are already optimized."|t('icon-manager') }}</p>
 </div>
 {% endif %}

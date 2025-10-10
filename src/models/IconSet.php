@@ -228,4 +228,32 @@ class IconSet extends Model
 
         return \lindemannrock\iconmanager\iconsets\WebFont::getFontFaceCss($this);
     }
+
+    /**
+     * Get optimization issue count for SVG folder icon sets
+     * Includes all issues and warnings (including large files)
+     */
+    public function getOptimizationIssueCount(): int
+    {
+        // Only applicable for SVG folder icon sets
+        if (!in_array($this->type, ['svg-folder', 'folder'])) {
+            return 0;
+        }
+
+        // Scan this icon set for issues
+        $scanResult = IconManager::getInstance()->svgOptimizer->scanIconSet($this);
+
+        // Sum up all issues including warnings
+        $totalIssues = 0;
+        if (isset($scanResult['issues'])) {
+            $totalIssues = ($scanResult['issues']['clipPaths'] ?? 0) +
+                          ($scanResult['issues']['masks'] ?? 0) +
+                          ($scanResult['issues']['filters'] ?? 0) +
+                          ($scanResult['issues']['comments'] ?? 0) +
+                          ($scanResult['issues']['inlineStyles'] ?? 0) +
+                          ($scanResult['issues']['largeFiles'] ?? 0);
+        }
+
+        return $totalIssues;
+    }
 }

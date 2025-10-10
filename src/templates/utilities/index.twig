@@ -226,6 +226,16 @@
     <h2>{{ 'SVG Quality'|t('icon-manager') }}</h2>
 
     <div class="pane">
+        {% set optimizationEnabled = craft.iconManager.settings.enableOptimization %}
+
+        {% if not optimizationEnabled %}
+            <div style="padding: 20px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 8px; text-align: center;">
+                <p style="font-size: 16px; font-weight: 600; color: #78350f; margin: 0 0 8px 0;">{{ "SVG Optimization Disabled"|t('icon-manager') }}</p>
+                <p style="font-size: 14px; color: #92400e; margin: 0;">
+                    {{ "Enable optimization in"|t('icon-manager') }} <a href="{{ url('icon-manager/settings') }}" style="font-weight: 600; text-decoration: underline;">{{ "Settings"|t('icon-manager') }}</a> {{ "or via config file"|t('icon-manager') }}
+                </p>
+            </div>
+        {% else %}
         <div>
             <h3 style="margin-bottom: 8px;">{{ "Scan for Issues"|t('icon-manager') }}</h3>
             <p class="light" style="margin-bottom: 16px;">{{ "Scan SVG files for optimization opportunities (clip-paths, masks, filters, large files)."|t('icon-manager') }}</p>
@@ -242,6 +252,7 @@
                 </div>
             </form>
         </div>
+        {% endif %}
 
         {% set svgScanResults = craft.app.session.get('svgScanResults') %}
         {% if svgScanResults %}

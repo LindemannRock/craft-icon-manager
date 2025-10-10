@@ -39,6 +39,10 @@ return [
             'web-font' => false,
         ],
 
+        // SVG Optimization settings
+        'enableOptimization' => true,
+        'enableOptimizationBackup' => true,
+
         // Logging settings
         'logLevel' => 'error', // Options: 'debug', 'info', 'warning', 'error'
     ],

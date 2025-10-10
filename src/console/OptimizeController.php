@@ -65,6 +65,20 @@ class OptimizeController extends Controller
      */
     public function actionIndex(): int
     {
+        // Check if optimization is enabled
+        if (!IconManager::getInstance()->getSettings()->enableOptimization) {
+            $this->stdout("\n");
+            $this->stderr("✗ SVG Optimization is disabled\n\n", Console::FG_RED);
+            $this->stdout("To enable optimization:\n\n");
+            $this->stdout("1. Via Settings:\n");
+            $this->stdout("   Go to Icon Manager → Settings → SVG Optimization\n");
+            $this->stdout("   Enable 'Enable Optimization'\n\n");
+            $this->stdout("2. Via Config File:\n");
+            $this->stdout("   Edit config/icon-manager.php and set:\n");
+            $this->stdout("   'enableOptimization' => true\n\n", Console::FG_GREEN);
+            return ExitCode::CONFIG;
+        }
+
         // Interactive mode if no --set provided
         if (!$this->set) {
             return $this->interactiveMode();

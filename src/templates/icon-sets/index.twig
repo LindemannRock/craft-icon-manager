@@ -25,6 +25,7 @@
 
 {% block content %}
     {% if iconSets|length %}
+        {% set optimizationEnabled = plugin.settings.enableOptimization %}
         <table class="data fullwidth">
             <thead>
                 <tr>
@@ -32,6 +33,9 @@
                     <th scope="col">{{ 'Handle'|t('icon-manager') }}</th>
                     <th scope="col">{{ 'Type'|t('icon-manager') }}</th>
                     <th scope="col">{{ 'Icons'|t('icon-manager') }}</th>
+                    {% if optimizationEnabled %}
+                    <th scope="col">{{ 'Optimize'|t('icon-manager') }}</th>
+                    {% endif %}
                     <th scope="col">{{ 'Enabled'|t('icon-manager') }}</th>
                     <td class="thin"></td>
                 </tr>
@@ -53,6 +57,24 @@
                         <td>
                             {{ iconSet.getIconCount()|number_format }}
                         </td>
+                        {% if optimizationEnabled %}
+                        <td>
+                            {% set issueCount = iconSet.getOptimizationIssueCount() %}
+                            {% if iconSet.type in ['svg-folder', 'folder'] %}
+                                {% if issueCount > 0 %}
+                                    <a href="{{ url('icon-manager/icon-sets/' ~ iconSet.id ~ '/optimize') }}"
+                                       style="text-decoration: none;"
+                                       title="{{ 'View optimization details'|t('icon-manager') }}">
+                                        {{ issueCount }}
+                                    </a>
+                                {% else %}
+                                    <span style="color: #10b981;">✓</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: #9ca3af;">—</span>
+                            {% endif %}
+                        </td>
+                        {% endif %}
                         <td>
                             {% if iconSet.enabled %}
                                 <span class="status enabled"></span>

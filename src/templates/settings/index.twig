@@ -137,6 +137,30 @@
 
     <hr>
 
+    <h2>{{ 'SVG Optimization'|t('icon-manager') }}</h2>
+
+    {{ forms.lightswitchField({
+        label: 'Enable Optimization'|t('icon-manager'),
+        instructions: 'Enable SVG optimization features (scanning and applying optimizations)'|t('icon-manager'),
+        id: 'enableOptimization',
+        name: 'settings[enableOptimization]',
+        on: settings.enableOptimization,
+        warning: settings.isOverriddenByConfig('enableOptimization') ? 'This is being overridden by the `enableOptimization` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverriddenByConfig('enableOptimization')
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: 'Enable Automatic Backups'|t('icon-manager'),
+        instructions: 'Automatically create backups before applying optimizations'|t('icon-manager'),
+        id: 'enableOptimizationBackup',
+        name: 'settings[enableOptimizationBackup]',
+        on: settings.enableOptimizationBackup,
+        warning: settings.isOverriddenByConfig('enableOptimizationBackup') ? 'This is being overridden by the `enableOptimizationBackup` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
+        disabled: settings.isOverriddenByConfig('enableOptimizationBackup')
+    }) }}
+
+    <hr>
+
     <h2>{{ 'Logging Settings'|t('icon-manager') }}</h2>
 
     {% set logOptions = [

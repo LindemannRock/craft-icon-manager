@@ -18,7 +18,7 @@
     { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 
-{% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+{% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
     {% set tabs = {
         settings: { label: "Settings"|t('icon-manager'), url: '#settings' },
         optimization: { label: "SVG Optimization"|t('icon-manager'), url: '#optimization' }
@@ -31,7 +31,7 @@
         <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
     </div>
 
-    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
         {% set isDevEnvironment = craft.app.config.general.devMode or (craft.app.env in ['local', 'dev', 'development']) %}
         {% set totalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.largeFiles + scanResult.issues.widthHeight %}
         {% if isDevEnvironment and totalIssues > 0 %}
@@ -349,7 +349,7 @@
     </div>{# end settings tab #}
 
     {# SVG Optimization Tab #}
-    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] %}
+    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
     <div id="optimization" class="hidden">
         {% include 'icon-manager/icon-sets/_optimization-tab.twig' %}
     </div>
