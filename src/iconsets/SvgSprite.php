@@ -24,6 +24,26 @@ use craft\helpers\Json;
 class SvgSprite
 {
     /**
+     * Static logging helper with structured context support
+     * Mimics LoggingTrait format for consistency
+     */
+    protected static function log(string $level, string $message, array $context = []): void
+    {
+        $formattedMessage = $message;
+        if (!empty($context)) {
+            $formattedMessage .= ' | ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        match($level) {
+            'info' => Craft::info($formattedMessage, 'icon-manager'),
+            'warning' => Craft::warning($formattedMessage, 'icon-manager'),
+            'error' => Craft::error($formattedMessage, 'icon-manager'),
+            'debug' => Craft::debug($formattedMessage, 'icon-manager'),
+            default => Craft::info($formattedMessage, 'icon-manager'),
+        };
+    }
+
+    /**
      * Get icons from an SVG sprite file
      */
     public static function getIcons(IconSet $iconSet): array
@@ -32,14 +52,17 @@ class SvgSprite
         $settings = $iconSet->settings ?? [];
 
         if (empty($settings['spriteFile'])) {
-            Craft::warning('SVG Sprite icon set has no sprite file configured: ' . $iconSet->handle, 'icon-manager');
+            self::log('warning', 'SVG Sprite icon set has no sprite file configured', ['iconSetHandle' => $iconSet->handle]);
             return [];
         }
 
         $spritePath = self::getSpritePath($settings['spriteFile']);
 
         if (!file_exists($spritePath)) {
-            Craft::error('Sprite file not found: ' . $spritePath . ' for icon set: ' . $iconSet->handle, 'icon-manager');
+            self::log('error', 'Sprite file not found', [
+                'spritePath' => $spritePath,
+                'iconSetHandle' => $iconSet->handle
+            ]);
             return [];
         }
 
@@ -80,7 +103,10 @@ class SvgSprite
             $icons[] = $icon;
         }
 
-        Craft::info('Loaded ' . count($icons) . ' icons from SVG sprite: ' . $iconSet->handle, 'icon-manager');
+        self::log('info', 'Loaded icons from SVG sprite', [
+            'count' => count($icons),
+            'iconSetHandle' => $iconSet->handle
+        ]);
 
         return $icons;
     }
@@ -96,7 +122,7 @@ class SvgSprite
             $svgContent = file_get_contents($spritePath);
 
             if (!$svgContent) {
-                Craft::error('Failed to read sprite file: ' . $spritePath, 'icon-manager');
+                self::log('error', 'Failed to read sprite file', ['spritePath' => $spritePath]);
                 return [];
             }
 
@@ -126,7 +152,10 @@ class SvgSprite
             }
 
         } catch (\Exception $e) {
-            Craft::error('Error parsing sprite file ' . $spritePath . ': ' . $e->getMessage(), 'icon-manager');
+            self::log('error', 'Error parsing sprite file', [
+                'spritePath' => $spritePath,
+                'error' => $e->getMessage()
+            ]);
         }
 
         return $symbols;
@@ -148,7 +177,10 @@ class SvgSprite
             $json = file_get_contents($metadataPath);
             return Json::decode($json);
         } catch (\Exception $e) {
-            Craft::warning('Error loading metadata file ' . $metadataPath . ': ' . $e->getMessage(), 'icon-manager');
+            self::log('warning', 'Error loading metadata file', [
+                'metadataPath' => $metadataPath,
+                'error' => $e->getMessage()
+            ]);
             return [];
         }
     }
