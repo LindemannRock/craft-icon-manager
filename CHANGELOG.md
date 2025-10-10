@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.1...v1.13.2) (2025-10-10)
+
+
+### Bug Fixes
+
+* Preserve legal/license comments in SVG optimization ([c44c198](https://github.com/LindemannRock/craft-icon-manager/commit/c44c1981b0983b392e27818bef7e191672774d16))
+
 ## [1.13.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.0...v1.13.1) (2025-10-10)
 
 
