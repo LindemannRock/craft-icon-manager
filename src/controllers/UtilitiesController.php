@@ -38,7 +38,10 @@ class UtilitiesController extends Controller
                     IconManager::getInstance()->icons->refreshIconsForSet($iconSet);
                     $refreshed++;
                 } catch (\Exception $e) {
-                    $this->logError("Failed to refresh icon set '{$iconSet->name}': " . $e->getMessage());
+                    $this->logError("Failed to refresh icon set", [
+                        'iconSetName' => $iconSet->name,
+                        'error' => $e->getMessage()
+                    ]);
                     $failed++;
                 }
             }
@@ -58,7 +61,7 @@ class UtilitiesController extends Controller
                 );
             }
         } catch (\Exception $e) {
-            $this->logError("Failed to refresh all icons: " . $e->getMessage());
+            $this->logError("Failed to refresh all icons", ['error' => $e->getMessage()]);
             Craft::$app->getSession()->setError(
                 Craft::t('icon-manager', 'Could not refresh icons: {error}', ['error' => $e->getMessage()])
             );
@@ -98,7 +101,7 @@ class UtilitiesController extends Controller
                 );
             }
         } catch (\Exception $e) {
-            $this->logError("Failed to scan SVGs: " . $e->getMessage());
+            $this->logError("Failed to scan SVGs", ['error' => $e->getMessage()]);
             Craft::$app->getSession()->setError(
                 Craft::t('icon-manager', 'Could not scan SVGs: {error}', ['error' => $e->getMessage()])
             );

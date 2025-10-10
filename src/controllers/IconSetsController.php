@@ -196,7 +196,7 @@ class IconSetsController extends Controller
         }
 
         // Debug - log the actual type
-        $this->logDebug("Icon set type: {$iconSet->type}");
+        $this->logDebug("Icon set type", ['type' => $iconSet->type]);
 
         // Only allow SVG folder icon sets
         if ($iconSet->type !== 'folder' && $iconSet->type !== 'svg-folder') {
@@ -426,7 +426,7 @@ class IconSetsController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            $this->logError('Could not save optimized SVGs: ' . $e->getMessage());
+            $this->logError('Could not save optimized SVGs', ['error' => $e->getMessage()]);
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
         }
     }

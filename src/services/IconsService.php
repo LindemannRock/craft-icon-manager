@@ -34,6 +34,15 @@ class IconsService extends Component
     private array $_iconsBySetId = [];
 
     /**
+     * Initialize the service
+     */
+    public function init(): void
+    {
+        parent::init();
+        $this->setLoggingHandle('icon-manager');
+    }
+
+    /**
      * Get all icons for an icon set
      * 
      * @param int $iconSetId
@@ -115,7 +124,8 @@ class IconsService extends Component
 
         // Log warning for slow operations
         if ($duration > 1.0) {
-            $this->logWarning("Slow icon loading detected for icon set {$iconSetId}", [
+            $this->logWarning("Slow icon loading detected for icon set", [
+                'iconSetId' => $iconSetId,
                 'duration' => round($duration, 3),
                 'iconCount' => count($icons)
             ]);
@@ -163,7 +173,7 @@ class IconsService extends Component
 
             // Clear memory cache
             unset($this->_iconsBySetId[$iconSet->id]);
-            
+
             // Delete existing icons
             $db->createCommand()
                 ->delete('{{%iconmanager_icons}}', ['iconSetId' => $iconSet->id])
@@ -267,7 +277,7 @@ class IconsService extends Component
         }
 
         if (!is_dir($folderPath)) {
-            $this->logWarning("Folder path does not exist: {$folderPath}");
+            $this->logWarning("Folder path does not exist", ['folderPath' => $folderPath]);
             return $icons;
         }
 
@@ -277,7 +287,10 @@ class IconsService extends Component
             'recursive' => $includeSubfolders,
         ]);
 
-        $this->logInfo("Found " . count($files) . " SVG files in {$folderPath}");
+        $this->logInfo("Found SVG files", [
+            'count' => count($files),
+            'folderPath' => $folderPath
+        ]);
 
         foreach ($files as $file) {
             $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $file);
@@ -423,7 +436,7 @@ class IconsService extends Component
         $this->_iconsBySetId = [];
 
         if ($cacheCount > 0) {
-            $this->logInfo("Cleared memory cache for {$cacheCount} icon sets");
+            $this->logInfo("Cleared memory cache for icon sets", ['cacheCount' => $cacheCount]);
         }
     }
 

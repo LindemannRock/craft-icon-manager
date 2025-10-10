@@ -26,6 +26,26 @@ use FontLib\Font;
 class WebFont
 {
     /**
+     * Static logging helper with structured context support
+     * Mimics LoggingTrait format for consistency
+     */
+    protected static function log(string $level, string $message, array $context = []): void
+    {
+        $formattedMessage = $message;
+        if (!empty($context)) {
+            $formattedMessage .= ' | ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        match($level) {
+            'info' => Craft::info($formattedMessage, 'icon-manager'),
+            'warning' => Craft::warning($formattedMessage, 'icon-manager'),
+            'error' => Craft::error($formattedMessage, 'icon-manager'),
+            'debug' => Craft::debug($formattedMessage, 'icon-manager'),
+            default => Craft::info($formattedMessage, 'icon-manager'),
+        };
+    }
+
+    /**
      * Get icons from a custom web font file
      */
     public static function getIcons(IconSet $iconSet): array
@@ -34,14 +54,17 @@ class WebFont
         $settings = $iconSet->settings ?? [];
 
         if (empty($settings['fontFile'])) {
-            Craft::warning('WebFont icon set has no font file configured: ' . $iconSet->handle, 'icon-manager');
+            self::log('warning', 'WebFont icon set has no font file configured', ['iconSetHandle' => $iconSet->handle]);
             return [];
         }
 
         $fontPath = self::getFontPath($settings['fontFile']);
 
         if (!file_exists($fontPath)) {
-            Craft::error('Font file not found: ' . $fontPath . ' for icon set: ' . $iconSet->handle, 'icon-manager');
+            self::log('error', 'Font file not found', [
+                'fontPath' => $fontPath,
+                'iconSetHandle' => $iconSet->handle
+            ]);
             return [];
         }
 
@@ -78,7 +101,10 @@ class WebFont
             $icons[] = $icon;
         }
 
-        Craft::info('Loaded ' . count($icons) . ' icons from web font: ' . $iconSet->handle, 'icon-manager');
+        self::log('info', 'Loaded icons from web font', [
+            'count' => count($icons),
+            'iconSetHandle' => $iconSet->handle
+        ]);
 
         return $icons;
     }
@@ -126,7 +152,10 @@ class WebFont
             }
 
         } catch (\Exception $e) {
-            Craft::error('Error parsing font file ' . $fontPath . ': ' . $e->getMessage(), 'icon-manager');
+            self::log('error', 'Error parsing font file', [
+                'fontPath' => $fontPath,
+                'error' => $e->getMessage()
+            ]);
         }
 
         return $glyphs;
@@ -148,7 +177,10 @@ class WebFont
             $json = file_get_contents($metadataPath);
             return Json::decode($json);
         } catch (\Exception $e) {
-            Craft::warning('Error loading metadata file ' . $metadataPath . ': ' . $e->getMessage(), 'icon-manager');
+            self::log('warning', 'Error loading metadata file', [
+                'metadataPath' => $metadataPath,
+                'error' => $e->getMessage()
+            ]);
             return [];
         }
     }

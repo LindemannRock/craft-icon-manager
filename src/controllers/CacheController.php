@@ -70,7 +70,7 @@ class CacheController extends Controller
 
             return $this->redirectToPostedUrl();
         } catch (\Throwable $e) {
-            $this->logError("Failed to clear icon cache: " . $e->getMessage());
+            $this->logError("Failed to clear icon cache", ['error' => $e->getMessage()]);
             Craft::$app->getSession()->setError(
                 Craft::t('icon-manager', 'Failed to clear icon cache.')
             );

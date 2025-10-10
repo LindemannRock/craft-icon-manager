@@ -38,13 +38,16 @@ class IconsController extends Controller
 
         $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($iconSetHandle);
         if (!$iconSet || !$iconSet->enabled) {
-            $this->logWarning("Icon render failed - icon set not found or disabled: {$iconSetHandle}");
+            $this->logWarning("Icon render failed - icon set not found or disabled", ['iconSetHandle' => $iconSetHandle]);
             throw new \yii\web\NotFoundHttpException('Icon set not found');
         }
 
         $icon = IconManager::getInstance()->icons->getIcon($iconSetHandle, $iconName);
         if (!$icon) {
-            $this->logWarning("Icon render failed - icon not found: {$iconSetHandle}:{$iconName}");
+            $this->logWarning("Icon render failed - icon not found", [
+                'iconSetHandle' => $iconSetHandle,
+                'iconName' => $iconName
+            ]);
             throw new \yii\web\NotFoundHttpException('Icon not found');
         }
 
@@ -65,13 +68,16 @@ class IconsController extends Controller
 
         $iconSet = IconManager::getInstance()->iconSets->getIconSetByHandle($iconSetHandle);
         if (!$iconSet || !$iconSet->enabled) {
-            $this->logWarning("Icon data request failed - icon set not found: {$iconSetHandle}");
+            $this->logWarning("Icon data request failed - icon set not found", ['iconSetHandle' => $iconSetHandle]);
             return $this->asJson(['error' => 'Icon set not found']);
         }
 
         $icon = IconManager::getInstance()->icons->getIcon($iconSetHandle, $iconName);
         if (!$icon) {
-            $this->logWarning("Icon data request failed - icon not found: {$iconSetHandle}:{$iconName}");
+            $this->logWarning("Icon data request failed - icon not found", [
+                'iconSetHandle' => $iconSetHandle,
+                'iconName' => $iconName
+            ]);
             return $this->asJson(['error' => 'Icon not found']);
         }
 
@@ -169,7 +175,7 @@ class IconsController extends Controller
         // Get the field
         $field = Craft::$app->getFields()->getFieldById($fieldId);
         if (!$field) {
-            $this->logWarning("Field not found: {$fieldId}");
+            $this->logWarning("Field not found", ['fieldId' => $fieldId]);
             return $this->asJson(['error' => 'Field not found']);
         }
 

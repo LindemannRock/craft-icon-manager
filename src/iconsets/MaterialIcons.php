@@ -17,7 +17,7 @@ use craft\helpers\Json;
 
 /**
  * Material Icons handler
- * 
+ *
  * Supports:
  * - Material Icons (classic)
  * - Material Symbols (variable font)
@@ -26,6 +26,26 @@ use craft\helpers\Json;
  */
 class MaterialIcons
 {
+    /**
+     * Static logging helper with structured context support
+     * Mimics LoggingTrait format for consistency
+     */
+    protected static function log(string $level, string $message, array $context = []): void
+    {
+        $formattedMessage = $message;
+        if (!empty($context)) {
+            $formattedMessage .= ' | ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        }
+
+        match($level) {
+            'info' => Craft::info($formattedMessage, 'icon-manager'),
+            'warning' => Craft::warning($formattedMessage, 'icon-manager'),
+            'error' => Craft::error($formattedMessage, 'icon-manager'),
+            'debug' => Craft::debug($formattedMessage, 'icon-manager'),
+            default => Craft::info($formattedMessage, 'icon-manager'),
+        };
+    }
+
     // Constants
     // =========================================================================
 
@@ -61,11 +81,17 @@ class MaterialIcons
     {
         $icons = [];
         $settings = $this->iconSet->settings;
-        
+
         $materialType = $settings['materialType'] ?? self::TYPE_ICONS;
-        
+
         // Load icon definitions
         $iconDefinitions = $this->loadIconDefinitions($materialType);
+
+        self::log('debug', 'Loading Material Icons', [
+            'iconSetHandle' => $this->iconSet->handle,
+            'materialType' => $materialType,
+            'definitionsCount' => count($iconDefinitions)
+        ]);
         
         foreach ($iconDefinitions as $iconName => $iconData) {
             if ($materialType === self::TYPE_SYMBOLS) {
@@ -131,7 +157,13 @@ class MaterialIcons
                 }
             }
         }
-        
+
+        self::log('info', 'Loaded icons from Material Icons', [
+            'count' => count($icons),
+            'iconSetHandle' => $this->iconSet->handle,
+            'materialType' => $materialType
+        ]);
+
         return $icons;
     }
 
@@ -238,15 +270,20 @@ class MaterialIcons
     private function loadIconDefinitionsFromFile(string $type): array
     {
         $definitions = [];
-        
+
         // Path to bundled icon definitions
         $definitionsPath = __DIR__ . "/../json/material/{$type}/icons.json";
-        
+
         if (file_exists($definitionsPath)) {
             $json = file_get_contents($definitionsPath);
             $definitions = Json::decode($json);
+        } else {
+            self::log('warning', 'Material Icons definition file not found', [
+                'type' => $type,
+                'path' => $definitionsPath
+            ]);
         }
-        
+
         return $definitions;
     }
 
