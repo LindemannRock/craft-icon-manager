@@ -173,7 +173,7 @@
 
         <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
 
-        <div style="margin-bottom: 24px;">
+        <div>
             <h3 style="margin-bottom: 8px;">{{ "Icon Management"|t('icon-manager') }}</h3>
             <p class="light" style="margin-bottom: 16px;">{{ "Refresh all icon sets to fetch new icons from their sources (CDNs, APIs, directories)."|t('icon-manager') }}</p>
 
@@ -190,6 +190,12 @@
             </form>
         </div>
 
+        {# HIDDEN: Rebuild Icon Cache button is redundant with Refresh All Icons
+           The rebuild button only clears cache and relies on page load to rebuild (creates 6 cache files),
+           while Refresh All Icons does a proper full scan and rebuild (creates 7 cache files including
+           Material Icons definitions cache). This inconsistency (6 vs 7) is confusing for users.
+           "Refresh All Icons" is the better option and should be the primary action. #}
+        {#
         <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
 
         <div>
@@ -211,6 +217,7 @@
                 </div>
             </form>
         </div>
+        #}
     </div>
 </div>
 
