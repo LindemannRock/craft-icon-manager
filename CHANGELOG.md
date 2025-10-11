@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.0...v1.14.1) (2025-10-11)
+
+
+### Bug Fixes
+
+* Add plugin credit to preview and optimization tabs ([b7463ae](https://github.com/LindemannRock/craft-icon-manager/commit/b7463aea0111d13a69326cf2c002d6303054ad20))
+
 ## [1.14.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.2...v1.14.0) (2025-10-10)
 
 
