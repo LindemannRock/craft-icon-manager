@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.17.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.16.0...v1.17.0) (2025-10-11)
+
+
+### Features
+
+* Implement dynamic multi-language metadata support ([35c7637](https://github.com/LindemannRock/craft-icon-manager/commit/35c76379ed27a752ff59c932ffd4d3df66e5b573))
+
+
+### Bug Fixes
+
+* Implement proper multi-site support for custom labels and metadata ([a9a4d25](https://github.com/LindemannRock/craft-icon-manager/commit/a9a4d25f471bd052fe83f509ee27cd5a49714dcb))
+
 ## [1.16.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.15.0...v1.16.0) (2025-10-11)
 
 
