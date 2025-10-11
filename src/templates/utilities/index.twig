@@ -258,6 +258,7 @@
         {% if svgScanResults %}
             {# Clear the session after reading #}
             {% do craft.app.session.remove('svgScanResults') %}
+            {% set settings = craft.iconManager.settings %}
 
             <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
             {% if svgScanResults|length > 0 %}
@@ -275,59 +276,61 @@
                 </div>
 
                 <div style="overflow-x: auto; margin-top: 12px;">
-                <table class="data fullwidth" style="font-size: 13px; table-layout: fixed; min-width: 900px; border-collapse: collapse; border: 1px solid #e5e7eb;">
-                    <colgroup>
-                        <col style="width: 140px;">
-                        <col style="width: 70px;">
-                        <col style="width: 80px;">
-                        <col style="width: auto;">
-                        <col style="width: auto;">
-                        <col style="width: auto;">
-                        <col style="width: auto;">
-                        <col style="width: auto;">
-                        <col style="width: auto;">
-                    </colgroup>
+                <table class="data fullwidth" style="font-size: 13px; border-collapse: collapse; border: 1px solid #e5e7eb;">
                     <thead>
                         <tr style="background: #f9fafb;">
-                            <th style="padding: 10px 12px; text-align: left; border: 1px solid #e5e7eb;">{{ "Icon Set"|t('icon-manager') }}</th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">{{ "Icons"|t('icon-manager') }}</th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">{{ "Size"|t('icon-manager') }}</th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
+                            <th style="padding: 10px 12px; text-align: left; border: 1px solid #e5e7eb; width: 140px; max-width: 140px;">{{ "Icon Set"|t('icon-manager') }}</th>
+                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb; width: 90px;">{{ "Icons"|t('icon-manager') }}</th>
+                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb; width: 110px;">{{ "Size"|t('icon-manager') }}</th>
+                            {% if settings.scanClipPaths %}
+                            <th class="thin" style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {{ "Clip"|t('icon-manager') }}
-                                <span class="info" style="margin-left: 4px;">{{ 'Can cause rendering issues in some browsers'|t('icon-manager') }}</span>
+                                <span class="info" style="margin-left: 4px;">{{ 'Empty or unused clip-paths'|t('icon-manager') }}</span>
                             </th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
+                            {% endif %}
+                            {% if settings.scanMasks %}
+                            <th class="thin" style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {{ "Mask"|t('icon-manager') }}
-                                <span class="info" style="margin-left: 4px;">{{ 'May impact rendering performance'|t('icon-manager') }}</span>
+                                <span class="info" style="margin-left: 4px;">{{ 'Empty or unused masks'|t('icon-manager') }}</span>
                             </th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
+                            {% endif %}
+                            {% if settings.scanFilters %}
+                            <th class="thin" style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {{ "Filter"|t('icon-manager') }}
                                 <span class="info" style="margin-left: 4px;">{{ 'Complex effects that can slow down rendering'|t('icon-manager') }}</span>
                             </th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
+                            {% endif %}
+                            {% if settings.scanComments %}
+                            <th class="thin" style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {{ "Comment"|t('icon-manager') }}
-                                <span class="info" style="margin-left: 4px;">{{ 'Unnecessary metadata that adds file size'|t('icon-manager') }}</span>
+                                <span class="info" style="margin-left: 4px;">{{ 'Unnecessary metadata'|t('icon-manager') }}</span>
                             </th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
+                            {% endif %}
+                            {% if settings.scanInlineStyles %}
+                            <th class="thin" style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {{ "Style"|t('icon-manager') }}
                                 <span class="info" style="margin-left: 4px;">{{ 'Harder to override with CSS'|t('icon-manager') }}</span>
                             </th>
-                            <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
+                            {% endif %}
+                            {% if settings.scanLargeFiles %}
+                            <th class="thin" style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {{ "Large"|t('icon-manager') }}
-                                <span class="info" style="margin-left: 4px;">{{ 'Files over 10KB that could be optimized'|t('icon-manager') }}</span>
+                                <span class="info" style="margin-left: 4px;">{{ 'Files over 10KB'|t('icon-manager') }}</span>
                             </th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for result in svgScanResults %}
                             <tr>
                                 <td style="padding: 8px 12px; border: 1px solid #e5e7eb;">
-                                    <a href="{{ url('icon-manager/icon-sets/' ~ result.iconSetId ~ '/optimize') }}">
+                                    <a href="{{ url('icon-manager/icon-sets/' ~ result.iconSetId ~ '#optimization') }}">
                                         {{ result.iconSetName }}
                                     </a>
                                 </td>
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">{{ result.totalIcons }}</td>
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">{{ craft.iconManager.svgOptimizer.formatFileSize(result.totalSize) }}</td>
+                                {% if settings.scanClipPaths %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.clipPaths > 0 %}
                                         <span style="color: #dc2626; font-weight: 600;">{{ result.issues.clipPaths }}</span>
@@ -335,6 +338,8 @@
                                         <span style="color: #9ca3af;">—</span>
                                     {% endif %}
                                 </td>
+                                {% endif %}
+                                {% if settings.scanMasks %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.masks > 0 %}
                                         <span style="color: #dc2626; font-weight: 600;">{{ result.issues.masks }}</span>
@@ -342,6 +347,8 @@
                                         <span style="color: #9ca3af;">—</span>
                                     {% endif %}
                                 </td>
+                                {% endif %}
+                                {% if settings.scanFilters %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.filters > 0 %}
                                         <span style="color: #dc2626; font-weight: 600;">{{ result.issues.filters }}</span>
@@ -349,6 +356,8 @@
                                         <span style="color: #9ca3af;">—</span>
                                     {% endif %}
                                 </td>
+                                {% endif %}
+                                {% if settings.scanComments %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.comments > 0 %}
                                         <span style="color: #dc2626; font-weight: 600;">{{ result.issues.comments }}</span>
@@ -356,6 +365,8 @@
                                         <span style="color: #9ca3af;">—</span>
                                     {% endif %}
                                 </td>
+                                {% endif %}
+                                {% if settings.scanInlineStyles %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.inlineStyles > 0 %}
                                         <span style="color: #dc2626; font-weight: 600;">{{ result.issues.inlineStyles }}</span>
@@ -363,6 +374,8 @@
                                         <span style="color: #9ca3af;">—</span>
                                     {% endif %}
                                 </td>
+                                {% endif %}
+                                {% if settings.scanLargeFiles %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.largeFiles > 0 %}
                                         <span style="color: #dc2626; font-weight: 600;">{{ result.issues.largeFiles }}</span>
@@ -370,6 +383,7 @@
                                         <span style="color: #9ca3af;">—</span>
                                     {% endif %}
                                 </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>

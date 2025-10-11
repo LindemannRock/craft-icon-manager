@@ -1,44 +1,14 @@
 {#
- # Icon Set SVG Optimization
+ # Icon Set SVG Optimization (Deprecated - Redirects to Edit Page)
+ #
+ # This standalone page is deprecated. The optimization functionality
+ # is now integrated into the edit page as a tab for better UX.
+ #
+ # This template should never be rendered as the controller redirects,
+ # but keeping it as a fallback for any direct template includes.
  #
  # @link      https://lindemannrock.com
  # @copyright Copyright (c) 2025 LindemannRock
  #}
 
-{% extends "_layouts/cp" %}
-{% import "_includes/forms" as forms %}
-
-{% set title = iconSet.name ~ ' - SVG Optimization' %}
-
-{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
-{% set crumbs = [
-    { label: plugin.settings.pluginName, url: url('icon-manager') },
-    { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') },
-    { label: iconSet.name, url: url('icon-manager/icon-sets/' ~ iconSet.id) }
-] %}
-
-{% block actionButton %}
-    {% set isDevEnvironment = craft.app.config.general.devMode or (craft.app.env in ['local', 'dev', 'development']) %}
-
-    {% if isDevEnvironment %}
-        <form method="post" accept-charset="UTF-8">
-            {{ csrfInput() }}
-            {{ actionInput('icon-manager/icon-sets/apply-optimizations') }}
-            {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id ~ '/optimize') }}
-            {{ hiddenInput('iconSetId', iconSet.id) }}
-
-            <button type="submit" class="btn submit" onclick="return confirm('{{ 'This will create a backup and optimize all SVG files in this icon set. Continue?'|t('icon-manager') }}');">
-                {{ "Apply Optimizations"|t('icon-manager') }}
-            </button>
-        </form>
-    {% else %}
-        <span class="btn disabled" title="{{ 'Only available in local/development environments'|t('icon-manager') }}">
-            {{ "Apply Optimizations"|t('icon-manager') }}
-        </span>
-    {% endif %}
-{% endblock %}
-
-{% block content %}
-    {# Include the shared optimization tab content (includes SVGO notice) #}
-    {% include 'icon-manager/icon-sets/_optimization-tab.twig' %}
-{% endblock %}
+{% redirect 'icon-manager/icon-sets/' ~ iconSet.id ~ '#optimization' %}

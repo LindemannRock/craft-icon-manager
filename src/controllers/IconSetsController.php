@@ -190,42 +190,13 @@ class IconSetsController extends Controller
     }
 
     /**
-     * Optimize SVG files for an icon set
+     * Optimize SVG files for an icon set (redirects to edit page optimization tab)
      */
     public function actionOptimize(int $iconSetId): Response
     {
-        // Check if optimization is enabled
-        if (!IconManager::getInstance()->getSettings()->enableOptimization) {
-            Craft::$app->getSession()->setError(Craft::t('icon-manager', 'SVG optimization is disabled. Enable it in settings or config file.'));
-            return $this->redirect('icon-manager/icon-sets/' . $iconSetId);
-        }
-
-        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-
-        if (!$iconSet) {
-            throw new \yii\web\NotFoundHttpException('Icon set not found');
-        }
-
-        // Debug - log the actual type
-        $this->logDebug("Icon set type", ['type' => $iconSet->type]);
-
-        // Only allow SVG folder icon sets
-        if ($iconSet->type !== 'folder' && $iconSet->type !== 'svg-folder') {
-            Craft::$app->getSession()->setError(Craft::t('icon-manager', 'SVG optimization is only available for folder-based icon sets. Type: ' . $iconSet->type));
-            return $this->redirect('icon-manager/icon-sets/' . $iconSetId);
-        }
-
-        // Scan this specific icon set
-        $scanResult = IconManager::getInstance()->svgOptimizer->scanIconSet($iconSet);
-
-        // Get backups list
-        $backups = IconManager::getInstance()->svgOptimizer->listBackups($iconSet->name);
-
-        return $this->renderTemplate('icon-manager/icon-sets/optimize', [
-            'iconSet' => $iconSet,
-            'scanResult' => $scanResult,
-            'backups' => $backups,
-        ]);
+        // Redirect to edit page with optimization tab
+        // The standalone optimize page is deprecated - using integrated tab instead
+        return $this->redirect('icon-manager/icon-sets/' . $iconSetId . '#optimization');
     }
 
     /**

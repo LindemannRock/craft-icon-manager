@@ -149,6 +149,7 @@
         disabled: settings.isOverriddenByConfig('enableOptimization')
     }) }}
 
+    <div id="optimization-settings" class="{% if not settings.enableOptimization %}hidden{% endif %}">
     {{ forms.lightswitchField({
         label: 'Enable Automatic Backups'|t('icon-manager'),
         instructions: 'Automatically create backups before applying optimizations'|t('icon-manager'),
@@ -241,6 +242,7 @@
         warning: settings.isOverriddenByConfig('scanWidthHeightWithViewBox') ? 'This is being overridden by the `scanWidthHeightWithViewBox` setting in the `config/icon-manager.php` file.'|t('icon-manager'),
         disabled: settings.isOverriddenByConfig('scanWidthHeightWithViewBox')
     }) }}
+    </div>{# end optimization-settings #}
 
     <hr>
 
@@ -274,3 +276,17 @@
 
     {% include 'icon-manager/_components/plugin-credit.twig' %}
 {% endblock %}
+
+{% js %}
+// Toggle optimization settings visibility based on enableOptimization
+$('#enableOptimization').on('change', function() {
+    var isEnabled = $(this).siblings('.lightswitch').hasClass('on');
+    var $optimizationSettings = $('#optimization-settings');
+
+    if (isEnabled) {
+        $optimizationSettings.removeClass('hidden');
+    } else {
+        $optimizationSettings.addClass('hidden');
+    }
+});
+{% endjs %}

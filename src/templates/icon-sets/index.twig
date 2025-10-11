@@ -62,7 +62,7 @@
                             {% set issueCount = iconSet.getOptimizationIssueCount() %}
                             {% if iconSet.type in ['svg-folder', 'folder'] %}
                                 {% if issueCount > 0 %}
-                                    <a href="{{ url('icon-manager/icon-sets/' ~ iconSet.id ~ '/optimize') }}"
+                                    <a href="{{ url('icon-manager/icon-sets/' ~ iconSet.id ~ '#optimization') }}"
                                        style="text-decoration: none;"
                                        title="{{ 'View optimization details'|t('icon-manager') }}">
                                         {{ issueCount }}
