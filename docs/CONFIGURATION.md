@@ -139,6 +139,56 @@ return [
   - Backups are stored in `storage/backups/icon-manager/` with timestamps
   - Can be restored via Control Panel (dev mode only) or manually
 
+#### Scan Control Settings
+
+Control what the scanner detects as optimization opportunities. **Note:** These settings only affect the scanner and PHP optimizer. SVGO uses its own configuration file (`svgo.config.js`) and will optimize based on its settings regardless of these flags.
+
+- **scanClipPaths** (default: true)
+  - Detects **empty or unused** clip-path definitions
+  - Only flags clip-paths that are not referenced anywhere in the SVG or have no content
+  - Used clip-paths are preserved and not flagged as issues
+
+- **scanMasks** (default: true)
+  - Detects **empty or unused** mask definitions
+  - Only flags masks that are not referenced anywhere in the SVG or have no content
+  - Used masks are preserved and not flagged as issues
+
+- **scanFilters** (default: true)
+  - Detects filter effects (`<filter>` elements)
+  - Flags all filters as they can slow down rendering
+  - Some complex effects require filters - disable this if filters are intentional
+
+- **scanComments** (default: true)
+  - Detects regular comments `<!-- ... -->`
+  - **Excludes legal/license comments** `<!--! ... -->` (e.g., Font Awesome licenses)
+  - Legal comments are always preserved by both PHP and SVGO optimizers
+
+- **scanInlineStyles** (default: true)
+  - Detects inline `style` attributes with convertible properties
+  - Only flags styles that can be converted to SVG attributes (fill, stroke, etc.)
+  - **Preserves CSS-only properties** like `isolation`, `mix-blend-mode`, `transform`, `filter`
+  - Example: `style="fill:#000"` → flagged (can be `fill="#000"`)
+  - Example: `style="isolation:isolate"` → not flagged (CSS-only, must stay in style)
+
+- **scanLargeFiles** (default: true)
+  - Detects files over 10KB
+  - **Warning only** - large file size may be normal for complex icons
+  - Useful for identifying icons that might benefit from optimization
+
+- **scanWidthHeight** (default: true)
+  - Detects width/height attributes **without viewBox** on `<svg>` tag
+  - **Critical issue** - SVG won't scale responsively without viewBox
+  - Example: `<svg width="24" height="24">` → flagged (missing viewBox)
+  - Example: `<svg width="24" height="24" viewBox="0 0 24 24">` → not flagged
+
+- **scanWidthHeightWithViewBox** (default: false)
+  - Detects width/height even when viewBox exists
+  - **Optional optimization** - some prefer viewBox-only for maximum flexibility
+  - When enabled: `<svg width="24" height="24" viewBox="0 0 24 24">` → flagged
+  - When disabled: Only flags width/height **without** viewBox (critical issues only)
+
+**Important:** SVGO ignores these settings. Configure SVGO separately via `svgo.config.js` to control what it optimizes.
+
 #### Logging Settings
 
 - **logLevel**: Logging verbosity level

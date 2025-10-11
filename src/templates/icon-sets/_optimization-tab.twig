@@ -1,6 +1,7 @@
 {# SVG Optimization Tab Content #}
 
 {% set isDevEnvironment = craft.app.config.general.devMode or (craft.app.env in ['local', 'dev', 'development']) %}
+{% set settings = craft.iconManager.settings %}
 
 
 {% if scanResult is not defined %}
@@ -178,34 +179,48 @@
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb; width: 60px;">{{ "Preview"|t('icon-manager') }}</th>
                         <th style="padding: 10px 12px; text-align: left; border: 1px solid #e5e7eb;">{{ "File Name"|t('icon-manager') }}</th>
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">{{ "Size"|t('icon-manager') }}</th>
+                        {% if settings.scanClipPaths %}
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Clip"|t('icon-manager') }}
                             <span class="info" style="margin-left: 4px;">{{ 'Empty or unused clip-paths'|t('icon-manager') }}</span>
                         </th>
+                        {% endif %}
+                        {% if settings.scanMasks %}
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Mask"|t('icon-manager') }}
                             <span class="info" style="margin-left: 4px;">{{ 'Empty or unused masks'|t('icon-manager') }}</span>
                         </th>
+                        {% endif %}
+                        {% if settings.scanFilters %}
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Filter"|t('icon-manager') }}
                             <span class="info" style="margin-left: 4px;">{{ 'Complex effects that can slow down rendering'|t('icon-manager') }}</span>
                         </th>
+                        {% endif %}
+                        {% if settings.scanComments %}
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Comment"|t('icon-manager') }}
                             <span class="info" style="margin-left: 4px;">{{ 'Unnecessary metadata that adds file size'|t('icon-manager') }}</span>
                         </th>
+                        {% endif %}
+                        {% if settings.scanInlineStyles %}
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Style"|t('icon-manager') }}
                             <span class="info" style="margin-left: 4px;">{{ 'Harder to override with CSS'|t('icon-manager') }}</span>
                         </th>
+                        {% endif %}
+                        {% if settings.scanLargeFiles %}
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "Large"|t('icon-manager') }}
                             <span class="info" style="margin-left: 4px;">{{ 'Files over 10KB (may be normal for complex icons)'|t('icon-manager') }}</span>
                         </th>
+                        {% endif %}
+                        {% if settings.scanWidthHeight or settings.scanWidthHeightWithViewBox %}
                         <th style="padding: 10px 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ "W/H"|t('icon-manager') }}
-                            <span class="info" style="margin-left: 4px;">{{ 'Has width/height attributes instead of viewBox'|t('icon-manager') }}</span>
+                            <span class="info" style="margin-left: 4px;">{{ 'Has width/height attributes'|t('icon-manager') }}{% if settings.scanWidthHeightWithViewBox %}{{ ' (even with viewBox)'|t('icon-manager') }}{% endif %}</span>
                         </th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -230,6 +245,7 @@
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {{ craft.iconManager.svgOptimizer.formatFileSize(icon.fileSize) }}
                             </td>
+                            {% if settings.scanClipPaths %}
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {% if icon.issues.clipPaths > 0 %}
                                     <span style="color: #dc2626; font-weight: 600;">✓</span>
@@ -237,6 +253,8 @@
                                     <span style="color: #9ca3af;">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
+                            {% if settings.scanMasks %}
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {% if icon.issues.masks > 0 %}
                                     <span style="color: #dc2626; font-weight: 600;">✓</span>
@@ -244,6 +262,8 @@
                                     <span style="color: #9ca3af;">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
+                            {% if settings.scanFilters %}
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {% if icon.issues.filters > 0 %}
                                     <span style="color: #dc2626; font-weight: 600;">✓</span>
@@ -251,6 +271,8 @@
                                     <span style="color: #9ca3af;">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
+                            {% if settings.scanComments %}
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {% if icon.issues.comments > 0 %}
                                     <span style="color: #dc2626; font-weight: 600;">✓</span>
@@ -258,6 +280,8 @@
                                     <span style="color: #9ca3af;">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
+                            {% if settings.scanInlineStyles %}
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {% if icon.issues.inlineStyles > 0 %}
                                     <span style="color: #dc2626; font-weight: 600;">✓</span>
@@ -265,6 +289,8 @@
                                     <span style="color: #9ca3af;">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
+                            {% if settings.scanLargeFiles %}
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {% if icon.issues.largeFiles > 0 %}
                                     <span style="color: #dc2626; font-weight: 600;">✓</span>
@@ -272,6 +298,8 @@
                                     <span style="color: #9ca3af;">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
+                            {% if settings.scanWidthHeight or settings.scanWidthHeightWithViewBox %}
                             <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                 {% if icon.issues.widthHeight > 0 %}
                                     <span style="color: #dc2626; font-weight: 600;">✓</span>
@@ -279,6 +307,7 @@
                                     <span style="color: #9ca3af;">—</span>
                                 {% endif %}
                             </td>
+                            {% endif %}
                         </tr>
                         {% endif %}
                     {% endfor %}

@@ -43,6 +43,16 @@ return [
         'enableOptimization' => true,
         'enableOptimizationBackup' => true,
 
+        // Scan control settings (what to check for during optimization scans)
+        'scanClipPaths' => true,              // Scan for unused clip-paths
+        'scanMasks' => true,                  // Scan for unused masks
+        'scanFilters' => true,                // Scan for filters
+        'scanComments' => true,               // Scan for comments
+        'scanInlineStyles' => true,           // Scan for inline styles
+        'scanLargeFiles' => true,             // Scan for large files (>10KB)
+        'scanWidthHeight' => true,            // Scan for width/height without viewBox
+        'scanWidthHeightWithViewBox' => false, // Scan for width/height even with viewBox
+
         // Logging settings
         'logLevel' => 'error', // Options: 'debug', 'info', 'warning', 'error'
     ],

@@ -75,6 +75,15 @@ class Install extends Migration
             // Optimization settings
             'enableOptimization' => $this->boolean()->notNull()->defaultValue(true),
             'enableOptimizationBackup' => $this->boolean()->notNull()->defaultValue(true),
+            // Scan control settings
+            'scanClipPaths' => $this->boolean()->notNull()->defaultValue(true),
+            'scanMasks' => $this->boolean()->notNull()->defaultValue(true),
+            'scanFilters' => $this->boolean()->notNull()->defaultValue(true),
+            'scanComments' => $this->boolean()->notNull()->defaultValue(true),
+            'scanInlineStyles' => $this->boolean()->notNull()->defaultValue(true),
+            'scanLargeFiles' => $this->boolean()->notNull()->defaultValue(true),
+            'scanWidthHeight' => $this->boolean()->notNull()->defaultValue(true),
+            'scanWidthHeightWithViewBox' => $this->boolean()->notNull()->defaultValue(false),
             // Logging settings
             'logLevel' => $this->string(20)->notNull()->defaultValue('error'),
             // System fields
@@ -99,6 +108,14 @@ class Install extends Migration
             ]),
             'enableOptimization' => true,
             'enableOptimizationBackup' => true,
+            'scanClipPaths' => true,
+            'scanMasks' => true,
+            'scanFilters' => true,
+            'scanComments' => true,
+            'scanInlineStyles' => true,
+            'scanLargeFiles' => true,
+            'scanWidthHeight' => true,
+            'scanWidthHeightWithViewBox' => false,
             'logLevel' => 'error',
             'dateCreated' => Db::prepareDateForDb(new \DateTime()),
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),

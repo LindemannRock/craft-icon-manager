@@ -138,91 +138,117 @@ class SvgOptimizerService extends Component
             return $result;
         }
 
+        // Get scan settings
+        $settings = IconManager::getInstance()->getSettings();
+
         // Check for problematic clip-paths (empty or unused)
-        $clipPathIssues = 0;
-        if (preg_match_all('/<clipPath[^>]*id\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)<\/clipPath>/is', $content, $clipMatches, PREG_SET_ORDER)) {
-            foreach ($clipMatches as $match) {
-                $clipId = $match[1];
-                $clipContent = trim($match[2]);
+        if ($settings->scanClipPaths) {
+            $clipPathIssues = 0;
+            if (preg_match_all('/<clipPath[^>]*id\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)<\/clipPath>/is', $content, $clipMatches, PREG_SET_ORDER)) {
+                foreach ($clipMatches as $match) {
+                    $clipId = $match[1];
+                    $clipContent = trim($match[2]);
 
-                // Empty clip-path
-                if (empty($clipContent)) {
-                    $clipPathIssues++;
-                    continue;
-                }
+                    // Empty clip-path
+                    if (empty($clipContent)) {
+                        $clipPathIssues++;
+                        continue;
+                    }
 
-                // Unused clip-path (not referenced anywhere)
-                if (!preg_match('/clip-path\s*[:=]\s*["\']?\s*url\s*\(\s*#' . preg_quote($clipId, '/') . '\s*\)/i', $content)) {
-                    $clipPathIssues++;
+                    // Unused clip-path (not referenced anywhere)
+                    if (!preg_match('/clip-path\s*[:=]\s*["\']?\s*url\s*\(\s*#' . preg_quote($clipId, '/') . '\s*\)/i', $content)) {
+                        $clipPathIssues++;
+                    }
                 }
             }
+            $result['issues']['clipPaths'] = $clipPathIssues;
         }
-        $result['issues']['clipPaths'] = $clipPathIssues;
 
         // Check for problematic masks (empty or unused)
-        $maskIssues = 0;
-        if (preg_match_all('/<mask[^>]*id\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)<\/mask>/is', $content, $maskMatches, PREG_SET_ORDER)) {
-            foreach ($maskMatches as $match) {
-                $maskId = $match[1];
-                $maskContent = trim($match[2]);
+        if ($settings->scanMasks) {
+            $maskIssues = 0;
+            if (preg_match_all('/<mask[^>]*id\s*=\s*["\']([^"\']+)["\'][^>]*>(.*?)<\/mask>/is', $content, $maskMatches, PREG_SET_ORDER)) {
+                foreach ($maskMatches as $match) {
+                    $maskId = $match[1];
+                    $maskContent = trim($match[2]);
 
-                // Empty mask
-                if (empty($maskContent)) {
-                    $maskIssues++;
-                    continue;
-                }
+                    // Empty mask
+                    if (empty($maskContent)) {
+                        $maskIssues++;
+                        continue;
+                    }
 
-                // Unused mask (not referenced anywhere)
-                if (!preg_match('/mask\s*[:=]\s*["\']?\s*url\s*\(\s*#' . preg_quote($maskId, '/') . '\s*\)/i', $content)) {
-                    $maskIssues++;
+                    // Unused mask (not referenced anywhere)
+                    if (!preg_match('/mask\s*[:=]\s*["\']?\s*url\s*\(\s*#' . preg_quote($maskId, '/') . '\s*\)/i', $content)) {
+                        $maskIssues++;
+                    }
                 }
             }
+            $result['issues']['masks'] = $maskIssues;
         }
-        $result['issues']['masks'] = $maskIssues;
 
         // Check for filters
-        if (preg_match_all('/<filter/i', $content, $matches)) {
-            $result['issues']['filters'] = count($matches[0]);
+        if ($settings->scanFilters) {
+            if (preg_match_all('/<filter/i', $content, $matches)) {
+                $result['issues']['filters'] = count($matches[0]);
+            }
         }
 
         // Check for comments (exclude legal/license comments with <!--! ... -->)
-        if (preg_match_all('/<!--(?!!).*?-->/s', $content, $matches)) {
-            $result['issues']['comments'] = count($matches[0]);
+        if ($settings->scanComments) {
+            if (preg_match_all('/<!--(?!!).*?-->/s', $content, $matches)) {
+                $result['issues']['comments'] = count($matches[0]);
+            }
         }
 
         // Check for inline styles (but exclude CSS-only properties we want to keep)
-        if (preg_match_all('/style\s*=\s*["\']([^"\']+)["\']/i', $content, $matches)) {
-            $styleCount = 0;
-            foreach ($matches[1] as $styleContent) {
-                // Parse the style content
-                $hasConvertibleStyles = false;
-                foreach (explode(';', $styleContent) as $style) {
-                    if (strpos($style, ':') !== false) {
-                        list($prop, $value) = array_map('trim', explode(':', $style, 2));
-                        $propLower = strtolower($prop);
+        if ($settings->scanInlineStyles) {
+            if (preg_match_all('/style\s*=\s*["\']([^"\']+)["\']/i', $content, $matches)) {
+                $styleCount = 0;
+                foreach ($matches[1] as $styleContent) {
+                    // Parse the style content
+                    $hasConvertibleStyles = false;
+                    foreach (explode(';', $styleContent) as $style) {
+                        if (strpos($style, ':') !== false) {
+                            list($prop, $value) = array_map('trim', explode(':', $style, 2));
+                            $propLower = strtolower($prop);
 
-                        // Only count if it's NOT a CSS-only property
-                        if (!in_array($propLower, ['mix-blend-mode', 'opacity', 'filter', 'transform', 'clip-path', 'isolation'])) {
-                            $hasConvertibleStyles = true;
-                            break;
+                            // Only count if it's NOT a CSS-only property
+                            if (!in_array($propLower, ['mix-blend-mode', 'opacity', 'filter', 'transform', 'clip-path', 'isolation'])) {
+                                $hasConvertibleStyles = true;
+                                break;
+                            }
                         }
                     }
+                    if ($hasConvertibleStyles) {
+                        $styleCount++;
+                    }
                 }
-                if ($hasConvertibleStyles) {
-                    $styleCount++;
-                }
+                $result['issues']['inlineStyles'] = $styleCount;
             }
-            $result['issues']['inlineStyles'] = $styleCount;
         }
 
         // Check if file is large (> 10KB)
-        if ($result['fileSize'] > 10240) {
-            $result['issues']['largeFiles'] = 1;
+        if ($settings->scanLargeFiles) {
+            if ($result['fileSize'] > 10240) {
+                $result['issues']['largeFiles'] = 1;
+            }
         }
 
         // Check for width/height attributes on <svg> tag
-        if (preg_match('/<svg[^>]*(width|height)\s*=/i', $content)) {
-            $result['issues']['widthHeight'] = 1;
+        if ($settings->scanWidthHeight || $settings->scanWidthHeightWithViewBox) {
+            // Match only when preceded by space or quote to avoid stroke-width, line-width, etc.
+            if (preg_match('/<svg[^>]*[\s"\'](width|height)\s*=/i', $content)) {
+                $hasViewBox = preg_match('/<svg[^>]*viewBox\s*=/i', $content);
+
+                if (!$hasViewBox && $settings->scanWidthHeight) {
+                    // Critical: width/height without viewBox
+                    $result['issues']['widthHeight'] = 1;
+                } elseif ($hasViewBox && $settings->scanWidthHeightWithViewBox) {
+                    // Optional: width/height even with viewBox
+                    $result['issues']['widthHeight'] = 1;
+                }
+            }
         }
 
         return $result;

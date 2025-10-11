@@ -165,7 +165,37 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - **enabledIconTypes** - Enable/disable specific icon set types
 - **enableOptimization** - Enable/disable SVG optimization features (default: true)
 - **enableOptimizationBackup** - Automatically create backups before optimization (default: true)
+- **Scan Controls** - Granular control over what the scanner detects (see Scan Control Settings below)
 - **logLevel** - Logging verbosity: error, warning, info, or debug
+
+#### Scan Control Settings
+
+These settings control what the scanner detects during optimization scans. **Important:** These only affect the scanner and PHP optimizer - SVGO uses its own `svgo.config.js` configuration.
+
+```php
+// config/icon-manager.php
+return [
+    'scanClipPaths' => true,              // Detect empty/unused clip-paths
+    'scanMasks' => true,                  // Detect empty/unused masks
+    'scanFilters' => true,                // Detect filter effects
+    'scanComments' => true,               // Detect comments (excludes legal <!--! ... -->)
+    'scanInlineStyles' => true,           // Detect convertible inline styles
+    'scanLargeFiles' => true,             // Detect files >10KB (warning)
+    'scanWidthHeight' => true,            // Detect width/height without viewBox (critical)
+    'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
+];
+```
+
+**What each scan detects:**
+
+- **scanClipPaths**: Flags **empty or unreferenced** clip-paths only. Used clip-paths are not flagged.
+- **scanMasks**: Flags **empty or unreferenced** masks only. Used masks are not flagged.
+- **scanFilters**: Flags all `<filter>` elements (can slow rendering). Disable if filters are intentional.
+- **scanComments**: Flags regular comments. **Preserves legal comments** (`<!--! ... -->`).
+- **scanInlineStyles**: Flags convertible styles (fill, stroke). **Preserves CSS-only** (isolation, mix-blend-mode, transform, filter).
+- **scanLargeFiles**: Warning for files >10KB. May be normal for complex icons.
+- **scanWidthHeight**: Flags width/height **without viewBox** (responsive issue - default: true).
+- **scanWidthHeightWithViewBox**: Flags width/height **even with viewBox** (optional optimization - default: false).
 
 ### Creating Icon Sets
 
@@ -736,6 +766,31 @@ Before optimization, a backup is automatically created (unless `--noBackup` is u
 - Don't have Node.js in your environment
 - Need simple, reliable optimization
 - Only need basic cleanup (comments, metadata)
+
+### Scan Controls vs SVGO Configuration
+
+**Scan control settings** (in Icon Manager settings or config) control:
+- What the scanner flags as issues in the UI
+- What the PHP optimizer attempts to fix
+
+**SVGO configuration** (`svgo.config.js`) controls:
+- What SVGO actually optimizes when you run `./craft icon-manager/optimize --engine=svgo`
+- Independent of scan control settings
+
+**Example scenario:**
+```php
+// config/icon-manager.php
+'scanComments' => false, // Don't show comments as issues in UI
+```
+
+Even with `scanComments => false`:
+- Scanner won't flag comments
+- PHP optimizer won't remove comments
+- **But SVGO will still remove comments** if `removeComments` is in `svgo.config.js`
+
+To fully disable comment removal, you must:
+1. Set `scanComments => false` in config (hides from scanner/PHP optimizer)
+2. Remove `removeComments` from `svgo.config.js` (prevents SVGO from removing)
 
 ## Missing Icon Handling
 

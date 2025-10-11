@@ -76,6 +76,46 @@ class Settings extends Model
      */
     public bool $enableOptimizationBackup = true;
 
+    /**
+     * @var bool Scan for unused clip-paths
+     */
+    public bool $scanClipPaths = true;
+
+    /**
+     * @var bool Scan for unused masks
+     */
+    public bool $scanMasks = true;
+
+    /**
+     * @var bool Scan for filters
+     */
+    public bool $scanFilters = true;
+
+    /**
+     * @var bool Scan for comments
+     */
+    public bool $scanComments = true;
+
+    /**
+     * @var bool Scan for inline styles
+     */
+    public bool $scanInlineStyles = true;
+
+    /**
+     * @var bool Scan for large files (>10KB)
+     */
+    public bool $scanLargeFiles = true;
+
+    /**
+     * @var bool Scan for width/height without viewBox (critical issue)
+     */
+    public bool $scanWidthHeight = true;
+
+    /**
+     * @var bool Scan for width/height even with viewBox (optional optimization)
+     */
+    public bool $scanWidthHeightWithViewBox = false;
+
 
     /**
      * @inheritdoc
@@ -98,7 +138,7 @@ class Settings extends Model
         return [
             [['iconSetsPath'], 'required'],
             [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
-            [['enableCache', 'enableOptimization', 'enableOptimizationBackup'], 'boolean'],
+            [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['enabledIconTypes'], 'safe'],
             [['logLevel'], 'in', 'range' => ['debug', 'info', 'warning', 'error']],
@@ -194,7 +234,7 @@ class Settings extends Model
             unset($row['id'], $row['dateCreated'], $row['dateUpdated'], $row['uid']);
             
             // Convert numeric boolean values to actual booleans
-            $booleanFields = ['enableCache', 'enableOptimization', 'enableOptimizationBackup'];
+            $booleanFields = ['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox'];
             foreach ($booleanFields as $field) {
                 if (isset($row[$field])) {
                     $row[$field] = (bool) $row[$field];
@@ -277,6 +317,14 @@ class Settings extends Model
             'logLevel' => $this->logLevel,
             'enableOptimization' => $this->enableOptimization,
             'enableOptimizationBackup' => $this->enableOptimizationBackup,
+            'scanClipPaths' => $this->scanClipPaths,
+            'scanMasks' => $this->scanMasks,
+            'scanFilters' => $this->scanFilters,
+            'scanComments' => $this->scanComments,
+            'scanInlineStyles' => $this->scanInlineStyles,
+            'scanLargeFiles' => $this->scanLargeFiles,
+            'scanWidthHeight' => $this->scanWidthHeight,
+            'scanWidthHeightWithViewBox' => $this->scanWidthHeightWithViewBox,
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
         ];
         
