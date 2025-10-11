@@ -100,7 +100,7 @@ class Icon extends Model implements \JsonSerializable
             'iconSetHandle' => $this->iconSetHandle,
             'type' => $this->type,
             'name' => $this->name,
-            'label' => $this->label,
+            'label' => $this->getDisplayLabel(), // Use display label for current site language
             'value' => $this->value,
             'keywords' => $this->keywords,
         ];
@@ -215,15 +215,39 @@ class Icon extends Model implements \JsonSerializable
             }
 
             // Get current site language
-            $currentSite = Craft::$app->sites->getCurrentSite();
-            $language = $currentSite->language ?? 'en';
+            // In CP: Use the site being edited (from request param)
+            // In frontend: Use the current site
+            if (Craft::$app->getRequest()->getIsCpRequest()) {
+                $siteHandle = Craft::$app->getRequest()->getParam('site');
+                if ($siteHandle) {
+                    $site = Craft::$app->sites->getSiteByHandle($siteHandle);
+                    $language = $site ? $site->language : (Craft::$app->sites->getCurrentSite()->language ?? 'en');
+                } else {
+                    $language = Craft::$app->sites->getCurrentSite()->language ?? 'en';
+                }
+            } else {
+                $currentSite = Craft::$app->sites->getCurrentSite();
+                $language = $currentSite->language ?? 'en';
+            }
 
-            // Check for language-specific label first
-            if ($language === 'ar' && isset($data['labelAr'])) {
-                return $data['labelAr'];
-            } elseif ($language === 'en' && isset($data['labelEn'])) {
-                return $data['labelEn'];
-            } elseif (isset($data['label'])) {
+            // Convert language code to clean format
+            // Supports both hyphen and underscore: 'en-US' -> 'en', 'en_GB' -> 'en', 'ar-AE' -> 'ar'
+            $languageCode = strtolower(preg_split('/[-_]/', $language)[0]);
+
+            // Check for language-specific label using dynamic key: label_{language}
+            $languageKey = 'label_' . $languageCode;
+            if (isset($data[$languageKey])) {
+                return $data[$languageKey];
+            }
+
+            // Fallback to legacy format for backward compatibility
+            $legacyKey = 'label' . ucfirst($languageCode); // labelEn, labelAr, labelFr, etc.
+            if (isset($data[$legacyKey])) {
+                return $data[$legacyKey];
+            }
+
+            // Fallback to generic label
+            if (isset($data['label'])) {
                 return $data['label'];
             }
 

@@ -325,15 +325,19 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
         $showSearchJson = $this->showSearch ? 'true' : 'false';
         $showLabelsJson = $this->showLabels ? 'true' : 'false';
         $allowMultipleJson = $this->allowMultiple ? 'true' : 'false';
+        $allowCustomLabelsJson = $this->allowCustomLabels ? 'true' : 'false';
+        $currentSiteId = Craft::$app->getSites()->getCurrentSite()->id;
 
         $js = <<<JS
 new IconManager.IconPicker('$namespacedId', {
     fieldId: {$this->id},
+    siteId: {$currentSiteId},
     showSearch: $showSearchJson,
     showLabels: $showLabelsJson,
     iconSize: '{$this->iconSize}',
     iconsPerPage: {$this->iconsPerPage},
-    allowMultiple: $allowMultipleJson
+    allowMultiple: $allowMultipleJson,
+    allowCustomLabels: $allowCustomLabelsJson
 });
 JS;
 

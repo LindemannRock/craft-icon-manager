@@ -372,6 +372,51 @@ document.getElementById('submit-btn').addEventListener('click', function() {
 
 ## Multi-Site Icons
 
+### Dynamic Multilingual Metadata
+
+Icon Manager supports unlimited languages dynamically. Use the `label_{languageCode}` format in your metadata.json:
+
+```json
+{
+    "delivery-truck": {
+        "label": "Delivery",
+        "label_en": "Delivery",
+        "label_ar": "توصيل",
+        "label_fr": "Livraison",
+        "label_de": "Lieferung",
+        "label_es": "Entrega",
+        "label_it": "Consegna",
+        "label_ja": "配達",
+        "label_zh": "交付",
+        "search": {
+            "terms": ["truck", "delivery", "shipping", "توصيل", "شحن", "livraison", "camion", "Lieferung", "LKW"]
+        }
+    },
+    "shopping-cart": {
+        "label": "Cart",
+        "label_en": "Shopping Cart",
+        "label_ar": "عربة التسوق",
+        "label_fr": "Panier",
+        "label_de": "Warenkorb",
+        "label_es": "Carrito",
+        "label_it": "Carrello",
+        "search": {
+            "terms": ["cart", "shopping", "basket", "عربة", "تسوق", "panier", "achats", "Warenkorb", "Einkaufen"]
+        }
+    }
+}
+```
+
+**How it works:**
+- Site language `en-US` → Uses `label_en`
+- Site language `ar-AE` → Uses `label_ar`
+- Site language `fr-CA` → Uses `label_fr`
+- Primary language code extracted automatically (e.g., `pt-BR` → `pt`)
+
+**Backward compatibility:**
+- Legacy `labelEn`, `labelAr` format still works
+- Automatically falls back to `label` if language-specific not found
+
 ### Language-Specific Icons with Custom Labels
 ```twig
 {# Icon with site-specific custom label #}

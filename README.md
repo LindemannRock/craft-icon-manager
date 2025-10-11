@@ -496,16 +496,26 @@ Add a `metadata.json` file in your icon folders to provide enhanced metadata:
 {
     "freshly-baked": {
         "label": "Freshly Baked",
-        "labelAr": "مخبوز طازج",
-        "labelEn": "Freshly Baked",
+        "label_en": "Freshly Baked",
+        "label_ar": "مخبوز طازج",
+        "label_fr": "Fraîchement Cuit",
+        "label_de": "Frisch Gebacken",
+        "label_es": "Recién Horneado",
+        "label_it": "Appena Sfornato",
         "search": {
-            "terms": ["fresh", "baked", "bread", "bakery", "طازج", "مخبوز", "خبز"]
+            "terms": ["fresh", "baked", "bread", "bakery", "طازج", "مخبوز", "خبز", "frais", "cuit", "frisch", "gebacken"]
         },
         "category": "product-features",
         "description": "Icon representing freshly baked products"
     }
 }
 ```
+
+**Language Code Format:**
+- Use `label_{languageCode}` where `{languageCode}` is the site's language code
+- Supports any language: `label_en`, `label_ar`, `label_fr`, `label_de`, `label_es`, `label_it`, etc.
+- Legacy format (`labelEn`, `labelAr`) still supported for backward compatibility
+- Primary language codes only (e.g., `en-US` → uses `label_en`, `ar-AE` → uses `label_ar`)
 
 ### Label Resolution Priority
 
@@ -518,9 +528,11 @@ The plugin resolves icon labels in this order:
 
 ### Supported Metadata Properties
 
-- **`label`** - Default display label
-- **`labelAr`** - Arabic language label
-- **`labelEn`** - English language label
+- **`label`** - Default display label (fallback)
+- **`label_{languageCode}`** - Language-specific labels (e.g., `label_en`, `label_ar`, `label_fr`, `label_de`)
+  - Supports any Craft site language dynamically
+  - Use primary language code only (e.g., `en-US` → `label_en`)
+- **`labelEn`, `labelAr`** - Legacy format (still supported for backward compatibility)
 - **`search.terms`** - Additional search keywords (supports multilingual)
 - **`category`** - Icon category for organization
 - **`description`** - Icon description for accessibility
