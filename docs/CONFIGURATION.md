@@ -28,6 +28,16 @@ return [
     'enableOptimization' => true,          // Enable optimization features
     'enableOptimizationBackup' => true,    // Auto-backup before optimization
 
+    // Scan Controls (what scanner detects - PHP optimizer only, SVGO uses svgo.config.js)
+    'scanClipPaths' => true,              // Detect empty/unused clip-paths (used ones preserved)
+    'scanMasks' => true,                  // Detect empty/unused masks (used ones preserved)
+    'scanFilters' => true,                // Detect filter effects
+    'scanComments' => true,               // Detect regular comments (legal <!--! ... --> preserved)
+    'scanInlineStyles' => true,           // Detect convertible styles (CSS-only properties preserved)
+    'scanLargeFiles' => true,             // Detect files >10KB (warning only)
+    'scanWidthHeight' => true,            // Detect width/height without viewBox (critical)
+    'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
+
     // Logging settings
     'logLevel' => 'info', // error, warning, info, debug
 
@@ -62,6 +72,16 @@ return [
             'material-icons' => false,
             'web-font' => false,
         ],
+
+        // Scan Controls (PHP optimizer only, SVGO uses svgo.config.js)
+        'scanClipPaths' => true,              // Detect empty/unused clip-paths (used ones preserved)
+        'scanMasks' => true,                  // Detect empty/unused masks (used ones preserved)
+        'scanFilters' => true,                // Detect filter effects
+        'scanComments' => true,               // Detect regular comments (legal <!--! ... --> preserved)
+        'scanInlineStyles' => true,           // Detect convertible styles (CSS-only properties preserved)
+        'scanLargeFiles' => true,             // Detect files >10KB (warning only)
+        'scanWidthHeight' => true,            // Detect width/height without viewBox (critical)
+        'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
     ],
 
     // Development environment
@@ -78,14 +98,14 @@ return [
             'web-font' => true,
         ],
     ],
-    
-    // Staging environment  
+
+    // Staging environment
     'staging' => [
         'iconSetsPath' => '@webroot/dist/assets/icons',
         'enableCache' => true,
         'cacheDuration' => 86400, // 1 day
     ],
-    
+
     // Production environment
     'production' => [
         'iconSetsPath' => '@webroot/dist/assets/icons',
@@ -390,4 +410,11 @@ No configuration needed - detection is automatic and intelligent.
 
 ## Icon Metadata Configuration
 
-You can also configure icon metadata files alongside your icon configuration. See the main README for details on `metadata.json` structure and multilingual label support.
+You can add `metadata.json` files to your icon folders to provide enhanced metadata like keywords, labels, and multilingual support.
+
+See the [Icon Metadata section in the README](../README.md#icon-metadata) for:
+- Basic metadata structure with keywords
+- Advanced structure with multilingual labels
+- Label resolution priority
+- Supported metadata properties
+- Complete examples

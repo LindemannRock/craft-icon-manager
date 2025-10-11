@@ -2,6 +2,66 @@
 
 A comprehensive icon management field supporting SVG libraries and icon fonts for Craft CMS 5.x.
 
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Development Status](#development-status)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Plugin Settings](#plugin-settings)
+  - [Config File](#config-file)
+  - [Scan Control Settings](#scan-control-settings)
+  - [Creating Icon Sets](#creating-icon-sets)
+- [Usage](#usage)
+  - [Field Type](#field-type)
+  - [Template Variables](#template-variables)
+  - [Rendering Options](#rendering-options)
+- [Icon Metadata](#icon-metadata)
+- [Security](#security)
+- [Field Settings](#field-settings)
+- [Caching](#caching)
+- [Logging](#logging)
+- [Environment-Specific Paths](#environment-specific-paths)
+- [SVG Optimization](#svg-optimization)
+  - [Issue Detection](#issue-detection)
+  - [PHP Optimizer](#php-optimizer-default)
+  - [SVGO](#svgo-advanced)
+  - [Scan Controls vs SVGO Configuration](#scan-controls-vs-svgo-configuration)
+- [Performance Tips](#performance-tips)
+- [Troubleshooting](#troubleshooting)
+- [Examples](#examples)
+- [Support](#support)
+- [License](#license)
+
+## Quick Start
+
+Get up and running with Icon Manager in 5 minutes:
+
+**1. Install the plugin**
+```bash
+composer require lindemannrock/icon-manager
+./craft plugin/install icon-manager
+```
+
+**2. Create your first icon set**
+- Go to **Icon Manager → Icon Sets** in the Control Panel
+- Click **"New Icon Set"**
+- Choose **"SVG Folder"** as the type
+- Select a folder containing SVG files (or use the default `/icons` folder)
+- Save the icon set
+
+**3. Add an icon field to your section**
+- Go to **Settings → Fields**
+- Create a new **"Icon Manager"** field
+- Add it to your entry type
+- Start selecting icons in your entries!
+
+**That's it!** Icons are now available in your templates via `{{ entry.iconField.render() }}`.
+
+See [Usage](#usage) below for template examples and advanced features.
+
 ## Features
 
 - **Multiple Icon Formats**: Support for SVG files, SVG sprites, Font Awesome, Material Icons, and custom web fonts
@@ -94,6 +154,20 @@ return [
             'material-icons' => false,
             'web-font' => false,
         ],
+
+        // SVG Optimization
+        'enableOptimization' => true,
+        'enableOptimizationBackup' => true,
+
+        // Scan Controls (what scanner detects - PHP optimizer only, SVGO uses svgo.config.js)
+        'scanClipPaths' => true,              // Detect empty/unused clip-paths (used ones preserved)
+        'scanMasks' => true,                  // Detect empty/unused masks (used ones preserved)
+        'scanFilters' => true,                // Detect filter effects
+        'scanComments' => true,               // Detect regular comments (legal <!--! ... --> preserved)
+        'scanInlineStyles' => true,           // Detect convertible styles (CSS-only properties preserved)
+        'scanLargeFiles' => true,             // Detect files >10KB (warning only)
+        'scanWidthHeight' => true,            // Detect width/height without viewBox (critical)
+        'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
     ],
 
     // Dev environment settings
@@ -807,6 +881,168 @@ Check if an icon exists:
     {# Handle missing icon #}
 {% endif %}
 ```
+
+## Performance Tips
+
+### For Large Icon Sets (500+ icons)
+
+**1. Enable Caching**
+```php
+'enableCache' => true,
+'cacheDuration' => 86400, // 24 hours
+```
+
+**2. Optimize Icon Files**
+- Run SVGO on your icon sets to reduce file sizes
+- Remove unnecessary metadata and comments
+- Use viewBox instead of width/height for responsive scaling
+
+**3. Limit Field Icon Sets**
+- Configure fields to show only relevant icon sets
+- Reduces picker loading time and improves UX
+
+**4. Use SVG Sprites for Repeated Icons**
+- If using 10+ icons from the same set on a page
+- Sprite loads once, all icons reference it
+- Significant performance improvement over individual SVG files
+
+### For Material Icons
+
+Material Icons loads a ~3.7MB font file containing all 3,800+ icons. For better performance:
+- Use only the icons you need as SVG files instead
+- Download specific icons from [Google Fonts](https://fonts.google.com/icons)
+- Add them to an SVG folder icon set
+
+### Cache Strategy by Environment
+
+```php
+'dev' => [
+    'cacheDuration' => 3600,     // 1 hour - quick iteration
+],
+'staging' => [
+    'cacheDuration' => 86400,    // 1 day - balance updates/performance
+],
+'production' => [
+    'cacheDuration' => 2592000,  // 30 days - maximum performance
+],
+```
+
+## Troubleshooting
+
+### Icons Not Showing in Picker
+
+**Check icon set is enabled:**
+- Go to Icon Manager → Icon Sets
+- Ensure the icon set has the green "enabled" status
+- Click the set and verify it's enabled in settings
+
+**Refresh icon cache:**
+- Go to Utilities → Clear Icon Cache
+- Click "Refresh All Icons"
+- Or go to the icon set and click "Refresh Icons"
+
+**Check file paths:**
+```php
+// In config/icon-manager.php
+'iconSetsPath' => '@root/icons', // Make sure this path exists
+```
+
+Verify the path exists:
+```bash
+ls /path/to/your/project/icons
+```
+
+### Icons Not Rendering in Templates
+
+**Check the icon exists:**
+```twig
+{% set icon = craft.iconManager.getIcon('mySet', 'iconName') %}
+{% if icon %}
+    {{ icon.render() }}
+{% else %}
+    Icon not found
+{% endif %}
+```
+
+**Check icon set handle:**
+- Icon set handles are case-sensitive
+- Verify the handle in Icon Manager → Icon Sets
+
+**Clear Craft cache:**
+```bash
+./craft clear-caches/all
+```
+
+### Optimization Not Working
+
+**Check optimization is enabled:**
+- Icon Manager → Settings → SVG Optimization
+- Ensure "Enable Optimization" is toggled on
+
+**For CLI optimization, check environment:**
+- Apply Optimizations button only works in dev/local
+- CLI commands work in all environments
+
+**SVGO not found:**
+```bash
+# Install SVGO
+npm install --save-dev svgo
+
+# Or verify it's installed
+./craft icon-manager/optimize/check
+```
+
+### Performance Issues with Large Icon Sets
+
+**Enable caching:**
+```php
+'enableCache' => true,
+'cacheDuration' => 86400,
+```
+
+**Limit icons per page in field:**
+- Edit the Icon Manager field
+- Set "Icons Per Page" to 50-100 instead of 500
+
+**Optimize SVG files:**
+- Large, unoptimized SVGs slow down the picker
+- Run optimization on your icon sets
+
+### Config File Not Working
+
+**Check file location:**
+```bash
+# Should be at:
+config/icon-manager.php
+
+# NOT:
+vendor/lindemannrock/icon-manager/src/config.php
+```
+
+**Verify environment:**
+```php
+// Check current environment
+echo Craft::$app->env; // Should match your config keys
+```
+
+**Check for syntax errors:**
+```bash
+php -l config/icon-manager.php
+```
+
+## Examples
+
+For more real-world template examples, see [docs/EXAMPLES.md](docs/EXAMPLES.md) including:
+
+- Navigation menus with icons
+- Feature cards and icon grids
+- Social media links
+- Button components with loading states
+- Dynamic icon selection
+- Multi-site and RTL support
+- Tailwind CSS integration
+- Performance optimization techniques
+- Accessibility best practices
 
 ## Support
 
