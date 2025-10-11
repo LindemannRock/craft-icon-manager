@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.15.0...v1.16.0) (2025-10-11)
+
+
+### Features
+
+* Enhance documentation with detailed configuration and usage examples ([b203fe7](https://github.com/LindemannRock/craft-icon-manager/commit/b203fe7e61c650804672beb5b2abd51f6949ace0))
+
 ## [1.15.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.1...v1.15.0) (2025-10-11)
 
 
