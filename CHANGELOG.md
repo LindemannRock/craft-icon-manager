@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.1...v1.15.0) (2025-10-11)
+
+
+### Features
+
+* Add granular scan control settings for SVG optimization ([26bbea2](https://github.com/LindemannRock/craft-icon-manager/commit/26bbea2c5945cb81345d94013281ea3c37414a03))
+
 ## [1.14.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.0...v1.14.1) (2025-10-11)
 
 
