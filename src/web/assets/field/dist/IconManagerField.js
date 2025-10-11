@@ -9,12 +9,14 @@
     IconManager.IconPicker = function(fieldId, settings) {
         this.fieldId = fieldId;
         this.settings = settings || {};
+        this.siteId = settings.siteId || 1; // Current site ID for custom labels
         this.icons = []; // Will be loaded via AJAX
         this.showSearch = settings.showSearch !== false;
         this.showLabels = settings.showLabels !== false;
         this.iconSize = settings.iconSize || 'medium';
         this.iconsPerPage = settings.iconsPerPage || 100;
         this.allowMultiple = settings.allowMultiple === true;
+        this.allowCustomLabels = settings.allowCustomLabels === true;
         this.selectedIcons = []; // For multi-selection
         this.iconsLoaded = false; // Track if icons have been loaded
         this.iconsLoading = false; // Track if icons are currently loading
@@ -804,8 +806,25 @@
         getCurrentValue: function() {
             if (this.$input.value) {
                 try {
-                    return JSON.parse(this.$input.value);
+                    var value = JSON.parse(this.$input.value);
+
+                    // Extract site-specific custom label from customLabels object
+                    if (value && !Array.isArray(value)) {
+                        if (value.customLabels && typeof value.customLabels === 'object') {
+                            value.customLabel = value.customLabels[this.siteId] || '';
+                        }
+                    } else if (Array.isArray(value)) {
+                        value = value.map(function(icon) {
+                            if (icon.customLabels && typeof icon.customLabels === 'object') {
+                                icon.customLabel = icon.customLabels[this.siteId] || '';
+                            }
+                            return icon;
+                        }.bind(this));
+                    }
+
+                    return value;
                 } catch (e) {
+                    console.error('[IconManager] Error parsing value:', e);
                     return null;
                 }
             }
@@ -1071,7 +1090,7 @@
         
         bindCustomLabelInputs: function() {
             var self = this;
-            
+
             // Handle single custom label input
             var $singleInput = this.$field.querySelector('.icon-manager-custom-label-input');
             if ($singleInput && !this.allowMultiple) {
@@ -1079,19 +1098,19 @@
                     self.updateSingleCustomLabel(e.target.value);
                 });
             }
-            
+
             // Handle multiple custom label inputs
             var $multipleInputs = this.$field.querySelectorAll('[data-icon-index]');
             $multipleInputs.forEach(function($input) {
                 var iconIndex = parseInt($input.dataset.iconIndex);
-                
+
                 // Initialize selectedIcons[iconIndex].customLabel with input value if not set
                 if (self.selectedIcons && self.selectedIcons[iconIndex] && $input.value) {
                     if (!self.selectedIcons[iconIndex].hasOwnProperty('customLabel')) {
                         self.selectedIcons[iconIndex].customLabel = $input.value;
                     }
                 }
-                
+
                 $input.addEventListener('input', function(e) {
                     self.updateMultipleCustomLabel(iconIndex, e.target.value);
                 });
@@ -1099,19 +1118,29 @@
         },
         
         updateSingleCustomLabel: function(customLabel) {
-            // Update the current value with custom label
+            // Use customLabels[siteId] to allow different labels per site for same icon
             if (this.currentValue) {
-                this.currentValue.customLabel = customLabel;
+                // Preserve existing customLabels from other sites
+                if (!this.currentValue.customLabels || typeof this.currentValue.customLabels !== 'object') {
+                    this.currentValue.customLabels = {};
+                }
+                // Update only this site's label
+                this.currentValue.customLabels[this.siteId] = customLabel;
+                this.currentValue.customLabel = customLabel; // For display
                 this.$input.value = JSON.stringify(this.currentValue);
             }
         },
-        
+
         updateMultipleCustomLabel: function(iconIndex, customLabel) {
-            // Update the specific icon's custom label
+            // Use customLabels[siteId] to allow different labels per site for same icon
             if (this.allowMultiple && this.selectedIcons && this.selectedIcons[iconIndex]) {
-                // Always update the custom label (preserve empty values too)
-                this.selectedIcons[iconIndex].customLabel = customLabel;
-                
+                // Preserve existing customLabels from other sites
+                if (!this.selectedIcons[iconIndex].customLabels || typeof this.selectedIcons[iconIndex].customLabels !== 'object') {
+                    this.selectedIcons[iconIndex].customLabels = {};
+                }
+                // Update only this site's label
+                this.selectedIcons[iconIndex].customLabels[this.siteId] = customLabel;
+                this.selectedIcons[iconIndex].customLabel = customLabel; // For display
                 this.currentValue = this.selectedIcons;
                 this.$input.value = JSON.stringify(this.selectedIcons);
             }

@@ -513,18 +513,37 @@ Add a `metadata.json` file in your icon folders to provide enhanced metadata:
 
 **Language Code Format:**
 - Use `label_{languageCode}` where `{languageCode}` is the site's language code
+- **Use underscore `_` not hyphen `-`**: `label_en`, `label_ar`, `label_fr` (correct) vs `label-en` (wrong)
 - Supports any language: `label_en`, `label_ar`, `label_fr`, `label_de`, `label_es`, `label_it`, etc.
 - Legacy format (`labelEn`, `labelAr`) still supported for backward compatibility
 - Primary language codes only (e.g., `en-US` → uses `label_en`, `ar-AE` → uses `label_ar`)
 
+**Label Resolution in Control Panel:**
+- Uses the `?site=` URL parameter to determine which language to show
+- Example: When editing `?site=fr`, shows `label_fr` from JSON
+- Falls back gracefully: `label_fr` → `labelFr` → `label` → filename
+
+**Custom Labels (Per-Site):**
+- Custom labels are stored per-site using `customLabels[siteId]` object
+- Each site can have different custom labels for the same icon
+- Translation Method "Translate for each site" recommended for independent icon selection per site
+- Custom labels take priority over JSON labels when set
+
 ### Label Resolution Priority
 
 The plugin resolves icon labels in this order:
-1. **Custom field label** (highest priority) - set in the field interface
-2. **JSON metadata label** - from `label`, `labelAr`, `labelEn` based on site language
+1. **Site-specific custom label** (highest priority) - set via field's custom label input for current site
+2. **JSON metadata label** - from `label_fr`, `label_ar`, `label_en`, or legacy `labelFr`, `labelAr` based on editing site
 3. **Database label** - stored label from icon set
 4. **Translation system** - Craft's translation files
-5. **Filename** (fallback) - formatted from the SVG filename
+5. **Propagated custom label** - custom label from another site (as last resort)
+6. **Filename** (fallback) - formatted from the SVG filename
+
+**Important Notes:**
+- In Control Panel: Uses `?site=` URL parameter to determine language (not user's CP language)
+- On Frontend: Uses the current site being viewed
+- Custom labels with "Translate for each site" field setting work correctly per-site
+- JSON labels always use the editing site's language, ensuring correct translations in CP
 
 ### Supported Metadata Properties
 

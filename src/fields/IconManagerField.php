@@ -173,6 +173,46 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
      */
     public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
     {
+        // Check if we're processing a POST request and merge custom labels from separate inputs
+        $request = Craft::$app->getRequest();
+        if ($request->getIsPost() && !$request->getIsConsoleRequest()) {
+            $customLabelInputs = [];
+
+            // Get custom label values from POST (they're in the fields array)
+            $fields = $request->getBodyParam('fields', []);
+            if ($this->allowMultiple) {
+                // Multiple icons: fields[iconMulti_customLabel_0], fields[iconMulti_customLabel_1], etc.
+                $i = 0;
+                while (isset($fields[$this->handle . '_customLabel_' . $i])) {
+                    $customLabelInputs[$i] = $fields[$this->handle . '_customLabel_' . $i];
+                    $i++;
+                }
+            } else {
+                // Single icon: fields[iconMulti_customLabel]
+                if (isset($fields[$this->handle . '_customLabel'])) {
+                    $customLabelInputs[0] = $fields[$this->handle . '_customLabel'];
+                }
+            }
+
+            // Merge custom labels into value
+            if (!empty($customLabelInputs) && is_string($value)) {
+                $decoded = Json::decodeIfJson($value);
+                if (is_array($decoded) && $this->allowMultiple) {
+                    // Multiple icons - merge each custom label
+                    foreach ($customLabelInputs as $index => $customLabel) {
+                        if (isset($decoded[$index])) {
+                            $decoded[$index]['customLabel'] = $customLabel;
+                        }
+                    }
+                    $value = Json::encode($decoded);
+                } elseif (is_array($decoded) && !$this->allowMultiple) {
+                    // Single icon
+                    $decoded['customLabel'] = $customLabelInputs[0] ?? '';
+                    $value = Json::encode($decoded);
+                }
+            }
+        }
+
         // Handle multiple icons
         if ($this->allowMultiple) {
             if (is_array($value)) {
@@ -256,16 +296,16 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
                             'value' => $icon->value,
                         ];
                         
-                        // Include custom labels (site-specific) if set
+                        // Include custom label if set (for display)
                         if ($icon->customLabel) {
                             $iconData['customLabel'] = $icon->customLabel;
                         }
-                        
+
                         // Save site-specific custom labels array
                         if (!empty($icon->customLabels)) {
                             $iconData['customLabels'] = $icon->customLabels;
                         }
-                        
+
                         $serializedIcons[] = $iconData;
                     }
                 }
@@ -283,16 +323,16 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
                 'value' => $value->value,
             ];
             
-            // Include custom labels (site-specific) if set
+            // Include custom label if set (for display)
             if ($value->customLabel) {
                 $iconData['customLabel'] = $value->customLabel;
             }
-            
+
             // Save site-specific custom labels array
             if (!empty($value->customLabels)) {
                 $iconData['customLabels'] = $value->customLabels;
             }
-            
+
             return Json::encode($iconData);
         }
 
@@ -326,7 +366,20 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
         $showLabelsJson = $this->showLabels ? 'true' : 'false';
         $allowMultipleJson = $this->allowMultiple ? 'true' : 'false';
         $allowCustomLabelsJson = $this->allowCustomLabels ? 'true' : 'false';
-        $currentSiteId = Craft::$app->getSites()->getCurrentSite()->id;
+
+        // Get the site being edited (from element or URL parameter)
+        if ($element && $element->siteId) {
+            $currentSiteId = $element->siteId;
+        } else {
+            // Fallback to URL param or current site
+            $siteHandle = Craft::$app->getRequest()->getParam('site');
+            if ($siteHandle) {
+                $site = Craft::$app->sites->getSiteByHandle($siteHandle);
+                $currentSiteId = $site ? $site->id : Craft::$app->getSites()->getCurrentSite()->id;
+            } else {
+                $currentSiteId = Craft::$app->getSites()->getCurrentSite()->id;
+            }
+        }
 
         $js = <<<JS
 new IconManager.IconPicker('$namespacedId', {
@@ -455,7 +508,7 @@ JS;
         if (isset($data['customLabel'])) {
             $icon->customLabel = $data['customLabel'];
         }
-        
+
         // Restore site-specific custom labels array
         if (isset($data['customLabels']) && is_array($data['customLabels'])) {
             $icon->customLabels = $data['customLabels'];
@@ -481,6 +534,15 @@ JS;
     {
         // Allow all conditions for GraphQL
         return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function afterElementPropagate(ElementInterface $element, bool $isNew): void
+    {
+        // Hook for future custom label propagation handling if needed
+        parent::afterElementPropagate($element, $isNew);
     }
 
 }

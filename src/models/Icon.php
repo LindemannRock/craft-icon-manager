@@ -140,16 +140,14 @@ class Icon extends Model implements \JsonSerializable
      */
     public function getDisplayLabel(): string
     {
-        // 1. Check for site-specific custom field label (highest priority)
-        $currentSiteId = Craft::$app->getSites()->getCurrentSite()->id;
-        if (!empty($this->customLabels) && isset($this->customLabels[$currentSiteId])) {
-            return $this->customLabels[$currentSiteId];
+        // 1. Check for site-specific custom label (highest priority)
+        $siteSpecificLabel = $this->getSiteSpecificCustomLabel();
+        if ($siteSpecificLabel) {
+            return $siteSpecificLabel;
         }
 
-        // 2. Check for general custom field label (fallback)
-        if ($this->customLabel) {
-            return $this->customLabel;
-        }
+        // 2. Skip propagated customLabel - go straight to JSON/database labels
+        // (customLabel may be from another site due to Craft propagation)
 
         // 3. Check for JSON file label (high priority)
         if ($jsonLabel = $this->getJsonLabel()) {
@@ -166,7 +164,12 @@ class Icon extends Model implements \JsonSerializable
             return $translatedLabel;
         }
 
-        // 6. Generate label from name (fallback)
+        // 6. Fallback to customLabel if nothing else found (may be propagated but better than nothing)
+        if ($this->customLabel) {
+            return $this->customLabel;
+        }
+
+        // 7. Generate label from name (last resort)
         return StringHelper::titleize($this->name);
     }
 
@@ -175,10 +178,19 @@ class Icon extends Model implements \JsonSerializable
      */
     public function getSiteSpecificCustomLabel(?int $siteId = null): ?string
     {
-        // Simple: use current site if no site ID provided
+        // Get site ID from request if in CP
         if (!$siteId) {
-            $currentSite = Craft::$app->getSites()->getCurrentSite();
-            $siteId = $currentSite->id;
+            if (Craft::$app->getRequest()->getIsCpRequest()) {
+                $siteHandle = Craft::$app->getRequest()->getParam('site');
+                if ($siteHandle) {
+                    $site = Craft::$app->sites->getSiteByHandle($siteHandle);
+                    $siteId = $site ? $site->id : Craft::$app->getSites()->getCurrentSite()->id;
+                } else {
+                    $siteId = Craft::$app->getSites()->getCurrentSite()->id;
+                }
+            } else {
+                $siteId = Craft::$app->getSites()->getCurrentSite()->id;
+            }
         }
 
         // Return site-specific custom label
@@ -214,20 +226,20 @@ class Icon extends Model implements \JsonSerializable
                 return null;
             }
 
-            // Get current site language
-            // In CP: Use the site being edited (from request param)
-            // In frontend: Use the current site
+            // Get site language
+            // In CP: Use ?site param to get the site being edited
+            // In Frontend: Use current site
             if (Craft::$app->getRequest()->getIsCpRequest()) {
                 $siteHandle = Craft::$app->getRequest()->getParam('site');
                 if ($siteHandle) {
                     $site = Craft::$app->sites->getSiteByHandle($siteHandle);
-                    $language = $site ? $site->language : (Craft::$app->sites->getCurrentSite()->language ?? 'en');
+                    $language = $site ? $site->language : 'en';
                 } else {
                     $language = Craft::$app->sites->getCurrentSite()->language ?? 'en';
                 }
             } else {
-                $currentSite = Craft::$app->sites->getCurrentSite();
-                $language = $currentSite->language ?? 'en';
+                // Frontend: use current site
+                $language = Craft::$app->sites->getCurrentSite()->language ?? 'en';
             }
 
             // Convert language code to clean format

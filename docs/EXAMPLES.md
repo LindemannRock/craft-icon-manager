@@ -408,14 +408,23 @@ Icon Manager supports unlimited languages dynamically. Use the `label_{languageC
 ```
 
 **How it works:**
+- In CP: Uses `?site=` URL parameter (e.g., `?site=fr` → Uses `label_fr`)
+- On Frontend: Uses current site being viewed
 - Site language `en-US` → Uses `label_en`
 - Site language `ar-AE` → Uses `label_ar`
 - Site language `fr-CA` → Uses `label_fr`
 - Primary language code extracted automatically (e.g., `pt-BR` → `pt`)
 
-**Backward compatibility:**
+**Important:**
+- **Use underscore `_` not hyphen `-`**: `label_en` ✓, `label-en` ✗
 - Legacy `labelEn`, `labelAr` format still works
-- Automatically falls back to `label` if language-specific not found
+- Falls back to `label` if language-specific not found
+
+**Custom Labels:**
+- Field-level custom labels work per-site when Translation Method = "Translate for each site"
+- Stored as `customLabels[siteId]` in field value
+- Custom labels take priority over JSON labels
+- Each site can override with different custom label
 
 ### Language-Specific Icons with Custom Labels
 ```twig
@@ -854,6 +863,26 @@ document.querySelectorAll('[data-lazy-icon]').forEach(el => observer.observe(el)
     </div>
 {% endcache %}
 ```
+
+## Troubleshooting Multi-Site Custom Labels
+
+### Custom Labels Showing Wrong Language
+
+**Symptom**: Arabic site shows English custom labels
+**Cause**: Craft propagation copied the custom label from English site
+**Solution**: Set a custom label on the Arabic site to override the propagated value
+
+### Custom Labels Not Saving Per-Site
+
+**Check**: Field's Translation Method setting
+**Required**: "Translate for each site" or "Translate for each language"
+**Not**: "Not translatable" (this shares values across all sites)
+
+### JSON Labels Not Showing
+
+**Check format**: Use `label_en` (underscore) not `label-en` (hyphen)
+**Priority**: Site-specific custom labels override JSON labels
+**Solution**: Clear custom label to see JSON label, or ensure JSON has correct language key
 
 ## See Also
 
