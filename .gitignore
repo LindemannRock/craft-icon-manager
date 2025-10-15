@@ -36,6 +36,7 @@ yarn-error.log*
 # Development files
 TODO.md
 FREEMIUM_PLAN.md
+FONTAWESOME_PLAN.md
 
 # Plugin releases
 *.zip

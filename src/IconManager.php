@@ -119,7 +119,7 @@ class IconManager extends Plugin
             return Settings::loadFromDatabase();
         } catch (\Exception $e) {
             // Database might not be ready during installation
-            Craft::info('Could not load settings from database: ' . $e->getMessage(), __METHOD__);
+            Craft::info('Could not load settings from database', __METHOD__, ['error' => $e->getMessage()]);
             return new Settings();
         }
     }

@@ -225,7 +225,7 @@ class Settings extends Model
                 ->where(['id' => 1])
                 ->one();
         } catch (\Exception $e) {
-            Craft::error('Failed to load settings from database: ' . $e->getMessage(), 'icon-manager');
+            Craft::error('Failed to load settings from database', 'icon-manager', ['error' => $e->getMessage()]);
             return $settings;
         }
         
@@ -288,7 +288,7 @@ class Settings extends Model
         // IMPORTANT: Validate settings after config overrides are applied
         // This will trigger validateLogLevel and other validation methods
         if (!$settings->validate()) {
-            Craft::error('Icon Manager settings validation failed: ' . print_r($settings->getErrors(), true), 'icon-manager');
+            Craft::error('Icon Manager settings validation failed', 'icon-manager', ['errors' => $settings->getErrors()]);
         }
 
         return $settings;
@@ -327,9 +327,9 @@ class Settings extends Model
             'scanWidthHeightWithViewBox' => $this->scanWidthHeightWithViewBox,
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
         ];
-        
-        Craft::info('Attempting to save settings: ' . Json::encode($attributes), 'icon-manager');
-        
+
+        Craft::info('Attempting to save settings', 'icon-manager', ['attributes' => $attributes]);
+
         // Update existing settings (we know there's always one row from migration)
         try {
             $result = $db->createCommand()
@@ -338,7 +338,7 @@ class Settings extends Model
             
             return $result !== false;
         } catch (\Exception $e) {
-            Craft::error('Failed to save Icon Manager settings: ' . $e->getMessage(), 'icon-manager');
+            Craft::error('Failed to save Icon Manager settings', 'icon-manager', ['error' => $e->getMessage()]);
             return false;
         }
     }
