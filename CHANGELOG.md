@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.0...v1.17.1) (2025-10-15)
+
+
+### Bug Fixes
+
+* Improve error logging for database settings loading and validation ([dbbe29c](https://github.com/LindemannRock/craft-icon-manager/commit/dbbe29cfc6cb04b57ceb35fa66f21945eb54ae63))
+
 ## [1.17.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.16.0...v1.17.0) (2025-10-11)
 
 
