@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.0...v1.18.1) (2025-10-16)
+
+
+### Bug Fixes
+
+* remove logging-library repository configuration from composer.json ([21673b9](https://github.com/LindemannRock/craft-icon-manager/commit/21673b98d39b976093996106fa595bf4f2713287))
+
 ## [1.18.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.2...v1.18.0) (2025-10-16)
 
 
