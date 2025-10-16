@@ -39,7 +39,7 @@ return [
     'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
 
     // Logging settings
-    'logLevel' => 'info', // error, warning, info, debug
+    'logLevel' => 'error', // error, warning, info, debug
 
     // Icon types to enable
     'enabledIconTypes' => [
@@ -132,7 +132,7 @@ return [
     'enableCache' => getenv('ICON_MANAGER_CACHE') === 'true',
     'cacheDuration' => (int)getenv('ICON_CACHE_DURATION') ?: 86400,
     'iconSetsPath' => getenv('ICON_SETS_PATH') ?: '@root/icons',
-    'logLevel' => getenv('ICON_LOG_LEVEL') ?: 'info',
+    'logLevel' => getenv('ICON_LOG_LEVEL') ?: 'error',
 ];
 ```
 
@@ -212,10 +212,10 @@ Control what the scanner detects as optimization opportunities. **Note:** These 
 #### Logging Settings
 
 - **logLevel**: Logging verbosity level
-  - `error` - Critical errors only
+  - `error` - Critical errors only (default, production recommended)
   - `warning` - Errors and warnings
-  - `info` - General information (recommended for production)
-  - `debug` - Detailed debugging with performance metrics (development only)
+  - `info` - General information
+  - `debug` - Detailed debugging with performance metrics (development only, requires devMode)
 
 #### Icon Type Settings
 

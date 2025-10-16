@@ -641,45 +641,27 @@ return [
 
 ## Logging
 
-Icon Manager uses the [LindemannRock Logging Library](https://github.com/LindemannRock/craft-logging-library) for centralized, structured logging across all LindemannRock plugins.
+Icon Manager uses the [LindemannRock Logging Library](https://github.com/LindemannRock/craft-logging-library) for centralized, structured logging.
 
-### Log Levels
-- **Error**: Critical errors only
+**Log Levels:**
+- **Error**: Critical errors only (default)
 - **Warning**: Errors and warnings
 - **Info**: General information
-- **Debug**: Detailed debugging (includes performance metrics, requires devMode)
+- **Debug**: Detailed debugging (requires devMode)
 
-### Configuration
+**Configuration:**
 ```php
 // config/icon-manager.php
 return [
-    'logLevel' => 'info', // error, warning, info, or debug
+    'logLevel' => 'error', // error, warning, info, or debug
 ];
 ```
 
-**Note:** Debug level requires Craft's `devMode` to be enabled. If set to debug with devMode disabled, it automatically falls back to info level.
+**Log Files:**
+- Location: `storage/logs/icon-manager-YYYY-MM-DD.log`
+- Web Interface: Icon Manager → Logs in Control Panel
 
-### Log Files
-- **Location**: `storage/logs/icon-manager-YYYY-MM-DD.log`
-- **Retention**: 30 days (automatic cleanup via Logging Library)
-- **Format**: Structured JSON logs with context data
-- **Web Interface**: View and filter logs in CP at Icon Manager → Logs
-
-### What's Logged
-- **Error**: File system failures, SVG parsing errors, database errors
-- **Warning**: Missing icons, empty content, slow operations (>1s)
-- **Info**: Icon set operations, cache clears, major actions
-- **Debug**: Cache hits/misses, performance timing, API requests, detailed SVG processing
-
-### Log Management
-Access logs through the Control Panel:
-1. Navigate to Icon Manager → Logs
-2. Filter by date, level, or search terms
-3. Download log files for external analysis
-4. View file sizes and entry counts
-5. Auto-cleanup after 30 days (configurable via Logging Library)
-
-**Requires:** `lindemannrock/logginglibrary` plugin (installed automatically as dependency)
+See [docs/LOGGING.md](docs/LOGGING.md) for detailed logging documentation.
 
 ## Environment-Specific Paths
 
