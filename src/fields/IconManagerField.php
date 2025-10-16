@@ -68,7 +68,8 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
      */
     public static function displayName(): string
     {
-        return Craft::t('icon-manager', 'Icon Manager');
+        $plugin = IconManager::getInstance();
+        return $plugin->getSettings()->pluginName ?? 'Icon Manager';
     }
 
     /**
