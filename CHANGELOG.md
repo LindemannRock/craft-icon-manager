@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.1...v1.17.2) (2025-10-16)
+
+
+### Bug Fixes
+
+* Update display name retrieval for Icon Manager field ([f02b431](https://github.com/LindemannRock/craft-icon-manager/commit/f02b4310a360268444a12e58b1d4a90ea7dd592e))
+
 ## [1.17.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.0...v1.17.1) (2025-10-15)
 
 
