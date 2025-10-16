@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.1...v1.18.2) (2025-10-16)
+
+
+### Bug Fixes
+
+* update installation instructions for Composer and DDEV ([aea61a1](https://github.com/LindemannRock/craft-icon-manager/commit/aea61a1afaad99ea8883a0e2154053cbdce3c9a9))
+
 ## [1.18.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.0...v1.18.1) (2025-10-16)
 
 
