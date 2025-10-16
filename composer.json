@@ -41,12 +41,6 @@
         "mathiasreker/php-svg-optimizer": "^7.0",
         "phenx/php-font-lib": "^0.5.0"
     },
-    "repositories": {
-        "logging-library": {
-            "type": "vcs",
-            "url": "https://github.com/LindemannRock/craft-logging-library.git"
-        }
-    },
     "autoload": {
         "psr-4": {
             "lindemannrock\\iconmanager\\": "src/"
