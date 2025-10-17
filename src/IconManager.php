@@ -372,7 +372,7 @@ class IconManager extends Plugin
 
         LoggingLibrary::configure([
             'pluginHandle' => $this->handle,
-            'pluginName' => $this->name,
+            'pluginName' => $settings->pluginName ?? $this->name,
             'logLevel' => $logLevel,
             'permissions' => ['iconManager:viewLogs'],
         ]);
