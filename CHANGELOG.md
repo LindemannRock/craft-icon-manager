@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.3](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.2...v1.18.3) (2025-10-17)
+
+
+### Bug Fixes
+
+* use settings for plugin name in logging configuration ([1c80df9](https://github.com/LindemannRock/craft-icon-manager/commit/1c80df924b679fc3d2425e4fefd6cab08a542a99))
+
 ## [1.18.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.1...v1.18.2) (2025-10-16)
 
 
