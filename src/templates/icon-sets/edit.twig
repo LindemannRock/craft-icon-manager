@@ -133,7 +133,7 @@
     <div id="type-settings">
         <div id="svg-folder-settings" class="{% if iconSet.type != 'svg-folder' %}hidden{% endif %}">
             <h2>{{ 'SVG Folder Settings'|t('icon-manager') }}</h2>
-            
+
             {{ forms.selectField({
                 label: 'Folder'|t('icon-manager'),
                 instructions: 'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.'|t('icon-manager'),
@@ -152,7 +152,7 @@
                 on: iconSet.settings.includeSubfolders ?? false,
             }) }}
         </div>
-        
+
         <div id="svg-sprite-settings" class="{% if iconSet.type != 'svg-sprite' %}hidden{% endif %}">
             <h2>{{ 'SVG Sprite Settings'|t('icon-manager') }}</h2>
 
@@ -175,10 +175,10 @@
                 placeholder: 'icon-',
             }) }}
         </div>
-        
+
         <div id="font-awesome-settings" class="{% if iconSet.type != 'font-awesome' %}hidden{% endif %}">
             <h2>{{ 'Font Awesome Settings'|t('icon-manager') }}</h2>
-            
+
             {{ forms.selectField({
                 label: 'Integration Type'|t('icon-manager'),
                 instructions: 'How to integrate Font Awesome icons.'|t('icon-manager'),
@@ -191,7 +191,7 @@
                     { label: 'Local Files'|t('icon-manager'), value: 'local' },
                 ],
             }) }}
-            
+
             <div id="fa-kit-settings" class="{% if (iconSet.settings.type ?? 'cdn') != 'kit' %}hidden{% endif %}">
                 {{ forms.textField({
                     label: 'Kit Code'|t('icon-manager'),
@@ -202,7 +202,7 @@
                     placeholder: 'abc123def456',
                     required: true,
                 }) }}
-                
+
                 <div class="field">
                     <div class="heading">
                         <label>{{ 'How to find your Kit Code'|t('icon-manager') }}</label>
@@ -216,7 +216,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div id="fa-cdn-settings" class="{% if (iconSet.settings.type ?? 'cdn') != 'cdn' %}hidden{% endif %}">
                 {{ forms.selectField({
                     label: 'Version'|t('icon-manager'),
@@ -228,7 +228,7 @@
                         { label: 'Version 7.0.0', value: '7.0.0' },
                     ],
                 }) }}
-                
+
                 {{ forms.selectField({
                     label: 'License'|t('icon-manager'),
                     instructions: 'Font Awesome license type.'|t('icon-manager'),
@@ -240,7 +240,7 @@
                         { label: 'Pro'|t('icon-manager'), value: 'pro' },
                     ],
                 }) }}
-                
+
                 {{ forms.checkboxSelectField({
                     label: 'Icon Styles'|t('icon-manager'),
                     instructions: 'Which icon styles to include.'|t('icon-manager'),
@@ -258,10 +258,10 @@
                 }) }}
             </div>
         </div>
-        
+
         <div id="material-icons-settings" class="{% if iconSet.type != 'material-icons' %}hidden{% endif %}">
             <h2>{{ 'Material Icons Settings'|t('icon-manager') }}</h2>
-            
+
             {{ forms.selectField({
                 label: 'Icon Type'|t('icon-manager'),
                 instructions: 'Material Icons variant to use.'|t('icon-manager'),
@@ -273,7 +273,7 @@
                     { label: 'Material Symbols'|t('icon-manager'), value: 'symbols' },
                 ],
             }) }}
-            
+
             <div id="material-icons-styles" class="{% if (iconSet.settings.materialType ?? 'icons') != 'icons' %}hidden{% endif %}">
                 {{ forms.checkboxSelectField({
                     label: 'Icon Styles'|t('icon-manager'),
@@ -351,6 +351,9 @@
                 {{ 'Refresh Icons'|t('icon-manager') }}
             </button>
         </div>
+
+    {% include 'icon-manager/_components/plugin-credit.twig' %}
+
     {% endif %}
 
     </div>{# end settings tab #}
@@ -417,14 +420,14 @@
     var handleField = document.getElementById('handle');
     var isNewIconSet = {{ isNew ? 'true' : 'false' }};
     var handleModified = false;
-    
+
     // Check if handle was manually modified
     if (handleField) {
         handleField.addEventListener('input', function() {
             handleModified = true;
         });
     }
-    
+
     // Generate handle from name (only for new icon sets or empty handles)
     if (nameField && handleField) {
         nameField.addEventListener('input', function() {
@@ -439,7 +442,7 @@
                     .replace(/\s+/g, '-') // Replace spaces with hyphens
                     .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
                     .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-                    
+
                 // Convert to camelCase if it contains hyphens
                 if (handle.includes('-')) {
                     handle = handle.split('-').map(function(word, index) {
@@ -449,19 +452,19 @@
                         return word.charAt(0).toUpperCase() + word.slice(1);
                     }).join('');
                 }
-                
+
                 handleField.value = handle;
             }
         });
     }
-    
+
     // Handle type changes
     var typeField = document.getElementById('type');
-    
+
     if (typeField) {
         typeField.addEventListener('change', function() {
             var type = this.value;
-            
+
             // Hide all type settings
             var svgFolderSettings = document.getElementById('svg-folder-settings');
             var svgSpriteSettings = document.getElementById('svg-sprite-settings');
@@ -489,7 +492,7 @@
             }
         });
     }
-    
+
     // Handle Font Awesome type changes
     var faTypeField = document.getElementById('settings-fa-type');
     if (faTypeField) {
@@ -497,10 +500,10 @@
             var faType = this.value;
             var kitSettings = document.getElementById('fa-kit-settings');
             var cdnSettings = document.getElementById('fa-cdn-settings');
-            
+
             if (kitSettings) kitSettings.classList.add('hidden');
             if (cdnSettings) cdnSettings.classList.add('hidden');
-            
+
             if (faType === 'kit' && kitSettings) {
                 kitSettings.classList.remove('hidden');
             } else if (faType === 'cdn' && cdnSettings) {
@@ -508,14 +511,14 @@
             }
         });
     }
-    
+
     // Handle Material Icons type changes
     var materialTypeField = document.getElementById('settings-material-type');
     if (materialTypeField) {
         materialTypeField.addEventListener('change', function() {
             var materialType = this.value;
             var stylesDiv = document.getElementById('material-icons-styles');
-            
+
             if (stylesDiv) {
                 if (materialType === 'icons') {
                     stylesDiv.classList.remove('hidden');
@@ -525,7 +528,7 @@
             }
         });
     }
-    
+
     // Refresh icons function
     window.refreshIcons = function() {
         const form = document.createElement('form');
