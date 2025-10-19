@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.19.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.3...v1.19.0) (2025-10-19)
+
+
+### Features
+
+* add modern index layout with filtering, search, sorting, pagination and bulk actions to icon sets ([ba54863](https://github.com/LindemannRock/craft-icon-manager/commit/ba5486374d3611374092dc71db1dfc1b116bc997))
+
+
+### Bug Fixes
+
+* remove unnecessary whitespace in icon set edit template ([f0b9e9d](https://github.com/LindemannRock/craft-icon-manager/commit/f0b9e9d2c5aeee222b0011117d44f31c8176b004))
+* set selected subnav item for icon sets edit template ([3fe45e1](https://github.com/LindemannRock/craft-icon-manager/commit/3fe45e12e851a52755a27391f552aa0884634e1b))
+
 ## [1.18.3](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.2...v1.18.3) (2025-10-17)
 
 
