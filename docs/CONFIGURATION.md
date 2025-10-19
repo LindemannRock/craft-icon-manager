@@ -41,6 +41,9 @@ return [
     // Logging settings
     'logLevel' => 'error', // error, warning, info, debug
 
+    // UI settings
+    'itemsPerPage' => 100, // Items per page in CP (10-500)
+
     // Icon types to enable
     'enabledIconTypes' => [
         'svg-folder' => true,
@@ -216,6 +219,14 @@ Control what the scanner detects as optimization opportunities. **Note:** These 
   - `warning` - Errors and warnings
   - `info` - General information
   - `debug` - Detailed debugging with performance metrics (development only, requires devMode)
+
+#### UI Settings
+
+- **itemsPerPage** (default: 100)
+  - Number of icon sets displayed per page in the Control Panel Icon Sets index
+  - Minimum: 10, Maximum: 500
+  - Configurable per environment for optimal performance
+  - Can be overridden via config file to prevent CP modifications
 
 #### Icon Type Settings
 

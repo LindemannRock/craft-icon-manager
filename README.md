@@ -227,6 +227,7 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - **iconSetsPath** - Path to icon files (supports aliases like `@root`, `@webroot`)
 - **enableCache** - Whether to cache icon data for better performance
 - **cacheDuration** - How long to cache icon data, in seconds
+- **itemsPerPage** - Number of icon sets per page in CP index (10-500, default: 100)
 - **enabledIconTypes** - Enable/disable specific icon set types
 - **enableOptimization** - Enable/disable SVG optimization features (default: true)
 - **enableOptimizationBackup** - Automatically create backups before optimization (default: true)

@@ -55,6 +55,9 @@ return [
 
         // Logging settings
         'logLevel' => 'error', // Options: 'debug', 'info', 'warning', 'error'
+
+        // UI settings
+        'itemsPerPage' => 100, // Items per page in CP (10-500)
     ],
 
     // Dev environment settings

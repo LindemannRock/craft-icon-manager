@@ -17,121 +17,454 @@
     { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 
-{% block actionButton %}
-    <a href="{{ url('icon-manager/icon-sets/new') }}" class="btn submit add icon">
-        {{ 'New icon set'|t('icon-manager') }}
-    </a>
+{# Get query parameters #}
+{% set search = craft.app.request.getParam('search', '') %}
+{% set statusFilter = craft.app.request.getParam('status', 'all') %}
+{% set typeFilter = craft.app.request.getParam('type', 'all') %}
+{% set sort = craft.app.request.getParam('sort', 'name') %}
+{% set dir = craft.app.request.getParam('dir', 'asc') %}
+
+{% block toolbar %}
+    <div id="toolbar" class="flex" style="align-items: flex-end;">
+        <div class="flex-grow">
+            <form method="get" action="{{ url('icon-manager/icon-sets') }}">
+                <div class="flex">
+                    <div class="btngroup">
+                        <button type="button" class="btn menubtn statusmenubtn">
+                            <span class="status {{ statusFilter == 'all' ? 'all' : (statusFilter == 'enabled' ? 'green' : 'disabled') }}"></span>
+                            {{ statusFilter == 'all' ? 'All'|t('icon-manager') : statusFilter|capitalize }}
+                        </button>
+                        <div class="menu">
+                            <ul>
+                                <li><a class="{{ statusFilter == 'all' ? 'sel' : '' }}" href="?status=all&type={{ typeFilter }}&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status all"></span>All
+                                </a></li>
+                                <li><hr class="padded"></li>
+                                <li class="menu-header">Status</li>
+                                <li><a class="{{ statusFilter == 'enabled' ? 'sel' : '' }}" href="?status=enabled&type={{ typeFilter }}&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status green"></span>Enabled
+                                </a></li>
+                                <li><a class="{{ statusFilter == 'disabled' ? 'sel' : '' }}" href="?status=disabled&type={{ typeFilter }}&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status disabled"></span>Disabled
+                                </a></li>
+                                <li><hr class="padded"></li>
+                                <li class="menu-header">Type</li>
+                                <li><a class="{{ typeFilter == 'all' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=all&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status {{ typeFilter == 'all' ? 'blue' : 'disabled' }}"></span>All Types
+                                </a></li>
+                                <li><a class="{{ typeFilter == 'svg-folder' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=svg-folder&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status {{ typeFilter == 'svg-folder' ? 'blue' : 'disabled' }}"></span>SVG Folder
+                                </a></li>
+                                <li><a class="{{ typeFilter == 'svg-sprite' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=svg-sprite&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status {{ typeFilter == 'svg-sprite' ? 'blue' : 'disabled' }}"></span>SVG Sprite
+                                </a></li>
+                                <li><a class="{{ typeFilter == 'font-awesome' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=font-awesome&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status {{ typeFilter == 'font-awesome' ? 'blue' : 'disabled' }}"></span>Font Awesome
+                                </a></li>
+                                <li><a class="{{ typeFilter == 'material-icons' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=material-icons&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status {{ typeFilter == 'material-icons' ? 'blue' : 'disabled' }}"></span>Material Icons
+                                </a></li>
+                                <li><a class="{{ typeFilter == 'web-font' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=web-font&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
+                                    <span class="status {{ typeFilter == 'web-font' ? 'blue' : 'disabled' }}"></span>Web Font
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="search-container texticon flex-grow">
+                        <span class="texticon-icon search icon" aria-hidden="true"></span>
+                        <input type="text"
+                               class="clearable text fullwidth"
+                               name="search"
+                               value="{{ search }}"
+                               placeholder="{{ 'Search icon sets...'|t('icon-manager') }}"
+                               autocomplete="off"
+                               dir="ltr"
+                               aria-label="Search"
+                               {% if search %}autofocus{% endif %}>
+                        <button type="button" class="clear-btn {{ search ? '' : 'hidden' }}"
+                                title="Clear search"
+                                role="button"
+                                aria-label="Clear search"></button>
+                        <input type="hidden" name="status" value="{{ statusFilter }}">
+                        <input type="hidden" name="type" value="{{ typeFilter }}">
+                        <input type="hidden" name="sort" value="{{ sort }}">
+                        <input type="hidden" name="dir" value="{{ dir }}">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <a href="{{ url('icon-manager/icon-sets/new') }}" class="btn submit add icon" id="new-iconset-btn">
+            <span class="label-full">{{ 'New Icon Set'|t('icon-manager') }}</span>
+            <span class="label-short" style="display: none;">{{ 'New'|t('icon-manager') }}</span>
+        </a>
+    </div>
 {% endblock %}
+
+{% css %}
+    @media (max-width: 768px) {
+        #new-iconset-btn .label-full {
+            display: none;
+        }
+        #new-iconset-btn .label-short {
+            display: inline;
+        }
+        #new-iconset-btn:before {
+            margin-inline-end: 0 !important;
+        }
+    }
+{% endcss %}
 
 {% block content %}
-    {% if iconSets|length %}
-        {% set optimizationEnabled = plugin.settings.enableOptimization %}
-        <table class="data fullwidth">
-            <thead>
-                <tr>
-                    <th scope="col">{{ 'Name'|t('icon-manager') }}</th>
-                    <th scope="col">{{ 'Handle'|t('icon-manager') }}</th>
-                    <th scope="col">{{ 'Type'|t('icon-manager') }}</th>
-                    <th scope="col">{{ 'Icons'|t('icon-manager') }}</th>
-                    {% if optimizationEnabled %}
-                    <th scope="col">{{ 'Optimize'|t('icon-manager') }}</th>
-                    {% endif %}
-                    <th scope="col">{{ 'Enabled'|t('icon-manager') }}</th>
-                    <td class="thin"></td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for iconSet in iconSets %}
-                    <tr data-id="{{ iconSet.id }}">
-                        <td>
-                            <a href="{{ url('icon-manager/icon-sets/' ~ iconSet.id) }}">
-                                {{ iconSet.name }}
-                            </a>
-                        </td>
-                        <td>
-                            <code>{{ iconSet.handle }}</code>
-                        </td>
-                        <td>
-                            {{ iconSet.getTypeLabel() }}
-                        </td>
-                        <td>
-                            {{ iconSet.getIconCount()|number_format }}
-                        </td>
-                        {% if optimizationEnabled %}
-                        <td>
-                            {% set issueCount = iconSet.getOptimizationIssueCount() %}
-                            {% if iconSet.type in ['svg-folder', 'folder'] %}
-                                {% if issueCount > 0 %}
-                                    <a href="{{ url('icon-manager/icon-sets/' ~ iconSet.id ~ '#optimization') }}"
-                                       style="text-decoration: none;"
-                                       title="{{ 'View optimization details'|t('icon-manager') }}">
-                                        {{ issueCount }}
-                                    </a>
-                                {% else %}
-                                    <span style="color: #10b981;">✓</span>
-                                {% endif %}
-                            {% else %}
-                                <span style="color: #9ca3af;">—</span>
-                            {% endif %}
-                        </td>
+    <style>
+        .page-info {
+            margin: 0 12px;
+            color: #596673;
+        }
+        .checkbox-cell {
+            width: 40px !important;
+            text-align: center;
+        }
+        .pagination {
+            gap: 4px;
+            align-items: center;
+        }
+        .menu-header {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #7c97b2;
+            padding: 8px 14px 4px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        /* Keep toolbar on one row even on smaller screens */
+        #toolbar.flex {
+            flex-wrap: nowrap;
+            gap: 8px;
+        }
+        #toolbar .flex-grow {
+            min-width: 0;
+            flex-shrink: 1;
+        }
+    </style>
+
+    <div id="elements" class="elements">
+        <div class="tableview tablepane">
+            <table class="data fullwidth">
+                <thead>
+                    <tr>
+                        <th class="checkbox-cell selectallcontainer">
+                            <div class="checkbox" role="checkbox" tabindex="0" aria-checked="false" aria-label="Select all"></div>
+                        </th>
+                        <th scope="col" data-attribute="name" class="orderable {{ sort == 'name' ? 'ordered ' ~ dir : '' }}" style="width: 25%;">
+                            <button type="button" data-sort="name">
+                                {{ 'Name'|t('icon-manager') }}
+                            </button>
+                        </th>
+                        <th scope="col" style="width: 15%;">{{ 'Handle'|t('icon-manager') }}</th>
+                        <th scope="col" data-attribute="type" class="orderable {{ sort == 'type' ? 'ordered ' ~ dir : '' }}" style="width: 15%;">
+                            <button type="button" data-sort="type">
+                                {{ 'Type'|t('icon-manager') }}
+                            </button>
+                        </th>
+                        <th scope="col" data-attribute="iconCount" class="orderable {{ sort == 'iconCount' ? 'ordered ' ~ dir : '' }}" style="width: 10%;">
+                            <button type="button" data-sort="iconCount">
+                                {{ 'Icons'|t('icon-manager') }}
+                            </button>
+                        </th>
+                        {% if plugin.settings.enableOptimization %}
+                        <th scope="col" data-attribute="optimizationIssueCount" class="orderable {{ sort == 'optimizationIssueCount' ? 'ordered ' ~ dir : '' }}" style="width: 10%;">
+                            <button type="button" data-sort="optimizationIssueCount">
+                                {{ 'Optimize'|t('icon-manager') }}
+                            </button>
+                        </th>
                         {% endif %}
-                        <td>
-                            {% if iconSet.enabled %}
-                                <span class="status enabled"></span>
-                            {% else %}
-                                <span class="status disabled"></span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a class="delete icon"
-                               title="{{ 'Delete'|t('app') }}"
-                               role="button"
-                               aria-label="{{ 'Delete'|t('app') }}">
-                            </a>
-                        </td>
+                        <th scope="col" style="width: 10%;">{{ 'Enabled'|t('icon-manager') }}</th>
+                        <th class="thin" style="width: 60px;">{{ 'Actions'|t('icon-manager') }}</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>{{ 'No icon sets exist yet.'|t('icon-manager') }}</p>
-    {% endif %}
+                </thead>
+                <tbody>
+                    {% if iconSets|length %}
+                        {% for iconSet in iconSets %}
+                            <tr data-id="{{ iconSet.id }}" data-name="{{ iconSet.name }}">
+                                <td class="checkbox-cell">
+                                    <div class="checkbox" title="Select" tabindex="0" aria-checked="false" role="checkbox"></div>
+                                </td>
+                                <td>
+                                    <a class="label-link" href="{{ url('icon-manager/icon-sets/' ~ iconSet.id) }}">
+                                        <span>{{ iconSet.name }}</span>
+                                    </a>
+                                </td>
+                                <td><code>{{ iconSet.handle }}</code></td>
+                                <td>{{ iconSet.getTypeLabel() }}</td>
+                                <td>{{ iconSet.getIconCount()|number_format }}</td>
+                                {% if plugin.settings.enableOptimization %}
+                                <td>
+                                    {% set issueCount = iconSet.getOptimizationIssueCount() %}
+                                    {% if iconSet.type in ['svg-folder', 'folder'] %}
+                                        {% if issueCount > 0 %}
+                                            <a href="{{ url('icon-manager/icon-sets/' ~ iconSet.id ~ '#optimization') }}"
+                                               style="text-decoration: none;"
+                                               title="{{ 'View optimization details'|t('icon-manager') }}">
+                                                {{ issueCount }}
+                                            </a>
+                                        {% else %}
+                                            <span style="color: #10b981;">✓</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span style="color: #9ca3af;">—</span>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+                                <td>
+                                    {% if iconSet.enabled %}
+                                        <span class="status green"></span>
+                                    {% else %}
+                                        <span class="status disabled"></span>
+                                    {% endif %}
+                                </td>
+                                <td class="thin" style="text-align: right;">
+                                    <button type="button" class="btn icon delete" title="{{ 'Delete'|t('app') }}" aria-label="{{ 'Delete'|t('app') }}"></button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="{{ plugin.settings.enableOptimization ? '8' : '7' }}" style="text-align: center; padding: 2em;">
+                                {{ 'No icon sets found.'|t('icon-manager') }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    {% include 'icon-manager/_components/plugin-credit.twig' %}
-{% endblock %}
+    <div id="footer" class="flex-justify flex">
+        <div class="light">
+            <div class="pagination flex">
+                <nav class="flex" aria-label="icon set pagination">
+                    <button type="button" class="page-link prev-page {{ page <= 1 ? 'disabled' : '' }}" {{ page <= 1 ? 'disabled' : '' }} title="Previous Page"></button>
+                    <button type="button" class="page-link next-page {{ page >= totalPages ? 'disabled' : '' }}" {{ page >= totalPages ? 'disabled' : '' }} title="Next Page"></button>
+                </nav>
+                <div class="page-info">
+                    {% set endRange = min(offset + limit, totalCount) %}
+                    {% if totalCount == 0 %}
+                        No icon sets
+                    {% else %}
+                        {{ offset + 1 }}–{{ endRange }} of {{ totalCount }} {{ totalCount == 1 ? 'icon set' : 'icon sets' }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-nowrap">
+            <button type="button" class="btn secondary" id="bulk-enable-btn" style="display: none;">
+                {{ 'Enable Selected'|t('icon-manager') }}
+            </button>
+            <button type="button" class="btn secondary" id="bulk-disable-btn" style="display: none;">
+                {{ 'Disable Selected'|t('icon-manager') }}
+            </button>
+            <button type="button" class="btn secondary" id="bulk-delete-btn" style="display: none;">
+                {{ 'Delete Selected'|t('icon-manager') }}
+            </button>
+        </div>
+    </div>
 
-{% js %}
-    // Handle delete clicks
-    $(document).on('click', 'table.data a.delete', function(e) {
-        e.preventDefault();
+    <script>
+        // Initialize menu buttons
+        document.querySelectorAll('.menubtn').forEach(btn => {
+            if (typeof Craft !== 'undefined' && Craft.MenuBtn) {
+                new Craft.MenuBtn(btn);
+            } else if (typeof Garnish !== 'undefined' && Garnish.MenuBtn) {
+                new Garnish.MenuBtn(btn);
+            }
+        });
 
-        var $row = $(this).closest('tr');
-        var iconSetId = $row.data('id');
-        var iconSetName = $row.find('td:first-child a').text().trim();
+        // Clear search
+        const clearBtn = document.querySelector('.clear-btn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function() {
+                const searchInput = this.previousElementSibling.previousElementSibling;
+                searchInput.value = '';
+                searchInput.form.submit();
+            });
+        }
 
-        var message = {{ 'Are you sure you want to delete "{name}"?'|t('icon-manager')|json_encode|raw }};
-        message = message.replace('{name}', iconSetName);
-
-        if (confirm(message)) {
-            Craft.postActionRequest('icon-manager/icon-sets/delete', {
-                iconSetId: iconSetId
-            }, function(response, textStatus) {
-                if (textStatus === 'success') {
-                    if (response.success) {
-                        Craft.cp.displayNotice({{ 'Icon set deleted.'|t('icon-manager')|json_encode|raw }});
-                        $row.fadeOut(function() {
-                            $(this).remove();
-                            // Check if table is now empty
-                            if ($('table.data tbody tr').length === 0) {
-                                window.location.reload();
-                            }
-                        });
-                    } else {
-                        Craft.cp.displayError(response.error || {{ "Couldn't delete icon set."|t('icon-manager')|json_encode|raw }});
-                    }
+        // Search on Enter
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    this.form.submit();
                 }
             });
         }
-    });
-{% endjs %}
 
+        // Sort buttons
+        document.querySelectorAll('th.orderable button').forEach(button => {
+            button.addEventListener('click', function() {
+                const sortField = this.dataset.sort;
+                const currentSort = '{{ sort }}';
+                const currentDir = '{{ dir }}';
+                let newDir = 'asc';
+
+                if (sortField === currentSort) {
+                    newDir = currentDir === 'asc' ? 'desc' : 'asc';
+                }
+
+                window.location.href = '?status={{ statusFilter }}&type={{ typeFilter }}&search={{ search }}&sort=' + sortField + '&dir=' + newDir + '&page=1';
+            });
+        });
+
+        // Pagination
+        document.querySelector('.prev-page:not(.disabled)')?.addEventListener('click', function() {
+            window.location.href = '?status={{ statusFilter }}&type={{ typeFilter }}&search={{ search }}&sort={{ sort }}&dir={{ dir }}&page={{ page - 1 }}';
+        });
+
+        document.querySelector('.next-page:not(.disabled)')?.addEventListener('click', function() {
+            window.location.href = '?status={{ statusFilter }}&type={{ typeFilter }}&search={{ search }}&sort={{ sort }}&dir={{ dir }}&page={{ page + 1 }}';
+        });
+
+        // Checkbox functionality
+        const selectAllCheckbox = document.querySelector('.selectallcontainer .checkbox');
+        const checkboxes = document.querySelectorAll('tbody .checkbox');
+        let selectedIds = new Set();
+
+        function toggleCheckbox(checkbox, checked) {
+            if (checked) {
+                checkbox.classList.add('checked');
+                checkbox.setAttribute('aria-checked', 'true');
+            } else {
+                checkbox.classList.remove('checked');
+                checkbox.setAttribute('aria-checked', 'false');
+            }
+        }
+
+        function updateBulkButtons() {
+            const hasSelection = selectedIds.size > 0;
+            const enableBtn = document.getElementById('bulk-enable-btn');
+            const disableBtn = document.getElementById('bulk-disable-btn');
+            const deleteBtn = document.getElementById('bulk-delete-btn');
+
+            [enableBtn, disableBtn, deleteBtn].forEach(btn => {
+                if (hasSelection) {
+                    btn.style.display = '';
+                    btn.removeAttribute('style');
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
+
+        // Select all
+        selectAllCheckbox.addEventListener('click', function() {
+            const isChecked = !this.classList.contains('checked');
+            toggleCheckbox(this, isChecked);
+
+            checkboxes.forEach(checkbox => {
+                toggleCheckbox(checkbox, isChecked);
+                const id = checkbox.closest('tr').dataset.id;
+                if (isChecked) {
+                    selectedIds.add(id);
+                } else {
+                    selectedIds.delete(id);
+                }
+            });
+
+            updateBulkButtons();
+        });
+
+        // Individual checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                const isChecked = !this.classList.contains('checked');
+                toggleCheckbox(this, isChecked);
+
+                const id = this.closest('tr').dataset.id;
+                if (isChecked) {
+                    selectedIds.add(id);
+                } else {
+                    selectedIds.delete(id);
+                }
+
+                updateBulkButtons();
+            });
+        });
+
+        // Bulk enable
+        document.getElementById('bulk-enable-btn')?.addEventListener('click', function() {
+            const ids = Array.from(selectedIds);
+
+            Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-enable', {
+                data: { iconSetIds: ids }
+            }).then(function(response) {
+                if (response.data.success) {
+                    Craft.cp.displayNotice(`Enabled ${response.data.enabled} icon sets`);
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            }).catch(function(error) {
+                Craft.cp.displayError('Failed to enable icon sets');
+            });
+        });
+
+        // Bulk disable
+        document.getElementById('bulk-disable-btn')?.addEventListener('click', function() {
+            const ids = Array.from(selectedIds);
+
+            Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-disable', {
+                data: { iconSetIds: ids }
+            }).then(function(response) {
+                if (response.data.success) {
+                    Craft.cp.displayNotice(`Disabled ${response.data.disabled} icon sets`);
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            }).catch(function(error) {
+                Craft.cp.displayError('Failed to disable icon sets');
+            });
+        });
+
+        // Bulk delete
+        document.getElementById('bulk-delete-btn')?.addEventListener('click', function() {
+            const ids = Array.from(selectedIds);
+            if (!confirm(`Delete ${ids.length} icon set${ids.length > 1 ? 's' : ''}?`)) return;
+
+            Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-delete', {
+                data: { iconSetIds: ids }
+            }).then(function(response) {
+                if (response.data.success) {
+                    Craft.cp.displayNotice(`Deleted ${response.data.deleted} icon sets`);
+                    setTimeout(() => window.location.reload(), 1000);
+                }
+            }).catch(function(error) {
+                Craft.cp.displayError('Failed to delete icon sets');
+            });
+        });
+
+        // Individual delete
+        document.querySelectorAll('.btn.delete').forEach(deleteBtn => {
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const row = this.closest('tr');
+                const id = row.dataset.id;
+                const name = row.dataset.name;
+
+                if (!confirm(`Delete "${name}"?`)) return;
+
+                Craft.sendActionRequest('POST', 'icon-manager/icon-sets/delete', {
+                    data: { iconSetId: id }
+                }).then(function(response) {
+                    if (response.data.success) {
+                        row.remove();
+                        Craft.cp.displayNotice('Icon set deleted');
+
+                        // Check if table is now empty
+                        if (document.querySelectorAll('tbody tr').length === 0) {
+                            window.location.reload();
+                        }
+                    }
+                }).catch(function(error) {
+                    Craft.cp.displayError('Failed to delete icon set');
+                });
+            });
+        });
+    </script>
+{% endblock %}

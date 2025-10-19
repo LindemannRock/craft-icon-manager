@@ -67,6 +67,11 @@ class Settings extends Model
     public string $logLevel = 'error';
 
     /**
+     * @var int Items per page in CP element index
+     */
+    public int $itemsPerPage = 100;
+
+    /**
      * @var bool Enable SVG optimization features
      */
     public bool $enableOptimization = true;
@@ -140,6 +145,8 @@ class Settings extends Model
             [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
             [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
+            [['itemsPerPage'], 'integer', 'min' => 10, 'max' => 500],
+            [['itemsPerPage'], 'default', 'value' => 100],
             [['enabledIconTypes'], 'safe'],
             [['logLevel'], 'in', 'range' => ['debug', 'info', 'warning', 'error']],
             [['logLevel'], 'validateLogLevel'],
@@ -242,7 +249,7 @@ class Settings extends Model
             }
             
             // Convert numeric values to integers
-            $integerFields = ['cacheDuration'];
+            $integerFields = ['cacheDuration', 'itemsPerPage'];
             foreach ($integerFields as $field) {
                 if (isset($row[$field])) {
                     $row[$field] = (int) $row[$field];
@@ -315,6 +322,7 @@ class Settings extends Model
             'cacheDuration' => $this->cacheDuration,
             'enabledIconTypes' => Json::encode($this->enabledIconTypes),
             'logLevel' => $this->logLevel,
+            'itemsPerPage' => $this->itemsPerPage,
             'enableOptimization' => $this->enableOptimization,
             'enableOptimizationBackup' => $this->enableOptimizationBackup,
             'scanClipPaths' => $this->scanClipPaths,

@@ -86,6 +86,8 @@ class Install extends Migration
             'scanWidthHeightWithViewBox' => $this->boolean()->notNull()->defaultValue(false),
             // Logging settings
             'logLevel' => $this->string(20)->notNull()->defaultValue('error'),
+            // UI settings
+            'itemsPerPage' => $this->integer()->notNull()->defaultValue(100),
             // System fields
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
@@ -117,6 +119,7 @@ class Install extends Migration
             'scanWidthHeight' => true,
             'scanWidthHeightWithViewBox' => false,
             'logLevel' => 'error',
+            'itemsPerPage' => 100,
             'dateCreated' => Db::prepareDateForDb(new \DateTime()),
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
             'uid' => StringHelper::UUID(),

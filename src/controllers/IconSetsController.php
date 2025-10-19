@@ -27,11 +27,99 @@ class IconSetsController extends Controller
      */
     public function actionIndex(): Response
     {
+        $request = Craft::$app->getRequest();
+        $settings = IconManager::getInstance()->getSettings();
+
+        // Get query parameters
+        $search = $request->getQueryParam('search', '');
+        $statusFilter = $request->getQueryParam('status', 'all');
+        $typeFilter = $request->getQueryParam('type', 'all');
+        $sort = $request->getQueryParam('sort', 'name');
+        $dir = $request->getQueryParam('dir', 'asc');
+        $page = max(1, (int)$request->getQueryParam('page', 1));
+        $limit = $settings->itemsPerPage ?? 100;
+
         // Only show icon sets whose types are enabled in settings
         $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
 
+        // Apply status filter
+        if ($statusFilter === 'enabled') {
+            $iconSets = array_filter($iconSets, function($iconSet) {
+                return $iconSet->enabled;
+            });
+        } elseif ($statusFilter === 'disabled') {
+            $iconSets = array_filter($iconSets, function($iconSet) {
+                return !$iconSet->enabled;
+            });
+        }
+
+        // Apply type filter
+        if ($typeFilter !== 'all') {
+            $iconSets = array_filter($iconSets, function($iconSet) use ($typeFilter) {
+                return $iconSet->type === $typeFilter;
+            });
+        }
+
+        // Apply search filter
+        if ($search !== '') {
+            $searchLower = strtolower($search);
+            $iconSets = array_filter($iconSets, function($iconSet) use ($searchLower) {
+                return
+                    stripos($iconSet->name, $searchLower) !== false ||
+                    stripos($iconSet->handle, $searchLower) !== false;
+            });
+        }
+
+        // Apply sorting
+        usort($iconSets, function($a, $b) use ($sort, $dir) {
+            $aValue = null;
+            $bValue = null;
+
+            switch ($sort) {
+                case 'name':
+                    $aValue = strtolower($a->name);
+                    $bValue = strtolower($b->name);
+                    break;
+                case 'type':
+                    $aValue = strtolower($a->type);
+                    $bValue = strtolower($b->type);
+                    break;
+                case 'iconCount':
+                    $aValue = $a->getIconCount();
+                    $bValue = $b->getIconCount();
+                    break;
+                case 'optimizationIssueCount':
+                    $aValue = $a->getOptimizationIssueCount();
+                    $bValue = $b->getOptimizationIssueCount();
+                    break;
+                default:
+                    $aValue = strtolower($a->name);
+                    $bValue = strtolower($b->name);
+            }
+
+            if ($aValue === $bValue) {
+                return 0;
+            }
+
+            $result = $aValue < $bValue ? -1 : 1;
+            return $dir === 'desc' ? -$result : $result;
+        });
+
+        // Get total count
+        $totalCount = count($iconSets);
+        $totalPages = $totalCount > 0 ? (int)ceil($totalCount / $limit) : 1;
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $iconSets = array_slice($iconSets, $offset, $limit);
+
         return $this->renderTemplate('icon-manager/icon-sets/index', [
             'iconSets' => $iconSets,
+            'totalCount' => $totalCount,
+            'totalPages' => $totalPages,
+            'page' => $page,
+            'limit' => $limit,
+            'offset' => $offset,
         ]);
     }
 
@@ -160,9 +248,87 @@ class IconSetsController extends Controller
         if ($this->request->getAcceptsJson()) {
             return $this->asJson(['success' => true]);
         }
-        
+
         Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Icon set deleted.'));
         return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Bulk enable icon sets
+     */
+    public function actionBulkEnable(): Response
+    {
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
+
+        $iconSetIds = Craft::$app->getRequest()->getRequiredBodyParam('iconSetIds');
+        $enabled = 0;
+
+        foreach ($iconSetIds as $iconSetId) {
+            $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+            if ($iconSet) {
+                $iconSet->enabled = true;
+                if (IconManager::getInstance()->iconSets->saveIconSet($iconSet)) {
+                    $enabled++;
+                }
+            }
+        }
+
+        return $this->asJson([
+            'success' => true,
+            'enabled' => $enabled
+        ]);
+    }
+
+    /**
+     * Bulk disable icon sets
+     */
+    public function actionBulkDisable(): Response
+    {
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
+
+        $iconSetIds = Craft::$app->getRequest()->getRequiredBodyParam('iconSetIds');
+        $disabled = 0;
+
+        foreach ($iconSetIds as $iconSetId) {
+            $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+            if ($iconSet) {
+                $iconSet->enabled = false;
+                if (IconManager::getInstance()->iconSets->saveIconSet($iconSet)) {
+                    $disabled++;
+                }
+            }
+        }
+
+        return $this->asJson([
+            'success' => true,
+            'disabled' => $disabled
+        ]);
+    }
+
+    /**
+     * Bulk delete icon sets
+     */
+    public function actionBulkDelete(): Response
+    {
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
+
+        $iconSetIds = Craft::$app->getRequest()->getRequiredBodyParam('iconSetIds');
+        $deleted = 0;
+
+        foreach ($iconSetIds as $iconSetId) {
+            $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+            if ($iconSet && IconManager::getInstance()->iconSets->deleteIconSet($iconSet)) {
+                $deleted++;
+            }
+        }
+
+        return $this->asJson([
+            'success' => true,
+            'deleted' => $deleted
+        ]);
     }
 
     /**
