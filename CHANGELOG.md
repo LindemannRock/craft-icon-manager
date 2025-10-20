@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.19.0...v5.0.0) (2025-10-20)
+
+
+### Miscellaneous Chores
+
+* bump version scheme to match Craft 5 ([fcf3353](https://github.com/LindemannRock/craft-icon-manager/commit/fcf3353578e9a48b2aaa8e9a7a671befaffa952d))
+
 ## [1.19.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.3...v1.19.0) (2025-10-19)
 
 
