@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.0...v5.0.1) (2025-10-20)
+
+
+### Miscellaneous Chores
+
+* update logging library dependency to version 5.0 and enhance README with additional badges ([9ca3cc1](https://github.com/LindemannRock/craft-icon-manager/commit/9ca3cc1b4ec7c4892b3376f83d3f1e18a9462d7e))
+
 ## [5.0.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.19.0...v5.0.0) (2025-10-20)
 
 
