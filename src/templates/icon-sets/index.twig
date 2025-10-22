@@ -155,30 +155,30 @@
                         <th class="checkbox-cell selectallcontainer">
                             <div class="checkbox" role="checkbox" tabindex="0" aria-checked="false" aria-label="Select all"></div>
                         </th>
-                        <th scope="col" data-attribute="name" class="orderable {{ sort == 'name' ? 'ordered ' ~ dir : '' }}" style="width: 25%;">
+                        <th scope="col" data-attribute="name" class="orderable {{ sort == 'name' ? 'ordered ' ~ dir : '' }}">
                             <button type="button" data-sort="name">
                                 {{ 'Name'|t('icon-manager') }}
                             </button>
                         </th>
-                        <th scope="col" style="width: 15%;">{{ 'Handle'|t('icon-manager') }}</th>
-                        <th scope="col" data-attribute="type" class="orderable {{ sort == 'type' ? 'ordered ' ~ dir : '' }}" style="width: 15%;">
+                        <th scope="col">{{ 'Handle'|t('icon-manager') }}</th>
+                        <th scope="col" data-attribute="type" class="orderable {{ sort == 'type' ? 'ordered ' ~ dir : '' }}">
                             <button type="button" data-sort="type">
                                 {{ 'Type'|t('icon-manager') }}
                             </button>
                         </th>
-                        <th scope="col" data-attribute="iconCount" class="orderable {{ sort == 'iconCount' ? 'ordered ' ~ dir : '' }}" style="width: 10%;">
+                        <th scope="col" data-attribute="iconCount" class="orderable {{ sort == 'iconCount' ? 'ordered ' ~ dir : '' }}">
                             <button type="button" data-sort="iconCount">
                                 {{ 'Icons'|t('icon-manager') }}
                             </button>
                         </th>
                         {% if plugin.settings.enableOptimization %}
-                        <th scope="col" data-attribute="optimizationIssueCount" class="orderable {{ sort == 'optimizationIssueCount' ? 'ordered ' ~ dir : '' }}" style="width: 10%;">
+                        <th scope="col" data-attribute="optimizationIssueCount" class="orderable {{ sort == 'optimizationIssueCount' ? 'ordered ' ~ dir : '' }}">
                             <button type="button" data-sort="optimizationIssueCount">
                                 {{ 'Optimize'|t('icon-manager') }}
                             </button>
                         </th>
                         {% endif %}
-                        <th scope="col" style="width: 10%;">{{ 'Enabled'|t('icon-manager') }}</th>
+                        <th scope="col">{{ 'Enabled'|t('icon-manager') }}</th>
                         <th class="thin" style="width: 60px;">{{ 'Actions'|t('icon-manager') }}</th>
                     </tr>
                 </thead>
@@ -239,9 +239,9 @@
         </div>
     </div>
 
-    <div id="footer" class="flex-justify flex">
+    <div id="footer" class="flex flex-justify">
         <div class="light">
-            <div class="pagination flex">
+            <div class="flex pagination">
                 <nav class="flex" aria-label="icon set pagination">
                     <button type="button" class="page-link prev-page {{ page <= 1 ? 'disabled' : '' }}" {{ page <= 1 ? 'disabled' : '' }} title="Previous Page"></button>
                     <button type="button" class="page-link next-page {{ page >= totalPages ? 'disabled' : '' }}" {{ page >= totalPages ? 'disabled' : '' }} title="Next Page"></button>
@@ -256,15 +256,20 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-nowrap">
-            <button type="button" class="btn secondary" id="bulk-enable-btn" style="display: none;">
-                {{ 'Enable Selected'|t('icon-manager') }}
-            </button>
-            <button type="button" class="btn secondary" id="bulk-disable-btn" style="display: none;">
-                {{ 'Disable Selected'|t('icon-manager') }}
-            </button>
-            <button type="button" class="btn secondary" id="bulk-delete-btn" style="display: none;">
-                {{ 'Delete Selected'|t('icon-manager') }}
+        <div id="actions-container" class="flex" style="display: none;">
+            <div>
+                <button type="button" class="btn menubtn secondary" id="bulk-actions-btn" aria-label="Set status">
+                    {{ 'Set status'|t('app') }}
+                </button>
+                <div class="menu">
+                    <ul>
+                        <li><a id="bulk-enable-action">{{ 'Enable'|t('icon-manager') }}</a></li>
+                        <li><a id="bulk-disable-action">{{ 'Disable'|t('icon-manager') }}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <button type="button" class="btn secondary" id="bulk-delete-btn">
+                <span id="delete-label">{{ 'Delete'|t('icon-manager') }}</span>
             </button>
         </div>
     </div>
@@ -341,18 +346,16 @@
 
         function updateBulkButtons() {
             const hasSelection = selectedIds.size > 0;
-            const enableBtn = document.getElementById('bulk-enable-btn');
-            const disableBtn = document.getElementById('bulk-disable-btn');
-            const deleteBtn = document.getElementById('bulk-delete-btn');
+            const actionsContainer = document.getElementById('actions-container');
+            const deleteLabel = document.getElementById('delete-label');
 
-            [enableBtn, disableBtn, deleteBtn].forEach(btn => {
-                if (hasSelection) {
-                    btn.style.display = '';
-                    btn.removeAttribute('style');
-                } else {
-                    btn.style.display = 'none';
-                }
-            });
+            if (hasSelection) {
+                actionsContainer.style.display = '';
+                const count = selectedIds.size;
+                deleteLabel.textContent = `{{ 'Delete'|t('icon-manager') }} (${count})`;
+            } else {
+                actionsContainer.style.display = 'none';
+            }
         }
 
         // Select all
@@ -390,8 +393,19 @@
             });
         });
 
+        // Initialize bulk actions menu button
+        const bulkActionsBtn = document.getElementById('bulk-actions-btn');
+        if (bulkActionsBtn) {
+            if (typeof Craft !== 'undefined' && Craft.MenuBtn) {
+                new Craft.MenuBtn(bulkActionsBtn);
+            } else if (typeof Garnish !== 'undefined' && Garnish.MenuBtn) {
+                new Garnish.MenuBtn(bulkActionsBtn);
+            }
+        }
+
         // Bulk enable
-        document.getElementById('bulk-enable-btn')?.addEventListener('click', function() {
+        document.getElementById('bulk-enable-action')?.addEventListener('click', function(e) {
+            e.preventDefault();
             const ids = Array.from(selectedIds);
 
             Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-enable', {
@@ -407,7 +421,8 @@
         });
 
         // Bulk disable
-        document.getElementById('bulk-disable-btn')?.addEventListener('click', function() {
+        document.getElementById('bulk-disable-action')?.addEventListener('click', function(e) {
+            e.preventDefault();
             const ids = Array.from(selectedIds);
 
             Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-disable', {
