@@ -39,8 +39,14 @@ class IconSetsController extends Controller
         $page = max(1, (int)$request->getQueryParam('page', 1));
         $limit = $settings->itemsPerPage ?? 100;
 
-        // Only show icon sets whose types are enabled in settings
-        $iconSets = IconManager::getInstance()->iconSets->getAllEnabledIconSetsWithAllowedTypes();
+        // Get all icon sets whose types are enabled in settings
+        $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
+        $enabledTypes = $settings->enabledIconTypes ?? [];
+
+        // Filter by allowed types (from settings)
+        $iconSets = array_filter($iconSets, function($iconSet) use ($enabledTypes) {
+            return ($enabledTypes[$iconSet->type] ?? false) === true;
+        });
 
         // Apply status filter
         if ($statusFilter === 'enabled') {
