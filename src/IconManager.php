@@ -79,7 +79,7 @@ class IconManager extends Plugin
     public function init(): void
     {
         parent::init();
-        
+
         // Override plugin name from config if available, otherwise use from database settings
         $configFileSettings = Craft::$app->getConfig()->getConfigFromFile('icon-manager');
         if (isset($configFileSettings['pluginName'])) {
@@ -123,7 +123,7 @@ class IconManager extends Plugin
             return new Settings();
         }
     }
-    
+
     /**
      * Force reload settings from database
      * This is needed because Craft caches settings in a private property
@@ -368,12 +368,12 @@ class IconManager extends Plugin
     {
         // Configure logging using the new logging library
         $settings = $this->getSettings();
-        $logLevel = $settings->logLevel ?? 'info';
 
         LoggingLibrary::configure([
             'pluginHandle' => $this->handle,
             'pluginName' => $settings->pluginName ?? $this->name,
-            'logLevel' => $logLevel,
+            'logLevel' => $settings->logLevel ?? 'error',
+            'itemsPerPage' => $settings->itemsPerPage ?? 50,
             'permissions' => ['iconManager:viewLogs'],
         ]);
     }
