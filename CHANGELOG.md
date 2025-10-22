@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.0.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.1...v5.0.2) (2025-10-22)
+
+
+### Bug Fixes
+
+* update icon sets retrieval to filter by enabled types from settings ([8a5136d](https://github.com/LindemannRock/craft-icon-manager/commit/8a5136d4a60f310120e1cce8c4aecfeb7574ca66))
+* update icon sets table layout and enhance bulk actions functionality ([e8e454c](https://github.com/LindemannRock/craft-icon-manager/commit/e8e454cff96e60ed70284f3b8af9a80feccba700))
+* update logging configuration to use error level by default and set items per page ([ab77756](https://github.com/LindemannRock/craft-icon-manager/commit/ab7775645a4fc5613a9b15443951c79a74da60fc))
+
 ## [5.0.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.0...v5.0.1) (2025-10-20)
 
 
