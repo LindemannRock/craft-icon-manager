@@ -15,22 +15,34 @@ use craft\behaviors\EnvAttributeParserBehavior;
 use craft\db\Query;
 use craft\helpers\Db;
 use craft\helpers\Json;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
  * Icon Manager Settings Model
  */
 class Settings extends Model
 {
+    use LoggingTrait;
+
     /**
      * @var array Track which settings are overridden by config
      */
     private array $_overriddenSettings = [];
-    
+
     /**
      * @var array Track which specific icon types are overridden
      */
     private array $_overriddenIconTypes = [];
-    
+
+    /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
+        parent::init();
+        $this->setLoggingHandle('icon-manager');
+    }
+
     /**
      * @var string|null The public-facing name of the plugin
      */
@@ -174,16 +186,20 @@ class Settings extends Model
                 if (!Craft::$app->getRequest()->getIsConsoleRequest()) {
                     // Web request - use session to prevent duplicate warnings
                     if (Craft::$app->getSession()->get('im_debug_config_warning') === null) {
-                        Craft::warning('Log level "debug" from config file changed to "info" because devMode is disabled. Please update your config/icon-manager.php file.', 'icon-manager');
+                        $this->logWarning('Log level "debug" from config file changed to "info" because devMode is disabled', [
+                            'configFile' => 'config/icon-manager.php'
+                        ]);
                         Craft::$app->getSession()->set('im_debug_config_warning', true);
                     }
                 } else {
                     // Console request - just log without session
-                    Craft::warning('Log level "debug" from config file changed to "info" because devMode is disabled. Please update your config/icon-manager.php file.', 'icon-manager');
+                    $this->logWarning('Log level "debug" from config file changed to "info" because devMode is disabled', [
+                        'configFile' => 'config/icon-manager.php'
+                    ]);
                 }
             } else {
                 // Database setting - save the correction
-                Craft::warning('Log level automatically changed from "debug" to "info" because devMode is disabled. This setting has been saved.', 'icon-manager');
+                $this->logWarning('Log level automatically changed from "debug" to "info" because devMode is disabled');
                 $this->saveToDatabase();
             }
         }
@@ -232,7 +248,7 @@ class Settings extends Model
                 ->where(['id' => 1])
                 ->one();
         } catch (\Exception $e) {
-            Craft::error('Failed to load settings from database', 'icon-manager', ['error' => $e->getMessage()]);
+            $settings->logError('Failed to load settings from database', ['error' => $e->getMessage()]);
             return $settings;
         }
         
@@ -264,7 +280,7 @@ class Settings extends Model
             // Set attributes from database
             $settings->setAttributes($row, false);
         } else {
-            Craft::warning('No settings found in database', 'icon-manager');
+            $settings->logWarning('No settings found in database');
         }
         
         // Apply config file overrides
@@ -295,7 +311,7 @@ class Settings extends Model
         // IMPORTANT: Validate settings after config overrides are applied
         // This will trigger validateLogLevel and other validation methods
         if (!$settings->validate()) {
-            Craft::error('Icon Manager settings validation failed', 'icon-manager', ['errors' => $settings->getErrors()]);
+            $settings->logError('Icon Manager settings validation failed', ['errors' => $settings->getErrors()]);
         }
 
         return $settings;
@@ -336,17 +352,17 @@ class Settings extends Model
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
         ];
 
-        Craft::info('Attempting to save settings', 'icon-manager', ['attributes' => $attributes]);
+        $this->logDebug('Attempting to save settings', ['attributes' => $attributes]);
 
         // Update existing settings (we know there's always one row from migration)
         try {
             $result = $db->createCommand()
                 ->update('{{%iconmanager_settings}}', $attributes, ['id' => 1])
                 ->execute();
-            
+
             return $result !== false;
         } catch (\Exception $e) {
-            Craft::error('Failed to save Icon Manager settings', 'icon-manager', ['error' => $e->getMessage()]);
+            $this->logError('Failed to save Icon Manager settings', ['error' => $e->getMessage()]);
             return false;
         }
     }

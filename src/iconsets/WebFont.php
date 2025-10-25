@@ -15,6 +15,7 @@ use Craft;
 use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use FontLib\Font;
+use lindemannrock\logginglibrary\services\LoggingService;
 
 /**
  * WebFont Icon Set Handler
@@ -26,23 +27,11 @@ use FontLib\Font;
 class WebFont
 {
     /**
-     * Static logging helper with structured context support
-     * Mimics LoggingTrait format for consistency
+     * Static logging helper using LoggingService
      */
     protected static function log(string $level, string $message, array $context = []): void
     {
-        $formattedMessage = $message;
-        if (!empty($context)) {
-            $formattedMessage .= ' | ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        }
-
-        match($level) {
-            'info' => Craft::info($formattedMessage, 'icon-manager'),
-            'warning' => Craft::warning($formattedMessage, 'icon-manager'),
-            'error' => Craft::error($formattedMessage, 'icon-manager'),
-            'debug' => Craft::debug($formattedMessage, 'icon-manager'),
-            default => Craft::info($formattedMessage, 'icon-manager'),
-        };
+        LoggingService::log($message, $level, 'icon-manager', $context);
     }
 
     /**

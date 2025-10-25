@@ -12,6 +12,7 @@ use lindemannrock\iconmanager\IconManager;
 
 use Craft;
 use craft\web\Controller;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\Response;
 
 /**
@@ -19,6 +20,17 @@ use yii\web\Response;
  */
 class SettingsController extends Controller
 {
+    use LoggingTrait;
+
+    /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
+        parent::init();
+        $this->setLoggingHandle('icon-manager');
+    }
+
     /**
      * Settings index
      */

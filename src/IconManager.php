@@ -31,6 +31,7 @@ use lindemannrock\iconmanager\services\IconSetsService;
 use lindemannrock\iconmanager\services\SvgOptimizerService;
 use lindemannrock\iconmanager\utilities\ClearIconCache;
 use lindemannrock\iconmanager\variables\IconManagerVariable;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 use lindemannrock\logginglibrary\LoggingLibrary;
 use yii\base\Event;
 use craft\console\Application as ConsoleApplication;
@@ -52,6 +53,8 @@ use craft\services\Utilities;
  */
 class IconManager extends Plugin
 {
+    use LoggingTrait;
+
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
@@ -119,7 +122,7 @@ class IconManager extends Plugin
             return Settings::loadFromDatabase();
         } catch (\Exception $e) {
             // Database might not be ready during installation
-            Craft::info('Could not load settings from database', __METHOD__, ['error' => $e->getMessage()]);
+            $this->logInfo('Could not load settings from database', ['error' => $e->getMessage()]);
             return new Settings();
         }
     }
