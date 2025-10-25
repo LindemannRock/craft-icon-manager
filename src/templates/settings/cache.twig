@@ -1,0 +1,72 @@
+{% extends "icon-manager/_layouts/settings" %}
+{% set title = "Cache Settings"|t('icon-manager') %}
+{% set fullPageForm = true %}
+{% set selectedSettingsItem = 'cache' %}
+
+{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
+{% set crumbs = [
+    {
+        label: plugin.settings.pluginName|t('icon-manager'),
+        url: url('icon-manager'),
+    },
+    {
+        label: 'Settings'|t('icon-manager'),
+        url: url('icon-manager/settings'),
+    },
+    {
+        label: 'Cache'|t('icon-manager'),
+        url: url('icon-manager/settings/cache'),
+    },
+] %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    <form method="post" accept-charset="UTF-8">
+        {{ actionInput('icon-manager/settings/save') }}
+        {{ csrfInput() }}
+        {{ redirectInput('icon-manager/settings/cache') }}
+
+        <h2 style="margin-top: 0px;">{{ 'Cache Settings'|t('icon-manager') }}</h2>
+
+        {{ forms.lightswitchField({
+            label: 'Enable Cache'|t('icon-manager'),
+            instructions: 'Cache icon data for better performance'|t('icon-manager'),
+            id: 'enableCache',
+            name: 'settings[enableCache]',
+            on: settings.enableCache,
+            toggle: 'cache-settings',
+            warning: settings.isOverriddenByConfig('enableCache') ? 'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('enableCache')
+        }) }}
+
+        <div id="cache-settings" class="{{ not settings.enableCache ? 'hidden' }}">
+            {{ forms.textField({
+                label: 'Cache Duration'|t('icon-manager'),
+                instructions: 'How long to cache icon data (in seconds). Default: 86400 (24 hours)'|t('icon-manager'),
+                id: 'cacheDuration',
+                name: 'settings[cacheDuration]',
+                value: settings.cacheDuration,
+                type: 'number',
+                min: 0,
+                warning: settings.isOverriddenByConfig('cacheDuration') ? 'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+                disabled: settings.isOverriddenByConfig('cacheDuration')
+            }) }}
+
+            <div class="field">
+                <p class="light">
+                    <strong>Tips:</strong><br>
+                    • Higher values reduce database queries but may show outdated icon data<br>
+                    • Clear cache after adding or updating icon sets for immediate effect<br>
+                    • Set to 0 to disable caching (not recommended for production)
+                </p>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button type="submit" class="btn submit">{{ "Save Settings"|t('icon-manager') }}</button>
+        </div>
+    </form>
+
+    {% include 'icon-manager/_components/plugin-credit.twig' %}
+{% endblock %}

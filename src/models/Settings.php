@@ -71,6 +71,7 @@ class Settings extends Model
         'svg-sprite' => true,
         'font-awesome' => true,
         'material-icons' => false,
+        'web-font' => false,
     ];
 
     /**
@@ -168,7 +169,7 @@ class Settings extends Model
     /**
      * Validate log level - debug requires devMode
      */
-    public function validateLogLevel($attribute, $params, $validator)
+    public function validateLogLevel($attribute)
     {
         $logLevel = $this->$attribute;
 

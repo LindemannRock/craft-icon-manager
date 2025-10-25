@@ -55,6 +55,11 @@ class IconManager extends Plugin
 {
     use LoggingTrait;
 
+    /**
+     * @var IconManager|null
+     */
+    public static ?IconManager $plugin = null;
+
     public string $schemaVersion = '1.0.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
@@ -82,6 +87,7 @@ class IconManager extends Plugin
     public function init(): void
     {
         parent::init();
+        self::$plugin = $this;
 
         // Override plugin name from config if available, otherwise use from database settings
         $configFileSettings = Craft::$app->getConfig()->getConfigFromFile('icon-manager');
@@ -209,6 +215,7 @@ class IconManager extends Plugin
             UrlManager::EVENT_REGISTER_CP_URL_RULES,
             function(RegisterUrlRulesEvent $event) {
                 $event->rules = array_merge($event->rules, [
+                    // Icon Sets routes
                     'icon-manager' => 'icon-manager/icon-sets/index',
                     'icon-manager/icon-sets' => 'icon-manager/icon-sets/index',
                     'icon-manager/icon-sets/new' => 'icon-manager/icon-sets/edit',
@@ -216,15 +223,25 @@ class IconManager extends Plugin
                     'icon-manager/icon-sets/<iconSetId:\d+>' => 'icon-manager/icon-sets/edit',
                     'icon-manager/icon-sets/delete' => 'icon-manager/icon-sets/delete',
                     'icon-manager/icon-sets/refresh-icons' => 'icon-manager/icon-sets/refresh-icons',
+
+                    // Settings routes
+                    'icon-manager/settings' => 'icon-manager/settings/index',
+                    'icon-manager/settings/icon-types' => 'icon-manager/settings/icon-types',
+                    'icon-manager/settings/svg-optimization' => 'icon-manager/settings/svg-optimization',
+                    'icon-manager/settings/<section:\w+>' => 'icon-manager/settings/<section>',
+
+                    // Logging routes
                     'icon-manager/logs' => 'logging-library/logs/index',
                     'icon-manager/logs/download' => 'logging-library/logs/download',
-                    'icon-manager/settings' => 'icon-manager/settings/index',
-                    'icon-manager/settings/save' => 'icon-manager/settings/save',
+
+                    // Icons API routes
                     'icon-manager/icons/render' => 'icon-manager/icons/render',
                     'icon-manager/icons/get-data' => 'icon-manager/icons/get-data',
                     'icon-manager/icons/get-icons-for-field' => 'icon-manager/icons/get-icons-for-field',
                     'icon-manager/icons/serve-font' => 'icon-manager/icons/serve-font',
                     'icon-manager/icons/serve-sprite' => 'icon-manager/icons/serve-sprite',
+
+                    // Cache routes
                     'icon-manager/cache/clear' => 'icon-manager/cache/clear',
                 ]);
             }

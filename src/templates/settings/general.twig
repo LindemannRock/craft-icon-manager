@@ -1,0 +1,95 @@
+{% extends "icon-manager/_layouts/settings" %}
+{% set title = "General Settings"|t('icon-manager') %}
+{% set fullPageForm = true %}
+{% set selectedSettingsItem = 'general' %}
+
+{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
+{% set crumbs = [
+    {
+        label: plugin.settings.pluginName|t('icon-manager'),
+        url: url('icon-manager'),
+    },
+    {
+        label: 'Settings'|t('icon-manager'),
+        url: url('icon-manager/settings'),
+    },
+    {
+        label: 'General'|t('icon-manager'),
+        url: url('icon-manager/settings/general'),
+    },
+] %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    <form method="post" accept-charset="UTF-8">
+        {{ actionInput('icon-manager/settings/save') }}
+        {{ csrfInput() }}
+        {{ redirectInput('icon-manager/settings/general') }}
+
+        <h2 style="margin-top: 0px;">{{ "Plugin Settings"|t('icon-manager') }}</h2>
+
+        {{ forms.textField({
+            label: 'Plugin name'|t('icon-manager'),
+            instructions: 'The public-facing name of the plugin'|t('icon-manager'),
+            id: 'pluginName',
+            name: 'settings[pluginName]',
+            value: settings.pluginName ?? 'Icon Manager',
+            placeholder: 'Icon Manager',
+            warning: settings.isOverriddenByConfig('pluginName') ? 'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('pluginName')
+        }) }}
+
+        <hr>
+
+        <h2>{{ 'General Settings'|t('icon-manager') }}</h2>
+
+        {{ forms.autosuggestField({
+            label: 'Icons Path'|t('icon-manager'),
+            instructions: 'Provide the full path to your icon files. Also supports aliases.'|t('icon-manager'),
+            id: 'iconSetsPath',
+            name: 'settings[iconSetsPath]',
+            value: settings.iconSetsPath,
+            suggestEnvVars: true,
+            suggestAliases: true,
+            required: true,
+            warning: settings.isOverriddenByConfig('iconSetsPath') ? 'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : 'All icon sets will look for icons relative to this path.',
+            disabled: settings.isOverriddenByConfig('iconSetsPath')
+        }) }}
+
+        <hr>
+
+        <h2>{{ 'Logging Settings'|t('icon-manager') }}</h2>
+
+        {% set logOptions = [
+            {value: 'error', label: 'Error (Critical errors only)'|t('icon-manager')},
+            {value: 'warning', label: 'Warning (Errors and warnings)'|t('icon-manager')},
+            {value: 'info', label: 'Info (General information)'|t('icon-manager')},
+        ] %}
+
+        {% if craft.app.config.general.devMode %}
+            {% set logOptions = logOptions|merge([
+                {value: 'debug', label: 'Debug (Detailed debugging)'|t('icon-manager')}
+            ]) %}
+        {% endif %}
+
+        {{ forms.selectField({
+            label: 'Log Level'|t('icon-manager'),
+            instructions: craft.app.config.general.devMode ?
+                'Choose what types of messages to log. Higher levels include all lower levels (Error < Warning < Info < Debug)'|t('icon-manager') :
+                'Choose what types of messages to log. Debug level requires devMode to be enabled.'|t('icon-manager'),
+            id: 'logLevel',
+            name: 'settings[logLevel]',
+            value: settings.logLevel,
+            options: logOptions,
+            warning: settings.isOverriddenByConfig('logLevel') ? 'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('logLevel')
+        }) }}
+
+        <div class="buttons">
+            <button type="submit" class="btn submit">{{ "Save Settings"|t('icon-manager') }}</button>
+        </div>
+    </form>
+
+    {% include 'icon-manager/_components/plugin-credit.twig' %}
+{% endblock %}

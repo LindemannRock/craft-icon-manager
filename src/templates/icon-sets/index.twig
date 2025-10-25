@@ -249,9 +249,9 @@
                 <div class="page-info">
                     {% set endRange = min(offset + limit, totalCount) %}
                     {% if totalCount == 0 %}
-                        No icon sets
+                        no icon sets
                     {% else %}
-                        {{ offset + 1 }}–{{ endRange }} of {{ totalCount }} {{ totalCount == 1 ? 'icon set' : 'icon sets' }}
+                        {{ offset + 1 }} – {{ endRange }} of {{ totalCount }} {{ totalCount == 1 ? 'icon set' : 'icon sets' }}
                     {% endif %}
                 </div>
             </div>

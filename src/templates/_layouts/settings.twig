@@ -1,0 +1,49 @@
+{% extends "_layouts/cp" %}
+
+{% set title = title ?? 'Settings'|t('icon-manager') %}
+{% set selectedSettingsItem = selectedSettingsItem ?? 'general' %}
+{% set selectedSubnavItem = 'settings' %}
+
+{% block sidebar %}
+    <nav id="settings-nav">
+        <ul>
+            <li>
+                <a href="{{ url('icon-manager/settings/general') }}" {% if selectedSettingsItem == 'general' %}class="sel"{% endif %} data-nav-item="general">
+                    {{ 'General'|t('icon-manager') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ url('icon-manager/settings/icon-types') }}" {% if selectedSettingsItem == 'icon-types' %}class="sel"{% endif %} data-nav-item="icon-types">
+                    {{ 'Icon Types'|t('icon-manager') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ url('icon-manager/settings/svg-optimization') }}" {% if selectedSettingsItem == 'svg-optimization' %}class="sel"{% endif %} data-nav-item="svg-optimization">
+                    {{ 'SVG Optimization'|t('icon-manager') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ url('icon-manager/settings/interface') }}" {% if selectedSettingsItem == 'interface' %}class="sel"{% endif %} data-nav-item="interface">
+                    {{ 'Interface'|t('icon-manager') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ url('icon-manager/settings/cache') }}" {% if selectedSettingsItem == 'cache' %}class="sel"{% endif %} data-nav-item="cache">
+                    {{ 'Cache'|t('icon-manager') }}
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}
+
+{% css %}
+    /* Prevent scroll-based highlighting */
+    #settings-nav a {
+        transition: none;
+    }
+
+    /* Ensure only the current page link is highlighted */
+    #settings-nav a.sel {
+        cursor: default;
+    }
+{% endcss %}

@@ -1,0 +1,56 @@
+{% extends "icon-manager/_layouts/settings" %}
+{% set title = "Interface Settings"|t('icon-manager') %}
+{% set fullPageForm = true %}
+{% set selectedSettingsItem = 'interface' %}
+
+{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
+{% set crumbs = [
+    {
+        label: plugin.settings.pluginName|t('icon-manager'),
+        url: url('icon-manager'),
+    },
+    {
+        label: 'Settings'|t('icon-manager'),
+        url: url('icon-manager/settings'),
+    },
+    {
+        label: 'Interface'|t('icon-manager'),
+        url: url('icon-manager/settings/interface'),
+    },
+] %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    {% set pluginName = plugin.settings.pluginName %}
+
+    <form method="post" accept-charset="UTF-8">
+        {{ actionInput('icon-manager/settings/save') }}
+        {{ csrfInput() }}
+        {{ redirectInput('icon-manager/settings/interface') }}
+
+        <h2 style="margin-top: 0px;">{{ "Interface Settings"|t('icon-manager') }}</h2>
+
+        {{ forms.textField({
+            label: "Items Per Page"|t('icon-manager'),
+            instructions: "Number of icon sets to show per page"|t('icon-manager'),
+            id: 'itemsPerPage',
+            name: 'settings[itemsPerPage]',
+            value: settings.itemsPerPage ?? 100,
+            type: 'number',
+            min: 10,
+            max: 500,
+            required: true,
+            disabled: settings.isOverriddenByConfig('itemsPerPage'),
+            warning: settings.isOverriddenByConfig('itemsPerPage') ?
+                "This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>."|t('icon-manager')|raw : null,
+            errors: settings.getErrors('itemsPerPage')
+        }) }}
+
+        <div class="buttons">
+            <button type="submit" class="btn submit">{{ "Save Settings"|t('icon-manager') }}</button>
+        </div>
+    </form>
+
+    {% include 'icon-manager/_components/plugin-credit.twig' %}
+{% endblock %}

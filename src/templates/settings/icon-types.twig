@@ -1,0 +1,90 @@
+{% extends "icon-manager/_layouts/settings" %}
+{% set title = "Icon Types"|t('icon-manager') %}
+{% set fullPageForm = true %}
+{% set selectedSettingsItem = 'icon-types' %}
+
+{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
+{% set crumbs = [
+    {
+        label: plugin.settings.pluginName|t('icon-manager'),
+        url: url('icon-manager'),
+    },
+    {
+        label: 'Settings'|t('icon-manager'),
+        url: url('icon-manager/settings'),
+    },
+    {
+        label: 'Icon Types'|t('icon-manager'),
+        url: url('icon-manager/settings/icon-types'),
+    },
+] %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+    <form method="post" accept-charset="UTF-8">
+        {{ actionInput('icon-manager/settings/save') }}
+        {{ csrfInput() }}
+        {{ redirectInput('icon-manager/settings/icon-types') }}
+
+        <h2 style="margin-top: 0px;">{{ 'Icon Types'|t('icon-manager') }}</h2>
+
+        <p>{{ 'Choose which icon set types are available in the system.'|t('icon-manager') }}</p>
+
+        {{ forms.lightswitchField({
+            label: 'SVG Folder'|t('icon-manager'),
+            instructions: 'Enable SVG files from folders'|t('icon-manager'),
+            id: 'enabledIconTypes-svg-folder',
+            name: 'settings[enabledIconTypes][svg-folder]',
+            on: settings.enabledIconTypes['svg-folder'] ?? true,
+            warning: settings.isIconTypeOverridden('svg-folder') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-folder\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isIconTypeOverridden('svg-folder')
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: 'SVG Sprite'|t('icon-manager'),
+            instructions: 'Enable SVG sprite files'|t('icon-manager'),
+            id: 'enabledIconTypes-svg-sprite',
+            name: 'settings[enabledIconTypes][svg-sprite]',
+            on: settings.enabledIconTypes['svg-sprite'] ?? true,
+            warning: settings.isIconTypeOverridden('svg-sprite') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-sprite\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isIconTypeOverridden('svg-sprite')
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: 'Font Awesome'|t('icon-manager'),
+            instructions: 'Enable Font Awesome icons'|t('icon-manager'),
+            id: 'enabledIconTypes-font-awesome',
+            name: 'settings[enabledIconTypes][font-awesome]',
+            on: settings.enabledIconTypes['font-awesome'] ?? true,
+            warning: settings.isIconTypeOverridden('font-awesome') ? 'This is being overridden by the <code>enabledIconTypes[\'font-awesome\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isIconTypeOverridden('font-awesome')
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: 'Material Icons'|t('icon-manager'),
+            instructions: 'Enable Material Design icons'|t('icon-manager'),
+            id: 'enabledIconTypes-material-icons',
+            name: 'settings[enabledIconTypes][material-icons]',
+            on: settings.enabledIconTypes['material-icons'] ?? false,
+            warning: settings.isIconTypeOverridden('material-icons') ? 'This is being overridden by the <code>enabledIconTypes[\'material-icons\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isIconTypeOverridden('material-icons')
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: 'Web Font'|t('icon-manager'),
+            instructions: 'Enable custom icon fonts (TTF, WOFF, WOFF2, OTF)'|t('icon-manager'),
+            id: 'enabledIconTypes-web-font',
+            name: 'settings[enabledIconTypes][web-font]',
+            on: settings.enabledIconTypes['web-font'] ?? false,
+            warning: settings.isIconTypeOverridden('web-font') ? 'This is being overridden by the <code>enabledIconTypes[\'web-font\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isIconTypeOverridden('web-font')
+        }) }}
+
+        <div class="buttons">
+            <button type="submit" class="btn submit">{{ "Save Settings"|t('icon-manager') }}</button>
+        </div>
+    </form>
+
+    {% include 'icon-manager/_components/plugin-credit.twig' %}
+{% endblock %}
