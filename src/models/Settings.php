@@ -418,27 +418,33 @@ class Settings extends Model
      */
     public function isOverriddenByConfig(string $attribute): bool
     {
-        // Get the config file path
         $configPath = \Craft::$app->getPath()->getConfigPath() . '/icon-manager.php';
 
         if (!file_exists($configPath)) {
             return false;
         }
 
-        // Load the raw config file
+        // Load the raw config file instead of using Craft's config which merges with database
         $rawConfig = require $configPath;
 
-        // Check if this attribute is set in the config file (root level or environment level)
-        $hasRootConfig = array_key_exists($attribute, $rawConfig);
-        $env = \Craft::$app->getConfig()->getGeneral()->env ?? '*';
-        $hasEnvConfig = isset($rawConfig[$env]) && is_array($rawConfig[$env]) && array_key_exists($attribute, $rawConfig[$env]);
-
-        if (!$hasRootConfig && !$hasEnvConfig) {
-            return false;
+        // Check for the attribute in the config
+        // Use array_key_exists instead of isset to detect null values
+        if (array_key_exists($attribute, $rawConfig)) {
+            return true;
         }
 
+        // Check environment-specific configs
+        $env = \Craft::$app->getConfig()->env;
+        if ($env && is_array($rawConfig[$env] ?? null) && array_key_exists($attribute, $rawConfig[$env])) {
+            return true;
+        }
 
-        return true;
+        // Check wildcard config
+        if (is_array($rawConfig['*'] ?? null) && array_key_exists($attribute, $rawConfig['*'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
