@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.0...v5.1.1) (2025-10-26)
+
+
+### Bug Fixes
+
+* reorganize configuration settings and update log level instructions ([2eae2e1](https://github.com/LindemannRock/craft-icon-manager/commit/2eae2e13c408f66591e232d6650c09981abcc564))
+
 ## [5.1.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.2...v5.1.0) (2025-10-26)
 
 
