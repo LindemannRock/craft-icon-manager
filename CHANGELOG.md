@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.1.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.2...v5.1.0) (2025-10-26)
+
+
+### Features
+
+* integrate logging functionality across IconManager and related components ([fe8f8ec](https://github.com/LindemannRock/craft-icon-manager/commit/fe8f8ecd6f9867fe88c8c80397d8f579fcdc3b66))
+
+
+### Bug Fixes
+
+* settings management for Icon Manager plugin ([842681a](https://github.com/LindemannRock/craft-icon-manager/commit/842681a6bb4c5ee570b8f4de0d3bf025b27c2384))
+
 ## [5.0.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.1...v5.0.2) (2025-10-22)
 
 
