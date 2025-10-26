@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.1.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.1...v5.1.2) (2025-10-26)
+
+
+### Bug Fixes
+
+* improve config attribute override detection in Settings model ([0c6d665](https://github.com/LindemannRock/craft-icon-manager/commit/0c6d665cea2190b13aadb36d2176f4ee8d108c9e))
+
 ## [5.1.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.0...v5.1.1) (2025-10-26)
 
 
