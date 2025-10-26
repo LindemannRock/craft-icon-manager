@@ -75,9 +75,7 @@
 
         {{ forms.selectField({
             label: 'Log Level'|t('icon-manager'),
-            instructions: craft.app.config.general.devMode ?
-                'Choose what types of messages to log. Higher levels include all lower levels (Error < Warning < Info < Debug)'|t('icon-manager') :
-                'Choose what types of messages to log. Debug level requires devMode to be enabled.'|t('icon-manager'),
+            instructions: 'Choose what types of messages to log. Debug level requires devMode to be enabled.'|t('icon-manager'),
             id: 'logLevel',
             name: 'settings[logLevel]',
             value: settings.logLevel,
