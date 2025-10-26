@@ -26,6 +26,7 @@
         {{ actionInput('icon-manager/settings/save') }}
         {{ csrfInput() }}
         {{ redirectInput('icon-manager/settings/general') }}
+        {{ hiddenInput('section', 'general') }}
 
         <h2 style="margin-top: 0px;">{{ "Plugin Settings"|t('icon-manager') }}</h2>
 

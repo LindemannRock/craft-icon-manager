@@ -26,6 +26,7 @@
         {{ actionInput('icon-manager/settings/save') }}
         {{ csrfInput() }}
         {{ redirectInput('icon-manager/settings/cache') }}
+        {{ hiddenInput('section', 'cache') }}
 
         <h2 style="margin-top: 0px;">{{ 'Cache Settings'|t('icon-manager') }}</h2>
 

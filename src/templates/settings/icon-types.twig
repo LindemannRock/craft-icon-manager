@@ -26,6 +26,7 @@
         {{ actionInput('icon-manager/settings/save') }}
         {{ csrfInput() }}
         {{ redirectInput('icon-manager/settings/icon-types') }}
+        {{ hiddenInput('section', 'icon-types') }}
 
         <h2 style="margin-top: 0px;">{{ 'Icon Types'|t('icon-manager') }}</h2>
 

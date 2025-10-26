@@ -28,6 +28,7 @@
         {{ actionInput('icon-manager/settings/save') }}
         {{ csrfInput() }}
         {{ redirectInput('icon-manager/settings/interface') }}
+        {{ hiddenInput('section', 'interface') }}
 
         <h2 style="margin-top: 0px;">{{ "Interface Settings"|t('icon-manager') }}</h2>
 

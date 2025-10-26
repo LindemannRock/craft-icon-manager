@@ -412,8 +412,9 @@ class Settings extends Model
 
     /**
      * Check if a setting is being overridden by config file
+     * Supports dot notation for nested settings like: enabledIconTypes.svg-folder
      *
-     * @param string $attribute The setting attribute name
+     * @param string $attribute The setting attribute name or dot-notation path
      * @return bool
      */
     public function isOverriddenByConfig(string $attribute): bool
@@ -426,6 +427,21 @@ class Settings extends Model
 
         // Load the raw config file instead of using Craft's config which merges with database
         $rawConfig = require $configPath;
+
+        // Handle dot notation for nested config
+        if (str_contains($attribute, '.')) {
+            $parts = explode('.', $attribute);
+            $current = $rawConfig;
+
+            foreach ($parts as $part) {
+                if (!is_array($current) || !array_key_exists($part, $current)) {
+                    return false;
+                }
+                $current = $current[$part];
+            }
+
+            return true;
+        }
 
         // Check for the attribute in the config
         // Use array_key_exists instead of isset to detect null values
