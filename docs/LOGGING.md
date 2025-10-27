@@ -89,6 +89,74 @@ The plugin logs meaningful events using context arrays for structured data. All 
 - **[INFO]** `Cleared memory cache for icon sets` - Memory cache cleared
   - Context: `cacheCount` (number of caches cleared)
 
+### SVGO Service (SvgoService)
+
+#### Optimization Operations
+- **[INFO]** `Created backup before SVGO optimization` - Backup created before SVGO optimization
+  - Context: `backupPath` (path to backup file)
+- **[INFO]** `Starting SVGO optimization for icon set` - SVGO optimization initiated
+  - Context: `iconSetName`, `iconSetId`, `totalFiles` (number of files to optimize)
+- **[INFO]** `SVGO optimized file successfully` - Individual file optimized successfully
+  - Context: `file` (filename), `path` (full path), `progress` (e.g., "5/20")
+- **[WARNING]** `Skipped file during SVGO optimization` - File skipped during optimization
+  - Context: `file` (filename), `path` (full path), `reason`, `output` (SVGO output)
+- **[ERROR]** `Error optimizing file with SVGO` - SVGO optimization failed for file
+  - Context: `error` (exception message), `file` (filename), `path` (full path)
+- **[DEBUG]** `Exception trace` - Stack trace for SVGO errors
+  - Context: `trace` (stack trace string)
+- **[INFO]** `SVGO optimization completed for icon set` - SVGO optimization completed
+  - Context: `iconSetName`, `iconSetId`, `total`, `optimized`, `skipped`, `errors`
+
+### Icon Sets Service (IconSetsService)
+
+#### Save Operations
+- **[WARNING]** `Icon set validation failed` - Icon set validation errors
+  - Context: `errors` (validation errors array), `iconSetId`
+- **[INFO]** `Icon set operation successful` - Icon set created or updated
+  - Context: `action` (created or updated), `iconSetId`, `name`, `type`
+- **[ERROR]** `Failed to save icon set` - Icon set save failed
+  - Context: `error` (exception message), `iconSetId`, `name`
+
+#### Delete Operations
+- **[INFO]** `Icon set deleted successfully` - Icon set deleted
+  - Context: `iconSetId`, `name`, `type`
+- **[ERROR]** `Failed to delete icon set` - Icon set deletion failed
+  - Context: `error` (exception message), `iconSetId`, `name`
+
+### SVG Optimizer Service (SvgOptimizerService)
+
+- **[WARNING]** `Icon set folder not found` - Icon set folder path invalid
+  - Context: `folderPath`
+- **[INFO]** `Created backup` - Backup created before optimization
+  - Context: `backupPath` (path to backup directory)
+- **[ERROR]** `Failed to optimize SVG file` - SVG optimization failed
+  - Context: `filePath`, `error` (exception message)
+
+### Settings Model (Settings)
+
+#### Loading Operations
+- **[ERROR]** `Failed to load settings from database` - Database query error
+  - Context: `error` (exception message)
+- **[WARNING]** `No settings found in database` - No settings record exists in database
+
+#### Log Level Adjustments
+- **[WARNING]** `Log level "debug" from config file changed to "info" because devMode is disabled` - Debug level auto-corrected from config file
+  - Context: `configFile` (path to config file)
+- **[WARNING]** `Log level automatically changed from "debug" to "info" because devMode is disabled` - Debug level auto-corrected from database setting
+
+#### Save Operations
+- **[ERROR]** `Icon Manager settings validation failed` - Settings validation errors
+  - Context: `errors` (validation errors array)
+- **[DEBUG]** `Attempting to save settings` - Settings save operation initiated
+  - Context: `attributes` (settings being saved)
+- **[ERROR]** `Failed to save Icon Manager settings` - Settings save failed
+  - Context: `error` (exception message)
+
+### Main Plugin (IconManager)
+
+- **[INFO]** `Could not load settings from database` - Settings loading error during plugin initialization
+  - Context: `error` (exception message)
+
 ### Icon Model (Icon)
 
 #### File Operations
@@ -255,10 +323,16 @@ $this->logInfo('Found SVG files', ['count' => $count]);
 
 - **Error/Warning levels**: Minimal performance impact, suitable for production
 - **Info level**: Moderate logging, useful for tracking operations
+  - Logs SVGO optimization progress (per-file during optimization)
+  - Icon set save/delete operations
+  - Cache clearing operations
+  - SVG file discovery
 - **Debug level**: Extensive logging, use only in development (requires devMode)
   - Includes performance metrics
   - Logs WebFont icon details
   - Tracks icon loading operations
+  - SVGO exception stack traces
+  - Settings save attempt details
 
 ## Requirements
 
@@ -377,9 +451,101 @@ grep "Field not found" storage/logs/icon-manager-*.log
 ```
 
 This warning appears when:
+
 - Field ID doesn't exist in database
 - Field was deleted but still referenced
 - Incorrect field ID passed to icon rendering
+
+### SVGO Optimization Issues
+
+Monitor SVGO optimization operations:
+
+```bash
+grep "SVGO" storage/logs/icon-manager-*.log
+```
+
+Look for:
+
+- `Starting SVGO optimization for icon set` - Optimization started
+- `SVGO optimized file successfully` - Individual files optimized
+- `Skipped file during SVGO optimization` - Files skipped with reason
+- `Error optimizing file with SVGO` - Optimization errors
+- `SVGO optimization completed for icon set` - Summary with counts
+
+Common causes of SVGO failures:
+
+- SVGO binary not installed or not in PATH
+- Invalid SVG files that SVGO cannot parse
+- File permission issues
+- Malformed custom SVGO configuration
+- Insufficient disk space
+
+### Icon Set Save/Delete Failures
+
+Track icon set CRUD operations:
+
+```bash
+grep "Icon set" storage/logs/icon-manager-*.log
+```
+
+Look for:
+
+- `Icon set validation failed` - Validation errors before save
+- `Icon set operation successful` - Successful create/update
+- `Failed to save icon set` - Database save failure
+- `Icon set deleted successfully` - Successful deletion
+- `Failed to delete icon set` - Deletion failure
+
+If icon set operations fail:
+
+- Check validation errors for specific field issues
+- Verify database connectivity and permissions
+- Ensure unique handle values (no duplicates)
+- Check for foreign key constraints on deletion
+- Review icon set folder paths exist
+
+### Settings Operations Issues
+
+Monitor settings loading and saving:
+
+```bash
+grep -i "settings" storage/logs/icon-manager-*.log
+```
+
+Look for:
+
+- `Failed to load settings from database` - Settings loading error
+- `No settings found in database` - Missing settings record
+- `Icon Manager settings validation failed` - Validation errors
+- `Failed to save Icon Manager settings` - Save failure
+
+If settings operations fail:
+
+- Verify database table exists (run migrations)
+- Check database connectivity
+- Review validation errors for specific fields
+- Ensure proper database permissions
+
+### SVG Optimization Issues
+
+Track SVG optimization operations (non-SVGO):
+
+```bash
+grep "optimize\|backup" storage/logs/icon-manager-*.log
+```
+
+Look for:
+
+- `Icon set folder not found` - Invalid folder path
+- `Created backup` - Backup created before optimization
+- `Failed to optimize SVG file` - Optimization failure
+
+Common causes:
+
+- Incorrect icon set folder paths
+- File permission issues
+- Invalid SVG content
+- Disk space issues for backups
 
 ## Development Tips
 
@@ -401,6 +567,9 @@ This provides:
 - Icon loading performance metrics
 - SVG file discovery counts
 - Cache operation details
+- SVGO exception stack traces for debugging
+- Settings save operation details
+- Detailed context for all operations
 
 ### Monitor Specific Operations
 
@@ -418,6 +587,18 @@ grep "\[ERROR\]" storage/logs/icon-manager-*.log
 
 # Monitor performance issues
 grep "Slow icon loading" storage/logs/icon-manager-*.log
+
+# Track SVGO optimization
+grep "SVGO" storage/logs/icon-manager-*.log
+
+# Monitor icon set operations
+grep "Icon set" storage/logs/icon-manager-*.log
+
+# Watch settings operations
+grep -i "settings" storage/logs/icon-manager-*.log
+
+# Track backup operations
+grep "backup" storage/logs/icon-manager-*.log
 ```
 
 ### Performance Monitoring

@@ -131,13 +131,20 @@ return [
 All settings support environment variables:
 
 ```php
+use craft\helpers\App;
+
 return [
-    'enableCache' => getenv('ICON_MANAGER_CACHE') === 'true',
-    'cacheDuration' => (int)getenv('ICON_CACHE_DURATION') ?: 86400,
-    'iconSetsPath' => getenv('ICON_SETS_PATH') ?: '@root/icons',
-    'logLevel' => getenv('ICON_LOG_LEVEL') ?: 'error',
+    'enableCache' => (bool)App::env('ICON_MANAGER_CACHE') ?: true,
+    'cacheDuration' => (int)App::env('ICON_CACHE_DURATION') ?: 86400,
+    'iconSetsPath' => App::env('ICON_SETS_PATH') ?: '@root/icons',
+    'logLevel' => App::env('ICON_LOG_LEVEL') ?: 'error',
 ];
 ```
+
+**Important:**
+- ✅ Use `App::env('VAR_NAME')` - Craft 5 recommended approach
+- ❌ Don't use `getenv('VAR_NAME')` - Not thread-safe
+- ✅ Always import: `use craft\helpers\App;`
 
 ### Setting Descriptions
 
@@ -264,11 +271,13 @@ For production environments:
 ### Security Recommendations
 
 ```php
+use craft\helpers\App;
+
 // Use environment variables for sensitive paths
 'iconSetsPath' => App::env('ICON_SETS_PATH') ?: '@root/icons',
 
 // Limit cache duration in shared environments
-'cacheDuration' => min((int)getenv('CACHE_DURATION') ?: 86400, 604800), // Max 7 days
+'cacheDuration' => min((int)App::env('CACHE_DURATION') ?: 86400, 604800), // Max 7 days
 ```
 
 ## SVG Security
