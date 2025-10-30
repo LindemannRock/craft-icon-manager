@@ -190,7 +190,7 @@ class IconSetsController extends Controller
 
         // Populate model
         $iconSet->name = $request->getBodyParam('name');
-        $iconSet->handle = $request->getBodyParam('handle');
+        $iconSet->handle = $this->_generateUniqueHandle($request->getBodyParam('handle'), $iconSetId);
         $iconSet->type = $request->getBodyParam('type');
         $iconSet->enabled = (bool)$request->getBodyParam('enabled');
         
@@ -618,5 +618,53 @@ class IconSetsController extends Controller
         }
 
         return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Generate a unique handle by appending a number if needed
+     *
+     * @param string $handle The desired handle
+     * @param int|null $currentIconSetId The current icon set ID (to exclude from duplicate check)
+     * @return string A unique handle
+     */
+    private function _generateUniqueHandle(string $handle, ?int $currentIconSetId = null): string
+    {
+        // Check if handle already exists
+        $query = (new \craft\db\Query())
+            ->from('{{%iconmanager_iconsets}}')
+            ->where(['handle' => $handle]);
+
+        // Exclude current icon set if editing
+        if ($currentIconSetId) {
+            $query->andWhere(['not', ['id' => $currentIconSetId]]);
+        }
+
+        // If handle is unique, return as-is
+        if (!$query->exists()) {
+            return $handle;
+        }
+
+        // Handle is taken, generate unique one by appending number
+        $baseHandle = $handle;
+        $i = 1;
+
+        // Keep incrementing until we find a unique handle
+        while (true) {
+            $newHandle = $baseHandle . $i;
+
+            $query = (new \craft\db\Query())
+                ->from('{{%iconmanager_iconsets}}')
+                ->where(['handle' => $newHandle]);
+
+            if ($currentIconSetId) {
+                $query->andWhere(['not', ['id' => $currentIconSetId]]);
+            }
+
+            if (!$query->exists()) {
+                return $newHandle;
+            }
+
+            $i++;
+        }
     }
 }
