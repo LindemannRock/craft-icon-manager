@@ -207,6 +207,20 @@ class Settings extends Model
     }
 
     /**
+     * Custom setter for enabledIconTypes to normalize boolean values
+     * Converts string values ("1", "") to proper booleans (true, false)
+     */
+    public function setEnabledIconTypes(array $value): void
+    {
+        // Normalize all values to booleans
+        foreach ($value as $type => $enabled) {
+            $value[$type] = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        $this->enabledIconTypes = $value;
+    }
+
+    /**
      * Get the resolved icon sets path
      */
     public function getResolvedIconSetsPath(): string
@@ -276,6 +290,14 @@ class Settings extends Model
             // Decode JSON fields
             if (isset($row['enabledIconTypes'])) {
                 $row['enabledIconTypes'] = Json::decode($row['enabledIconTypes']);
+
+                // Convert string values to booleans for strict comparison
+                // Database may store "1"/"" instead of true/false
+                if (is_array($row['enabledIconTypes'])) {
+                    foreach ($row['enabledIconTypes'] as $type => $enabled) {
+                        $row['enabledIconTypes'][$type] = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
+                    }
+                }
             }
             
             // Set attributes from database
