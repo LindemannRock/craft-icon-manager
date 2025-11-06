@@ -1,5 +1,19 @@
 # Changelog
 
+## [5.2.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.2...v5.2.0) (2025-11-06)
+
+
+### Features
+
+* enhance settings handling and add hidden input for section in templates ([26e3f1e](https://github.com/LindemannRock/craft-icon-manager/commit/26e3f1ea5d2c5fd6cae1d0f2a577c2ff0e518cc8))
+* implement unique handle generation and validation for icon sets ([16169dc](https://github.com/LindemannRock/craft-icon-manager/commit/16169dc9bbebe95363670726a1679bc04a5e97c2))
+
+
+### Bug Fixes
+
+* add custom setter for enabledIconTypes to normalize boolean values ([5d29ac1](https://github.com/LindemannRock/craft-icon-manager/commit/5d29ac19fd7dbc3dba03b8f2a6a7c69b8beb0bc4))
+* update logging documentation and configuration examples for improved clarity and best practices ([f0f5c96](https://github.com/LindemannRock/craft-icon-manager/commit/f0f5c96e92e75071fee8abed886813f07a288c41))
+
 ## [5.1.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.1...v5.1.2) (2025-10-26)
 
 
