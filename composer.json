@@ -38,7 +38,7 @@
         "php": "^8.3",
         "craftcms/cms": "^5.0.0",
         "lindemannrock/craft-logging-library": "^5.0",
-        "mathiasreker/php-svg-optimizer": "^7.0",
+        "mathiasreker/php-svg-optimizer": "^7.2",
         "phenx/php-font-lib": "^0.5.0"
     },
     "autoload": {
