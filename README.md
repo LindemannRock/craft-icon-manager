@@ -139,7 +139,13 @@ SVG folder icons are fully stable and production-ready.
 
 ```bash
 cd /path/to/project
+```
+
+```bash
 composer require lindemannrock/craft-icon-manager
+```
+
+```bash
 ./craft plugin/install icon-manager
 ```
 
@@ -147,7 +153,13 @@ composer require lindemannrock/craft-icon-manager
 
 ```bash
 cd /path/to/project
+```
+
+```bash
 ddev composer require lindemannrock/craft-icon-manager
+```
+
+```bash
 ddev craft plugin/install icon-manager
 ```
 
