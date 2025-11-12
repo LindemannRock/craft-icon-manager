@@ -6,7 +6,7 @@
 {% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
 {% set crumbs = [
     {
-        label: plugin.settings.pluginName|t('icon-manager'),
+        label: iconHelper.fullName|t('icon-manager'),
         url: url('icon-manager'),
     },
     {
@@ -22,7 +22,7 @@
 {% import "_includes/forms" as forms %}
 
 {% block content %}
-    {% set pluginName = plugin.settings.pluginName %}
+    {% set pluginName = iconHelper.fullName %}
 
     <form method="post" accept-charset="UTF-8">
         {{ actionInput('icon-manager/settings/save') }}

@@ -516,4 +516,76 @@ class Settings extends Model
 
         return null;
     }
+
+    /**
+     * Get display name (singular, without "Manager")
+     *
+     * Strips "Manager" and singularizes the plugin name for use in UI labels.
+     * E.g., "Icon Manager" → "Icon", "Icons" → "Icon"
+     *
+     * @return string
+     */
+    public function getDisplayName(): string
+    {
+        // Strip "Manager" or "manager" from the name
+        $name = str_replace([' Manager', ' manager'], '', $this->pluginName);
+
+        // Singularize by removing trailing 's' if present
+        $singular = preg_replace('/s$/', '', $name) ?: $name;
+
+        return $singular;
+    }
+
+    /**
+     * Get full plugin name (as configured, with "Manager" if present)
+     *
+     * Returns the plugin name exactly as configured in settings.
+     * E.g., "Icon Manager", "Icons", etc.
+     *
+     * @return string
+     */
+    public function getFullName(): string
+    {
+        return $this->pluginName;
+    }
+
+    /**
+     * Get plural display name (without "Manager")
+     *
+     * Strips "Manager" from the plugin name but keeps plural form.
+     * E.g., "Icon Manager" → "Icons", "Icons" → "Icons"
+     *
+     * @return string
+     */
+    public function getPluralDisplayName(): string
+    {
+        // Strip "Manager" or "manager" from the name
+        return str_replace([' Manager', ' manager'], '', $this->pluginName);
+    }
+
+    /**
+     * Get lowercase display name (singular, without "Manager")
+     *
+     * Lowercase version of getDisplayName() for use in messages, handles, etc.
+     * E.g., "Icon Manager" → "icon", "Icons" → "icon"
+     *
+     * @return string
+     */
+    public function getLowerDisplayName(): string
+    {
+        return strtolower($this->getDisplayName());
+    }
+
+    /**
+     * Get lowercase plural display name (without "Manager")
+     *
+     * Lowercase version of getPluralDisplayName() for use in messages, handles, etc.
+     * E.g., "Icon Manager" → "icons", "Icons" → "icons"
+     *
+     * @return string
+     */
+    public function getPluralLowerDisplayName(): string
+    {
+        return strtolower($this->getPluralDisplayName());
+    }
 }

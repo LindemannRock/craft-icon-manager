@@ -13,7 +13,7 @@
 
 {% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
 {% set crumbs = [
-    { label: plugin.settings.pluginName, url: url('icon-manager') },
+    { label: iconHelper.fullName, url: url('icon-manager') },
     { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 

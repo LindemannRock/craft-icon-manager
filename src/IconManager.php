@@ -104,6 +104,10 @@ class IconManager extends Plugin
         $this->_registerLogTarget();
         $this->_registerCpRoutes();
         $this->_registerFieldTypes();
+
+        // Register Twig extension for plugin name helpers
+        Craft::$app->view->registerTwigExtension(new \lindemannrock\iconmanager\twigextensions\PluginNameExtension());
+
         $this->_registerVariables();
         $this->_registerPermissions();
         $this->_registerTemplateRoots();
