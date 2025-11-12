@@ -1,7 +1,7 @@
 {% import "_includes/forms" as forms %}
 
 <div style="margin-bottom: 32px;">
-    <h2>{{ "Icon Manager Overview"|t('icon-manager') }}</h2>
+    <h2>{{ "{pluginName} Overview"|t('icon-manager', {pluginName: iconHelper.fullName}) }}</h2>
     <p class="light">{{ "Monitor icon set performance, manage cache, and view system status for your icon collections."|t('icon-manager') }}</p>
 </div>
 
