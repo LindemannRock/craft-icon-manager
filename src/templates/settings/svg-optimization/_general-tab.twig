@@ -1,0 +1,26 @@
+{% import "_includes/forms" as forms %}
+
+<h2 style="margin-top: 0px;">{{ 'General Settings'|t('icon-manager') }}</h2>
+
+{{ forms.lightswitchField({
+    label: 'Enable Optimization'|t('icon-manager'),
+    instructions: 'Enable SVG optimization features (scanning and applying optimizations)'|t('icon-manager'),
+    id: 'enableOptimization',
+    name: 'settings[enableOptimization]',
+    on: settings.enableOptimization,
+    toggle: 'backup-settings',
+    warning: settings.isOverriddenByConfig('enableOptimization') ? 'This is being overridden by the <code>enableOptimization</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('enableOptimization')
+}) }}
+
+<div id="backup-settings" class="{% if not settings.enableOptimization %}hidden{% endif %}">
+{{ forms.lightswitchField({
+    label: 'Enable Automatic Backups'|t('icon-manager'),
+    instructions: 'Automatically create backups before applying optimizations'|t('icon-manager'),
+    id: 'enableOptimizationBackup',
+    name: 'settings[enableOptimizationBackup]',
+    on: settings.enableOptimizationBackup,
+    warning: settings.isOverriddenByConfig('enableOptimizationBackup') ? 'This is being overridden by the <code>enableOptimizationBackup</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('enableOptimizationBackup')
+}) }}
+</div>

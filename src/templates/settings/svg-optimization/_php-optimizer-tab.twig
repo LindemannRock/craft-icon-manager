@@ -1,0 +1,234 @@
+{% import "_includes/forms" as forms %}
+
+<p class="light" style="margin-top: 0; margin-bottom: 8px;">{{ 'These settings control which optimization rules are applied when using the PHP optimizer. All rules are enabled by default for comprehensive optimization.'|t('icon-manager') }}</p>
+<p class="light" style="margin-bottom: 24px;">{{ 'For more information about each rule, see the'|t('icon-manager') }} <a href="https://github.com/MathiasReker/php-svg-optimizer" target="_blank" rel="noopener noreferrer">php-svg-optimizer documentation</a>.</p>
+
+<hr>
+
+<h2>{{ 'Conversion Rules'|t('icon-manager') }}</h2>
+<p class="light">{{ 'Convert SVG content to optimized formats'|t('icon-manager') }}</p>
+
+{{ forms.lightswitchField({
+    label: 'Convert Colors to Hex'|t('icon-manager'),
+    instructions: 'Convert color values to hexadecimal format'|t('icon-manager'),
+    id: 'optimizeConvertColorsToHex',
+    name: 'settings[optimizeConvertColorsToHex]',
+    on: settings.optimizeConvertColorsToHex,
+    warning: settings.isOverriddenByConfig('optimizeConvertColorsToHex') ? 'This is being overridden by the <code>optimizeConvertColorsToHex</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeConvertColorsToHex')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Convert CSS Classes to Attributes'|t('icon-manager'),
+    instructions: 'Convert CSS classes to inline SVG attributes (supports 77 SVG properties including fill, stroke, opacity, markers, filters, text properties, and more)'|t('icon-manager'),
+    id: 'optimizeConvertCssClasses',
+    name: 'settings[optimizeConvertCssClasses]',
+    on: settings.optimizeConvertCssClasses,
+    warning: settings.isOverriddenByConfig('optimizeConvertCssClasses') ? 'This is being overridden by the <code>optimizeConvertCssClasses</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeConvertCssClasses')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Convert Empty Tags to Self-Closing'|t('icon-manager'),
+    instructions: 'Convert empty tags to self-closing format (e.g., <path></path> → <path/>)'|t('icon-manager'),
+    id: 'optimizeConvertEmptyTags',
+    name: 'settings[optimizeConvertEmptyTags]',
+    on: settings.optimizeConvertEmptyTags,
+    warning: settings.isOverriddenByConfig('optimizeConvertEmptyTags') ? 'This is being overridden by the <code>optimizeConvertEmptyTags</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeConvertEmptyTags')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Convert Inline Styles to Attributes'|t('icon-manager'),
+    instructions: 'Convert inline style attributes to SVG attributes (supports 77 SVG properties including fill, stroke, opacity, markers, filters, text properties, and more)'|t('icon-manager'),
+    id: 'optimizeConvertInlineStyles',
+    name: 'settings[optimizeConvertInlineStyles]',
+    on: settings.optimizeConvertInlineStyles,
+    warning: settings.isOverriddenByConfig('optimizeConvertInlineStyles') ? 'This is being overridden by the <code>optimizeConvertInlineStyles</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeConvertInlineStyles')
+}) }}
+
+<hr>
+
+<h2>{{ 'Minification Rules'|t('icon-manager') }}</h2>
+<p class="light">{{ 'Reduce file size by minifying coordinates and transformations'|t('icon-manager') }}</p>
+
+{{ forms.lightswitchField({
+    label: 'Minify SVG Coordinates'|t('icon-manager'),
+    instructions: 'Reduce precision of coordinates to minimize file size'|t('icon-manager'),
+    id: 'optimizeMinifyCoordinates',
+    name: 'settings[optimizeMinifyCoordinates]',
+    on: settings.optimizeMinifyCoordinates,
+    warning: settings.isOverriddenByConfig('optimizeMinifyCoordinates') ? 'This is being overridden by the <code>optimizeMinifyCoordinates</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeMinifyCoordinates')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Minify Transformations'|t('icon-manager'),
+    instructions: 'Optimize transformation matrices for smaller file size'|t('icon-manager'),
+    id: 'optimizeMinifyTransformations',
+    name: 'settings[optimizeMinifyTransformations]',
+    on: settings.optimizeMinifyTransformations,
+    warning: settings.isOverriddenByConfig('optimizeMinifyTransformations') ? 'This is being overridden by the <code>optimizeMinifyTransformations</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeMinifyTransformations')
+}) }}
+
+<hr>
+
+<h2>{{ 'Removal Rules'|t('icon-manager') }}</h2>
+<p class="light">{{ 'Remove unnecessary elements and attributes from SVG files'|t('icon-manager') }}</p>
+
+{{ forms.lightswitchField({
+    label: 'Remove Comments'|t('icon-manager'),
+    instructions: 'Remove comments from SVG (preserves legal comments <!--! -->)'|t('icon-manager'),
+    id: 'optimizeRemoveComments',
+    name: 'settings[optimizeRemoveComments]',
+    on: settings.optimizeRemoveComments,
+    warning: settings.isOverriddenByConfig('optimizeRemoveComments') ? 'This is being overridden by the <code>optimizeRemoveComments</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveComments')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Default Attributes'|t('icon-manager'),
+    instructions: 'Remove attributes with default values'|t('icon-manager'),
+    id: 'optimizeRemoveDefaultAttributes',
+    name: 'settings[optimizeRemoveDefaultAttributes]',
+    on: settings.optimizeRemoveDefaultAttributes,
+    warning: settings.isOverriddenByConfig('optimizeRemoveDefaultAttributes') ? 'This is being overridden by the <code>optimizeRemoveDefaultAttributes</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveDefaultAttributes')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Deprecated Attributes'|t('icon-manager'),
+    instructions: 'Remove deprecated SVG attributes'|t('icon-manager'),
+    id: 'optimizeRemoveDeprecatedAttributes',
+    name: 'settings[optimizeRemoveDeprecatedAttributes]',
+    on: settings.optimizeRemoveDeprecatedAttributes,
+    warning: settings.isOverriddenByConfig('optimizeRemoveDeprecatedAttributes') ? 'This is being overridden by the <code>optimizeRemoveDeprecatedAttributes</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveDeprecatedAttributes')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove DOCTYPE'|t('icon-manager'),
+    instructions: 'Remove DOCTYPE declarations'|t('icon-manager'),
+    id: 'optimizeRemoveDoctype',
+    name: 'settings[optimizeRemoveDoctype]',
+    on: settings.optimizeRemoveDoctype,
+    warning: settings.isOverriddenByConfig('optimizeRemoveDoctype') ? 'This is being overridden by the <code>optimizeRemoveDoctype</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveDoctype')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Enable-Background'|t('icon-manager'),
+    instructions: 'Remove deprecated enable-background attribute'|t('icon-manager'),
+    id: 'optimizeRemoveEnableBackground',
+    name: 'settings[optimizeRemoveEnableBackground]',
+    on: settings.optimizeRemoveEnableBackground,
+    warning: settings.isOverriddenByConfig('optimizeRemoveEnableBackground') ? 'This is being overridden by the <code>optimizeRemoveEnableBackground</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveEnableBackground')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Empty Attributes'|t('icon-manager'),
+    instructions: 'Remove attributes with empty values'|t('icon-manager'),
+    id: 'optimizeRemoveEmptyAttributes',
+    name: 'settings[optimizeRemoveEmptyAttributes]',
+    on: settings.optimizeRemoveEmptyAttributes,
+    warning: settings.isOverriddenByConfig('optimizeRemoveEmptyAttributes') ? 'This is being overridden by the <code>optimizeRemoveEmptyAttributes</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveEmptyAttributes')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Inkscape Footprints'|t('icon-manager'),
+    instructions: 'Remove Inkscape-specific elements and attributes'|t('icon-manager'),
+    id: 'optimizeRemoveInkscapeFootprints',
+    name: 'settings[optimizeRemoveInkscapeFootprints]',
+    on: settings.optimizeRemoveInkscapeFootprints,
+    warning: settings.isOverriddenByConfig('optimizeRemoveInkscapeFootprints') ? 'This is being overridden by the <code>optimizeRemoveInkscapeFootprints</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveInkscapeFootprints')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Invisible Characters'|t('icon-manager'),
+    instructions: 'Remove invisible/non-printable characters'|t('icon-manager'),
+    id: 'optimizeRemoveInvisibleCharacters',
+    name: 'settings[optimizeRemoveInvisibleCharacters]',
+    on: settings.optimizeRemoveInvisibleCharacters,
+    warning: settings.isOverriddenByConfig('optimizeRemoveInvisibleCharacters') ? 'This is being overridden by the <code>optimizeRemoveInvisibleCharacters</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveInvisibleCharacters')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Metadata'|t('icon-manager'),
+    instructions: 'Remove metadata elements (editor info, timestamps, etc.)'|t('icon-manager'),
+    id: 'optimizeRemoveMetadata',
+    name: 'settings[optimizeRemoveMetadata]',
+    on: settings.optimizeRemoveMetadata,
+    warning: settings.isOverriddenByConfig('optimizeRemoveMetadata') ? 'This is being overridden by the <code>optimizeRemoveMetadata</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveMetadata')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Whitespace'|t('icon-manager'),
+    instructions: 'Remove unnecessary whitespace'|t('icon-manager'),
+    id: 'optimizeRemoveWhitespace',
+    name: 'settings[optimizeRemoveWhitespace]',
+    on: settings.optimizeRemoveWhitespace,
+    warning: settings.isOverriddenByConfig('optimizeRemoveWhitespace') ? 'This is being overridden by the <code>optimizeRemoveWhitespace</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveWhitespace')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Unused Namespaces'|t('icon-manager'),
+    instructions: 'Remove XML namespaces that are not used'|t('icon-manager'),
+    id: 'optimizeRemoveUnusedNamespaces',
+    name: 'settings[optimizeRemoveUnusedNamespaces]',
+    on: settings.optimizeRemoveUnusedNamespaces,
+    warning: settings.isOverriddenByConfig('optimizeRemoveUnusedNamespaces') ? 'This is being overridden by the <code>optimizeRemoveUnusedNamespaces</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveUnusedNamespaces')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Unused Masks'|t('icon-manager'),
+    instructions: 'Remove mask definitions that are not referenced'|t('icon-manager'),
+    id: 'optimizeRemoveUnusedMasks',
+    name: 'settings[optimizeRemoveUnusedMasks]',
+    on: settings.optimizeRemoveUnusedMasks,
+    warning: settings.isOverriddenByConfig('optimizeRemoveUnusedMasks') ? 'This is being overridden by the <code>optimizeRemoveUnusedMasks</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveUnusedMasks')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Remove Width/Height Attributes'|t('icon-manager'),
+    instructions: 'Remove width/height attributes (keeps viewBox for responsive sizing)'|t('icon-manager'),
+    id: 'optimizeRemoveWidthHeight',
+    name: 'settings[optimizeRemoveWidthHeight]',
+    on: settings.optimizeRemoveWidthHeight,
+    warning: settings.isOverriddenByConfig('optimizeRemoveWidthHeight') ? 'This is being overridden by the <code>optimizeRemoveWidthHeight</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeRemoveWidthHeight')
+}) }}
+
+<hr>
+
+<h2>{{ 'Structure Rules'|t('icon-manager') }}</h2>
+<p class="light">{{ 'Optimize SVG structure for cleaner output'|t('icon-manager') }}</p>
+
+{{ forms.lightswitchField({
+    label: 'Flatten Groups'|t('icon-manager'),
+    instructions: 'Remove unnecessary <g> group wrappers'|t('icon-manager'),
+    id: 'optimizeFlattenGroups',
+    name: 'settings[optimizeFlattenGroups]',
+    on: settings.optimizeFlattenGroups,
+    warning: settings.isOverriddenByConfig('optimizeFlattenGroups') ? 'This is being overridden by the <code>optimizeFlattenGroups</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeFlattenGroups')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Sort Attributes'|t('icon-manager'),
+    instructions: 'Sort attributes alphabetically for consistency'|t('icon-manager'),
+    id: 'optimizeSortAttributes',
+    name: 'settings[optimizeSortAttributes]',
+    on: settings.optimizeSortAttributes,
+    warning: settings.isOverriddenByConfig('optimizeSortAttributes') ? 'This is being overridden by the <code>optimizeSortAttributes</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('optimizeSortAttributes')
+}) }}

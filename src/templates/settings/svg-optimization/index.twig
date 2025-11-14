@@ -1,0 +1,110 @@
+{% extends "icon-manager/_layouts/settings" %}
+{% set title = "SVG Optimization"|t('icon-manager') %}
+{% set fullPageForm = true %}
+{% set selectedSettingsItem = 'svg-optimization' %}
+
+{% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
+{% set crumbs = [
+    {
+        label: iconHelper.fullName|t('icon-manager'),
+        url: url('icon-manager'),
+    },
+    {
+        label: 'Settings'|t('icon-manager'),
+        url: url('icon-manager/settings'),
+    },
+    {
+        label: 'SVG Optimization'|t('icon-manager'),
+        url: url('icon-manager/settings/svg-optimization'),
+    },
+] %}
+
+{% set tabs = {
+    general: {
+        label: 'General'|t('icon-manager'),
+        url: '#general',
+    },
+} %}
+
+{% if settings.enableOptimization %}
+    {% set tabs = tabs|merge({
+        scanControls: {
+            label: 'Scan Controls'|t('icon-manager'),
+            url: '#scan-controls',
+        },
+        phpOptimizer: {
+            label: 'PHP Optimizer'|t('icon-manager'),
+            url: '#php-optimizer',
+        },
+    }) %}
+{% endif %}
+
+{% import "_includes/forms" as forms %}
+
+{% block content %}
+	<form method="post" accept-charset="UTF-8">
+		{{ actionInput('icon-manager/settings/save') }}
+		{{ csrfInput() }}
+		{{ redirectInput('icon-manager/settings/svg-optimization') }}
+		{{ hiddenInput('section', 'svg-optimization') }}
+
+		{# General Tab #}
+		<div id="general">
+			{% include "icon-manager/settings/svg-optimization/_general-tab" %}
+		</div>
+
+		{# Scan Controls Tab #}
+		<div id="scan-controls" class="hidden">
+			{% include "icon-manager/settings/svg-optimization/_scan-controls-tab" %}
+		</div>
+
+		{# PHP Optimizer Tab #}
+		<div id="php-optimizer" class="hidden">
+			{% include "icon-manager/settings/svg-optimization/_php-optimizer-tab" %}
+		</div>
+
+		<div class="buttons">
+			<button type="submit" class="btn submit">{{ "Save Settings"|t('icon-manager') }}</button>
+		</div>
+	</form>
+
+	{% include 'icon-manager/_components/plugin-credit.twig' %}
+{% endblock %}
+
+{% js %}
+// Hide/show tabs and content when Enable Optimization toggle changes
+const enableOptSwitch = document.getElementById('enableOptimization');
+if (enableOptSwitch) {
+    enableOptSwitch.addEventListener('change', function() {
+        const isEnabled = this.checked || this.classList.contains('on');
+        const scanControlsTab = document.querySelector('a[href="#scan-controls"]');
+        const phpOptimizerTab = document.querySelector('a[href="#php-optimizer"]');
+        const scanControlsContent = document.getElementById('scan-controls');
+        const phpOptimizerContent = document.getElementById('php-optimizer');
+
+        if (isEnabled) {
+            // Show tabs and make them clickable
+            if (scanControlsTab) scanControlsTab.parentElement.style.display = '';
+            if (phpOptimizerTab) phpOptimizerTab.parentElement.style.display = '';
+        } else {
+            // Hide tabs
+            if (scanControlsTab) scanControlsTab.parentElement.style.display = 'none';
+            if (phpOptimizerTab) phpOptimizerTab.parentElement.style.display = 'none';
+
+            // Switch to general tab if user was on a hidden tab
+            if (scanControlsContent && !scanControlsContent.classList.contains('hidden')) {
+                scanControlsContent.classList.add('hidden');
+                document.getElementById('general').classList.remove('hidden');
+                document.querySelector('a[href="#general"]').classList.add('sel');
+                if (scanControlsTab) scanControlsTab.classList.remove('sel');
+            }
+            if (phpOptimizerContent && !phpOptimizerContent.classList.contains('hidden')) {
+                phpOptimizerContent.classList.add('hidden');
+                document.getElementById('general').classList.remove('hidden');
+                document.querySelector('a[href="#general"]').classList.add('sel');
+                if (phpOptimizerTab) phpOptimizerTab.classList.remove('sel');
+            }
+        }
+    });
+}
+{% endjs %}

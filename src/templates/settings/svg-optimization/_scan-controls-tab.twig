@@ -1,0 +1,84 @@
+{% import "_includes/forms" as forms %}
+
+<h2 style="margin-top: 0;">{{ 'Scan Controls'|t('icon-manager') }}</h2>
+<p class="light">{{ 'Choose which issues to detect during SVG optimization scans'|t('icon-manager') }}</p>
+
+{{ forms.lightswitchField({
+    label: 'Scan Clip-Paths'|t('icon-manager'),
+    instructions: 'Detect empty or unused clip-path definitions'|t('icon-manager'),
+    id: 'scanClipPaths',
+    name: 'settings[scanClipPaths]',
+    on: settings.scanClipPaths,
+    warning: settings.isOverriddenByConfig('scanClipPaths') ? 'This is being overridden by the <code>scanClipPaths</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanClipPaths')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Scan Masks'|t('icon-manager'),
+    instructions: 'Detect empty or unused mask definitions'|t('icon-manager'),
+    id: 'scanMasks',
+    name: 'settings[scanMasks]',
+    on: settings.scanMasks,
+    warning: settings.isOverriddenByConfig('scanMasks') ? 'This is being overridden by the <code>scanMasks</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanMasks')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Scan Filters'|t('icon-manager'),
+    instructions: 'Detect filter effects that may slow rendering'|t('icon-manager'),
+    id: 'scanFilters',
+    name: 'settings[scanFilters]',
+    on: settings.scanFilters,
+    warning: settings.isOverriddenByConfig('scanFilters') ? 'This is being overridden by the <code>scanFilters</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanFilters')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Scan Comments'|t('icon-manager'),
+    instructions: 'Detect comments in SVG files (excludes legal comments like <!--! ... -->)'|t('icon-manager'),
+    id: 'scanComments',
+    name: 'settings[scanComments]',
+    on: settings.scanComments,
+    warning: settings.isOverriddenByConfig('scanComments') ? 'This is being overridden by the <code>scanComments</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanComments')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Scan Inline Styles'|t('icon-manager'),
+    instructions: 'Detect convertible inline styles (excludes CSS-only properties like isolation, mix-blend-mode)'|t('icon-manager'),
+    id: 'scanInlineStyles',
+    name: 'settings[scanInlineStyles]',
+    on: settings.scanInlineStyles,
+    warning: settings.isOverriddenByConfig('scanInlineStyles') ? 'This is being overridden by the <code>scanInlineStyles</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanInlineStyles')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Scan Large Files'|t('icon-manager'),
+    instructions: 'Detect files over 10KB (warning only, may be normal for complex icons)'|t('icon-manager'),
+    id: 'scanLargeFiles',
+    name: 'settings[scanLargeFiles]',
+    on: settings.scanLargeFiles,
+    warning: settings.isOverriddenByConfig('scanLargeFiles') ? 'This is being overridden by the <code>scanLargeFiles</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanLargeFiles')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Scan Width/Height (Critical)'|t('icon-manager'),
+    instructions: 'Detect width/height attributes without viewBox (responsive SVG issue)'|t('icon-manager'),
+    id: 'scanWidthHeight',
+    name: 'settings[scanWidthHeight]',
+    on: settings.scanWidthHeight,
+    warning: settings.isOverriddenByConfig('scanWidthHeight') ? 'This is being overridden by the <code>scanWidthHeight</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanWidthHeight')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Scan Width/Height with ViewBox'|t('icon-manager'),
+    instructions: 'Detect width/height even when viewBox exists (optional optimization for viewBox-only SVGs)'|t('icon-manager'),
+    id: 'scanWidthHeightWithViewBox',
+    name: 'settings[scanWidthHeightWithViewBox]',
+    on: settings.scanWidthHeightWithViewBox,
+    warning: settings.isOverriddenByConfig('scanWidthHeightWithViewBox') ? 'This is being overridden by the <code>scanWidthHeightWithViewBox</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    disabled: settings.isOverriddenByConfig('scanWidthHeightWithViewBox')
+}) }}

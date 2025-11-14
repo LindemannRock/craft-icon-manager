@@ -134,6 +134,114 @@ class Settings extends Model
      */
     public bool $scanWidthHeightWithViewBox = false;
 
+    // PHP SVG Optimizer Settings (control what optimizations to apply)
+    // All 21 available rules from php-svg-optimizer v7.3
+
+    /**
+     * @var bool Convert colors to hex format
+     */
+    public bool $optimizeConvertColorsToHex = true;
+
+    /**
+     * @var bool Convert CSS classes to inline SVG attributes
+     */
+    public bool $optimizeConvertCssClasses = true;
+
+    /**
+     * @var bool Convert empty tags to self-closing format
+     */
+    public bool $optimizeConvertEmptyTags = true;
+
+    /**
+     * @var bool Convert inline styles to SVG attributes
+     */
+    public bool $optimizeConvertInlineStyles = true;
+
+    /**
+     * @var bool Flatten unnecessary groups
+     */
+    public bool $optimizeFlattenGroups = true;
+
+    /**
+     * @var bool Minify SVG coordinates
+     */
+    public bool $optimizeMinifyCoordinates = true;
+
+    /**
+     * @var bool Minify transformation matrices
+     */
+    public bool $optimizeMinifyTransformations = true;
+
+    /**
+     * @var bool Remove comments (preserves legal comments <!--! -->)
+     */
+    public bool $optimizeRemoveComments = true;
+
+    /**
+     * @var bool Remove default attributes
+     */
+    public bool $optimizeRemoveDefaultAttributes = true;
+
+    /**
+     * @var bool Remove deprecated attributes
+     */
+    public bool $optimizeRemoveDeprecatedAttributes = true;
+
+    /**
+     * @var bool Remove DOCTYPE declarations
+     */
+    public bool $optimizeRemoveDoctype = true;
+
+    /**
+     * @var bool Remove enable-background attribute (deprecated)
+     */
+    public bool $optimizeRemoveEnableBackground = true;
+
+    /**
+     * @var bool Remove empty attributes
+     */
+    public bool $optimizeRemoveEmptyAttributes = true;
+
+    /**
+     * @var bool Remove Inkscape-specific elements and attributes
+     */
+    public bool $optimizeRemoveInkscapeFootprints = true;
+
+    /**
+     * @var bool Remove invisible characters
+     */
+    public bool $optimizeRemoveInvisibleCharacters = true;
+
+    /**
+     * @var bool Remove metadata elements
+     */
+    public bool $optimizeRemoveMetadata = true;
+
+    /**
+     * @var bool Remove unnecessary whitespace
+     */
+    public bool $optimizeRemoveWhitespace = true;
+
+    /**
+     * @var bool Remove unused XML namespaces
+     */
+    public bool $optimizeRemoveUnusedNamespaces = true;
+
+    /**
+     * @var bool Remove unused mask definitions
+     */
+    public bool $optimizeRemoveUnusedMasks = true;
+
+    /**
+     * @var bool Remove width/height attributes (keeps viewBox for responsive sizing)
+     */
+    public bool $optimizeRemoveWidthHeight = true;
+
+    /**
+     * @var bool Sort attributes alphabetically
+     */
+    public bool $optimizeSortAttributes = true;
+
 
     /**
      * @inheritdoc
@@ -156,7 +264,7 @@ class Settings extends Model
         return [
             [['iconSetsPath'], 'required'],
             [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
-            [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox'], 'boolean'],
+            [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['itemsPerPage'], 'integer', 'min' => 10, 'max' => 500],
             [['itemsPerPage'], 'default', 'value' => 100],
@@ -272,7 +380,7 @@ class Settings extends Model
             unset($row['id'], $row['dateCreated'], $row['dateUpdated'], $row['uid']);
             
             // Convert numeric boolean values to actual booleans
-            $booleanFields = ['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox'];
+            $booleanFields = ['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes'];
             foreach ($booleanFields as $field) {
                 if (isset($row[$field])) {
                     $row[$field] = (bool) $row[$field];
@@ -372,6 +480,27 @@ class Settings extends Model
             'scanLargeFiles' => $this->scanLargeFiles,
             'scanWidthHeight' => $this->scanWidthHeight,
             'scanWidthHeightWithViewBox' => $this->scanWidthHeightWithViewBox,
+            'optimizeConvertColorsToHex' => $this->optimizeConvertColorsToHex,
+            'optimizeConvertCssClasses' => $this->optimizeConvertCssClasses,
+            'optimizeConvertEmptyTags' => $this->optimizeConvertEmptyTags,
+            'optimizeConvertInlineStyles' => $this->optimizeConvertInlineStyles,
+            'optimizeFlattenGroups' => $this->optimizeFlattenGroups,
+            'optimizeMinifyCoordinates' => $this->optimizeMinifyCoordinates,
+            'optimizeMinifyTransformations' => $this->optimizeMinifyTransformations,
+            'optimizeRemoveComments' => $this->optimizeRemoveComments,
+            'optimizeRemoveDefaultAttributes' => $this->optimizeRemoveDefaultAttributes,
+            'optimizeRemoveDeprecatedAttributes' => $this->optimizeRemoveDeprecatedAttributes,
+            'optimizeRemoveDoctype' => $this->optimizeRemoveDoctype,
+            'optimizeRemoveEnableBackground' => $this->optimizeRemoveEnableBackground,
+            'optimizeRemoveEmptyAttributes' => $this->optimizeRemoveEmptyAttributes,
+            'optimizeRemoveInkscapeFootprints' => $this->optimizeRemoveInkscapeFootprints,
+            'optimizeRemoveInvisibleCharacters' => $this->optimizeRemoveInvisibleCharacters,
+            'optimizeRemoveMetadata' => $this->optimizeRemoveMetadata,
+            'optimizeRemoveWhitespace' => $this->optimizeRemoveWhitespace,
+            'optimizeRemoveUnusedNamespaces' => $this->optimizeRemoveUnusedNamespaces,
+            'optimizeRemoveUnusedMasks' => $this->optimizeRemoveUnusedMasks,
+            'optimizeRemoveWidthHeight' => $this->optimizeRemoveWidthHeight,
+            'optimizeSortAttributes' => $this->optimizeSortAttributes,
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
         ];
 

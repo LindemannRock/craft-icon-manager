@@ -50,7 +50,7 @@ return [
         'enableOptimization' => true,
         'enableOptimizationBackup' => true,
 
-        // Scan control settings (what to check for during optimization scans)
+        // Scan control settings (what to detect during optimization scans)
         'scanClipPaths' => true,              // Scan for unused clip-paths
         'scanMasks' => true,                  // Scan for unused masks
         'scanFilters' => true,                // Scan for filters
@@ -59,6 +59,36 @@ return [
         'scanLargeFiles' => true,             // Scan for large files (>10KB)
         'scanWidthHeight' => true,            // Scan for width/height without viewBox
         'scanWidthHeightWithViewBox' => false, // Scan for width/height even with viewBox
+
+        // PHP Optimizer rules (what to apply during optimization)
+        // Conversion rules
+        'optimizeConvertColorsToHex' => true,
+        'optimizeConvertCssClasses' => true,
+        'optimizeConvertEmptyTags' => true,
+        'optimizeConvertInlineStyles' => true,
+
+        // Minification rules
+        'optimizeMinifyCoordinates' => true,
+        'optimizeMinifyTransformations' => true,
+
+        // Removal rules
+        'optimizeRemoveComments' => true,
+        'optimizeRemoveDefaultAttributes' => true,
+        'optimizeRemoveDeprecatedAttributes' => true,
+        'optimizeRemoveDoctype' => true,
+        'optimizeRemoveEnableBackground' => true,
+        'optimizeRemoveEmptyAttributes' => true,
+        'optimizeRemoveInkscapeFootprints' => true,
+        'optimizeRemoveInvisibleCharacters' => true,
+        'optimizeRemoveMetadata' => true,
+        'optimizeRemoveWhitespace' => true,
+        'optimizeRemoveUnusedNamespaces' => true,
+        'optimizeRemoveUnusedMasks' => true,
+        'optimizeRemoveWidthHeight' => true,
+
+        // Structure rules
+        'optimizeFlattenGroups' => true,
+        'optimizeSortAttributes' => true,
 
 
         // ========================================

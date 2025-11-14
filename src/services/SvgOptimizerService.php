@@ -351,7 +351,16 @@ class SvgOptimizerService extends Component
      */
     public function optimizeIconSet($iconSet, bool $createBackup = true): array
     {
-        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+        // Check if optimization is enabled in settings
+        $settings = IconManager::getInstance()->getSettings();
+        if (!$settings->enableOptimization) {
+            return [
+                'success' => false,
+                'error' => 'SVG optimization is disabled in plugin settings.',
+            ];
+        }
+
+        $basePath = $settings->iconSetsPath;
         $folder = $iconSet->settings['folder'] ?? '';
         $folderPath = Craft::getAlias($basePath . '/' . $folder);
         $includeSubfolders = $iconSet->settings['includeSubfolders'] ?? false;
@@ -510,48 +519,81 @@ class SvgOptimizerService extends Component
     private function optimizeSvgFile(string $filePath): bool
     {
         try {
-            // Get user's optimization settings from plugin settings
+            // Get user's optimization settings - ALL rules are user-controlled
             $settings = IconManager::getInstance()->getSettings();
 
-            // Build rules array based on enabled scan settings
-            // If a scan setting is OFF, we don't apply that optimization rule
-            $rules = [
-                // Always-on optimizations (core cleanup)
-                'convertColorsToHex' => true,
-                'minifySvgCoordinates' => true,
-                'minifyTransformations' => true,
-                'removeMetadata' => true,
-                'removeInkscapeFootprints' => true,
-                'removeDefaultAttributes' => true,
-                'removeDeprecatedAttributes' => true,
-                'removeEmptyAttributes' => true,
-                'removeEnableBackgroundAttribute' => true,
-                'sortAttributes' => true,
-                'removeDoctype' => true,
-                'removeInvisibleCharacters' => true,
-                'removeUnnecessaryWhitespace' => true,
-                'removeUnusedNamespaces' => true,
-                'convertEmptyTagsToSelfClosing' => true,
-            ];
+            // Build rules array based on user settings (all 21 rules)
+            $rules = [];
 
-            // Conditional optimizations based on scan settings
-            if ($settings->scanComments) {
-                $rules['removeComments'] = true;  // Auto-preserves legal comments (<!--! -->)
+            // Conversion rules
+            if ($settings->optimizeConvertColorsToHex) {
+                $rules['convertColorsToHex'] = true;
             }
-
-            if ($settings->scanInlineStyles) {
+            if ($settings->optimizeConvertCssClasses) {
                 $rules['convertCssClassesToAttributes'] = true;
+            }
+            if ($settings->optimizeConvertEmptyTags) {
+                $rules['convertEmptyTagsToSelfClosing'] = true;
+            }
+            if ($settings->optimizeConvertInlineStyles) {
                 $rules['convertInlineStylesToAttributes'] = true;
             }
 
-            if ($settings->scanMasks) {
-                $rules['removeUnusedMasks'] = true;
-                $rules['flattenGroups'] = true;
+            // Minification rules
+            if ($settings->optimizeMinifyCoordinates) {
+                $rules['minifySvgCoordinates'] = true;
+            }
+            if ($settings->optimizeMinifyTransformations) {
+                $rules['minifyTransformations'] = true;
             }
 
-            // Width/height removal based on EITHER scan setting
-            if ($settings->scanWidthHeight || $settings->scanWidthHeightWithViewBox) {
+            // Removal rules
+            if ($settings->optimizeRemoveComments) {
+                $rules['removeComments'] = true;  // Auto-preserves legal comments (<!--! -->)
+            }
+            if ($settings->optimizeRemoveDefaultAttributes) {
+                $rules['removeDefaultAttributes'] = true;
+            }
+            if ($settings->optimizeRemoveDeprecatedAttributes) {
+                $rules['removeDeprecatedAttributes'] = true;
+            }
+            if ($settings->optimizeRemoveDoctype) {
+                $rules['removeDoctype'] = true;
+            }
+            if ($settings->optimizeRemoveEnableBackground) {
+                $rules['removeEnableBackgroundAttribute'] = true;
+            }
+            if ($settings->optimizeRemoveEmptyAttributes) {
+                $rules['removeEmptyAttributes'] = true;
+            }
+            if ($settings->optimizeRemoveInkscapeFootprints) {
+                $rules['removeInkscapeFootprints'] = true;
+            }
+            if ($settings->optimizeRemoveInvisibleCharacters) {
+                $rules['removeInvisibleCharacters'] = true;
+            }
+            if ($settings->optimizeRemoveMetadata) {
+                $rules['removeMetadata'] = true;
+            }
+            if ($settings->optimizeRemoveWhitespace) {
+                $rules['removeUnnecessaryWhitespace'] = true;
+            }
+            if ($settings->optimizeRemoveUnusedNamespaces) {
+                $rules['removeUnusedNamespaces'] = true;
+            }
+            if ($settings->optimizeRemoveUnusedMasks) {
+                $rules['removeUnusedMasks'] = true;
+            }
+            if ($settings->optimizeRemoveWidthHeight) {
                 $rules['removeWidthHeightAttributes'] = true;
+            }
+
+            // Structure rules
+            if ($settings->optimizeFlattenGroups) {
+                $rules['flattenGroups'] = true;
+            }
+            if ($settings->optimizeSortAttributes) {
+                $rules['sortAttributes'] = true;
             }
 
             // Apply optimization with user-controlled rules

@@ -77,7 +77,7 @@ class SettingsController extends Controller
 
         $settings = IconManager::$plugin->getSettings();
 
-        return $this->renderTemplate('icon-manager/settings/svg-optimization', [
+        return $this->renderTemplate('icon-manager/settings/svg-optimization/index', [
             'settings' => $settings,
         ]);
     }

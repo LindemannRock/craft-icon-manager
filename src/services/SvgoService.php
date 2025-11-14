@@ -135,6 +135,11 @@ class SvgoService extends Component
      */
     public function optimizeIconSet(IconSet $iconSet, ?string $customConfigPath = null, bool $createBackup = true): array
     {
+        // Check if optimization is enabled in settings
+        if (!IconManager::getInstance()->getSettings()->enableOptimization) {
+            throw new \Exception('SVG optimization is disabled in plugin settings.');
+        }
+
         if (!$this->isAvailable()) {
             throw new \Exception('SVGO is not available. Please install it first.');
         }

@@ -375,6 +375,14 @@ class IconSetsController extends Controller
     {
         $this->requirePostRequest();
 
+        // Check if optimization is enabled in settings
+        if (!IconManager::getInstance()->getSettings()->enableOptimization) {
+            Craft::$app->getSession()->setError(
+                Craft::t('icon-manager', 'SVG optimization is disabled in plugin settings.')
+            );
+            return $this->redirectToPostedUrl();
+        }
+
         // Check if optimization is allowed in this environment
         if (!$this->isOptimizationAllowed()) {
             Craft::$app->getSession()->setError(
