@@ -59,6 +59,7 @@ class SvgOptimizerService extends Component
         $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
         $folder = $iconSet->settings['folder'] ?? '';
         $folderPath = Craft::getAlias($basePath . '/' . $folder);
+        $includeSubfolders = $iconSet->settings['includeSubfolders'] ?? false;
 
         $result = [
             'iconSetId' => $iconSet->id,
@@ -83,8 +84,8 @@ class SvgOptimizerService extends Component
             return $result;
         }
 
-        // Get all SVG files recursively
-        $svgFiles = $this->getSvgFiles($folderPath);
+        // Get all SVG files (respecting includeSubfolders setting)
+        $svgFiles = $this->getSvgFiles($folderPath, $includeSubfolders);
 
         foreach ($svgFiles as $filePath) {
             $iconResult = $this->scanSvgFile($filePath);
@@ -255,12 +256,13 @@ class SvgOptimizerService extends Component
     }
 
     /**
-     * Get all SVG files in a directory recursively
+     * Get all SVG files in a directory
      *
      * @param string $directory Directory to scan
+     * @param bool $includeSubfolders Whether to scan subdirectories recursively
      * @return array Array of file paths
      */
-    private function getSvgFiles(string $directory): array
+    private function getSvgFiles(string $directory, bool $includeSubfolders = true): array
     {
         $files = [];
 
@@ -268,13 +270,25 @@ class SvgOptimizerService extends Component
             return $files;
         }
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
-        );
+        if ($includeSubfolders) {
+            // Recursive scan of all subdirectories
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
+            );
 
-        foreach ($iterator as $file) {
-            if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
-                $files[] = $file->getPathname();
+            foreach ($iterator as $file) {
+                if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
+                    $files[] = $file->getPathname();
+                }
+            }
+        } else {
+            // Non-recursive scan - only root directory
+            $iterator = new \DirectoryIterator($directory);
+
+            foreach ($iterator as $file) {
+                if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
+                    $files[] = $file->getPathname();
+                }
             }
         }
 
@@ -340,6 +354,7 @@ class SvgOptimizerService extends Component
         $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
         $folder = $iconSet->settings['folder'] ?? '';
         $folderPath = Craft::getAlias($basePath . '/' . $folder);
+        $includeSubfolders = $iconSet->settings['includeSubfolders'] ?? false;
 
         if (!is_dir($folderPath)) {
             return [
@@ -348,13 +363,13 @@ class SvgOptimizerService extends Component
             ];
         }
 
-        // Get all SVG files
-        $svgFiles = $this->getSvgFiles($folderPath);
+        // Get all SVG files (respecting includeSubfolders setting)
+        $svgFiles = $this->getSvgFiles($folderPath, $includeSubfolders);
 
         // Create backup before optimization if requested and files exist
         $backupPath = null;
         if ($createBackup && count($svgFiles) > 0) {
-            $backupPath = $this->createBackup($folderPath, $iconSet->name);
+            $backupPath = $this->createBackup($folderPath, $iconSet->name, $includeSubfolders);
             if (!$backupPath) {
                 return [
                     'success' => false,
@@ -388,11 +403,12 @@ class SvgOptimizerService extends Component
      *
      * @param string $folderPath Path to folder to backup
      * @param string $iconSetName Name of icon set for backup folder
+     * @param bool $includeSubfolders Whether to include subdirectories in backup
      * @return string|false Backup path on success, false on failure
      */
-    public function createBackupPublic(string $folderPath, string $iconSetName)
+    public function createBackupPublic(string $folderPath, string $iconSetName, bool $includeSubfolders = true)
     {
-        return $this->createBackup($folderPath, $iconSetName);
+        return $this->createBackup($folderPath, $iconSetName, $includeSubfolders);
     }
 
     /**
@@ -400,9 +416,10 @@ class SvgOptimizerService extends Component
      *
      * @param string $folderPath Path to folder to backup
      * @param string $iconSetName Name of icon set for backup folder
+     * @param bool $includeSubfolders Whether to include subdirectories in backup
      * @return string|false Backup path on success, false on failure
      */
-    private function createBackup(string $folderPath, string $iconSetName)
+    private function createBackup(string $folderPath, string $iconSetName, bool $includeSubfolders = true)
     {
         $runtimePath = Craft::$app->path->getRuntimePath();
         $backupBasePath = $runtimePath . '/icon-manager/backups';
@@ -417,23 +434,24 @@ class SvgOptimizerService extends Component
         $safeName = preg_replace('/[^a-z0-9_-]/i', '_', $iconSetName);
         $backupPath = $backupBasePath . '/' . $safeName . '_' . $timestamp;
 
-        // Copy entire folder
-        if (!$this->copyDirectory($folderPath, $backupPath)) {
+        // Copy folder (respecting includeSubfolders setting)
+        if (!$this->copyDirectory($folderPath, $backupPath, $includeSubfolders)) {
             return false;
         }
 
-        $this->logInfo("Created backup", ['backupPath' => $backupPath]);
+        $this->logInfo("Created backup", ['backupPath' => $backupPath, 'includeSubfolders' => $includeSubfolders]);
         return $backupPath;
     }
 
     /**
-     * Recursively copy a directory
+     * Copy a directory
      *
      * @param string $source Source directory
      * @param string $dest Destination directory
+     * @param bool $includeSubfolders Whether to copy subdirectories recursively
      * @return bool Success
      */
-    private function copyDirectory(string $source, string $dest): bool
+    private function copyDirectory(string $source, string $dest, bool $includeSubfolders = true): bool
     {
         if (!is_dir($source)) {
             return false;
@@ -443,20 +461,40 @@ class SvgOptimizerService extends Component
             mkdir($dest, 0755, true);
         }
 
-        $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
+        if ($includeSubfolders) {
+            // Recursive copy - all subdirectories
+            /** @var \RecursiveIteratorIterator|\RecursiveDirectoryIterator $iterator */
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST
+            );
 
-        foreach ($iterator as $item) {
-            $destPath = $dest . '/' . $iterator->getSubPathName();
+            foreach ($iterator as $item) {
+                $destPath = $dest . '/' . $iterator->getSubPathName();
 
-            if ($item->isDir()) {
-                if (!is_dir($destPath)) {
-                    mkdir($destPath, 0755, true);
+                if ($item->isDir()) {
+                    if (!is_dir($destPath)) {
+                        mkdir($destPath, 0755, true);
+                    }
+                } else {
+                    copy($item->getPathname(), $destPath);
                 }
-            } else {
-                copy($item->getPathname(), $destPath);
+            }
+        } else {
+            // Non-recursive copy - only root directory files
+            $iterator = new \DirectoryIterator($source);
+
+            foreach ($iterator as $item) {
+                if ($item->isDot()) {
+                    continue;
+                }
+
+                $destPath = $dest . '/' . $item->getFilename();
+
+                if ($item->isFile()) {
+                    copy($item->getPathname(), $destPath);
+                }
+                // Skip subdirectories when includeSubfolders is false
             }
         }
 
@@ -472,72 +510,58 @@ class SvgOptimizerService extends Component
     private function optimizeSvgFile(string $filePath): bool
     {
         try {
-            $content = file_get_contents($filePath);
-            if ($content === false) {
-                return false;
+            // Get user's optimization settings from plugin settings
+            $settings = IconManager::getInstance()->getSettings();
+
+            // Build rules array based on enabled scan settings
+            // If a scan setting is OFF, we don't apply that optimization rule
+            $rules = [
+                // Always-on optimizations (core cleanup)
+                'convertColorsToHex' => true,
+                'minifySvgCoordinates' => true,
+                'minifyTransformations' => true,
+                'removeMetadata' => true,
+                'removeInkscapeFootprints' => true,
+                'removeDefaultAttributes' => true,
+                'removeDeprecatedAttributes' => true,
+                'removeEmptyAttributes' => true,
+                'removeEnableBackgroundAttribute' => true,
+                'sortAttributes' => true,
+                'removeDoctype' => true,
+                'removeInvisibleCharacters' => true,
+                'removeUnnecessaryWhitespace' => true,
+                'removeUnusedNamespaces' => true,
+                'convertEmptyTagsToSelfClosing' => true,
+            ];
+
+            // Conditional optimizations based on scan settings
+            if ($settings->scanComments) {
+                $rules['removeComments'] = true;  // Auto-preserves legal comments (<!--! -->)
             }
 
-            // Normalize whitespace in original content for comparison
-            $originalNormalized = preg_replace('/\s+/', ' ', trim($content));
-
-            // Preserve legal/license comments (<!--! ... -->) before optimization
-            $legalComments = [];
-            if (preg_match_all('/<!--!.*?-->/s', $content, $matches)) {
-                $legalComments = $matches[0];
-                // Temporarily replace with placeholders
-                foreach ($legalComments as $index => $comment) {
-                    $content = str_replace($comment, "<!--LEGAL_COMMENT_PLACEHOLDER_{$index}-->", $content);
-                }
+            if ($settings->scanInlineStyles) {
+                $rules['convertCssClassesToAttributes'] = true;
+                $rules['convertInlineStylesToAttributes'] = true;
             }
 
-            // Step 1: Use php-svg-optimizer library for basic optimization
-            $optimizedContent = SvgOptimizerFacade::fromString($content)
-                ->withRules(
-                    convertColorsToHex: true,
-                    removeComments: true,
-                    removeMetadata: true,
-                    removeInkscapeFootprints: true,
-                    removeDefaultAttributes: true,
-                    removeDeprecatedAttributes: true,
-                    removeDoctype: true,
-                    removeEmptyAttributes: true,
-                    removeInvisibleCharacters: true,
-                    removeUnnecessaryWhitespace: true,
-                    removeUnusedNamespaces: true,
-                    convertEmptyTagsToSelfClosing: true,
-                    minifySvgCoordinates: true,
-                    sortAttributes: true
-                )
+            if ($settings->scanMasks) {
+                $rules['removeUnusedMasks'] = true;
+                $rules['flattenGroups'] = true;
+            }
+
+            // Width/height removal based on EITHER scan setting
+            if ($settings->scanWidthHeight || $settings->scanWidthHeightWithViewBox) {
+                $rules['removeWidthHeightAttributes'] = true;
+            }
+
+            // Apply optimization with user-controlled rules
+            $svgOptimizer = SvgOptimizerFacade::fromFile($filePath)
+                ->withRules(...$rules)
                 ->optimize()
-                ->getContent();
+                ->saveToFile($filePath);
 
-            // Restore legal comments
-            foreach ($legalComments as $index => $comment) {
-                $optimizedContent = str_replace("<!--LEGAL_COMMENT_PLACEHOLDER_{$index}-->", $comment, $optimizedContent);
-            }
-
-            // Step 2: Convert CSS classes to inline attributes (not handled by library)
-            $optimizedContent = $this->convertCssClassesToAttributes($optimizedContent);
-
-            // Step 3: Convert inline styles to attributes (not handled by library)
-            $optimizedContent = $this->convertInlineStylesToAttributes($optimizedContent);
-
-            // Step 4: Remove unused masks
-            $optimizedContent = $this->removeUnusedMasks($optimizedContent);
-
-            // Step 5: Remove width/height from <svg> tag (keep viewBox)
-            $optimizedContent = $this->removeWidthHeight($optimizedContent);
-
-            // Normalize whitespace in optimized content for comparison
-            $optimizedNormalized = preg_replace('/\s+/', ' ', trim($optimizedContent));
-
-            // Only write if content actually changed
-            if ($originalNormalized === $optimizedNormalized) {
-                return false; // No changes needed
-            }
-
-            // Write optimized content back to file
-            return file_put_contents($filePath, $optimizedContent) !== false;
+            // Return true if any bytes were saved
+            return $svgOptimizer->getMetaData()->getSavedBytes() > 0;
         } catch (\Exception $e) {
             $this->logError("Failed to optimize SVG file", [
                 'filePath' => $filePath,
@@ -545,267 +569,6 @@ class SvgOptimizerService extends Component
             ]);
             return false;
         }
-    }
-
-    /**
-     * Convert CSS classes to inline SVG attributes
-     *
-     * @param string $svgContent SVG content
-     * @return string SVG content with CSS converted to attributes
-     */
-    private function convertCssClassesToAttributes(string $svgContent): string
-    {
-        // Extract CSS rules from <style> blocks
-        $cssClasses = [];
-        if (preg_match('/<style[^>]*>(.*?)<\/style>/s', $svgContent, $matches)) {
-            $cssContent = $matches[1];
-
-            // Parse CSS rules
-            preg_match_all('/\.([a-zA-Z0-9_-]+)\s*\{([^}]+)\}/', $cssContent, $cssMatches, PREG_SET_ORDER);
-            foreach ($cssMatches as $match) {
-                $className = $match[1];
-                $cssProps = $match[2];
-
-                // Parse CSS properties
-                $props = [];
-                foreach (explode(';', $cssProps) as $prop) {
-                    $prop = trim($prop);
-                    if (strpos($prop, ':') !== false) {
-                        list($key, $value) = array_map('trim', explode(':', $prop, 2));
-                        $key = strtolower($key);
-
-                        // Only convert SVG-compatible properties
-                        if (in_array($key, ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'opacity'])) {
-                            $props[$key] = $value;
-                        }
-                    }
-                }
-
-                if (!empty($props)) {
-                    $cssClasses[$className] = $props;
-                }
-            }
-
-            // If we found CSS classes, apply them and remove style blocks
-            if (!empty($cssClasses)) {
-                libxml_use_internal_errors(true);
-                $dom = new \DOMDocument();
-                $dom->preserveWhiteSpace = false;
-                $dom->formatOutput = false;
-
-                if ($dom->loadXML($svgContent, LIBXML_NOERROR | LIBXML_NOWARNING)) {
-                    $xpath = new \DOMXPath($dom);
-
-                    // Process each CSS class
-                    foreach ($cssClasses as $className => $props) {
-                        $elements = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' {$className} ')]");
-
-                        foreach ($elements as $element) {
-                            // Add attributes from CSS
-                            foreach ($props as $attrName => $attrValue) {
-                                if (!$element->hasAttribute($attrName)) {
-                                    $element->setAttribute($attrName, $attrValue);
-                                }
-                            }
-
-                            // Remove the class from the class attribute
-                            $currentClass = $element->getAttribute('class');
-                            $newClass = trim(str_replace($className, '', $currentClass));
-                            if (empty($newClass)) {
-                                $element->removeAttribute('class');
-                            } else {
-                                $element->setAttribute('class', $newClass);
-                            }
-                        }
-                    }
-
-                    // Remove all <style> elements using getElementsByTagName (XPath has issues with SVG namespace)
-                    $styleElements = $dom->getElementsByTagName('style');
-                    $stylesToRemove = [];
-                    foreach ($styleElements as $styleElement) {
-                        $stylesToRemove[] = $styleElement;
-                    }
-                    foreach ($stylesToRemove as $styleElement) {
-                        $styleElement->parentNode->removeChild($styleElement);
-                    }
-
-                    // Remove empty <defs> elements using getElementsByTagName
-                    $defsElements = $dom->getElementsByTagName('defs');
-                    $defsToRemove = [];
-                    foreach ($defsElements as $defsElement) {
-                        // Check if defs is empty or only contains whitespace
-                        $hasContent = false;
-                        foreach ($defsElement->childNodes as $child) {
-                            if ($child->nodeType === XML_ELEMENT_NODE ||
-                                ($child->nodeType === XML_TEXT_NODE && trim($child->textContent) !== '')) {
-                                $hasContent = true;
-                                break;
-                            }
-                        }
-                        if (!$hasContent) {
-                            $defsToRemove[] = $defsElement;
-                        }
-                    }
-                    foreach ($defsToRemove as $defsElement) {
-                        $defsElement->parentNode->removeChild($defsElement);
-                    }
-
-                    $svgContent = $dom->saveXML($dom->documentElement);
-                }
-
-                libxml_clear_errors();
-            }
-        }
-
-        return $svgContent;
-    }
-
-    /**
-     * Convert inline style attributes to SVG attributes
-     *
-     * @param string $svgContent SVG content
-     * @return string SVG content with inline styles converted to attributes
-     */
-    private function convertInlineStylesToAttributes(string $svgContent): string
-    {
-        libxml_use_internal_errors(true);
-        $dom = new \DOMDocument();
-        $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = false;
-
-        if ($dom->loadXML($svgContent, LIBXML_NOERROR | LIBXML_NOWARNING)) {
-            $xpath = new \DOMXPath($dom);
-            $elementsWithStyle = $xpath->query('//*[@style]');
-
-            foreach ($elementsWithStyle as $element) {
-                $styleAttr = $element->getAttribute('style');
-                $convertedProps = [];
-                $remainingProps = [];
-
-                // Parse style attribute
-                foreach (explode(';', $styleAttr) as $declaration) {
-                    $declaration = trim($declaration);
-                    if (strpos($declaration, ':') !== false) {
-                        list($prop, $value) = array_map('trim', explode(':', $declaration, 2));
-                        $propLower = strtolower($prop);
-
-                        // SVG-compatible properties that can be converted to attributes
-                        if (in_array($propLower, ['fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-dasharray', 'stroke-dashoffset', 'opacity', 'fill-opacity', 'stroke-opacity'])) {
-                            // Only add if element doesn't already have this attribute
-                            if (!$element->hasAttribute($propLower)) {
-                                $element->setAttribute($propLower, $value);
-                                $convertedProps[] = $propLower;
-                            }
-                        } else {
-                            // CSS-only properties that must stay in style attribute (like isolation, mix-blend-mode, etc.)
-                            $remainingProps[] = $declaration;
-                        }
-                    }
-                }
-
-                // Update or remove style attribute based on what's left
-                if (empty($remainingProps)) {
-                    $element->removeAttribute('style');
-                } else {
-                    $element->setAttribute('style', implode('; ', $remainingProps));
-                }
-            }
-
-            $svgContent = $dom->saveXML($dom->documentElement);
-        }
-
-        libxml_clear_errors();
-        return $svgContent;
-    }
-
-    /**
-     * Remove unused mask elements
-     *
-     * @param string $svgContent SVG content
-     * @return string SVG content without unused masks
-     */
-    private function removeUnusedMasks(string $svgContent): string
-    {
-        libxml_use_internal_errors(true);
-        $dom = new \DOMDocument();
-        $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = false;
-
-        if ($dom->loadXML($svgContent, LIBXML_NOERROR | LIBXML_NOWARNING)) {
-            $xpath = new \DOMXPath($dom);
-
-            // Find all mask elements
-            $maskElements = $dom->getElementsByTagName('mask');
-            $masksToRemove = [];
-
-            foreach ($maskElements as $maskElement) {
-                $maskId = $maskElement->getAttribute('id');
-                if ($maskId) {
-                    // Check if this mask is referenced anywhere
-                    $references = $xpath->query("//*[contains(@mask, 'url(#{$maskId})')]");
-                    if ($references->length === 0) {
-                        // Mask is not used, mark for removal
-                        $masksToRemove[] = $maskElement;
-                    }
-                }
-            }
-
-            // Remove unused masks
-            foreach ($masksToRemove as $maskElement) {
-                if ($maskElement->parentNode) {
-                    $maskElement->parentNode->removeChild($maskElement);
-                }
-            }
-
-            // After removing masks, check for empty defs again
-            $defsElements = $dom->getElementsByTagName('defs');
-            $defsToRemove = [];
-            foreach ($defsElements as $defsElement) {
-                $hasContent = false;
-                foreach ($defsElement->childNodes as $child) {
-                    if ($child->nodeType === XML_ELEMENT_NODE ||
-                        ($child->nodeType === XML_TEXT_NODE && trim($child->textContent) !== '')) {
-                        $hasContent = true;
-                        break;
-                    }
-                }
-                if (!$hasContent) {
-                    $defsToRemove[] = $defsElement;
-                }
-            }
-            foreach ($defsToRemove as $defsElement) {
-                $defsElement->parentNode->removeChild($defsElement);
-            }
-
-            $svgContent = $dom->saveXML($dom->documentElement);
-        }
-
-        libxml_clear_errors();
-        return $svgContent;
-    }
-
-    /**
-     * Remove width and height attributes from SVG root element
-     *
-     * @param string $svgContent SVG content
-     * @return string SVG content without width/height
-     */
-    private function removeWidthHeight(string $svgContent): string
-    {
-        libxml_use_internal_errors(true);
-        $dom = new \DOMDocument();
-        $dom->loadXML($svgContent, LIBXML_NOERROR | LIBXML_NOWARNING);
-
-        $svgElement = $dom->documentElement;
-        if ($svgElement && $svgElement->nodeName === 'svg') {
-            $svgElement->removeAttribute('width');
-            $svgElement->removeAttribute('height');
-        }
-
-        $result = $dom->saveXML($dom->documentElement);
-        libxml_clear_errors();
-
-        return $result;
     }
 
     /**
@@ -887,13 +650,61 @@ class SvgOptimizerService extends Component
             return false;
         }
 
-        // Delete existing files first
-        if (is_dir($targetPath)) {
-            $this->deleteDirectory($targetPath);
+        // Detect if backup contains subdirectories (indicates it was created with includeSubfolders=true)
+        $backupHasSubdirs = $this->hasSubdirectories($backupPath);
+
+        if ($backupHasSubdirs) {
+            // Full restore - delete everything and restore complete structure
+            if (is_dir($targetPath)) {
+                $this->deleteDirectory($targetPath);
+            }
+            return $this->copyDirectory($backupPath, $targetPath, true);
+        } else {
+            // Root-only restore - only replace root files, preserve existing subdirectories
+            if (!is_dir($targetPath)) {
+                mkdir($targetPath, 0755, true);
+            }
+
+            // Delete only root-level files before restoring
+            $iterator = new \DirectoryIterator($targetPath);
+            foreach ($iterator as $item) {
+                if ($item->isDot()) {
+                    continue;
+                }
+                if ($item->isFile()) {
+                    unlink($item->getPathname());
+                }
+                // Leave subdirectories untouched
+            }
+
+            // Copy root-level files from backup
+            return $this->copyDirectory($backupPath, $targetPath, false);
+        }
+    }
+
+    /**
+     * Check if a directory contains any subdirectories
+     *
+     * @param string $path Directory path to check
+     * @return bool True if has subdirectories
+     */
+    private function hasSubdirectories(string $path): bool
+    {
+        if (!is_dir($path)) {
+            return false;
         }
 
-        // Restore from backup
-        return $this->copyDirectory($backupPath, $targetPath);
+        $iterator = new \DirectoryIterator($path);
+        foreach ($iterator as $item) {
+            if ($item->isDot()) {
+                continue;
+            }
+            if ($item->isDir()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

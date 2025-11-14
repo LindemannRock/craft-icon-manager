@@ -44,16 +44,9 @@
         {% set totalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.largeFiles + scanResult.issues.widthHeight %}
         {% if isDevEnvironment and totalIssues > 0 %}
             <div id="optimization-button-container" style="display: none;">
-                <form method="post" accept-charset="UTF-8">
-                    {{ csrfInput() }}
-                    {{ actionInput('icon-manager/icon-sets/apply-optimizations') }}
-                    {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id ~ '#optimization') }}
-                    {{ hiddenInput('iconSetId', iconSet.id) }}
-
-                    <button type="submit" class="btn submit" onclick="return confirm('{{ 'This will create a backup and optimize all SVG files. Continue?'|t('icon-manager') }}');">
-                        {{ "Apply Optimizations"|t('icon-manager') }}
-                    </button>
-                </form>
+                <button type="button" class="btn submit" id="apply-optimizations-btn">
+                    {{ "Apply Optimizations"|t('icon-manager') }}
+                </button>
             </div>
         {% endif %}
     {% endif %}
@@ -544,4 +537,26 @@
         document.body.appendChild(form);
         form.submit();
     };
+
+    // Apply optimizations button handler
+    var applyOptBtn = document.getElementById('apply-optimizations-btn');
+    if (applyOptBtn) {
+        applyOptBtn.addEventListener('click', function(e) {
+            if (!confirm('{{ 'This will create a backup and optimize all SVG files. Continue?'|t('icon-manager')|e('js') }}')) {
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '';
+            form.innerHTML = `
+                {{ actionInput('icon-manager/icon-sets/apply-optimizations')|raw }}
+                {{ hiddenInput('iconSetId', iconSet.id)|raw }}
+                {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id ~ '#optimization')|raw }}
+                {{ csrfInput()|raw }}
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
 {% endjs %}

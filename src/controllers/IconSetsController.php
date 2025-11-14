@@ -553,9 +553,10 @@ class IconSetsController extends Controller
             $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
             $folder = $iconSet->settings['folder'] ?? '';
             $folderPath = Craft::getAlias($basePath . '/' . $folder);
+            $includeSubfolders = $iconSet->settings['includeSubfolders'] ?? false;
 
             // Create backup first
-            $backupPath = IconManager::getInstance()->svgOptimizer->createBackupPublic($folderPath, $iconSet->name);
+            $backupPath = IconManager::getInstance()->svgOptimizer->createBackupPublic($folderPath, $iconSet->name, $includeSubfolders);
             if (!$backupPath) {
                 return $this->asJson(['success' => false, 'error' => 'Failed to create backup']);
             }

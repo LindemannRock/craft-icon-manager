@@ -171,12 +171,13 @@ class SvgoService extends Component
         $backupPath = null;
         if ($createBackup && $total > 0) {
             $svgOptimizer = IconManager::getInstance()->svgOptimizer;
-            $backupPath = $svgOptimizer->createBackupPublic($folderPath, $iconSet->name);
+            $backupPath = $svgOptimizer->createBackupPublic($folderPath, $iconSet->name, $includeSubfolders);
             if (!$backupPath) {
                 throw new \Exception('Failed to create backup');
             }
             $this->logInfo("Created backup before SVGO optimization", [
                 'backupPath' => $backupPath,
+                'includeSubfolders' => $includeSubfolders,
             ]);
         }
 
