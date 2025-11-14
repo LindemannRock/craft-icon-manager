@@ -55,7 +55,7 @@
 
 {{ forms.lightswitchField({
     label: 'Scan Large Files'|t('icon-manager'),
-    instructions: 'Detect files over 10KB (warning only, may be normal for complex icons)'|t('icon-manager'),
+    instructions: 'Detect files over 10KB (informational only - use as a guide to monitor file sizes. Large files may be normal for complex icons, and optimization may reduce size but not always)'|t('icon-manager'),
     id: 'scanLargeFiles',
     name: 'settings[scanLargeFiles]',
     on: settings.scanLargeFiles,

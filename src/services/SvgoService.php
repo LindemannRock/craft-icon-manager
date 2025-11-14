@@ -246,6 +246,14 @@ class SvgoService extends Component
             'errors' => $errors,
         ]);
 
+        // If no files were optimized, delete the backup (no changes made)
+        if ($optimized === 0 && $backupPath && is_dir($backupPath)) {
+            $svgOptimizer = IconManager::getInstance()->svgOptimizer;
+            $svgOptimizer->deleteBackup($backupPath);
+            $backupPath = null;
+            $this->logInfo("Deleted unnecessary backup (no files were optimized)");
+        }
+
         return [
             'total' => $total,
             'optimized' => $optimized,

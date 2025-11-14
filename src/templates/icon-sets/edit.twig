@@ -41,8 +41,7 @@
 
     {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
         {% set isDevEnvironment = craft.app.config.general.devMode or (craft.app.env in ['local', 'dev', 'development']) %}
-        {% set totalIssues = scanResult.issues.clipPaths + scanResult.issues.masks + scanResult.issues.filters + scanResult.issues.comments + scanResult.issues.inlineStyles + scanResult.issues.largeFiles + scanResult.issues.widthHeight %}
-        {% if isDevEnvironment and totalIssues > 0 %}
+        {% if isDevEnvironment %}
             <div id="optimization-button-container" style="display: none;">
                 <button type="button" class="btn submit" id="apply-optimizations-btn">
                     {{ "Apply Optimizations"|t('icon-manager') }}

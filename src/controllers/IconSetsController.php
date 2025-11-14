@@ -402,12 +402,20 @@ class IconSetsController extends Controller
             $result = IconManager::getInstance()->svgOptimizer->optimizeIconSet($iconSet);
 
             if ($result['success']) {
-                Craft::$app->getSession()->setNotice(
-                    Craft::t('icon-manager', 'Optimized {count} SVG files. Backup created at: {backup}', [
-                        'count' => $result['filesOptimized'],
-                        'backup' => $result['backupPath']
-                    ])
-                );
+                if ($result['filesOptimized'] > 0) {
+                    $message = Craft::t('icon-manager', 'Optimized {count} SVG file(s).', [
+                        'count' => $result['filesOptimized']
+                    ]);
+                    if ($result['backupPath']) {
+                        $message .= ' ' . Craft::t('icon-manager', 'Backup created at: {backup}', [
+                            'backup' => $result['backupPath']
+                        ]);
+                    }
+                } else {
+                    $message = Craft::t('icon-manager', 'No files needed optimization. All files are already optimized.');
+                }
+
+                Craft::$app->getSession()->setNotice($message);
             } else {
                 Craft::$app->getSession()->setError(
                     Craft::t('icon-manager', 'Optimization failed: {error}', ['error' => $result['error']])

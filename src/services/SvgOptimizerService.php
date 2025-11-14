@@ -397,6 +397,13 @@ class SvgOptimizerService extends Component
             }
         }
 
+        // If no files were optimized, delete the backup (no changes made)
+        if ($optimizedCount === 0 && $backupPath && is_dir($backupPath)) {
+            $this->deleteDirectory($backupPath);
+            $backupPath = null;
+            $this->logInfo("Deleted unnecessary backup (no files were optimized)");
+        }
+
         return [
             'success' => true,
             'total' => count($svgFiles),
