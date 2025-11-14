@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.3.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.2.0...v5.3.0) (2025-11-14)
+
+
+### Features
+
+* add Twig extension for plugin name helpers and enhance display name methods ([f248e4d](https://github.com/LindemannRock/craft-icon-manager/commit/f248e4d8ec6a1181ec475ea070d3c9ae25f3b0b2))
+* enhance SVG backup and optimization features with includeSubfolders option ([3a2607f](https://github.com/LindemannRock/craft-icon-manager/commit/3a2607f213a82cbf1bbc32d052c8aa3d1c2ea186))
+* improve SVG optimization feedback and cleanup backup handling ([e79e7d8](https://github.com/LindemannRock/craft-icon-manager/commit/e79e7d83e77da1c61b7c0bef4939675680874c53))
+* **svg-optimizer:** add user-controlled optimization rules and reorganize settings UI ([7c1179a](https://github.com/LindemannRock/craft-icon-manager/commit/7c1179a8545349ee9297e2acd26b67f2b1c6e7d8))
+* update overview heading to include dynamic plugin name ([94e668e](https://github.com/LindemannRock/craft-icon-manager/commit/94e668edc293979175a5b3963bd944ff1573f8bf))
+
+
+### Bug Fixes
+
+* update php-svg-optimizer version to ^7.3 for compatibility ([65c107c](https://github.com/LindemannRock/craft-icon-manager/commit/65c107c59b26b9db324b22e40ec25949d8cddfaf))
+
 ## [5.2.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.2...v5.2.0) (2025-11-06)
 
 
