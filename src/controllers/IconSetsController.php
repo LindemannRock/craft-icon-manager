@@ -196,10 +196,7 @@ class IconSetsController extends Controller
         
         // Get settings and ensure proper types
         $settings = $request->getBodyParam('settings', []);
-        
-        // Log settings for debugging if needed
-        // Craft::info("Icon set save - Settings: " . json_encode($settings), __METHOD__);
-        
+
         // Convert includeSubfolders to boolean
         if (isset($settings['includeSubfolders'])) {
             $settings['includeSubfolders'] = (bool)$settings['includeSubfolders'];
