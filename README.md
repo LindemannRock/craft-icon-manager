@@ -297,9 +297,9 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - **Scan Controls** - Granular control over what the scanner detects (see Scan Control Settings below)
 - **logLevel** - Logging verbosity: error, warning, info, or debug
 
-#### Scan Control Settings
+#### Scan Control Settings (Detection Only)
 
-These settings control what the scanner detects during optimization scans. **Important:** These only affect the scanner and PHP optimizer - SVGO uses its own `svgo.config.js` configuration.
+These settings control what the scanner **detects and reports** in the UI. They do NOT control what gets optimized.
 
 ```php
 // config/icon-manager.php
@@ -309,7 +309,7 @@ return [
     'scanFilters' => true,                // Detect filter effects
     'scanComments' => true,               // Detect comments (excludes legal <!--! ... -->)
     'scanInlineStyles' => true,           // Detect convertible inline styles
-    'scanLargeFiles' => true,             // Detect files >10KB (warning)
+    'scanLargeFiles' => false,            // Detect files >10KB (informational)
     'scanWidthHeight' => true,            // Detect width/height without viewBox (critical)
     'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
 ];
@@ -317,14 +317,54 @@ return [
 
 **What each scan detects:**
 
-- **scanClipPaths**: Flags **empty or unreferenced** clip-paths only. Used clip-paths are not flagged.
-- **scanMasks**: Flags **empty or unreferenced** masks only. Used masks are not flagged.
-- **scanFilters**: Flags all `<filter>` elements (can slow rendering). Disable if filters are intentional.
-- **scanComments**: Flags regular comments. **Preserves legal comments** (`<!--! ... -->`).
-- **scanInlineStyles**: Flags convertible styles (fill, stroke). **Preserves CSS-only** (isolation, mix-blend-mode, transform, filter).
-- **scanLargeFiles**: Warning for files >10KB. May be normal for complex icons.
-- **scanWidthHeight**: Flags width/height **without viewBox** (responsive issue - default: true).
-- **scanWidthHeightWithViewBox**: Flags width/height **even with viewBox** (optional optimization - default: false).
+- **scanClipPaths**: Flags empty or unreferenced clip-paths. Used clip-paths are not flagged.
+- **scanMasks**: Flags empty or unreferenced masks. Used masks are not flagged.
+- **scanFilters**: Flags `<filter>` elements (informational - may slow rendering).
+- **scanComments**: Flags regular comments (legal comments `<!--! -->` preserved).
+- **scanInlineStyles**: Flags convertible styles (CSS-only properties like `isolation` preserved).
+- **scanLargeFiles**: Informational for files >10KB (use as file size monitoring guide - may be normal for complex icons, optimization may reduce size but not always).
+- **scanWidthHeight**: Flags width/height without viewBox (responsive SVG issue).
+- **scanWidthHeightWithViewBox**: Flags width/height even with viewBox (optional optimization).
+
+#### PHP Optimizer Settings (What Gets Applied)
+
+Control which optimization rules are applied during PHP optimization:
+
+```php
+// config/icon-manager.php
+return [
+    // Conversion rules
+    'optimizeConvertColorsToHex' => true,
+    'optimizeConvertCssClasses' => true,
+    'optimizeConvertEmptyTags' => true,
+    'optimizeConvertInlineStyles' => true,
+
+    // Minification rules
+    'optimizeMinifyCoordinates' => true,
+    'optimizeMinifyTransformations' => true,
+
+    // Removal rules (13 settings)
+    'optimizeRemoveComments' => true,
+    'optimizeRemoveDefaultAttributes' => true,
+    'optimizeRemoveDeprecatedAttributes' => true,
+    'optimizeRemoveDoctype' => true,
+    'optimizeRemoveEnableBackground' => true,
+    'optimizeRemoveEmptyAttributes' => true,
+    'optimizeRemoveInkscapeFootprints' => true,
+    'optimizeRemoveInvisibleCharacters' => true,
+    'optimizeRemoveMetadata' => true,
+    'optimizeRemoveWhitespace' => true,
+    'optimizeRemoveUnusedNamespaces' => true,
+    'optimizeRemoveUnusedMasks' => true,
+    'optimizeRemoveWidthHeight' => true,
+
+    // Structure rules
+    'optimizeFlattenGroups' => true,
+    'optimizeSortAttributes' => true,
+];
+```
+
+All rules default to `true` for comprehensive optimization. Toggle any off to skip that optimization.
 
 ### Creating Icon Sets
 
@@ -762,18 +802,31 @@ The plugin scans SVG files and identifies:
 
 ### PHP Optimizer (Default)
 
-Uses [mathiasreker/php-svg-optimizer](https://github.com/mathiasreker/php-svg-optimizer) and works out of the box. Available in the Control Panel via Icon Manager → Icon Sets → [Set] → Optimize.
+Uses [mathiasreker/php-svg-optimizer v7.3](https://github.com/mathiasreker/php-svg-optimizer) with 21 user-controlled optimization rules. Available in the Control Panel via Icon Manager → Icon Sets → [Set] → Optimize.
 
 **Features:**
 - No additional installation required
 - Works in CP interface
-- Safe for production use
-- Limited optimization capabilities
-- Best for basic cleanup (metadata, comments, whitespace)
+- 21 toggleable optimization rules organized in 4 categories:
+  - **Conversion**: Colors to hex, CSS classes/styles to attributes, empty tags to self-closing
+  - **Minification**: Coordinates, transformations
+  - **Removal**: Comments, metadata, deprecated attributes, whitespace, unused masks/namespaces, width/height
+  - **Structure**: Flatten groups, sort attributes
+- All rules enabled by default for comprehensive optimization
+- Control which rules to apply via Settings → SVG Optimization → PHP Optimizer
+- Supports 77 SVG properties for CSS-to-attribute conversion
+- Auto-preserves legal comments (`<!--! -->`)
 
-**Limitations:**
-- Cannot optimize clip-paths, masks, or complex SVG features
-- Limited file size reduction on already-clean SVGs
+**Configuration:**
+Control optimization behavior in Icon Manager → Settings → SVG Optimization:
+- **General tab**: Enable optimization, automatic backups
+- **Scan Controls tab**: What issues to detect in scans (8 detection rules)
+- **PHP Optimizer tab**: What optimizations to apply (21 optimization rules)
+
+**Important:** Scan Controls and PHP Optimizer Settings are separate:
+- **Scan Controls**: What scanner detects and displays in UI
+- **PHP Optimizer**: What actually gets applied during optimization
+- Optimization may modify files even when scan shows 0 issues (applies all enabled rules)
 
 ### SVGO (Advanced)
 
@@ -890,30 +943,77 @@ Before optimization, a backup is automatically created (unless `--noBackup` is u
 - Need simple, reliable optimization
 - Only need basic cleanup (comments, metadata)
 
-### Scan Controls vs SVGO Configuration
+### Understanding the Three Settings Areas
 
-**Scan control settings** (in Icon Manager settings or config) control:
-- What the scanner flags as issues in the UI
-- What the PHP optimizer attempts to fix
+Icon Manager has three separate configuration areas for SVG optimization:
 
-**SVGO configuration** (`svgo.config.js`) controls:
-- What SVGO actually optimizes when you run `./craft icon-manager/optimize --engine=svgo`
-- Independent of scan control settings
+#### 1. Scan Controls
+**Purpose:** What issues to detect and display in scan reports
+**Location:** Settings → SVG Optimization → Scan Controls tab
+**Affects:** UI reporting only (what you see in the "Issues Found" section)
 
-**Example scenario:**
+#### 2. PHP Optimizer Settings
+**Purpose:** Which optimization rules to apply when using PHP optimizer
+**Location:** Settings → SVG Optimization → PHP Optimizer tab
+**Affects:** Actual file modifications when using "Apply Optimizations" button or `--engine=php`
+
+**Available via config file:**
 ```php
 // config/icon-manager.php
-'scanComments' => false, // Don't show comments as issues in UI
+return [
+    // Scan controls (what to detect)
+    'scanComments' => true,
+    'scanInlineStyles' => true,
+    // ... 8 scan settings
+
+    // PHP optimizer rules (what to apply)
+    'optimizeRemoveComments' => true,
+    'optimizeConvertInlineStyles' => true,
+    // ... 21 optimization rules
+];
 ```
 
-Even with `scanComments => false`:
-- Scanner won't flag comments
-- PHP optimizer won't remove comments
-- **But SVGO will still remove comments** if `removeComments` is in `svgo.config.js`
+#### 3. SVGO Configuration
+**Purpose:** Custom SVGO optimization rules
+**Location:** `svgo.config.js` in project root
+**Affects:** What SVGO optimizes when using `--engine=svgo`
 
-To fully disable comment removal, you must:
-1. Set `scanComments => false` in config (hides from scanner/PHP optimizer)
-2. Remove `removeComments` from `svgo.config.js` (prevents SVGO from removing)
+**Example:**
+```javascript
+// svgo.config.js
+export default {
+    plugins: [
+        'removeComments',
+        'removeMetadata',
+        // ... SVGO plugins
+    ],
+};
+```
+
+#### Key Differences
+
+**Scan Controls vs PHP Optimizer:**
+- **Scan Controls** = Detection/reporting (shows issues in UI)
+- **PHP Optimizer** = Action (what gets fixed)
+- These are **independent** - you can scan for things you don't optimize, or optimize things you don't scan for
+
+**PHP Optimizer vs SVGO:**
+- **PHP Optimizer**: Uses settings from Icon Manager (21 toggles in CP)
+- **SVGO**: Uses `svgo.config.js` file (independent of Icon Manager settings)
+
+**Example Scenario:**
+```php
+// config/icon-manager.php
+'scanComments' => false,              // Don't show in scan results
+'optimizeRemoveComments' => true,     // But still remove during optimization
+```
+
+Result:
+- Scanner won't flag comments as issues
+- PHP optimizer will still remove them (rule is enabled)
+- Files with comments won't show in "Issue Breakdown" but will be optimized
+
+For SVGO: Icon Manager settings don't affect it - use `svgo.config.js` instead.
 
 ## Missing Icon Handling
 

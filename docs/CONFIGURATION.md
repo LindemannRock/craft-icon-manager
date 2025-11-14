@@ -28,15 +28,38 @@ return [
     'enableOptimization' => true,          // Enable optimization features
     'enableOptimizationBackup' => true,    // Auto-backup before optimization
 
-    // Scan Controls (what scanner detects - PHP optimizer only, SVGO uses svgo.config.js)
-    'scanClipPaths' => true,              // Detect empty/unused clip-paths (used ones preserved)
-    'scanMasks' => true,                  // Detect empty/unused masks (used ones preserved)
+    // Scan Controls (what scanner detects and reports in UI)
+    'scanClipPaths' => true,              // Detect empty/unused clip-paths
+    'scanMasks' => true,                  // Detect empty/unused masks
     'scanFilters' => true,                // Detect filter effects
-    'scanComments' => true,               // Detect regular comments (legal <!--! ... --> preserved)
-    'scanInlineStyles' => true,           // Detect convertible styles (CSS-only properties preserved)
-    'scanLargeFiles' => true,             // Detect files >10KB (warning only)
-    'scanWidthHeight' => true,            // Detect width/height without viewBox (critical)
-    'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
+    'scanComments' => true,               // Detect comments (legal <!--! --> preserved)
+    'scanInlineStyles' => true,           // Detect convertible inline styles
+    'scanLargeFiles' => false,            // Detect files >10KB (informational)
+    'scanWidthHeight' => true,            // Detect width/height without viewBox
+    'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox
+
+    // PHP Optimizer rules (what to apply during optimization)
+    'optimizeConvertColorsToHex' => true,
+    'optimizeConvertCssClasses' => true,
+    'optimizeConvertEmptyTags' => true,
+    'optimizeConvertInlineStyles' => true,
+    'optimizeMinifyCoordinates' => true,
+    'optimizeMinifyTransformations' => true,
+    'optimizeRemoveComments' => true,
+    'optimizeRemoveDefaultAttributes' => true,
+    'optimizeRemoveDeprecatedAttributes' => true,
+    'optimizeRemoveDoctype' => true,
+    'optimizeRemoveEnableBackground' => true,
+    'optimizeRemoveEmptyAttributes' => true,
+    'optimizeRemoveInkscapeFootprints' => true,
+    'optimizeRemoveInvisibleCharacters' => true,
+    'optimizeRemoveMetadata' => true,
+    'optimizeRemoveWhitespace' => true,
+    'optimizeRemoveUnusedNamespaces' => true,
+    'optimizeRemoveUnusedMasks' => true,
+    'optimizeRemoveWidthHeight' => true,
+    'optimizeFlattenGroups' => true,
+    'optimizeSortAttributes' => true,
 
     // Logging settings
     'logLevel' => 'error', // error, warning, info, debug
@@ -76,15 +99,38 @@ return [
             'web-font' => false,
         ],
 
-        // Scan Controls (PHP optimizer only, SVGO uses svgo.config.js)
-        'scanClipPaths' => true,              // Detect empty/unused clip-paths (used ones preserved)
-        'scanMasks' => true,                  // Detect empty/unused masks (used ones preserved)
-        'scanFilters' => true,                // Detect filter effects
-        'scanComments' => true,               // Detect regular comments (legal <!--! ... --> preserved)
-        'scanInlineStyles' => true,           // Detect convertible styles (CSS-only properties preserved)
-        'scanLargeFiles' => true,             // Detect files >10KB (warning only)
-        'scanWidthHeight' => true,            // Detect width/height without viewBox (critical)
-        'scanWidthHeightWithViewBox' => false, // Detect width/height with viewBox (optional)
+        // Scan Controls (what to detect and report in UI)
+        'scanClipPaths' => true,
+        'scanMasks' => true,
+        'scanFilters' => true,
+        'scanComments' => true,
+        'scanInlineStyles' => true,
+        'scanLargeFiles' => false,
+        'scanWidthHeight' => true,
+        'scanWidthHeightWithViewBox' => false,
+
+        // PHP Optimizer rules (what to apply - all 21 rules)
+        'optimizeConvertColorsToHex' => true,
+        'optimizeConvertCssClasses' => true,
+        'optimizeConvertEmptyTags' => true,
+        'optimizeConvertInlineStyles' => true,
+        'optimizeMinifyCoordinates' => true,
+        'optimizeMinifyTransformations' => true,
+        'optimizeRemoveComments' => true,
+        'optimizeRemoveDefaultAttributes' => true,
+        'optimizeRemoveDeprecatedAttributes' => true,
+        'optimizeRemoveDoctype' => true,
+        'optimizeRemoveEnableBackground' => true,
+        'optimizeRemoveEmptyAttributes' => true,
+        'optimizeRemoveInkscapeFootprints' => true,
+        'optimizeRemoveInvisibleCharacters' => true,
+        'optimizeRemoveMetadata' => true,
+        'optimizeRemoveWhitespace' => true,
+        'optimizeRemoveUnusedNamespaces' => true,
+        'optimizeRemoveUnusedMasks' => true,
+        'optimizeRemoveWidthHeight' => true,
+        'optimizeFlattenGroups' => true,
+        'optimizeSortAttributes' => true,
     ],
 
     // Development environment
@@ -169,55 +215,68 @@ return [
   - Backups are stored in `storage/backups/icon-manager/` with timestamps
   - Can be restored via Control Panel (dev mode only) or manually
 
-#### Scan Control Settings
+#### Scan Control Settings (Detection Only)
 
-Control what the scanner detects as optimization opportunities. **Note:** These settings only affect the scanner and PHP optimizer. SVGO uses its own configuration file (`svgo.config.js`) and will optimize based on its settings regardless of these flags.
+**Purpose:** Control what issues to detect and display in scan reports. These are for **UI reporting only** and do NOT control what gets optimized.
 
-- **scanClipPaths** (default: true)
-  - Detects **empty or unused** clip-path definitions
-  - Only flags clip-paths that are not referenced anywhere in the SVG or have no content
-  - Used clip-paths are preserved and not flagged as issues
+**Location:** Settings → SVG Optimization → Scan Controls tab
 
-- **scanMasks** (default: true)
-  - Detects **empty or unused** mask definitions
-  - Only flags masks that are not referenced anywhere in the SVG or have no content
-  - Used masks are preserved and not flagged as issues
+- **scanClipPaths** (default: true) - Detect empty or unused clip-path definitions
+- **scanMasks** (default: true) - Detect empty or unused mask definitions
+- **scanFilters** (default: true) - Detect filter effects (informational)
+- **scanComments** (default: true) - Detect comments (legal `<!--! -->` preserved)
+- **scanInlineStyles** (default: true) - Detect convertible inline styles
+- **scanLargeFiles** (default: false) - Detect files >10KB (informational, use as file size guide)
+- **scanWidthHeight** (default: true) - Detect width/height without viewBox (critical)
+- **scanWidthHeightWithViewBox** (default: false) - Detect width/height with viewBox (optional)
 
-- **scanFilters** (default: true)
-  - Detects filter effects (`<filter>` elements)
-  - Flags all filters as they can slow down rendering
-  - Some complex effects require filters - disable this if filters are intentional
+**Note:** Scan results show in the "Issues Found" and "Issue Breakdown" sections of the Optimization tab.
 
-- **scanComments** (default: true)
-  - Detects regular comments `<!-- ... -->`
-  - **Excludes legal/license comments** `<!--! ... -->` (e.g., Font Awesome licenses)
-  - Legal comments are always preserved by both PHP and SVGO optimizers
+#### PHP Optimizer Settings (What Gets Applied)
 
-- **scanInlineStyles** (default: true)
-  - Detects inline `style` attributes with convertible properties
-  - Only flags styles that can be converted to SVG attributes (fill, stroke, etc.)
-  - **Preserves CSS-only properties** like `isolation`, `mix-blend-mode`, `transform`, `filter`
-  - Example: `style="fill:#000"` → flagged (can be `fill="#000"`)
-  - Example: `style="isolation:isolate"` → not flagged (CSS-only, must stay in style)
+**Purpose:** Control which optimization rules are actually applied to files when using the PHP optimizer.
 
-- **scanLargeFiles** (default: true)
-  - Detects files over 10KB
-  - **Warning only** - large file size may be normal for complex icons
-  - Useful for identifying icons that might benefit from optimization
+**Location:** Settings → SVG Optimization → PHP Optimizer tab
 
-- **scanWidthHeight** (default: true)
-  - Detects width/height attributes **without viewBox** on `<svg>` tag
-  - **Critical issue** - SVG won't scale responsively without viewBox
-  - Example: `<svg width="24" height="24">` → flagged (missing viewBox)
-  - Example: `<svg width="24" height="24" viewBox="0 0 24 24">` → not flagged
+**All 21 available rules** (organized by category):
 
-- **scanWidthHeightWithViewBox** (default: false)
-  - Detects width/height even when viewBox exists
-  - **Optional optimization** - some prefer viewBox-only for maximum flexibility
-  - When enabled: `<svg width="24" height="24" viewBox="0 0 24 24">` → flagged
-  - When disabled: Only flags width/height **without** viewBox (critical issues only)
+**Conversion Rules (4):**
+- `optimizeConvertColorsToHex` - Convert colors to hexadecimal format
+- `optimizeConvertCssClasses` - Convert CSS classes to SVG attributes (77 properties)
+- `optimizeConvertEmptyTags` - Convert empty tags to self-closing format
+- `optimizeConvertInlineStyles` - Convert inline styles to SVG attributes (77 properties)
 
-**Important:** SVGO ignores these settings. Configure SVGO separately via `svgo.config.js` to control what it optimizes.
+**Minification Rules (2):**
+- `optimizeMinifyCoordinates` - Reduce coordinate precision
+- `optimizeMinifyTransformations` - Optimize transformation matrices
+
+**Removal Rules (13):**
+- `optimizeRemoveComments` - Remove comments (legal `<!--! -->` preserved)
+- `optimizeRemoveDefaultAttributes` - Remove default-value attributes
+- `optimizeRemoveDeprecatedAttributes` - Remove deprecated attributes
+- `optimizeRemoveDoctype` - Remove DOCTYPE declarations
+- `optimizeRemoveEnableBackground` - Remove deprecated enable-background
+- `optimizeRemoveEmptyAttributes` - Remove empty attributes
+- `optimizeRemoveInkscapeFootprints` - Remove Inkscape-specific elements
+- `optimizeRemoveInvisibleCharacters` - Remove invisible/non-printable chars
+- `optimizeRemoveMetadata` - Remove metadata elements
+- `optimizeRemoveWhitespace` - Remove unnecessary whitespace
+- `optimizeRemoveUnusedNamespaces` - Remove unused XML namespaces
+- `optimizeRemoveUnusedMasks` - Remove unreferenced mask definitions
+- `optimizeRemoveWidthHeight` - Remove width/height (keeps viewBox)
+
+**Structure Rules (2):**
+- `optimizeFlattenGroups` - Remove unnecessary `<g>` wrappers
+- `optimizeSortAttributes` - Sort attributes alphabetically
+
+**Default:** All rules enabled for comprehensive optimization. Toggle any off to skip that rule.
+
+**Important:**
+- Scan Controls and PHP Optimizer Settings are **separate and independent**
+- Scan controls what you **see** in reports
+- PHP Optimizer controls what **gets modified** in files
+- Optimization may apply even when scan shows 0 issues (applies all enabled rules)
+- SVGO ignores these settings - uses `svgo.config.js` instead
 
 #### Logging Settings
 
