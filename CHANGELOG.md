@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.4.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.3.0...v5.4.0) (2025-11-15)
+
+
+### Features
+
+* add MIT License file ([7cb19b7](https://github.com/LindemannRock/craft-icon-manager/commit/7cb19b7f8c1111005b78800349c2c557edf062ae))
+
 ## [5.3.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.2.0...v5.3.0) (2025-11-14)
 
 
