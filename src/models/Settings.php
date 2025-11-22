@@ -59,9 +59,9 @@ class Settings extends Model
     public bool $enableCache = true;
 
     /**
-     * @var int Cache duration in seconds
+     * @var int Cache duration in seconds (24 hours)
      */
-    public int $cacheDuration = 86400; // 24 hours
+    public int $cacheDuration = 86400;
 
     /**
      * @var array Default icon set types to enable
