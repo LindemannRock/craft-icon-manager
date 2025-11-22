@@ -56,14 +56,28 @@ class IconManager extends Plugin
     use LoggingTrait;
 
     /**
-     * @var IconManager|null
+     * @var IconManager|null Singleton plugin instance
      */
     public static ?IconManager $plugin = null;
 
+    /**
+     * @var string Plugin schema version for migrations
+     */
     public string $schemaVersion = '1.0.0';
+
+    /**
+     * @var bool Whether the plugin exposes a control panel settings page
+     */
     public bool $hasCpSettings = true;
+
+    /**
+     * @var bool Whether the plugin registers a control panel section
+     */
     public bool $hasCpSection = true;
 
+    /**
+     * @var bool Internal flag to avoid registering duplicate log targets
+     */
     private static bool $_logTargetRegistered = false;
 
     /**
