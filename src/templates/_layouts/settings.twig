@@ -1,6 +1,7 @@
 {% extends "_layouts/cp" %}
 
 {% set title = title ?? 'Settings'|t('icon-manager') %}
+{% set docTitle =  title ~  ' - ' ~ iconHelper.fullName %}
 {% set selectedSettingsItem = selectedSettingsItem ?? 'general' %}
 {% set selectedSubnavItem = 'settings' %}
 

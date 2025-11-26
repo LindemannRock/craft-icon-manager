@@ -12,6 +12,8 @@
 {% set selectedSubnavItem = 'icon-sets' %}
 
 {% set title = isNew ? 'New Icon Set'|t('icon-manager') : iconSet.name %}
+{% set pluginName = iconHelper.fullName %}
+{% set docTitle = title ~ ' - ' ~ pluginName %}
 
 {% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
 {% set crumbs = [
