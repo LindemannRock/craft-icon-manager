@@ -13,7 +13,6 @@
  * you do for 'general.php'
  */
 
-use craft\helpers\App;
 
 return [
     // Global settings

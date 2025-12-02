@@ -8,17 +8,16 @@
 
 namespace lindemannrock\iconmanager\services;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\models\IconSet;
-use lindemannrock\iconmanager\records\IconSetRecord;
-use lindemannrock\logginglibrary\traits\LoggingTrait;
-
 use Craft;
 use craft\base\Component;
 use craft\db\Query;
 use craft\helpers\DateTimeHelper;
-use craft\helpers\Db;
+
 use craft\helpers\StringHelper;
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\IconSet;
+use lindemannrock\iconmanager\records\IconSetRecord;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
  * Icon Sets Service
@@ -48,7 +47,7 @@ class IconSetsService extends Component
     
     /**
      * Get all icon sets
-     * 
+     *
      * @return IconSet[]
      */
     public function getAllIconSets(): array
@@ -130,7 +129,7 @@ class IconSetsService extends Component
 
     /**
      * Get multiple icon sets by their handles
-     * 
+     *
      * @param string[] $handles
      * @return IconSet[]
      */
@@ -166,7 +165,7 @@ class IconSetsService extends Component
             $this->logWarning("Icon set validation failed", [
                 'errors' => $errorString,
                 'errors' => $iconSet->getErrors(),
-                'iconSetId' => $iconSet->id
+                'iconSetId' => $iconSet->id,
             ]);
             return false;
         }
@@ -219,15 +218,14 @@ class IconSetsService extends Component
                 'action' => $action,
                 'iconSetId' => $iconSet->id,
                 'name' => $iconSet->name,
-                'type' => $iconSet->type
+                'type' => $iconSet->type,
             ]);
-
         } catch (\Throwable $e) {
             $transaction->rollBack();
             $this->logError("Failed to save icon set", [
                 'error' => $e->getMessage(),
                 'iconSetId' => $iconSet->id ?? 'new',
-                'name' => $iconSet->name ?? 'unknown'
+                'name' => $iconSet->name ?? 'unknown',
             ]);
             throw $e;
         }
@@ -261,15 +259,14 @@ class IconSetsService extends Component
             $this->logInfo("Icon set deleted successfully", [
                 'iconSetId' => $iconSet->id,
                 'name' => $iconSet->name,
-                'type' => $iconSet->type
+                'type' => $iconSet->type,
             ]);
-
         } catch (\Throwable $e) {
             $transaction->rollBack();
             $this->logError("Failed to delete icon set", [
                 'error' => $e->getMessage(),
                 'iconSetId' => $iconSet->id,
-                'name' => $iconSet->name
+                'name' => $iconSet->name,
             ]);
             throw $e;
         }
@@ -288,8 +285,8 @@ class IconSetsService extends Component
         try {
             foreach ($iconSetIds as $order => $id) {
                 $db->createCommand()
-                    ->update('{{%iconmanager_iconsets}}', 
-                        ['sortOrder' => $order + 1], 
+                    ->update('{{%iconmanager_iconsets}}',
+                        ['sortOrder' => $order + 1],
                         ['id' => $id]
                     )
                     ->execute();

@@ -8,12 +8,12 @@
 
 namespace lindemannrock\iconmanager\iconsets;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\models\Icon;
-use lindemannrock\iconmanager\models\IconSet;
-
 use Craft;
 use craft\helpers\Json;
+use lindemannrock\iconmanager\IconManager;
+
+use lindemannrock\iconmanager\models\Icon;
+use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\logginglibrary\services\LoggingService;
 
 /**
@@ -79,7 +79,7 @@ class MaterialIcons
         self::log('debug', 'Loading Material Icons', [
             'iconSetHandle' => $this->iconSet->handle,
             'materialType' => $materialType,
-            'definitionsCount' => count($iconDefinitions)
+            'definitionsCount' => count($iconDefinitions),
         ]);
         
         foreach ($iconDefinitions as $iconName => $iconData) {
@@ -98,7 +98,7 @@ class MaterialIcons
                     'className' => 'material-symbols-outlined',
                     'iconName' => $iconName,
                     'codepoint' => $iconData['codepoint'] ?? '',
-                    'materialType' => 'symbols'
+                    'materialType' => 'symbols',
                 ];
                 
                 // For symbols, we add the icon name as content
@@ -136,7 +136,7 @@ class MaterialIcons
                         'iconName' => $iconName,
                         'style' => $style,
                         'codepoint' => $iconData['codepoint'] ?? '',
-                        'materialType' => 'icons'
+                        'materialType' => 'icons',
                     ];
                     
                     // For icons, we add the icon name as content
@@ -150,7 +150,7 @@ class MaterialIcons
         self::log('info', 'Loaded icons from Material Icons', [
             'count' => count($icons),
             'iconSetHandle' => $this->iconSet->handle,
-            'materialType' => $materialType
+            'materialType' => $materialType,
         ]);
 
         return $icons;
@@ -170,7 +170,7 @@ class MaterialIcons
             $assets[] = [
                 'type' => 'css',
                 'url' => 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
-                'attributes' => ['crossorigin' => 'anonymous']
+                'attributes' => ['crossorigin' => 'anonymous'],
             ];
             
             // Add CSS for default settings
@@ -184,7 +184,7 @@ class MaterialIcons
                             "GRAD" 0,
                             "opsz" 24;
                     }
-                '
+                ',
             ];
         } else {
             // Material Icons classic
@@ -194,7 +194,7 @@ class MaterialIcons
             $assets[] = [
                 'type' => 'css',
                 'url' => 'https://fonts.googleapis.com/icon?family=Material+Icons',
-                'attributes' => ['crossorigin' => 'anonymous']
+                'attributes' => ['crossorigin' => 'anonymous'],
             ];
             
             // Include additional styles
@@ -204,7 +204,7 @@ class MaterialIcons
                     $assets[] = [
                         'type' => 'css',
                         'url' => "https://fonts.googleapis.com/icon?family={$fontFamily}",
-                        'attributes' => ['crossorigin' => 'anonymous']
+                        'attributes' => ['crossorigin' => 'anonymous'],
                     ];
                 }
             }
@@ -269,7 +269,7 @@ class MaterialIcons
         } else {
             self::log('warning', 'Material Icons definition file not found', [
                 'type' => $type,
-                'path' => $definitionsPath
+                'path' => $definitionsPath,
             ]);
         }
 

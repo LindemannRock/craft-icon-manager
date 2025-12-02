@@ -8,19 +8,19 @@
 
 namespace lindemannrock\iconmanager\fields;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\models\Icon;
-
-use lindemannrock\iconmanager\web\assets\field\IconManagerFieldAsset;
-
 use Craft;
+use craft\base\EagerLoadingFieldInterface;
+
 use craft\base\ElementInterface;
+
 use craft\base\Field;
 use craft\base\PreviewableFieldInterface;
 use craft\base\SortableFieldInterface;
-use craft\base\EagerLoadingFieldInterface;
 use craft\helpers\Html;
 use craft\helpers\Json;
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\Icon;
+use lindemannrock\iconmanager\web\assets\field\IconManagerFieldAsset;
 
 /**
  * Icon Manager Field
@@ -545,5 +545,4 @@ JS;
         // Hook for future custom label propagation handling if needed
         parent::afterElementPropagate($element, $isNew);
     }
-
 }

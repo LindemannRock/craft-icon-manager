@@ -8,19 +8,13 @@
 
 namespace lindemannrock\iconmanager\iconsets;
 
+use Craft;
+use craft\helpers\Json;
 use lindemannrock\iconmanager\IconManager;
+
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
-
-use Craft;
-use craft\helpers\App;
-use craft\helpers\Json;
-use craft\helpers\StringHelper;
 use lindemannrock\logginglibrary\services\LoggingService;
-
-use GuzzleHttp\Exception\RequestException;
-
-use Throwable;
 
 /**
  * Font Awesome icon set handler
@@ -83,7 +77,7 @@ class FontAwesome
 
         self::log('debug', 'Loading Font Awesome icons', [
             'iconSetHandle' => $this->iconSet->handle,
-            'type' => $type
+            'type' => $type,
         ]);
 
         switch ($type) {
@@ -103,7 +97,7 @@ class FontAwesome
         self::log('info', 'Loaded icons from Font Awesome', [
             'count' => count($icons),
             'iconSetHandle' => $this->iconSet->handle,
-            'type' => $type
+            'type' => $type,
         ]);
 
         return $icons;
@@ -125,7 +119,7 @@ class FontAwesome
                     $assets[] = [
                         'type' => 'js',
                         'url' => "https://kit.fontawesome.com/{$kitCode}.js",
-                        'attributes' => ['crossorigin' => 'anonymous']
+                        'attributes' => ['crossorigin' => 'anonymous'],
                     ];
                 }
                 break;
@@ -136,15 +130,15 @@ class FontAwesome
                 $styles = $settings['styles'] ?? ['solid'];
                 
                 // Font Awesome v7 CDN URLs
-                $baseUrl = $license === self::LICENSE_PRO 
-                    ? "https://pro.fontawesome.com/v7.0.0/css" 
+                $baseUrl = $license === self::LICENSE_PRO
+                    ? "https://pro.fontawesome.com/v7.0.0/css"
                     : "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css";
                 
                 // Always include base fontawesome.css
                 $assets[] = [
                     'type' => 'css',
                     'url' => "{$baseUrl}/fontawesome.min.css",
-                    'attributes' => ['crossorigin' => 'anonymous']
+                    'attributes' => ['crossorigin' => 'anonymous'],
                 ];
                 
                 // Include selected styles (v7 naming)
@@ -153,7 +147,7 @@ class FontAwesome
                     $assets[] = [
                         'type' => 'css',
                         'url' => "{$baseUrl}/{$cssFile}",
-                        'attributes' => ['crossorigin' => 'anonymous']
+                        'attributes' => ['crossorigin' => 'anonymous'],
                     ];
                 }
                 break;
@@ -172,9 +166,9 @@ class FontAwesome
 
     /**
      * Get icons from Font Awesome kit
-     * 
-     * For kits, we return an empty array since the kit JavaScript 
-     * dynamically loads available icons. Users should reference 
+     *
+     * For kits, we return an empty array since the kit JavaScript
+     * dynamically loads available icons. Users should reference
      * Font Awesome documentation for available icons.
      */
     private function getKitIcons(array $settings): array
@@ -183,7 +177,7 @@ class FontAwesome
         // We can't predict which icons are available without the kit JS
         $kitCode = $settings['kitCode'] ?? '';
         self::log('info', 'Font Awesome Kit icons load dynamically via JavaScript', [
-            'kitCode' => $kitCode ? substr($kitCode, 0, 8) . '...' : 'not configured'
+            'kitCode' => $kitCode ? substr($kitCode, 0, 8) . '...' : 'not configured',
         ]);
         return [];
     }
@@ -202,7 +196,7 @@ class FontAwesome
                 return [[
                     'type' => 'js',
                     'url' => "https://kit.fontawesome.com/{$kitCode}.js",
-                    'attributes' => ['crossorigin' => 'anonymous']
+                    'attributes' => ['crossorigin' => 'anonymous'],
                 ]];
             }
         }
@@ -248,7 +242,7 @@ class FontAwesome
                     'type' => Icon::TYPE_FONT,
                     'className' => "{$prefix} fa-{$iconId}",
                     'unicode' => $iconData['unicode'] ?? '',
-                    'style' => $style
+                    'style' => $style,
                 ];
                 
                 $icons[] = $icon;
@@ -322,7 +316,7 @@ class FontAwesome
             self::log('warning', 'Font Awesome definition file not found', [
                 'version' => $version,
                 'license' => $license,
-                'path' => $definitionsPath
+                'path' => $definitionsPath,
             ]);
         }
 
@@ -371,5 +365,4 @@ class FontAwesome
         
         return $prefixMap[$styleName] ?? 'fa';
     }
-
 }

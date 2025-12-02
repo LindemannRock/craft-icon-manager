@@ -8,9 +8,9 @@
 
 namespace lindemannrock\iconmanager\models;
 
-use lindemannrock\iconmanager\IconManager;
 use Craft;
 use craft\base\Model;
+use lindemannrock\iconmanager\IconManager;
 
 /**
  * Icon Set Model
@@ -116,7 +116,7 @@ class IconSet extends Model
      */
     public function getTypeLabel(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'svg-folder' => Craft::t('icon-manager', 'SVG Folder'),
             'svg-sprite' => Craft::t('icon-manager', 'SVG Sprite'),
             'font-awesome' => Craft::t('icon-manager', 'Font Awesome'),
@@ -132,7 +132,7 @@ class IconSet extends Model
      */
     public function getTypeSettings(): array
     {
-        return match($this->type) {
+        return match ($this->type) {
             'svg-folder' => [
                 'folder' => $this->settings['folder'] ?? '',
                 'includeSubfolders' => $this->settings['includeSubfolders'] ?? false,

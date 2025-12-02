@@ -12,8 +12,6 @@ use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
 
-use Craft;
-
 /**
  * Icon Manager Variable
  */

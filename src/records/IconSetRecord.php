@@ -12,7 +12,7 @@ use craft\db\ActiveRecord;
 
 /**
  * Icon Set Record
- * 
+ *
  * @property int $id
  * @property string $name
  * @property string $handle

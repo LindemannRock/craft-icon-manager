@@ -26,9 +26,9 @@ class Icon extends Model implements \JsonSerializable
     /**
      * Icon types
      */
-    const TYPE_SVG = 'svg';
-    const TYPE_SPRITE = 'sprite';
-    const TYPE_FONT = 'font';
+    public const TYPE_SVG = 'svg';
+    public const TYPE_SPRITE = 'sprite';
+    public const TYPE_FONT = 'font';
 
     /**
      * @var int|null ID
@@ -334,7 +334,7 @@ class Icon extends Model implements \JsonSerializable
                 'iconId' => $this->id,
                 'expectedPath' => $fullPath,
                 'basePath' => $basePath,
-                'relativePath' => $this->path
+                'relativePath' => $this->path,
             ]);
             return null;
         }
@@ -346,7 +346,7 @@ class Icon extends Model implements \JsonSerializable
                 'iconId' => $this->id,
                 'filePath' => $fullPath,
                 'fileExists' => file_exists($fullPath),
-                'fileSize' => filesize($fullPath)
+                'fileSize' => filesize($fullPath),
             ]);
             return null;
         }
@@ -355,7 +355,7 @@ class Icon extends Model implements \JsonSerializable
             $this->logWarning("Icon file is empty: {$this->name}", [
                 'iconId' => $this->id,
                 'filePath' => $fullPath,
-                'fileSize' => filesize($fullPath)
+                'fileSize' => filesize($fullPath),
             ]);
             return null;
         }
@@ -367,7 +367,7 @@ class Icon extends Model implements \JsonSerializable
             $this->logWarning("SVG content removed during sanitization: {$this->name}", [
                 'iconId' => $this->id,
                 'originalLength' => strlen($svg),
-                'filePath' => $fullPath
+                'filePath' => $fullPath,
             ]);
         }
 
@@ -439,7 +439,7 @@ class Icon extends Model implements \JsonSerializable
                         'unicode' => $unicode,
                         'unicodeHex' => '0x' . dechex($unicode),
                         'charBytes' => bin2hex($iconContent),
-                        'value' => $this->value
+                        'value' => $this->value,
                     ]);
                 }
 
@@ -514,7 +514,7 @@ class Icon extends Model implements \JsonSerializable
                     $this->logWarning("SVG content is empty for icon: {$this->name}", [
                         'iconId' => $this->id,
                         'iconSet' => $this->iconSetId,
-                        'path' => $this->path
+                        'path' => $this->path,
                     ]);
                     return '';
                 }
@@ -527,7 +527,7 @@ class Icon extends Model implements \JsonSerializable
                     $this->logError("Failed to parse SVG content for icon: {$this->name}", [
                         'iconId' => $this->id,
                         'iconSet' => $this->iconSetId,
-                        'svgLength' => strlen($svg)
+                        'svgLength' => strlen($svg),
                     ]);
                     return '';
                 }
@@ -586,7 +586,7 @@ class Icon extends Model implements \JsonSerializable
                     $this->logWarning("No SVG element found in parsed content for icon: {$this->name}", [
                         'iconId' => $this->id,
                         'iconSet' => $this->iconSetId,
-                        'contentPreview' => substr($svg, 0, 100)
+                        'contentPreview' => substr($svg, 0, 100),
                     ]);
                 }
                 break;
@@ -660,10 +660,10 @@ class Icon extends Model implements \JsonSerializable
         // Material Icons - register Google Fonts
         if ($iconSet->type === 'material-icons') {
             $view->registerCssFile('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block', [
-                'crossorigin' => 'anonymous'
+                'crossorigin' => 'anonymous',
             ]);
             $view->registerCssFile('https://fonts.googleapis.com/icon?family=Material+Icons&display=block', [
-                'crossorigin' => 'anonymous'
+                'crossorigin' => 'anonymous',
             ]);
         }
         // WebFont - register @font-face CSS

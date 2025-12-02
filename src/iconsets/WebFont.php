@@ -8,13 +8,12 @@
 
 namespace lindemannrock\iconmanager\iconsets;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\models\Icon;
-use lindemannrock\iconmanager\models\IconSet;
-use Craft;
 use craft\helpers\FileHelper;
 use craft\helpers\Json;
 use FontLib\Font;
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\Icon;
+use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\logginglibrary\services\LoggingService;
 
 /**
@@ -52,7 +51,7 @@ class WebFont
         if (!file_exists($fontPath)) {
             self::log('error', 'Font file not found', [
                 'fontPath' => $fontPath,
-                'iconSetHandle' => $iconSet->handle
+                'iconSetHandle' => $iconSet->handle,
             ]);
             return [];
         }
@@ -92,7 +91,7 @@ class WebFont
 
         self::log('info', 'Loaded icons from web font', [
             'count' => count($icons),
-            'iconSetHandle' => $iconSet->handle
+            'iconSetHandle' => $iconSet->handle,
         ]);
 
         return $icons;
@@ -139,11 +138,10 @@ class WebFont
                     'glyphId' => $glyphId,
                 ];
             }
-
         } catch (\Exception $e) {
             self::log('error', 'Error parsing font file', [
                 'fontPath' => $fontPath,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
 
@@ -168,7 +166,7 @@ class WebFont
         } catch (\Exception $e) {
             self::log('warning', 'Error loading metadata file', [
                 'metadataPath' => $metadataPath,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             return [];
         }
@@ -213,12 +211,12 @@ class WebFont
         // Get font URL - use controller action to serve the font file
         $fontUrl = \craft\helpers\UrlHelper::cpUrl('icon-manager/icons/serve-font', [
             'iconSet' => $iconSet->handle,
-            'file' => basename($settings['fontFile'])
+            'file' => basename($settings['fontFile']),
         ]);
 
         // Determine font format from extension
         $ext = pathinfo($settings['fontFile'], PATHINFO_EXTENSION);
-        $format = match(strtolower($ext)) {
+        $format = match (strtolower($ext)) {
             'woff2' => 'woff2',
             'woff' => 'woff',
             'ttf' => 'truetype',

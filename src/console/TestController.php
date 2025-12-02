@@ -8,9 +8,9 @@
 
 namespace lindemannrock\iconmanager\console;
 
-use lindemannrock\iconmanager\IconManager;
-use craft\console\Controller;
 use Craft;
+use craft\console\Controller;
+use lindemannrock\iconmanager\IconManager;
 
 /**
  * Test Controller
@@ -35,7 +35,7 @@ class TestController extends Controller
         // Update settings
         $iconSet->settings = [
             'folder' => '/alhatab',
-            'includeSubfolders' => false
+            'includeSubfolders' => false,
         ];
         
         $this->stdout("Saving with new settings:\n");

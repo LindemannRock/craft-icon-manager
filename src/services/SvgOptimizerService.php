@@ -614,7 +614,7 @@ class SvgOptimizerService extends Component
         } catch (\Exception $e) {
             $this->logError("Failed to optimize SVG file", [
                 'filePath' => $filePath,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             return false;
         }

@@ -40,7 +40,7 @@ class UtilitiesController extends Controller
                 } catch (\Exception $e) {
                     $this->logError("Failed to refresh icon set", [
                         'iconSetName' => $iconSet->name,
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                     $failed++;
                 }
@@ -50,13 +50,13 @@ class UtilitiesController extends Controller
                 Craft::$app->getSession()->setNotice(
                     Craft::t('icon-manager', 'Refreshed {refreshed} icon sets. {failed} failed.', [
                         'refreshed' => $refreshed,
-                        'failed' => $failed
+                        'failed' => $failed,
                     ])
                 );
             } else {
                 Craft::$app->getSession()->setNotice(
                     Craft::t('icon-manager', 'Successfully refreshed {count} icon sets.', [
-                        'count' => $refreshed
+                        'count' => $refreshed,
                     ])
                 );
             }
@@ -92,7 +92,7 @@ class UtilitiesController extends Controller
                 Craft::$app->getSession()->setNotice(
                     Craft::t('icon-manager', 'Scan complete. Found {count} potential issues across {sets} icon sets.', [
                         'count' => $totalIssues,
-                        'sets' => count($results)
+                        'sets' => count($results),
                     ])
                 );
             } else {

@@ -8,11 +8,11 @@
 
 namespace lindemannrock\iconmanager\controllers;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\models\Settings;
-
 use Craft;
 use craft\web\Controller;
+
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\Settings;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\Response;
 

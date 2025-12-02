@@ -8,12 +8,11 @@
 
 namespace lindemannrock\iconmanager\iconsets;
 
+use craft\helpers\FileHelper;
+use craft\helpers\Json;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
-use Craft;
-use craft\helpers\FileHelper;
-use craft\helpers\Json;
 use lindemannrock\logginglibrary\services\LoggingService;
 
 /**
@@ -50,7 +49,7 @@ class SvgSprite
         if (!file_exists($spritePath)) {
             self::log('error', 'Sprite file not found', [
                 'spritePath' => $spritePath,
-                'iconSetHandle' => $iconSet->handle
+                'iconSetHandle' => $iconSet->handle,
             ]);
             return [];
         }
@@ -94,7 +93,7 @@ class SvgSprite
 
         self::log('info', 'Loaded icons from SVG sprite', [
             'count' => count($icons),
-            'iconSetHandle' => $iconSet->handle
+            'iconSetHandle' => $iconSet->handle,
         ]);
 
         return $icons;
@@ -139,11 +138,10 @@ class SvgSprite
                     'viewBox' => $symbolElement->getAttribute('viewBox'),
                 ];
             }
-
         } catch (\Exception $e) {
             self::log('error', 'Error parsing sprite file', [
                 'spritePath' => $spritePath,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
 
@@ -168,7 +166,7 @@ class SvgSprite
         } catch (\Exception $e) {
             self::log('warning', 'Error loading metadata file', [
                 'metadataPath' => $metadataPath,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             return [];
         }
@@ -253,7 +251,7 @@ class SvgSprite
         // Fallback to controller action if file is outside webroot
         return \craft\helpers\UrlHelper::cpUrl('icon-manager/icons/serve-sprite', [
             'iconSet' => $iconSet->handle,
-            'file' => basename($settings['spriteFile'])
+            'file' => basename($settings['spriteFile']),
         ]);
     }
 }

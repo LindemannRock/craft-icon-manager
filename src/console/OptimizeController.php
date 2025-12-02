@@ -8,10 +8,10 @@
 
 namespace lindemannrock\iconmanager\console;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\services\SvgoService;
 use craft\console\Controller;
 use craft\helpers\Console;
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\services\SvgoService;
 use yii\console\ExitCode;
 
 /**

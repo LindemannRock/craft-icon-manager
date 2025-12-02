@@ -8,18 +8,17 @@
 
 namespace lindemannrock\iconmanager\services;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\models\Icon;
-use lindemannrock\iconmanager\models\IconSet;
-use lindemannrock\iconmanager\records\IconRecord;
-use lindemannrock\logginglibrary\traits\LoggingTrait;
-
 use Craft;
 use craft\base\Component;
 use craft\db\Query;
+use craft\helpers\Db;
+
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
-use craft\helpers\Db;
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\Icon;
+use lindemannrock\iconmanager\models\IconSet;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
  * Icons Service
@@ -44,7 +43,7 @@ class IconsService extends Component
 
     /**
      * Get all icons for an icon set
-     * 
+     *
      * @param int $iconSetId
      * @return Icon[]
      */
@@ -127,7 +126,7 @@ class IconsService extends Component
             $this->logWarning("Slow icon loading detected for icon set", [
                 'iconSetId' => $iconSetId,
                 'duration' => round($duration, 3),
-                'iconCount' => count($icons)
+                'iconCount' => count($icons),
             ]);
         }
 
@@ -289,7 +288,7 @@ class IconsService extends Component
 
         $this->logInfo("Found SVG files", [
             'count' => count($files),
-            'folderPath' => $folderPath
+            'folderPath' => $folderPath,
         ]);
 
         foreach ($files as $file) {

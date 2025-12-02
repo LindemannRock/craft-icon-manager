@@ -12,7 +12,7 @@ use craft\db\ActiveRecord;
 
 /**
  * Icon Record
- * 
+ *
  * @property int $id
  * @property int $iconSetId
  * @property string $name

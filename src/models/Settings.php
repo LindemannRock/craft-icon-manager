@@ -8,7 +8,6 @@
 
 namespace lindemannrock\iconmanager\models;
 
-use lindemannrock\iconmanager\IconManager;
 use Craft;
 use craft\base\Model;
 use craft\behaviors\EnvAttributeParserBehavior;
@@ -296,14 +295,14 @@ class Settings extends Model
                     // Web request - use session to prevent duplicate warnings
                     if (Craft::$app->getSession()->get('im_debug_config_warning') === null) {
                         $this->logWarning('Log level "debug" from config file changed to "info" because devMode is disabled', [
-                            'configFile' => 'config/icon-manager.php'
+                            'configFile' => 'config/icon-manager.php',
                         ]);
                         Craft::$app->getSession()->set('im_debug_config_warning', true);
                     }
                 } else {
                     // Console request - just log without session
                     $this->logWarning('Log level "debug" from config file changed to "info" because devMode is disabled', [
-                        'configFile' => 'config/icon-manager.php'
+                        'configFile' => 'config/icon-manager.php',
                     ]);
                 }
             } else {

@@ -8,11 +8,11 @@
 
 namespace lindemannrock\iconmanager\controllers;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\logginglibrary\traits\LoggingTrait;
-
 use Craft;
 use craft\web\Controller;
+
+use lindemannrock\iconmanager\IconManager;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\Response;
 
 /**
@@ -46,7 +46,7 @@ class IconsController extends Controller
         if (!$icon) {
             $this->logWarning("Icon render failed - icon not found", [
                 'iconSetHandle' => $iconSetHandle,
-                'iconName' => $iconName
+                'iconName' => $iconName,
             ]);
             throw new \yii\web\NotFoundHttpException('Icon not found');
         }
@@ -76,7 +76,7 @@ class IconsController extends Controller
         if (!$icon) {
             $this->logWarning("Icon data request failed - icon not found", [
                 'iconSetHandle' => $iconSetHandle,
-                'iconName' => $iconName
+                'iconName' => $iconName,
             ]);
             return $this->asJson(['error' => 'Icon not found']);
         }
@@ -89,7 +89,7 @@ class IconsController extends Controller
                 'content' => $icon->getContent(),
                 'keywords' => $icon->keywords,
                 'type' => $icon->type,
-            ]
+            ],
         ]);
     }
 
@@ -307,7 +307,7 @@ class IconsController extends Controller
 
         // Determine MIME type
         $ext = pathinfo($fontFile, PATHINFO_EXTENSION);
-        $mimeType = match(strtolower($ext)) {
+        $mimeType = match (strtolower($ext)) {
             'woff2' => 'font/woff2',
             'woff' => 'font/woff',
             'ttf' => 'font/ttf',
@@ -318,7 +318,7 @@ class IconsController extends Controller
         // Return font file
         return Craft::$app->getResponse()->sendFile($fontPath, $fileName, [
             'mimeType' => $mimeType,
-            'inline' => true
+            'inline' => true,
         ]);
     }
 
@@ -357,7 +357,7 @@ class IconsController extends Controller
         // Return sprite file
         return Craft::$app->getResponse()->sendFile($spritePath, $fileName, [
             'mimeType' => 'image/svg+xml',
-            'inline' => true
+            'inline' => true,
         ]);
     }
 }

@@ -11,31 +11,31 @@
 namespace lindemannrock\iconmanager;
 
 use Craft;
-use craft\base\Plugin;
 use craft\base\Model;
+use craft\base\Plugin;
+use craft\console\Application as ConsoleApplication;
+use craft\events\RegisterCacheOptionsEvent;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterTemplateRootsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Fields;
 use craft\services\UserPermissions;
+use craft\services\Utilities;
+use craft\utilities\ClearCaches;
+use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
-use craft\web\twig\variables\CraftVariable;
-use craft\events\RegisterCacheOptionsEvent;
-use craft\utilities\ClearCaches;
 use lindemannrock\iconmanager\fields\IconManagerField;
 use lindemannrock\iconmanager\models\Settings;
-use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\services\IconSetsService;
+use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\services\SvgOptimizerService;
 use lindemannrock\iconmanager\utilities\ClearIconCache;
 use lindemannrock\iconmanager\variables\IconManagerVariable;
-use lindemannrock\logginglibrary\traits\LoggingTrait;
 use lindemannrock\logginglibrary\LoggingLibrary;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\base\Event;
-use craft\console\Application as ConsoleApplication;
-use craft\services\Utilities;
 
 /**
  * Icon Manager Plugin
@@ -208,7 +208,7 @@ class IconManager extends Plugin
             if (Craft::$app->getPlugins()->isPluginInstalled('logging-library') &&
                 Craft::$app->getPlugins()->isPluginEnabled('logging-library')) {
                 $item = LoggingLibrary::addLogsNav($item, $this->handle, [
-                    'iconManager:viewLogs'
+                    'iconManager:viewLogs',
                 ]);
             }
 
@@ -415,5 +415,4 @@ class IconManager extends Plugin
             'permissions' => ['iconManager:viewLogs'],
         ]);
     }
-
 }

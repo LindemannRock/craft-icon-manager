@@ -8,12 +8,12 @@
 
 namespace lindemannrock\iconmanager\controllers;
 
-use lindemannrock\iconmanager\IconManager;
-use lindemannrock\iconmanager\models\IconSet;
-use lindemannrock\logginglibrary\traits\LoggingTrait;
-
 use Craft;
 use craft\web\Controller;
+use lindemannrock\iconmanager\IconManager;
+
+use lindemannrock\iconmanager\models\IconSet;
+use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\Response;
 
 /**
@@ -279,7 +279,7 @@ class IconSetsController extends Controller
 
         return $this->asJson([
             'success' => true,
-            'enabled' => $enabled
+            'enabled' => $enabled,
         ]);
     }
 
@@ -306,7 +306,7 @@ class IconSetsController extends Controller
 
         return $this->asJson([
             'success' => true,
-            'disabled' => $disabled
+            'disabled' => $disabled,
         ]);
     }
 
@@ -330,7 +330,7 @@ class IconSetsController extends Controller
 
         return $this->asJson([
             'success' => true,
-            'deleted' => $deleted
+            'deleted' => $deleted,
         ]);
     }
 
@@ -404,11 +404,11 @@ class IconSetsController extends Controller
             if ($result['success']) {
                 if ($result['filesOptimized'] > 0) {
                     $message = Craft::t('icon-manager', 'Optimized {count} SVG file(s).', [
-                        'count' => $result['filesOptimized']
+                        'count' => $result['filesOptimized'],
                     ]);
                     if ($result['backupPath']) {
                         $message .= ' ' . Craft::t('icon-manager', 'Backup created at: {backup}', [
-                            'backup' => $result['backupPath']
+                            'backup' => $result['backupPath'],
                         ]);
                     }
                 } else {
@@ -533,7 +533,7 @@ class IconSetsController extends Controller
                 $files[] = [
                     'path' => $file->getPathname(),
                     'relativePath' => $relativePath,
-                    'content' => $content
+                    'content' => $content,
                 ];
             }
         }
@@ -552,7 +552,7 @@ class IconSetsController extends Controller
         if (!$this->isOptimizationAllowed()) {
             return $this->asJson([
                 'success' => false,
-                'error' => 'SVG optimization is only available in local/development environments.'
+                'error' => 'SVG optimization is only available in local/development environments.',
             ]);
         }
 
@@ -590,9 +590,8 @@ class IconSetsController extends Controller
             return $this->asJson([
                 'success' => true,
                 'filesSaved' => $savedCount,
-                'backupPath' => $backupPath
+                'backupPath' => $backupPath,
             ]);
-
         } catch (\Exception $e) {
             $this->logError('Could not save optimized SVGs', ['error' => $e->getMessage()]);
             return $this->asJson(['success' => false, 'error' => $e->getMessage()]);
