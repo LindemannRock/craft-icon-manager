@@ -31,6 +31,7 @@ use lindemannrock\iconmanager\models\Settings;
 use lindemannrock\iconmanager\services\IconSetsService;
 use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\services\SvgOptimizerService;
+use lindemannrock\iconmanager\services\SvgoService;
 use lindemannrock\iconmanager\utilities\ClearIconCache;
 use lindemannrock\iconmanager\variables\IconManagerVariable;
 use lindemannrock\logginglibrary\LoggingLibrary;
@@ -76,11 +77,6 @@ class IconManager extends Plugin
     public bool $hasCpSection = true;
 
     /**
-     * @var bool Internal flag to avoid registering duplicate log targets
-     */
-    private static bool $_logTargetRegistered = false;
-
-    /**
      * @inheritdoc
      */
     public static function config(): array
@@ -110,7 +106,7 @@ class IconManager extends Plugin
         } else {
             // Get from database settings
             $settings = $this->getSettings();
-            if ($settings && !empty($settings->pluginName)) {
+            if (!empty($settings->pluginName)) {
                 $this->name = $settings->pluginName;
             }
         }

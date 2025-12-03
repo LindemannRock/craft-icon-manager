@@ -363,7 +363,7 @@ class Icon extends Model implements \JsonSerializable
         // Sanitize SVG for security
         $sanitized = $this->sanitizeSvg($svg);
 
-        if (empty($sanitized) && !empty($svg)) {
+        if (empty($sanitized)) {
             $this->logWarning("SVG content removed during sanitization: {$this->name}", [
                 'iconId' => $this->id,
                 'originalLength' => strlen($svg),
@@ -516,7 +516,7 @@ class Icon extends Model implements \JsonSerializable
                         'iconSet' => $this->iconSetId,
                         'path' => $this->path,
                     ]);
-                    return '';
+                    return new \Twig\Markup('', 'UTF-8');
                 }
 
                 // Add classes and attributes to SVG
@@ -529,7 +529,7 @@ class Icon extends Model implements \JsonSerializable
                         'iconSet' => $this->iconSetId,
                         'svgLength' => strlen($svg),
                     ]);
-                    return '';
+                    return new \Twig\Markup('', 'UTF-8');
                 }
 
                 $svgElement = $dom->getElementsByTagName('svg')->item(0);
@@ -556,15 +556,15 @@ class Icon extends Model implements \JsonSerializable
                             $svgElement->setAttribute('height', $height);
                         } elseif ($width && $originalWidth && $originalHeight) {
                             // Width specified, calculate proportional height
-                            $aspectRatio = $originalHeight / $originalWidth;
+                            $aspectRatio = (float)$originalHeight / (float)$originalWidth;
                             $calculatedHeight = round($width * $aspectRatio, 1);
                             $svgElement->setAttribute('width', $width);
-                            $svgElement->setAttribute('height', $calculatedHeight);
+                            $svgElement->setAttribute('height', (string)$calculatedHeight);
                         } elseif ($height && $originalWidth && $originalHeight) {
                             // Height specified, calculate proportional width
-                            $aspectRatio = $originalWidth / $originalHeight;
+                            $aspectRatio = (float)$originalWidth / (float)$originalHeight;
                             $calculatedWidth = round($height * $aspectRatio, 1);
-                            $svgElement->setAttribute('width', $calculatedWidth);
+                            $svgElement->setAttribute('width', (string)$calculatedWidth);
                             $svgElement->setAttribute('height', $height);
                         } else {
                             // Fallback to original behavior

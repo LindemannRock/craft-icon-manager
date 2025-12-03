@@ -23,7 +23,7 @@ class IconsController extends Controller
     use LoggingTrait;
 
     /**
-     * @var array|bool|int Allow anonymous access
+     * @var array<int|string>|bool|int Allow anonymous access
      */
     protected array|bool|int $allowAnonymous = ['render', 'serve-sprite'];
 
@@ -52,7 +52,9 @@ class IconsController extends Controller
         }
 
         // Return SVG content
-        return $this->asRaw($icon->getContent())->format(Response::FORMAT_RAW);
+        $response = $this->asRaw($icon->getContent());
+        $response->format = Response::FORMAT_RAW;
+        return $response;
     }
     
     /**
@@ -174,8 +176,8 @@ class IconsController extends Controller
 
         // Get the field
         $field = Craft::$app->getFields()->getFieldById($fieldId);
-        if (!$field) {
-            $this->logWarning("Field not found", ['fieldId' => $fieldId]);
+        if (!$field || !($field instanceof \lindemannrock\iconmanager\fields\IconManagerField)) {
+            $this->logWarning("Field not found or not an IconManager field", ['fieldId' => $fieldId]);
             return $this->asJson(['error' => 'Field not found']);
         }
 

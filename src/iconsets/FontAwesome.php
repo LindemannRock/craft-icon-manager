@@ -52,7 +52,6 @@ class FontAwesome
     // =========================================================================
 
     private IconSet $iconSet;
-    private ?string $apiError = null;
 
     // Public Methods
     // =========================================================================

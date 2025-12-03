@@ -229,7 +229,6 @@ class SvgoService extends Component
                     'error' => $e->getMessage(),
                     'file' => $filename,
                     'path' => $file,
-                    'error' => $e->getMessage(),
                 ]);
                 $this->logDebug("Exception trace", [
                     'trace' => $e->getTraceAsString(),

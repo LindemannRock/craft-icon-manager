@@ -103,9 +103,9 @@ class TestController extends Controller
         $this->stdout("iconSetsPath: " . $settings->iconSetsPath . "\n");
         $this->stdout("enableCache: " . ($settings->enableCache ? 'true' : 'false') . "\n");
         $this->stdout("cacheDuration: " . $settings->cacheDuration . "\n");
-        $this->stdout("iconsPerPage: " . $settings->iconsPerPage . "\n");
-        $this->stdout("showLabels: " . ($settings->showLabels ? 'true' : 'false') . "\n");
-        $this->stdout("iconSize: " . $settings->iconSize . "\n");
+        // $this->stdout("iconsPerPage: " . $settings->iconsPerPage . "\n");
+        // $this->stdout("showLabels: " . ($settings->showLabels ? 'true' : 'false') . "\n");
+        // $this->stdout("iconSize: " . $settings->iconSize . "\n");
         $this->stdout("enabledIconTypes: " . json_encode($settings->enabledIconTypes) . "\n\n");
         
         // Test saving
@@ -141,9 +141,9 @@ class TestController extends Controller
         $this->stdout("  Resolved: " . $settings->getResolvedIconSetsPath() . "\n");
         $this->stdout("- enableCache: " . ($settings->enableCache ? 'true' : 'false') . "\n");
         $this->stdout("- cacheDuration: " . $settings->cacheDuration . "\n");
-        $this->stdout("- iconsPerPage: " . $settings->iconsPerPage . "\n");
-        $this->stdout("- showLabels: " . ($settings->showLabels ? 'true' : 'false') . "\n");
-        $this->stdout("- iconSize: " . $settings->iconSize . "\n");
+        // $this->stdout("- iconsPerPage: " . $settings->iconsPerPage . "\n");
+        // $this->stdout("- showLabels: " . ($settings->showLabels ? 'true' : 'false') . "\n");
+        // $this->stdout("- iconSize: " . $settings->iconSize . "\n");
         $this->stdout("- enabledIconTypes: " . json_encode($settings->enabledIconTypes) . "\n\n");
         
         // Check overrides

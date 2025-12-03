@@ -163,7 +163,7 @@ class IconSetsService extends Component
             $errorString = implode('; ', $errorMessages);
 
             $this->logWarning("Icon set validation failed", [
-                'errors' => $errorString,
+                'errorString' => $errorString,
                 'errors' => $iconSet->getErrors(),
                 'iconSetId' => $iconSet->id,
             ]);

@@ -269,10 +269,7 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
 
         if (is_array($value) && !empty($value)) {
             $icon = $this->_createIconFromArray($value, $element);
-            if ($icon) {
-                // Restore full customLabels array from database if available
-                $this->_restoreCustomLabelsFromDatabase($icon, $element);
-            }
+            // Note: Custom labels restoration removed - handled in _createIconFromArray
             return $icon;
         }
 

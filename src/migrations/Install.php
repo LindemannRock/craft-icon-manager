@@ -168,7 +168,7 @@ class Install extends Migration
     protected function dropForeignKeys(): void
     {
         if ($this->db->tableExists('{{%iconmanager_icons}}')) {
-            $this->dropForeignKey($this->db->getForeignKeyName('{{%iconmanager_icons}}', 'iconSetId'), '{{%iconmanager_icons}}');
+            $this->dropForeignKeyIfExists('{{%iconmanager_icons}}', ['iconSetId']);
         }
     }
 
