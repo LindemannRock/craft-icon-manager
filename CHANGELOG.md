@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.5.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.4.0...v5.5.0) (2025-12-04)
+
+
+### Features
+
+* add [@since](https://github.com/since) annotations to various classes and files for version tracking ([70c6db6](https://github.com/LindemannRock/craft-icon-manager/commit/70c6db6c9a40d5b35c6169713234d0e9e564fc7f))
+* add Info Box component template ([f30b6d8](https://github.com/LindemannRock/craft-icon-manager/commit/f30b6d8ce6ed4e5cd84eb2e45193109dc03a7b4e))
+* Add PHPStan and EasyCodingStandard support ([39626d0](https://github.com/LindemannRock/craft-icon-manager/commit/39626d0c975eedb2e5586b0cc07c0ca32611cf0e))
+* Refactor and enhance various components for improved functionality and clarity ([1da2e6b](https://github.com/LindemannRock/craft-icon-manager/commit/1da2e6b85b25a154d76f7f30b11d7c3e568d4248))
+* update titles in settings templates for clarity ([c049862](https://github.com/LindemannRock/craft-icon-manager/commit/c049862990e4c78c435c0a545c8e013a88f1e666))
+
 ## [5.4.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.3.0...v5.4.0) (2025-11-15)
 
 
