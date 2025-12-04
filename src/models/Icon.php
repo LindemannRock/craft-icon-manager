@@ -18,6 +18,8 @@ use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
  * Icon Model
+ *
+ * @since 1.0.0
  */
 class Icon extends Model implements \JsonSerializable
 {

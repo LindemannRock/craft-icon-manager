@@ -22,6 +22,8 @@ use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
  * Icons Service
+ *
+ * @since 1.0.0
  */
 class IconsService extends Component
 {

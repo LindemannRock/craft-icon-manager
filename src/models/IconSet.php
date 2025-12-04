@@ -14,6 +14,8 @@ use lindemannrock\iconmanager\IconManager;
 
 /**
  * Icon Set Model
+ *
+ * @since 1.0.0
  */
 class IconSet extends Model
 {

@@ -18,6 +18,8 @@ use MathiasReker\PhpSvgOptimizer\Service\Facade\SvgOptimizerFacade;
  * SVG Optimizer Service
  *
  * Scans and optimizes SVG files in icon sets
+ *
+ * @since 1.10.0
  */
 class SvgOptimizerService extends Component
 {

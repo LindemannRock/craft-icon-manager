@@ -16,6 +16,8 @@ use yii\console\ExitCode;
 
 /**
  * Optimize SVG icons using various optimization engines
+ *
+ * @since 1.10.0
  */
 class OptimizeController extends Controller
 {

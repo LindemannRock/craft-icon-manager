@@ -18,6 +18,8 @@ use yii\web\Response;
 
 /**
  * Icon Sets Controller
+ *
+ * @since 1.0.0
  */
 class IconSetsController extends Controller
 {

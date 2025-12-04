@@ -14,6 +14,8 @@ use craft\web\assets\cp\CpAsset;
 
 /**
  * Icon Manager Field Asset Bundle
+ *
+ * @since 1.0.0
  */
 class IconManagerFieldAsset extends AssetBundle
 {

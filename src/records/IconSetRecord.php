@@ -23,6 +23,7 @@ use craft\db\ActiveRecord;
  * @property \DateTime $dateCreated
  * @property \DateTime $dateUpdated
  * @property string $uid
+ * @since 1.0.0
  */
 class IconSetRecord extends ActiveRecord
 {

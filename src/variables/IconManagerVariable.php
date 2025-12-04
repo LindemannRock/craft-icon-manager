@@ -14,6 +14,8 @@ use lindemannrock\iconmanager\models\IconSet;
 
 /**
  * Icon Manager Variable
+ *
+ * @since 1.0.0
  */
 class IconManagerVariable
 {

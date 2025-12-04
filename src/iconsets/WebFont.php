@@ -22,6 +22,7 @@ use lindemannrock\logginglibrary\services\LoggingService;
  * Supports custom icon fonts (TTF, WOFF, OTF)
  * Automatically extracts glyph information from font files
  * Note: WOFF2 not supported due to Brotli compression - use TTF or WOFF
+ * @since 1.10.0
  */
 class WebFont
 {

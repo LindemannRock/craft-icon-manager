@@ -14,6 +14,8 @@ use lindemannrock\iconmanager\IconManager;
 
 /**
  * Test Controller
+ *
+ * @since 1.0.0
  */
 class TestController extends Controller
 {

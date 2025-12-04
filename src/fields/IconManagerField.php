@@ -24,6 +24,8 @@ use lindemannrock\iconmanager\web\assets\field\IconManagerFieldAsset;
 
 /**
  * Icon Manager Field
+ *
+ * @since 1.0.0
  */
 class IconManagerField extends Field implements PreviewableFieldInterface, SortableFieldInterface, EagerLoadingFieldInterface
 {

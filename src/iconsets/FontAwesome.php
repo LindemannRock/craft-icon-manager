@@ -25,6 +25,7 @@ use lindemannrock\logginglibrary\services\LoggingService;
  * - Kit integration
  * - CDN integration
  * - Auto-detection of Pro license
+ * @since 1.0.0
  */
 class FontAwesome
 {

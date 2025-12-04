@@ -17,6 +17,8 @@ use yii\web\Response;
 
 /**
  * Icons Controller
+ *
+ * @since 1.0.0
  */
 class IconsController extends Controller
 {

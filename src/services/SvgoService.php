@@ -19,6 +19,8 @@ use lindemannrock\logginglibrary\traits\LoggingTrait;
  * SVGO Service
  *
  * Handles SVGO detection, configuration, and optimization
+ *
+ * @since 1.10.0
  */
 class SvgoService extends Component
 {

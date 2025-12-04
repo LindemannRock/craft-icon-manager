@@ -15,6 +15,8 @@ use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
  * Cache Controller
+ *
+ * @since 1.8.0
  */
 class CacheController extends Controller
 {

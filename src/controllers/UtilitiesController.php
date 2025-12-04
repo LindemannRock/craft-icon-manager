@@ -16,6 +16,8 @@ use yii\web\Response;
 
 /**
  * Utilities Controller
+ *
+ * @since 1.8.0
  */
 class UtilitiesController extends Controller
 {
