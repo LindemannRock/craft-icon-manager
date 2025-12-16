@@ -462,10 +462,20 @@ class IconsService extends Component
     }
 
     /**
-     * Get cached icons from custom file cache
+     * Get cached icons from storage (file or Redis)
      */
     private function _getCachedIcons(int $iconSetId): ?array
     {
+        $settings = IconManager::getInstance()->getSettings();
+        $cacheKey = 'iconmanager:icons:' . $iconSetId;
+
+        // Use Redis/database cache if configured
+        if ($settings->cacheStorageMethod === 'redis') {
+            $cached = Craft::$app->cache->get($cacheKey);
+            return $cached !== false ? $cached : null;
+        }
+
+        // Use file-based cache (default)
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
         if (!$iconSet) {
             return null;
@@ -480,7 +490,6 @@ class IconsService extends Component
 
         // Check if cache is expired
         $mtime = filemtime($cacheFile);
-        $settings = IconManager::getInstance()->getSettings();
         if (time() - $mtime > $settings->cacheDuration) {
             @unlink($cacheFile);
             return null;
@@ -491,10 +500,28 @@ class IconsService extends Component
     }
 
     /**
-     * Cache icons to custom file cache
+     * Cache icons to storage (file or Redis)
      */
     private function _cacheIcons(int $iconSetId, array $icons, int $duration): void
     {
+        $settings = IconManager::getInstance()->getSettings();
+        $cacheKey = 'iconmanager:icons:' . $iconSetId;
+
+        // Use Redis/database cache if configured
+        if ($settings->cacheStorageMethod === 'redis') {
+            $cache = Craft::$app->cache;
+            $cache->set($cacheKey, $icons, $duration);
+
+            // Track key in set for selective deletion
+            if ($cache instanceof \yii\redis\Cache) {
+                $redis = $cache->redis;
+                $redis->executeCommand('SADD', ['iconmanager-icons-keys', $cacheKey]);
+            }
+
+            return;
+        }
+
+        // Use file-based cache (default)
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
         if (!$iconSet) {
             return;

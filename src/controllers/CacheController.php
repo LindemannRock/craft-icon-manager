@@ -32,29 +32,49 @@ class CacheController extends Controller
         try {
             $this->logInfo("Starting icon cache clearing operation");
 
-            $runtimePath = Craft::$app->path->getRuntimePath();
+            $settings = IconManager::getInstance()->getSettings();
             $totalCleared = 0;
             $cacheStats = [];
 
-            // Clear all cache folders organized by type
-            $cacheBasePath = $runtimePath . '/icon-manager/cache/';
-            $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
+            if ($settings->cacheStorageMethod === 'redis') {
+                // Clear Redis cache
+                $cache = Craft::$app->cache;
+                if ($cache instanceof \yii\redis\Cache) {
+                    $redis = $cache->redis;
 
-            foreach ($cacheTypes as $type) {
-                $cachePath = $cacheBasePath . $type . '/';
-                $typeCount = 0;
+                    // Get all icon cache keys from tracking set
+                    $keys = $redis->executeCommand('SMEMBERS', ['iconmanager-icons-keys']) ?: [];
 
-                if (is_dir($cachePath)) {
-                    $cacheFiles = glob($cachePath . '*.cache');
-                    foreach ($cacheFiles as $file) {
-                        if (@unlink($file)) {
-                            $typeCount++;
+                    // Delete icon cache keys using Craft's cache component
+                    foreach ($keys as $key) {
+                        $cache->delete($key);
+                    }
+
+                    // Clear the tracking set
+                    $redis->executeCommand('DEL', ['iconmanager-icons-keys']);
+                }
+            } else {
+                // Clear file cache
+                $runtimePath = Craft::$app->path->getRuntimePath();
+                $cacheBasePath = $runtimePath . '/icon-manager/cache/';
+                $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
+
+                foreach ($cacheTypes as $type) {
+                    $cachePath = $cacheBasePath . $type . '/';
+                    $typeCount = 0;
+
+                    if (is_dir($cachePath)) {
+                        $cacheFiles = glob($cachePath . '*.cache');
+                        foreach ($cacheFiles as $file) {
+                            if (@unlink($file)) {
+                                $typeCount++;
+                            }
                         }
                     }
-                }
 
-                $cacheStats[$type] = $typeCount;
-                $totalCleared += $typeCount;
+                    $cacheStats[$type] = $typeCount;
+                    $totalCleared += $typeCount;
+                }
             }
 
             // Clear memory caches

@@ -48,30 +48,44 @@
             <!-- Header -->
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
                 <div style="width: 12px; height: 12px; border-radius: 50%; background: {% if cacheEnabled %}#22c55e{% else %}#6b7280{% endif %};"></div>
-                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">{{ "Cache Status"|t('icon-manager') }}</h4>
+                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">
+                    {{ "Cache Status"|t('icon-manager') }}{% if cacheEnabled %} ({{ storageMethod == 'redis' ? 'Redis' : 'File' }}){% endif %}
+                </h4>
             </div>
 
             <!-- Main Content -->
             <div style="flex: 1; display: flex; flex-direction: column;">
-                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
-                    <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1;">
-                        {% if cacheEnabled %}
-                            {{ (cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'])|number_format }}
-                        {% else %}
-                            <span style="font-size: 18px; color: #6b7280;">{{ 'Disabled'|t('icon-manager') }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
-                    {% if cacheEnabled %}
-                        {{ "Total cached entries"|t('icon-manager') }}
+                {% if cacheEnabled %}
+                    {% if storageMethod == 'redis' %}
+                        <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1; margin-bottom: 12px;">
+                            {{ "Active"|t('icon-manager') }}
+                        </div>
+                        <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
+                            {{ "Cached via Redis"|t('icon-manager') }}
+                        </div>
                     {% else %}
-                        {{ "Cache is disabled"|t('icon-manager') }}
+                        <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+                            <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1;">
+                                {{ (cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'])|number_format }}
+                            </div>
+                        </div>
+                        <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
+                            {{ "Total cached entries"|t('icon-manager') }}
+                        </div>
                     {% endif %}
-                </div>
+                {% else %}
+                    <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+                        <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1;">
+                            <span style="font-size: 18px; color: #6b7280;">{{ 'Disabled'|t('icon-manager') }}</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
+                        {{ "Cache is disabled"|t('icon-manager') }}
+                    </div>
+                {% endif %}
 
                 <!-- Bottom Boxes -->
-                {% if cacheEnabled %}
+                {% if cacheEnabled and storageMethod != 'redis' %}
                 <div style="margin-top: auto;">
                     <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
                         <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
@@ -96,7 +110,7 @@
                         </div>
                     </div>
                 </div>
-                {% else %}
+                {% elseif not cacheEnabled %}
                 <div style="margin-top: auto;">
                     <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center;">
                         <p style="font-size: 12px; color: #6b7280; margin: 0;">

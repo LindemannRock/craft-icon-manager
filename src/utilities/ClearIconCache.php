@@ -72,8 +72,7 @@ class ClearIconCache extends Utility
             $duration = $minutes . ' ' . ($minutes == 1 ? Craft::t('icon-manager', 'minute') : Craft::t('icon-manager', 'minutes'));
         }
 
-        // Count cache files
-        $runtimePath = Craft::$app->path->getRuntimePath();
+        // Count cache files (only for file storage)
         $cacheStats = [
             'svg-folder' => 0,
             'svg-sprite' => 0,
@@ -82,12 +81,15 @@ class ClearIconCache extends Utility
             'web-font' => 0,
         ];
 
-        // Count cache files organized by type
-        $cacheBasePath = $runtimePath . '/icon-manager/cache/';
-        foreach (array_keys($cacheStats) as $type) {
-            $cachePath = $cacheBasePath . $type . '/';
-            if (is_dir($cachePath)) {
-                $cacheStats[$type] = count(glob($cachePath . '*.cache'));
+        // Only count files when using file storage (Redis counts are not displayed)
+        if ($settings->cacheStorageMethod === 'file') {
+            $runtimePath = Craft::$app->path->getRuntimePath();
+            $cacheBasePath = $runtimePath . '/icon-manager/cache/';
+            foreach (array_keys($cacheStats) as $type) {
+                $cachePath = $cacheBasePath . $type . '/';
+                if (is_dir($cachePath)) {
+                    $cacheStats[$type] = count(glob($cachePath . '*.cache'));
+                }
             }
         }
 
@@ -97,6 +99,7 @@ class ClearIconCache extends Utility
             'cacheEnabled' => $settings->enableCache,
             'cacheDuration' => $duration,
             'cacheStats' => $cacheStats,
+            'storageMethod' => $settings->cacheStorageMethod,
         ]);
     }
 }

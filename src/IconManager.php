@@ -375,18 +375,38 @@ class IconManager extends Plugin
      */
     private function _clearIconCache(): void
     {
-        $runtimePath = Craft::$app->path->getRuntimePath();
+        $settings = $this->getSettings();
 
-        // Clear all cache folders organized by type
-        $cacheBasePath = $runtimePath . '/icon-manager/cache/';
-        $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
+        if ($settings->cacheStorageMethod === 'redis') {
+            // Clear Redis cache
+            $cache = Craft::$app->cache;
+            if ($cache instanceof \yii\redis\Cache) {
+                $redis = $cache->redis;
 
-        foreach ($cacheTypes as $type) {
-            $cachePath = $cacheBasePath . $type . '/';
-            if (is_dir($cachePath)) {
-                $cacheFiles = glob($cachePath . '*.cache');
-                foreach ($cacheFiles as $file) {
-                    @unlink($file);
+                // Get all icon cache keys from tracking set
+                $keys = $redis->executeCommand('SMEMBERS', ['iconmanager-icons-keys']) ?: [];
+
+                // Delete icon cache keys using Craft's cache component
+                foreach ($keys as $key) {
+                    $cache->delete($key);
+                }
+
+                // Clear the tracking set
+                $redis->executeCommand('DEL', ['iconmanager-icons-keys']);
+            }
+        } else {
+            // Clear file cache
+            $runtimePath = Craft::$app->path->getRuntimePath();
+            $cacheBasePath = $runtimePath . '/icon-manager/cache/';
+            $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
+
+            foreach ($cacheTypes as $type) {
+                $cachePath = $cacheBasePath . $type . '/';
+                if (is_dir($cachePath)) {
+                    $cacheFiles = glob($cachePath . '*.cache');
+                    foreach ($cacheFiles as $file) {
+                        @unlink($file);
+                    }
                 }
             }
         }
