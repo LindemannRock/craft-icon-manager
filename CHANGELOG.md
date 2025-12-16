@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.6.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.5.0...v5.6.0) (2025-12-16)
+
+
+### Features
+
+* add cache storage method configuration for icon management ([ad66105](https://github.com/LindemannRock/craft-icon-manager/commit/ad66105582290f5ef3f1d505899c6ee98d0b69e6))
+* add cache storage method configuration to icon settings ([9aa99af](https://github.com/LindemannRock/craft-icon-manager/commit/9aa99af66cef9625850c500e1fa0e57f6309021b))
+* implement Redis cache support for icon management and enhance cache clearing functionality ([6f89d1d](https://github.com/LindemannRock/craft-icon-manager/commit/6f89d1d4d52932b0b557063833373f7e468485d7))
+* update caching configuration to support file and Redis storage methods ([6433373](https://github.com/LindemannRock/craft-icon-manager/commit/64333736d7291ee3d848cb53696f08ca45767a2d))
+
+
+### Bug Fixes
+
+* refine cache status display for Redis storage method ([bd5d1c9](https://github.com/LindemannRock/craft-icon-manager/commit/bd5d1c9e55f717f606c8132dae904b57075a2ed8))
+
 ## [5.5.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.4.0...v5.5.0) (2025-12-04)
 
 
