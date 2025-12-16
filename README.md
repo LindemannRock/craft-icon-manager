@@ -113,7 +113,7 @@ See [Usage](#usage) below for template examples and advanced features.
 - **Multiple Icon Formats**: Support for SVG files, SVG sprites, Font Awesome, Material Icons, and custom web fonts
 - **Intuitive Interface**: Searchable icon picker with preview, tabs/dropdown for multiple sets
 - **Flexible Configuration**: Configure icon sets and field settings (size, labels, search)
-- **Performance Optimized**: Built-in caching for fast icon loading
+- **Performance Optimized**: File or Redis caching for fast icon loading
 - **Security**: SVG sanitization to prevent XSS attacks
 - **Twig Integration**: Easy icon rendering in templates with automatic HTML safety
 
@@ -229,7 +229,8 @@ return [
         // Use source icons in dev
         'iconSetsPath' => '@root/src/icons',
 
-        // Enable caching in dev for performance
+        // Cache settings for dev
+        'cacheStorageMethod' => 'file',
         'enableCache' => true,
         'cacheDuration' => 3600, // 1 hour
 
@@ -262,6 +263,7 @@ return [
         'iconSetsPath' => '@webroot/dist/assets/icons',
 
         // Optimize for production
+        'cacheStorageMethod' => 'redis',  // Use Redis in production
         'enableCache' => true,
         'cacheDuration' => 2592000, // 30 days
 
@@ -724,15 +726,21 @@ Icon Manager includes a comprehensive caching system for better performance:
 ```php
 // config/icon-manager.php
 return [
-    'enableCache' => true,        // Enable/disable caching
-    'cacheDuration' => 86400,     // Cache duration in seconds (24 hours)
+    'cacheStorageMethod' => 'file',  // 'file' or 'redis'
+    'enableCache' => true,           // Enable/disable caching
+    'cacheDuration' => 86400,        // Cache duration in seconds (24 hours)
 ];
 ```
+
+**Storage Methods:**
+- **File** - Default, stores cache in `storage/runtime/icon-manager/cache/`
+- **Redis** - For load-balanced or cloud hosting (Servd, AWS, Platform.sh)
 
 ### Cache Management
 - **Clear Icon Cache Utility**: Go to Utilities → Clear Icon Cache
 - **Integrated with Craft**: Available in Utilities → Clear Caches
 - **Automatic**: Cache clears when refreshing icon sets
+- **Redis Support**: All cache clearing methods work with both file and Redis storage
 
 ## Environment-Specific Paths
 
@@ -1066,13 +1074,16 @@ Material Icons loads a ~3.7MB font file containing all 3,800+ icons. For better 
 
 ```php
 'dev' => [
+    'cacheStorageMethod' => 'file',
     'cacheDuration' => 3600,     // 1 hour - quick iteration
 ],
 'staging' => [
+    'cacheStorageMethod' => 'file',
     'cacheDuration' => 86400,    // 1 day - balance updates/performance
 ],
 'production' => [
-    'cacheDuration' => 2592000,  // 30 days - maximum performance
+    'cacheStorageMethod' => 'redis',  // Use Redis in production
+    'cacheDuration' => 2592000,       // 30 days - maximum performance
 ],
 ```
 
