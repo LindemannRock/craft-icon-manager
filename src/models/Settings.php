@@ -65,6 +65,11 @@ class Settings extends Model
     public int $cacheDuration = 86400;
 
     /**
+     * @var string Cache storage method (file or redis)
+     */
+    public string $cacheStorageMethod = 'file';
+
+    /**
      * @var array Default icon set types to enable
      */
     public array $enabledIconTypes = [
@@ -267,6 +272,7 @@ class Settings extends Model
             [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
             [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
+            [['cacheStorageMethod'], 'in', 'range' => ['file', 'redis']],
             [['itemsPerPage'], 'integer', 'min' => 10, 'max' => 500],
             [['itemsPerPage'], 'default', 'value' => 100],
             [['enabledIconTypes'], 'safe'],
@@ -468,6 +474,7 @@ class Settings extends Model
             'iconSetsPath' => $this->iconSetsPath,
             'enableCache' => $this->enableCache,
             'cacheDuration' => $this->cacheDuration,
+            'cacheStorageMethod' => $this->cacheStorageMethod,
             'enabledIconTypes' => Json::encode($this->enabledIconTypes),
             'logLevel' => $this->logLevel,
             'itemsPerPage' => $this->itemsPerPage,

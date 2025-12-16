@@ -105,6 +105,11 @@ return [
         // ========================================
         // Icon caching configuration
 
+        // Cache Storage Method
+        // 'file' = File system (default, single server)
+        // 'redis' = Redis/Database (load-balanced, multi-server, cloud hosting)
+        'cacheStorageMethod' => 'file',
+
         'enableCache' => true,
         'cacheDuration' => 86400,             // 24 hours
     ],
@@ -143,6 +148,7 @@ return [
             'material-icons' => false,        // Beta
             'web-font' => false,              // Beta
         ],
+        'cacheStorageMethod' => 'redis',      // Use Redis for production (Servd/AWS/Platform.sh)
         'enableCache' => true,
         'cacheDuration' => 2592000,           // 30 days
     ],
