@@ -71,6 +71,7 @@ class Install extends Migration
             'iconSetsPath' => $this->string()->notNull()->defaultValue('@root/icons'),
             'enableCache' => $this->boolean()->notNull()->defaultValue(true),
             'cacheDuration' => $this->integer()->notNull()->defaultValue(86400),
+            'cacheStorageMethod' => $this->string(10)->notNull()->defaultValue('file')->comment('Cache storage method: file or redis'),
             // Icon types (stored as JSON)
             'enabledIconTypes' => $this->text(),
             // Optimization settings
