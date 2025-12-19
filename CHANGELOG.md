@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.6.0...v5.7.0) (2025-12-19)
+
+
+### Features
+
+* add color coding for icon types in the icon sets index ([033dca0](https://github.com/LindemannRock/craft-icon-manager/commit/033dca051494d1adc51b7df9b81f965704e9354f))
+* enhance cache duration settings with human-readable format and validation ([e17addb](https://github.com/LindemannRock/craft-icon-manager/commit/e17addb25f59381af265a021983fdb6dbef726ad))
+
+
+### Bug Fixes
+
+* improve display name handling by trimming whitespace in cache options ([dcba4b8](https://github.com/LindemannRock/craft-icon-manager/commit/dcba4b8dee069cdb3ffd0a58d6b6913b7b30b00e))
+
 ## [5.6.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.5.0...v5.6.0) (2025-12-16)
 
 
