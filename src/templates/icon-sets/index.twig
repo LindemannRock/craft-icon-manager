@@ -27,6 +27,15 @@
 {% set sort = craft.app.request.getParam('sort', 'name') %}
 {% set dir = craft.app.request.getParam('dir', 'asc') %}
 
+{# Icon type colors #}
+{% set iconTypeColors = {
+    'svg-folder': '#14b8a6',
+    'svg-sprite': '#6366f1',
+    'font-awesome': '#3b82f6',
+    'material-icons': '#f59e0b',
+    'web-font': '#8b5cf6',
+} %}
+
 {% block toolbar %}
     <div id="toolbar" class="flex" style="align-items: flex-end;">
         <div class="flex-grow">
@@ -53,22 +62,22 @@
                                 <li><hr class="padded"></li>
                                 <li class="menu-header">Type</li>
                                 <li><a class="{{ typeFilter == 'all' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=all&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
-                                    <span class="status {{ typeFilter == 'all' ? 'blue' : 'disabled' }}"></span>All Types
+                                    <span class="status all"></span>All Types
                                 </a></li>
                                 <li><a class="{{ typeFilter == 'svg-folder' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=svg-folder&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
-                                    <span class="status {{ typeFilter == 'svg-folder' ? 'blue' : 'disabled' }}"></span>SVG Folder
+                                    <span class="status" style="background: {{ typeFilter == 'svg-folder' ? iconTypeColors['svg-folder'] : '#aab6c1' }};"></span>SVG Folder
                                 </a></li>
                                 <li><a class="{{ typeFilter == 'svg-sprite' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=svg-sprite&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
-                                    <span class="status {{ typeFilter == 'svg-sprite' ? 'blue' : 'disabled' }}"></span>SVG Sprite
+                                    <span class="status" style="background: {{ typeFilter == 'svg-sprite' ? iconTypeColors['svg-sprite'] : '#aab6c1' }};"></span>SVG Sprite
                                 </a></li>
                                 <li><a class="{{ typeFilter == 'font-awesome' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=font-awesome&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
-                                    <span class="status {{ typeFilter == 'font-awesome' ? 'blue' : 'disabled' }}"></span>Font Awesome
+                                    <span class="status" style="background: {{ typeFilter == 'font-awesome' ? iconTypeColors['font-awesome'] : '#aab6c1' }};"></span>Font Awesome
                                 </a></li>
                                 <li><a class="{{ typeFilter == 'material-icons' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=material-icons&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
-                                    <span class="status {{ typeFilter == 'material-icons' ? 'blue' : 'disabled' }}"></span>Material Icons
+                                    <span class="status" style="background: {{ typeFilter == 'material-icons' ? iconTypeColors['material-icons'] : '#aab6c1' }};"></span>Material Icons
                                 </a></li>
                                 <li><a class="{{ typeFilter == 'web-font' ? 'sel' : '' }}" href="?status={{ statusFilter }}&type=web-font&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
-                                    <span class="status {{ typeFilter == 'web-font' ? 'blue' : 'disabled' }}"></span>Web Font
+                                    <span class="status" style="background: {{ typeFilter == 'web-font' ? iconTypeColors['web-font'] : '#aab6c1' }};"></span>Web Font
                                 </a></li>
                             </ul>
                         </div>
@@ -198,7 +207,7 @@
                                     </a>
                                 </td>
                                 <td><code>{{ iconSet.handle }}</code></td>
-                                <td>{{ iconSet.getTypeLabel() }}</td>
+                                <td><span class="status" style="background: {{ iconTypeColors[iconSet.type]|default('#aab6c1') }};"></span> {{ iconSet.getTypeLabel() }}</td>
                                 <td>{{ iconSet.getIconCount()|number_format }}</td>
                                 {% if plugin.settings.enableOptimization %}
                                 <td>
