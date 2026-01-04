@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.0...v5.7.1) (2026-01-04)
+
+
+### Bug Fixes
+
+* add missing PHP SVG Optimizer settings to installation migration ([356a658](https://github.com/LindemannRock/craft-icon-manager/commit/356a658c6b984e303c40d9ed4b1113f5415f2aff))
+
 ## [5.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.6.0...v5.7.0) (2025-12-19)
 
 
