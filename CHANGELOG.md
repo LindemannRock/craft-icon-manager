@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.1...v5.8.0) (2026-01-06)
+
+
+### Features
+
+* migrate to shared base plugin ([5ac5983](https://github.com/LindemannRock/craft-icon-manager/commit/5ac5983f2572aeb7c706966ea54692a2009c7309))
+
 ## [5.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.0...v5.7.1) (2026-01-04)
 
 
