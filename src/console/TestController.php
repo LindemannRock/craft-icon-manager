@@ -148,26 +148,32 @@ class TestController extends Controller
         // $this->stdout("- iconSize: " . $settings->iconSize . "\n");
         $this->stdout("- enabledIconTypes: " . json_encode($settings->enabledIconTypes) . "\n\n");
         
-        // Check overrides
-        $this->stdout("Overridden settings:\n");
-        $overriddenSettings = $settings->getOverriddenSettings();
-        if (empty($overriddenSettings)) {
-            $this->stdout("None\n");
-        } else {
-            foreach ($overriddenSettings as $setting) {
+        // Check overrides using isOverriddenByConfig()
+        $this->stdout("Config file overrides:\n");
+        $settingsToCheck = ['pluginName', 'iconSetsPath', 'enableCache', 'cacheDuration', 'logLevel'];
+        $hasOverrides = false;
+        foreach ($settingsToCheck as $setting) {
+            if ($settings->isOverriddenByConfig($setting)) {
                 $this->stdout("- " . $setting . " (from config file)\n");
+                $hasOverrides = true;
             }
         }
-        
-        // Check icon type overrides
-        $this->stdout("\nOverridden icon types:\n");
-        $overriddenIconTypes = $settings->getOverriddenIconTypes();
-        if (empty($overriddenIconTypes)) {
+        if (!$hasOverrides) {
             $this->stdout("None\n");
-        } else {
-            foreach ($overriddenIconTypes as $iconType) {
+        }
+
+        // Check icon type overrides
+        $this->stdout("\nIcon type overrides:\n");
+        $iconTypes = ['svg-folder', 'svg-sprite', 'font-awesome', 'material-icons', 'web-font'];
+        $hasIconTypeOverrides = false;
+        foreach ($iconTypes as $iconType) {
+            if ($settings->isOverriddenByConfig('enabledIconTypes.' . $iconType)) {
                 $this->stdout("- " . $iconType . " (from config file)\n");
+                $hasIconTypeOverrides = true;
             }
+        }
+        if (!$hasIconTypeOverrides) {
+            $this->stdout("None\n");
         }
         
         // Check config file

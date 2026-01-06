@@ -26,6 +26,7 @@ use craft\utilities\ClearCaches;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
+use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\fields\IconManagerField;
 use lindemannrock\iconmanager\models\Settings;
 use lindemannrock\iconmanager\services\IconSetsService;
@@ -98,6 +99,9 @@ class IconManager extends Plugin
     {
         parent::init();
         self::$plugin = $this;
+
+        // Bootstrap the base plugin helper
+        PluginHelper::bootstrap($this, 'iconHelper');
 
         // Override plugin name from config if available, otherwise use from database settings
         $configFileSettings = Craft::$app->getConfig()->getConfigFromFile('icon-manager');

@@ -39,8 +39,8 @@
             id: 'enabledIconTypes-svg-folder',
             name: 'settings[enabledIconTypes][svg-folder]',
             on: settings.enabledIconTypes['svg-folder'] ?? true,
-            warning: settings.isIconTypeOverridden('svg-folder') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-folder\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isIconTypeOverridden('svg-folder')
+            warning: settings.isOverriddenByConfig('enabledIconTypes.svg-folder') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-folder\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.svg-folder')
         }) }}
 
         {{ forms.lightswitchField({
@@ -49,8 +49,8 @@
             id: 'enabledIconTypes-svg-sprite',
             name: 'settings[enabledIconTypes][svg-sprite]',
             on: settings.enabledIconTypes['svg-sprite'] ?? true,
-            warning: settings.isIconTypeOverridden('svg-sprite') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-sprite\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isIconTypeOverridden('svg-sprite')
+            warning: settings.isOverriddenByConfig('enabledIconTypes.svg-sprite') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-sprite\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.svg-sprite')
         }) }}
 
         {{ forms.lightswitchField({
@@ -59,8 +59,8 @@
             id: 'enabledIconTypes-font-awesome',
             name: 'settings[enabledIconTypes][font-awesome]',
             on: settings.enabledIconTypes['font-awesome'] ?? true,
-            warning: settings.isIconTypeOverridden('font-awesome') ? 'This is being overridden by the <code>enabledIconTypes[\'font-awesome\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isIconTypeOverridden('font-awesome')
+            warning: settings.isOverriddenByConfig('enabledIconTypes.font-awesome') ? 'This is being overridden by the <code>enabledIconTypes[\'font-awesome\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.font-awesome')
         }) }}
 
         {{ forms.lightswitchField({
@@ -69,8 +69,8 @@
             id: 'enabledIconTypes-material-icons',
             name: 'settings[enabledIconTypes][material-icons]',
             on: settings.enabledIconTypes['material-icons'] ?? false,
-            warning: settings.isIconTypeOverridden('material-icons') ? 'This is being overridden by the <code>enabledIconTypes[\'material-icons\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isIconTypeOverridden('material-icons')
+            warning: settings.isOverriddenByConfig('enabledIconTypes.material-icons') ? 'This is being overridden by the <code>enabledIconTypes[\'material-icons\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.material-icons')
         }) }}
 
         {{ forms.lightswitchField({
@@ -79,8 +79,8 @@
             id: 'enabledIconTypes-web-font',
             name: 'settings[enabledIconTypes][web-font]',
             on: settings.enabledIconTypes['web-font'] ?? false,
-            warning: settings.isIconTypeOverridden('web-font') ? 'This is being overridden by the <code>enabledIconTypes[\'web-font\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isIconTypeOverridden('web-font')
+            warning: settings.isOverriddenByConfig('enabledIconTypes.web-font') ? 'This is being overridden by the <code>enabledIconTypes[\'web-font\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.web-font')
         }) }}
 
         <div class="buttons">

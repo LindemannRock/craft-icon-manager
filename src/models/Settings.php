@@ -11,9 +11,9 @@ namespace lindemannrock\iconmanager\models;
 use Craft;
 use craft\base\Model;
 use craft\behaviors\EnvAttributeParserBehavior;
-use craft\db\Query;
-use craft\helpers\Db;
-use craft\helpers\Json;
+use lindemannrock\base\traits\SettingsConfigTrait;
+use lindemannrock\base\traits\SettingsDisplayNameTrait;
+use lindemannrock\base\traits\SettingsPersistenceTrait;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
@@ -24,16 +24,9 @@ use lindemannrock\logginglibrary\traits\LoggingTrait;
 class Settings extends Model
 {
     use LoggingTrait;
-
-    /**
-     * @var array Track which settings are overridden by config
-     */
-    private array $_overriddenSettings = [];
-
-    /**
-     * @var array Track which specific icon types are overridden
-     */
-    private array $_overriddenIconTypes = [];
+    use SettingsConfigTrait;
+    use SettingsDisplayNameTrait;
+    use SettingsPersistenceTrait;
 
     /**
      * @inheritdoc
@@ -343,386 +336,93 @@ class Settings extends Model
         return Craft::getAlias($this->iconSetsPath);
     }
     
+    // =========================================================================
+    // Trait Configuration Methods
+    // =========================================================================
+
     /**
-     * @inheritdoc
+     * Database table name for settings storage
      */
-    public function __construct($config = [])
+    protected static function tableName(): string
     {
-        // Get config file overrides
-        $configFileSettings = Craft::$app->getConfig()->getConfigFromFile('icon-manager');
-        
-        // Merge config file settings with defaults
-        if ($configFileSettings) {
-            $config = array_merge($configFileSettings, $config);
-        }
-        
-        parent::__construct($config);
+        return 'iconmanager_settings';
     }
-    
+
     /**
-     * Load settings from database
-     *
-     * @param Settings|null $settings Optional existing settings instance
-     * @return self
+     * Plugin handle for config file resolution
      */
-    public static function loadFromDatabase(?Settings $settings = null): self
+    protected static function pluginHandle(): string
     {
-        if ($settings === null) {
-            $settings = new self();
-        }
-        
-        // Load from database
-        try {
-            $row = (new Query())
-                ->from('{{%iconmanager_settings}}')
-                ->where(['id' => 1])
-                ->one();
-        } catch (\Exception $e) {
-            $settings->logError('Failed to load settings from database', ['error' => $e->getMessage()]);
-            return $settings;
-        }
-        
-        if ($row) {
-            // Remove system fields that aren't attributes
-            unset($row['id'], $row['dateCreated'], $row['dateUpdated'], $row['uid']);
-            
-            // Convert numeric boolean values to actual booleans
-            $booleanFields = ['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes'];
-            foreach ($booleanFields as $field) {
-                if (isset($row[$field])) {
-                    $row[$field] = (bool) $row[$field];
-                }
-            }
-            
-            // Convert numeric values to integers
-            $integerFields = ['cacheDuration', 'itemsPerPage'];
-            foreach ($integerFields as $field) {
-                if (isset($row[$field])) {
-                    $row[$field] = (int) $row[$field];
-                }
-            }
-            
-            // Decode JSON fields
-            if (isset($row['enabledIconTypes'])) {
-                $row['enabledIconTypes'] = Json::decode($row['enabledIconTypes']);
-
-                // Convert string values to booleans for strict comparison
-                // Database may store "1"/"" instead of true/false
-                if (is_array($row['enabledIconTypes'])) {
-                    foreach ($row['enabledIconTypes'] as $type => $enabled) {
-                        $row['enabledIconTypes'][$type] = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
-                    }
-                }
-            }
-            
-            // Set attributes from database
-            $settings->setAttributes($row, false);
-        } else {
-            $settings->logWarning('No settings found in database');
-        }
-        
-        // Apply config file overrides
-        $configFileSettings = Craft::$app->getConfig()->getConfigFromFile('icon-manager');
-        if ($configFileSettings) {
-            // Track which settings are overridden
-            foreach ($configFileSettings as $setting => $value) {
-                if (property_exists($settings, $setting)) {
-                    // Special handling for enabledIconTypes - only override specified keys
-                    if ($setting === 'enabledIconTypes' && is_array($value)) {
-                        // Track which specific icon types are overridden
-                        $settings->_overriddenIconTypes = array_keys($value);
-
-                        // Only override the icon types that are in the config
-                        // Keep database values for non-specified icon types
-                        foreach ($value as $iconType => $enabled) {
-                            $settings->enabledIconTypes[$iconType] = $enabled;
-                        }
-                    } else {
-                        // For non-array settings, track as fully overridden
-                        $settings->_overriddenSettings[] = $setting;
-                        $settings->$setting = $value;
-                    }
-                }
-            }
-        }
-
-        // IMPORTANT: Validate settings after config overrides are applied
-        // This will trigger validateLogLevel and other validation methods
-        if (!$settings->validate()) {
-            $settings->logError('Icon Manager settings validation failed', ['errors' => $settings->getErrors()]);
-        }
-
-        return $settings;
+        return 'icon-manager';
     }
-    
-    /**
-     * Save settings to database
-     *
-     * @return bool
-     */
-    public function saveToDatabase(): bool
-    {
-        if (!$this->validate()) {
-            return false;
-        }
 
-        $db = Craft::$app->getDb();
-        
-        // Build the attributes to save
-        $attributes = [
-            'pluginName' => $this->pluginName,
-            'iconSetsPath' => $this->iconSetsPath,
-            'enableCache' => $this->enableCache,
-            'cacheDuration' => $this->cacheDuration,
-            'cacheStorageMethod' => $this->cacheStorageMethod,
-            'enabledIconTypes' => Json::encode($this->enabledIconTypes),
-            'logLevel' => $this->logLevel,
-            'itemsPerPage' => $this->itemsPerPage,
-            'enableOptimization' => $this->enableOptimization,
-            'enableOptimizationBackup' => $this->enableOptimizationBackup,
-            'scanClipPaths' => $this->scanClipPaths,
-            'scanMasks' => $this->scanMasks,
-            'scanFilters' => $this->scanFilters,
-            'scanComments' => $this->scanComments,
-            'scanInlineStyles' => $this->scanInlineStyles,
-            'scanLargeFiles' => $this->scanLargeFiles,
-            'scanWidthHeight' => $this->scanWidthHeight,
-            'scanWidthHeightWithViewBox' => $this->scanWidthHeightWithViewBox,
-            'optimizeConvertColorsToHex' => $this->optimizeConvertColorsToHex,
-            'optimizeConvertCssClasses' => $this->optimizeConvertCssClasses,
-            'optimizeConvertEmptyTags' => $this->optimizeConvertEmptyTags,
-            'optimizeConvertInlineStyles' => $this->optimizeConvertInlineStyles,
-            'optimizeFlattenGroups' => $this->optimizeFlattenGroups,
-            'optimizeMinifyCoordinates' => $this->optimizeMinifyCoordinates,
-            'optimizeMinifyTransformations' => $this->optimizeMinifyTransformations,
-            'optimizeRemoveComments' => $this->optimizeRemoveComments,
-            'optimizeRemoveDefaultAttributes' => $this->optimizeRemoveDefaultAttributes,
-            'optimizeRemoveDeprecatedAttributes' => $this->optimizeRemoveDeprecatedAttributes,
-            'optimizeRemoveDoctype' => $this->optimizeRemoveDoctype,
-            'optimizeRemoveEnableBackground' => $this->optimizeRemoveEnableBackground,
-            'optimizeRemoveEmptyAttributes' => $this->optimizeRemoveEmptyAttributes,
-            'optimizeRemoveInkscapeFootprints' => $this->optimizeRemoveInkscapeFootprints,
-            'optimizeRemoveInvisibleCharacters' => $this->optimizeRemoveInvisibleCharacters,
-            'optimizeRemoveMetadata' => $this->optimizeRemoveMetadata,
-            'optimizeRemoveWhitespace' => $this->optimizeRemoveWhitespace,
-            'optimizeRemoveUnusedNamespaces' => $this->optimizeRemoveUnusedNamespaces,
-            'optimizeRemoveUnusedMasks' => $this->optimizeRemoveUnusedMasks,
-            'optimizeRemoveWidthHeight' => $this->optimizeRemoveWidthHeight,
-            'optimizeSortAttributes' => $this->optimizeSortAttributes,
-            'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
+    /**
+     * Fields that should be cast to boolean
+     */
+    protected static function booleanFields(): array
+    {
+        return [
+            'enableCache',
+            'enableOptimization',
+            'enableOptimizationBackup',
+            'scanClipPaths',
+            'scanMasks',
+            'scanFilters',
+            'scanComments',
+            'scanInlineStyles',
+            'scanLargeFiles',
+            'scanWidthHeight',
+            'scanWidthHeightWithViewBox',
+            'optimizeConvertColorsToHex',
+            'optimizeConvertCssClasses',
+            'optimizeConvertEmptyTags',
+            'optimizeConvertInlineStyles',
+            'optimizeFlattenGroups',
+            'optimizeMinifyCoordinates',
+            'optimizeMinifyTransformations',
+            'optimizeRemoveComments',
+            'optimizeRemoveDefaultAttributes',
+            'optimizeRemoveDeprecatedAttributes',
+            'optimizeRemoveDoctype',
+            'optimizeRemoveEnableBackground',
+            'optimizeRemoveEmptyAttributes',
+            'optimizeRemoveInkscapeFootprints',
+            'optimizeRemoveInvisibleCharacters',
+            'optimizeRemoveMetadata',
+            'optimizeRemoveWhitespace',
+            'optimizeRemoveUnusedNamespaces',
+            'optimizeRemoveUnusedMasks',
+            'optimizeRemoveWidthHeight',
+            'optimizeSortAttributes',
         ];
-
-        $this->logDebug('Attempting to save settings', ['attributes' => $attributes]);
-
-        // Update existing settings (we know there's always one row from migration)
-        try {
-            $result = $db->createCommand()
-                ->update('{{%iconmanager_settings}}', $attributes, ['id' => 1])
-                ->execute();
-
-            return $result !== false;
-        } catch (\Exception $e) {
-            $this->logError('Failed to save Icon Manager settings', ['error' => $e->getMessage()]);
-            return false;
-        }
-    }
-    
-    /**
-     * Check if a setting is overridden by config file
-     *
-     * @param string $setting
-     * @return bool
-     */
-    public function isOverridden(string $setting): bool
-    {
-        return in_array($setting, $this->_overriddenSettings, true);
-    }
-    
-    /**
-     * Get all overridden settings
-     *
-     * @return array
-     */
-    public function getOverriddenSettings(): array
-    {
-        return $this->_overriddenSettings;
-    }
-    
-    /**
-     * Check if a specific icon type is overridden
-     *
-     * @param string $iconType
-     * @return bool
-     */
-    public function isIconTypeOverridden(string $iconType): bool
-    {
-        return in_array($iconType, $this->_overriddenIconTypes, true);
-    }
-    
-    /**
-     * Get all overridden icon types
-     *
-     * @return array
-     */
-    public function getOverriddenIconTypes(): array
-    {
-        return $this->_overriddenIconTypes;
     }
 
     /**
-     * Check if a setting is being overridden by config file
-     * Supports dot notation for nested settings like: enabledIconTypes.svg-folder
-     *
-     * @param string $attribute The setting attribute name or dot-notation path
-     * @return bool
+     * Fields that should be cast to integer
      */
-    public function isOverriddenByConfig(string $attribute): bool
+    protected static function integerFields(): array
     {
-        $configPath = \Craft::$app->getPath()->getConfigPath() . '/icon-manager.php';
-
-        if (!file_exists($configPath)) {
-            return false;
-        }
-
-        // Load the raw config file instead of using Craft's config which merges with database
-        $rawConfig = require $configPath;
-
-        // Handle dot notation for nested config
-        if (str_contains($attribute, '.')) {
-            $parts = explode('.', $attribute);
-            $current = $rawConfig;
-
-            foreach ($parts as $part) {
-                if (!is_array($current) || !array_key_exists($part, $current)) {
-                    return false;
-                }
-                $current = $current[$part];
-            }
-
-            return true;
-        }
-
-        // Check for the attribute in the config
-        // Use array_key_exists instead of isset to detect null values
-        if (array_key_exists($attribute, $rawConfig)) {
-            return true;
-        }
-
-        // Check environment-specific configs
-        $env = \Craft::$app->getConfig()->env;
-        if ($env && is_array($rawConfig[$env] ?? null) && array_key_exists($attribute, $rawConfig[$env])) {
-            return true;
-        }
-
-        // Check wildcard config
-        if (is_array($rawConfig['*'] ?? null) && array_key_exists($attribute, $rawConfig['*'])) {
-            return true;
-        }
-
-        return false;
+        return [
+            'cacheDuration',
+            'itemsPerPage',
+        ];
     }
 
     /**
-     * Get the raw config value (for display in settings form)
-     *
-     * @param string $attribute The setting attribute name
-     * @return mixed|null
+     * Fields that should be JSON encoded/decoded
      */
-    public function getRawConfigValue(string $attribute)
+    protected static function jsonFields(): array
     {
-        // Get the config file path
-        $configPath = \Craft::$app->getPath()->getConfigPath() . '/icon-manager.php';
-
-        if (!file_exists($configPath)) {
-            return null;
-        }
-
-        // Load the raw config file
-        $rawConfig = require $configPath;
-
-        // Check environment-specific settings first (highest priority)
-        $env = \Craft::$app->getConfig()->getGeneral()->env ?? '*';
-        if (isset($rawConfig[$env]) && is_array($rawConfig[$env]) && array_key_exists($attribute, $rawConfig[$env])) {
-            return $rawConfig[$env][$attribute];
-        }
-
-        // Check root level
-        if (array_key_exists($attribute, $rawConfig)) {
-            return $rawConfig[$attribute];
-        }
-
-        return null;
+        return [
+            'enabledIconTypes',
+        ];
     }
 
     /**
-     * Get display name (singular, without "Manager")
-     *
-     * Strips "Manager" and singularizes the plugin name for use in UI labels.
-     * E.g., "Icon Manager" → "Icon", "Icons" → "Icon"
-     *
-     * @return string
+     * Fields to exclude from database save
      */
-    public function getDisplayName(): string
+    protected static function excludeFromSave(): array
     {
-        // Strip "Manager" or "manager" from the name and trim whitespace
-        $name = trim(str_replace([' Manager', ' manager'], '', $this->pluginName));
-
-        // Singularize by removing trailing 's' if present
-        $singular = preg_replace('/s$/', '', $name) ?: $name;
-
-        return $singular;
-    }
-
-    /**
-     * Get full plugin name (as configured, with "Manager" if present)
-     *
-     * Returns the plugin name exactly as configured in settings.
-     * E.g., "Icon Manager", "Icons", etc.
-     *
-     * @return string
-     */
-    public function getFullName(): string
-    {
-        return trim($this->pluginName);
-    }
-
-    /**
-     * Get plural display name (without "Manager")
-     *
-     * Strips "Manager" from the plugin name but keeps plural form.
-     * E.g., "Icon Manager" → "Icons", "Icons" → "Icons"
-     *
-     * @return string
-     */
-    public function getPluralDisplayName(): string
-    {
-        // Strip "Manager" or "manager" from the name and trim whitespace
-        return trim(str_replace([' Manager', ' manager'], '', $this->pluginName));
-    }
-
-    /**
-     * Get lowercase display name (singular, without "Manager")
-     *
-     * Lowercase version of getDisplayName() for use in messages, handles, etc.
-     * E.g., "Icon Manager" → "icon", "Icons" → "icon"
-     *
-     * @return string
-     */
-    public function getLowerDisplayName(): string
-    {
-        return strtolower($this->getDisplayName());
-    }
-
-    /**
-     * Get lowercase plural display name (without "Manager")
-     *
-     * Lowercase version of getPluralDisplayName() for use in messages, handles, etc.
-     * E.g., "Icon Manager" → "icons", "Icons" → "icons"
-     *
-     * @return string
-     */
-    public function getPluralLowerDisplayName(): string
-    {
-        return strtolower($this->getPluralDisplayName());
+        return [];
     }
 }
