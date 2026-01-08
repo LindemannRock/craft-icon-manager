@@ -171,11 +171,16 @@
 </div>
 
 <!-- Quick Actions -->
+{% set hasNavigation = canViewIconSets or canEditSettings %}
+{% set hasIconManagement = canEditIconSets %}
+{% set hasAnyQuickAction = hasNavigation or hasIconManagement %}
+
+{% if hasAnyQuickAction %}
 <div style="margin-bottom: 40px;">
     <h2>{{ 'Quick Actions'|t('icon-manager') }}</h2>
 
     <div class="pane">
-        {% if canViewIconSets or canEditSettings %}
+        {% if hasNavigation %}
         <div style="margin-bottom: 24px;">
             <h3 style="margin-bottom: 8px;">{{ "Navigation"|t('icon-manager') }}</h3>
             <p class="light" style="margin-bottom: 16px;">{{ "Access main plugin sections"|t('icon-manager') }}</p>
@@ -194,8 +199,8 @@
         </div>
         {% endif %}
 
-        {% if canEditIconSets %}
-        {% if canViewIconSets or canEditSettings %}
+        {% if hasIconManagement %}
+        {% if hasNavigation %}
         <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
         {% endif %}
 
@@ -218,6 +223,7 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 
 <!-- SVG Quality -->
 {% if canManageOptimization %}
