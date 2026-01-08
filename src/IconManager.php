@@ -323,26 +323,30 @@ class IconManager extends Plugin
             UserPermissions::class,
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function(RegisterUserPermissionsEvent $event) {
+                $settings = $this->getSettings();
+                $fullName = $settings->getFullName();
+                $lowerDisplayName = $settings->getLowerDisplayName();
+
                 $event->permissions[] = [
-                    'heading' => Craft::t('icon-manager', 'Icon Manager'),
+                    'heading' => $fullName,
                     'permissions' => [
                         'iconManager:viewIconSets' => [
-                            'label' => Craft::t('icon-manager', 'View icon sets'),
+                            'label' => Craft::t('icon-manager', 'View {name} sets', ['name' => $lowerDisplayName]),
                         ],
                         'iconManager:createIconSets' => [
-                            'label' => Craft::t('icon-manager', 'Create icon sets'),
+                            'label' => Craft::t('icon-manager', 'Create {name} sets', ['name' => $lowerDisplayName]),
                         ],
                         'iconManager:editIconSets' => [
-                            'label' => Craft::t('icon-manager', 'Edit icon sets'),
+                            'label' => Craft::t('icon-manager', 'Edit {name} sets', ['name' => $lowerDisplayName]),
                         ],
                         'iconManager:deleteIconSets' => [
-                            'label' => Craft::t('icon-manager', 'Delete icon sets'),
+                            'label' => Craft::t('icon-manager', 'Delete {name} sets', ['name' => $lowerDisplayName]),
                         ],
                         'iconManager:manageOptimization' => [
                             'label' => Craft::t('icon-manager', 'Manage SVG optimization'),
                         ],
                         'iconManager:clearCache' => [
-                            'label' => Craft::t('icon-manager', 'Clear icon cache'),
+                            'label' => Craft::t('icon-manager', 'Clear {name} cache', ['name' => $lowerDisplayName]),
                         ],
                         'iconManager:viewLogs' => [
                             'label' => Craft::t('icon-manager', 'View logs'),
