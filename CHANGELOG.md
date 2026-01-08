@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.9.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.8.0...v5.9.0) (2026-01-08)
+
+
+### Features
+
+* **icon-manager:** Add granular user permissions system ([51d80e8](https://github.com/LindemannRock/craft-icon-manager/commit/51d80e8af9405bd2de18868127e58f6d8817a675))
+* streamline user permissions checks for icon sets access ([3340342](https://github.com/LindemannRock/craft-icon-manager/commit/33403424462424aa1ac4697e57d2e5f3db52b940))
+* update user permissions labels to include dynamic names ([a67d874](https://github.com/LindemannRock/craft-icon-manager/commit/a67d87486bb3eddd54255e12f83672f764c0d7be))
+
+
+### Bug Fixes
+
+* refactor quick actions visibility logic in index.twig ([0ded170](https://github.com/LindemannRock/craft-icon-manager/commit/0ded170412ebe7009c8f2f3faf8585008707e787))
+* update success message for settings save action ([76843a0](https://github.com/LindemannRock/craft-icon-manager/commit/76843a03d9f28c5f9d0f5cd76889ffb4ae3c3b7f))
+
 ## [5.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.1...v5.8.0) (2026-01-06)
 
 
