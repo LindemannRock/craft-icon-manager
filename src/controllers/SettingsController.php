@@ -157,7 +157,7 @@ class SettingsController extends Controller
             // Update the plugin's cached settings (CRITICAL - forces Craft to refresh)
             IconManager::$plugin->setSettings($settings->getAttributes());
 
-            Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Settings saved successfully'));
+            Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Settings saved.'));
         } else {
             Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not save settings'));
             return null;
