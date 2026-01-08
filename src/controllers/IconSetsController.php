@@ -36,14 +36,19 @@ class IconSetsController extends Controller
         // Check permissions based on action
         switch ($action->id) {
             case 'index':
-                // View icon sets list requires view permission (or any related permission for implicit access)
-                $hasViewAccess = $user->checkPermission('iconManager:viewIconSets') ||
-                    $user->checkPermission('iconManager:createIconSets') ||
-                    $user->checkPermission('iconManager:editIconSets') ||
-                    $user->checkPermission('iconManager:deleteIconSets') ||
-                    $user->checkPermission('iconManager:manageOptimization');
-                if (!$hasViewAccess) {
-                    throw new ForbiddenHttpException('User does not have permission to view icon sets');
+                // View icon sets list requires viewIconSets permission
+                if (!$user->checkPermission('iconManager:viewIconSets')) {
+                    // Redirect to first accessible section
+                    if ($user->checkPermission('iconManager:viewLogs')) {
+                        Craft::$app->getResponse()->redirect('icon-manager/logs')->send();
+                        return false;
+                    }
+                    if ($user->checkPermission('iconManager:editSettings')) {
+                        Craft::$app->getResponse()->redirect('icon-manager/settings')->send();
+                        return false;
+                    }
+                    // No access at all
+                    throw new ForbiddenHttpException('User does not have permission to access Icon Manager');
                 }
                 break;
 

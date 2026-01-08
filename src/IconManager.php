@@ -194,12 +194,8 @@ class IconManager extends Plugin
         $item = parent::getCpNavItem();
         $user = Craft::$app->getUser();
 
-        // Check if user has any access to the plugin
-        $hasIconSetsAccess = $user->checkPermission('iconManager:viewIconSets') ||
-            $user->checkPermission('iconManager:createIconSets') ||
-            $user->checkPermission('iconManager:editIconSets') ||
-            $user->checkPermission('iconManager:deleteIconSets') ||
-            $user->checkPermission('iconManager:manageOptimization');
+        // Check if user has view access to each section
+        $hasIconSetsAccess = $user->checkPermission('iconManager:viewIconSets');
         $hasLogsAccess = $user->checkPermission('iconManager:viewLogs');
         $hasSettingsAccess = $user->checkPermission('iconManager:editSettings');
 
@@ -330,20 +326,26 @@ class IconManager extends Plugin
                 $event->permissions[] = [
                     'heading' => $fullName,
                     'permissions' => [
-                        'iconManager:viewIconSets' => [
-                            'label' => Craft::t('icon-manager', 'View {name} sets', ['name' => $lowerDisplayName]),
-                        ],
-                        'iconManager:createIconSets' => [
-                            'label' => Craft::t('icon-manager', 'Create {name} sets', ['name' => $lowerDisplayName]),
-                        ],
-                        'iconManager:editIconSets' => [
-                            'label' => Craft::t('icon-manager', 'Edit {name} sets', ['name' => $lowerDisplayName]),
-                        ],
-                        'iconManager:deleteIconSets' => [
-                            'label' => Craft::t('icon-manager', 'Delete {name} sets', ['name' => $lowerDisplayName]),
-                        ],
-                        'iconManager:manageOptimization' => [
-                            'label' => Craft::t('icon-manager', 'Manage SVG optimization'),
+                        // Icon sets - grouped
+                        'iconManager:manageIconSets' => [
+                            'label' => Craft::t('icon-manager', 'Manage {name} sets', ['name' => $lowerDisplayName]),
+                            'nested' => [
+                                'iconManager:viewIconSets' => [
+                                    'label' => Craft::t('icon-manager', 'View {name} sets', ['name' => $lowerDisplayName]),
+                                ],
+                                'iconManager:createIconSets' => [
+                                    'label' => Craft::t('icon-manager', 'Create {name} sets', ['name' => $lowerDisplayName]),
+                                ],
+                                'iconManager:editIconSets' => [
+                                    'label' => Craft::t('icon-manager', 'Edit {name} sets', ['name' => $lowerDisplayName]),
+                                ],
+                                'iconManager:deleteIconSets' => [
+                                    'label' => Craft::t('icon-manager', 'Delete {name} sets', ['name' => $lowerDisplayName]),
+                                ],
+                                'iconManager:manageOptimization' => [
+                                    'label' => Craft::t('icon-manager', 'Manage SVG optimization'),
+                                ],
+                            ],
                         ],
                         'iconManager:clearCache' => [
                             'label' => Craft::t('icon-manager', 'Clear {name} cache', ['name' => $lowerDisplayName]),
