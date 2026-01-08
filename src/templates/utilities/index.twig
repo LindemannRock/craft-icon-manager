@@ -1,5 +1,11 @@
 {% import "_includes/forms" as forms %}
 
+{# Permission checks #}
+{% set canViewIconSets = currentUser.can('iconManager:viewIconSets') or currentUser.can('iconManager:createIconSets') or currentUser.can('iconManager:editIconSets') or currentUser.can('iconManager:deleteIconSets') or currentUser.can('iconManager:manageOptimization') %}
+{% set canEditIconSets = currentUser.can('iconManager:editIconSets') %}
+{% set canManageOptimization = currentUser.can('iconManager:manageOptimization') %}
+{% set canEditSettings = currentUser.can('iconManager:editSettings') %}
+
 <div style="margin-bottom: 32px;">
     <h2>{{ "{pluginName} Overview"|t('icon-manager', {pluginName: iconHelper.fullName}) }}</h2>
     <p class="light">{{ "Monitor icon set performance, manage cache, and view system status for your icon collections."|t('icon-manager') }}</p>
@@ -169,20 +175,29 @@
     <h2>{{ 'Quick Actions'|t('icon-manager') }}</h2>
 
     <div class="pane">
+        {% if canViewIconSets or canEditSettings %}
         <div style="margin-bottom: 24px;">
             <h3 style="margin-bottom: 8px;">{{ "Navigation"|t('icon-manager') }}</h3>
             <p class="light" style="margin-bottom: 16px;">{{ "Access main plugin sections"|t('icon-manager') }}</p>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                {% if canViewIconSets %}
                 <a href="{{ url('icon-manager') }}" class="btn">
                     {{ "Manage Icon Sets"|t('icon-manager') }}
                 </a>
+                {% endif %}
+                {% if canEditSettings %}
                 <a href="{{ url('icon-manager/settings') }}" class="btn">
                     {{ "View Settings"|t('icon-manager') }}
                 </a>
+                {% endif %}
             </div>
         </div>
+        {% endif %}
 
+        {% if canEditIconSets %}
+        {% if canViewIconSets or canEditSettings %}
         <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
+        {% endif %}
 
         <div>
             <h3 style="margin-bottom: 8px;">{{ "Icon Management"|t('icon-manager') }}</h3>
@@ -200,39 +215,12 @@
                 </div>
             </form>
         </div>
-
-        {# HIDDEN: Rebuild Icon Cache button is redundant with Refresh All Icons
-           The rebuild button only clears cache and relies on page load to rebuild (creates 6 cache files),
-           while Refresh All Icons does a proper full scan and rebuild (creates 7 cache files including
-           Material Icons definitions cache). This inconsistency (6 vs 7) is confusing for users.
-           "Refresh All Icons" is the better option and should be the primary action. #}
-        {#
-        <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
-
-        <div>
-            <h3 style="margin-bottom: 8px;">{{ "Cache Management"|t('icon-manager') }}</h3>
-            <p class="light" style="margin-bottom: 16px;">{{ "Rebuild icon cache to reload data from cache. Useful after clearing cache or troubleshooting."|t('icon-manager') }}</p>
-
-            <form method="post" accept-charset="UTF-8">
-                {{ csrfInput() }}
-                {{ actionInput('icon-manager/cache/clear') }}
-                {{ redirectInput('utilities/clear-icon-cache') }}
-
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="submit" class="btn">
-                        {{ "Rebuild Icon Cache"|t('icon-manager') }}
-                        {% if cacheEnabled %}
-                            ({{ (cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font']) }})
-                        {% endif %}
-                    </button>
-                </div>
-            </form>
-        </div>
-        #}
+        {% endif %}
     </div>
 </div>
 
 <!-- SVG Quality -->
+{% if canManageOptimization %}
 <div style="margin-bottom: 40px;" id="svg-quality">
     <h2>{{ 'SVG Quality'|t('icon-manager') }}</h2>
 
@@ -411,6 +399,7 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 
 {% js %}
     // Smooth scroll to SVG Quality section if hash is present

@@ -66,6 +66,7 @@ If you are using this plugin, please be aware that future versions may have diff
     - [Configuration](#configuration-1)
     - [Cache Management](#cache-management)
   - [Logging](#logging)
+  - [Permissions](#permissions)
   - [Environment-Specific Paths](#environment-specific-paths)
   - [SVG Optimization](#svg-optimization)
     - [Enabling/Disabling Optimization](#enablingdisabling-optimization)
@@ -1132,6 +1133,66 @@ Access logs through the Control Panel:
 **Requires:** `lindemannrock/craft-logging-library` plugin (installed automatically as dependency)
 
 See [docs/LOGGING.md](docs/LOGGING.md) for detailed logging documentation.
+
+## Permissions
+
+Icon Manager provides granular permissions for controlling access to plugin features. Permissions can be assigned to user groups or individual users in **Settings → Users → User Groups** or **Users → [User] → Permissions**.
+
+### Available Permissions
+
+| Permission | Description |
+|------------|-------------|
+| **View icon sets** | View the icon sets list in the Control Panel |
+| **Create icon sets** | Create new icon sets |
+| **Edit icon sets** | Edit existing icon sets, enable/disable sets, refresh icons |
+| **Delete icon sets** | Delete icon sets |
+| **Manage SVG optimization** | Access the SVG Optimization tab, apply optimizations, manage backups |
+| **Clear icon cache** | Clear icon caches (also controls visibility in Craft's Clear Caches utility) |
+| **View logs** | View plugin logs in the Control Panel |
+| ↳ **Download logs** | Download log files (nested under View logs) |
+| **Edit plugin settings** | Access and modify plugin settings |
+
+### Permission Behavior
+
+**Icon Sets Access:**
+- Users with **any** icon set permission (view, create, edit, delete, or manage optimization) can see the Icon Sets navigation item
+- The "New Icon Set" button only appears for users with **Create icon sets** permission
+- Icon set names are only clickable (linking to edit page) for users with **Edit icon sets** permission
+- Delete buttons and bulk delete actions require **Delete icon sets** permission
+- The SVG Optimization tab on icon set edit pages requires **Manage SVG optimization** permission
+
+**Cache Management:**
+- The "Icon Manager caches" option in Craft's Clear Caches utility only appears for users with **Clear icon cache** permission
+- The Clear Icon Cache utility page respects this permission
+
+**Logs:**
+- The Logs navigation item only appears for users with **View logs** permission
+- The Download button in the logs viewer requires **Download logs** permission
+
+**Settings:**
+- The Settings navigation item only appears for users with **Edit plugin settings** permission
+
+### Example Permission Configurations
+
+**Content Editor** (can use icons but not manage them):
+- ✗ No Icon Manager permissions needed
+- They can select icons in fields but cannot access the Icon Manager CP section
+
+**Icon Manager** (can manage icon sets):
+- ✓ View icon sets
+- ✓ Create icon sets
+- ✓ Edit icon sets
+- ✓ Delete icon sets
+- ✗ Manage SVG optimization (optional)
+- ✓ Clear icon cache
+
+**Developer** (full access):
+- ✓ All permissions
+
+**Support Staff** (can view logs only):
+- ✓ View icon sets
+- ✓ View logs
+- ✓ Download logs
 
 ## Troubleshooting
 

@@ -12,6 +12,7 @@ use Craft;
 use craft\web\Controller;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
+use yii\web\ForbiddenHttpException;
 
 /**
  * Cache Controller
@@ -21,6 +22,20 @@ use lindemannrock\logginglibrary\traits\LoggingTrait;
 class CacheController extends Controller
 {
     use LoggingTrait;
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action): bool
+    {
+        $user = Craft::$app->getUser();
+
+        if (!$user->checkPermission('iconManager:clearCache')) {
+            throw new ForbiddenHttpException('User does not have permission to clear icon cache');
+        }
+
+        return parent::beforeAction($action);
+    }
 
     /**
      * Clear all icon caches

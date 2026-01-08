@@ -27,13 +27,36 @@
 {% set sort = craft.app.request.getParam('sort', 'name') %}
 {% set dir = craft.app.request.getParam('dir', 'asc') %}
 
+{# Permission checks #}
+{% set canCreate = currentUser.can('iconManager:createIconSets') %}
+{% set canEdit = currentUser.can('iconManager:editIconSets') %}
+{% set canDelete = currentUser.can('iconManager:deleteIconSets') %}
+
 {# Icon type colors #}
 {% set iconTypeColors = {
-    'svg-folder': '#14b8a6',
+    'svg-folder': '#ec4899',
     'svg-sprite': '#6366f1',
     'font-awesome': '#3b82f6',
     'material-icons': '#f59e0b',
-    'web-font': '#8b5cf6',
+    'web-font': '#06b6d4',
+} %}
+
+{# Icon type RGB for backgrounds #}
+{% set iconTypeRgb = {
+    'svg-folder': '236, 72, 153',
+    'svg-sprite': '99, 102, 241',
+    'font-awesome': '59, 130, 246',
+    'material-icons': '245, 158, 11',
+    'web-font': '6, 182, 212',
+} %}
+
+{# Icon type dark colors for text #}
+{% set iconTypeTextColors = {
+    'svg-folder': '#831843',
+    'svg-sprite': '#312e81',
+    'font-awesome': '#1e3a8a',
+    'material-icons': '#78350f',
+    'web-font': '#155e75',
 } %}
 
 {% block toolbar %}
@@ -51,8 +74,6 @@
                                 <li><a class="{{ statusFilter == 'all' ? 'sel' : '' }}" href="?status=all&type={{ typeFilter }}&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
                                     <span class="status all"></span>All
                                 </a></li>
-                                <li><hr class="padded"></li>
-                                <li class="menu-header">Status</li>
                                 <li><a class="{{ statusFilter == 'enabled' ? 'sel' : '' }}" href="?status=enabled&type={{ typeFilter }}&search={{ search }}&sort={{ sort }}&dir={{ dir }}">
                                     <span class="status green"></span>Enabled
                                 </a></li>
@@ -105,10 +126,12 @@
                 </div>
             </form>
         </div>
+        {% if canCreate %}
         <a href="{{ url('icon-manager/icon-sets/new') }}" class="btn submit add icon" id="new-iconset-btn">
             <span class="label-full">{{ 'New Icon Set'|t('icon-manager') }}</span>
             <span class="label-short" style="display: none;">{{ 'New'|t('icon-manager') }}</span>
         </a>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -164,9 +187,11 @@
             <table class="data fullwidth">
                 <thead>
                     <tr>
+                        {% if canEdit or canDelete %}
                         <th class="checkbox-cell selectallcontainer">
                             <div class="checkbox" role="checkbox" tabindex="0" aria-checked="false" aria-label="Select all"></div>
                         </th>
+                        {% endif %}
                         <th scope="col" data-attribute="name" class="orderable {{ sort == 'name' ? 'ordered ' ~ dir : '' }}">
                             <button type="button" data-sort="name">
                                 {{ 'Name'|t('icon-manager') }}
@@ -191,23 +216,36 @@
                         </th>
                         {% endif %}
                         <th scope="col">{{ 'Enabled'|t('icon-manager') }}</th>
+                        {% if canDelete %}
                         <th class="thin" style="width: 60px;">{{ 'Actions'|t('icon-manager') }}</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% if iconSets|length %}
                         {% for iconSet in iconSets %}
                             <tr data-id="{{ iconSet.id }}" data-name="{{ iconSet.name }}">
+                                {% if canEdit or canDelete %}
                                 <td class="checkbox-cell">
                                     <div class="checkbox" title="Select" tabindex="0" aria-checked="false" role="checkbox"></div>
                                 </td>
+                                {% endif %}
                                 <td>
+                                    {% if canEdit %}
                                     <a class="label-link" href="{{ url('icon-manager/icon-sets/' ~ iconSet.id) }}">
                                         <span>{{ iconSet.name }}</span>
                                     </a>
+                                    {% else %}
+                                    <span>{{ iconSet.name }}</span>
+                                    {% endif %}
                                 </td>
                                 <td><code>{{ iconSet.handle }}</code></td>
-                                <td><span class="status" style="background: {{ iconTypeColors[iconSet.type]|default('#aab6c1') }};"></span> {{ iconSet.getTypeLabel() }}</td>
+                                <td>
+                                    {% set tColor = iconTypeColors[iconSet.type]|default('#9aa5b1') %}
+                                    {% set tRgb = iconTypeRgb[iconSet.type]|default('154, 165, 177') %}
+                                    {% set tTextColor = iconTypeTextColors[iconSet.type]|default('#374151') %}
+                                    <span class="status-label" style="background: rgba({{ tRgb }}, 0.12);"><span class="status" style="background: {{ tColor }};"></span><span class="status-label-text" style="color: {{ tTextColor }};">{{ iconSet.getTypeLabel() }}</span></span>
+                                </td>
                                 <td>{{ iconSet.getIconCount()|number_format }}</td>
                                 {% if plugin.settings.enableOptimization %}
                                 <td>
@@ -229,14 +267,16 @@
                                 {% endif %}
                                 <td>
                                     {% if iconSet.enabled %}
-                                        <span class="status green"></span>
+                                        <span class="status-label teal"><span class="status teal"></span><span class="status-label-text">{{ 'Enabled'|t('icon-manager') }}</span></span>
                                     {% else %}
-                                        <span class="status disabled"></span>
+                                        <span class="status-label gray"><span class="status disabled"></span><span class="status-label-text">{{ 'Disabled'|t('icon-manager') }}</span></span>
                                     {% endif %}
                                 </td>
+                                {% if canDelete %}
                                 <td class="thin" style="text-align: right;">
                                     <button type="button" class="btn icon delete" title="{{ 'Delete'|t('app') }}" aria-label="{{ 'Delete'|t('app') }}"></button>
                                 </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     {% else %}
@@ -268,7 +308,9 @@
                 </div>
             </div>
         </div>
+        {% if canEdit or canDelete %}
         <div id="actions-container" class="flex" style="display: none;">
+            {% if canEdit %}
             <div>
                 <button type="button" class="btn menubtn secondary" id="bulk-actions-btn" aria-label="Set status">
                     {{ 'Set status'|t('app') }}
@@ -280,10 +322,14 @@
                     </ul>
                 </div>
             </div>
+            {% endif %}
+            {% if canDelete %}
             <button type="button" class="btn secondary" id="bulk-delete-btn">
                 <span id="delete-label">{{ 'Delete'|t('icon-manager') }}</span>
             </button>
+            {% endif %}
         </div>
+        {% endif %}
     </div>
 
     <script>
@@ -342,6 +388,8 @@
         });
 
         // Checkbox functionality
+        const canEdit = {{ canEdit ? 'true' : 'false' }};
+        const canDelete = {{ canDelete ? 'true' : 'false' }};
         const selectAllCheckbox = document.querySelector('.selectallcontainer .checkbox');
         const checkboxes = document.querySelectorAll('tbody .checkbox');
         let selectedIds = new Set();
@@ -467,31 +515,33 @@
         });
 
         // Individual delete
-        document.querySelectorAll('.btn.delete').forEach(deleteBtn => {
-            deleteBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const row = this.closest('tr');
-                const id = row.dataset.id;
-                const name = row.dataset.name;
+        if (canDelete) {
+            document.querySelectorAll('.btn.delete').forEach(deleteBtn => {
+                deleteBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const row = this.closest('tr');
+                    const id = row.dataset.id;
+                    const name = row.dataset.name;
 
-                if (!confirm(`Delete "${name}"?`)) return;
+                    if (!confirm(`Delete "${name}"?`)) return;
 
-                Craft.sendActionRequest('POST', 'icon-manager/icon-sets/delete', {
-                    data: { iconSetId: id }
-                }).then(function(response) {
-                    if (response.data.success) {
-                        row.remove();
-                        Craft.cp.displayNotice('Icon set deleted');
+                    Craft.sendActionRequest('POST', 'icon-manager/icon-sets/delete', {
+                        data: { iconSetId: id }
+                    }).then(function(response) {
+                        if (response.data.success) {
+                            row.remove();
+                            Craft.cp.displayNotice('Icon set deleted');
 
-                        // Check if table is now empty
-                        if (document.querySelectorAll('tbody tr').length === 0) {
-                            window.location.reload();
+                            // Check if table is now empty
+                            if (document.querySelectorAll('tbody tr').length === 0) {
+                                window.location.reload();
+                            }
                         }
-                    }
-                }).catch(function(error) {
-                    Craft.cp.displayError('Failed to delete icon set');
+                    }).catch(function(error) {
+                        Craft.cp.displayError('Failed to delete icon set');
+                    });
                 });
             });
-        });
+        }
     </script>
 {% endblock %}

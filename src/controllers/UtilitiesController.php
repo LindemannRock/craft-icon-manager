@@ -12,6 +12,7 @@ use Craft;
 use craft\web\Controller;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
+use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
 /**
@@ -22,6 +23,30 @@ use yii\web\Response;
 class UtilitiesController extends Controller
 {
     use LoggingTrait;
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action): bool
+    {
+        $user = Craft::$app->getUser();
+
+        switch ($action->id) {
+            case 'refresh-all-icons':
+                if (!$user->checkPermission('iconManager:editIconSets')) {
+                    throw new ForbiddenHttpException('User does not have permission to refresh icons');
+                }
+                break;
+
+            case 'scan-svgs':
+                if (!$user->checkPermission('iconManager:manageOptimization')) {
+                    throw new ForbiddenHttpException('User does not have permission to scan SVGs');
+                }
+                break;
+        }
+
+        return parent::beforeAction($action);
+    }
 
     /**
      * Refresh all icon sets

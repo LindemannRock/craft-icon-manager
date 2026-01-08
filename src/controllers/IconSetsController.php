@@ -14,6 +14,7 @@ use lindemannrock\iconmanager\IconManager;
 
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
+use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
 /**
@@ -24,6 +25,89 @@ use yii\web\Response;
 class IconSetsController extends Controller
 {
     use LoggingTrait;
+
+    /**
+     * @inheritdoc
+     */
+    public function beforeAction($action): bool
+    {
+        $user = Craft::$app->getUser();
+
+        // Check permissions based on action
+        switch ($action->id) {
+            case 'index':
+                // View icon sets list requires view permission (or any related permission for implicit access)
+                $hasViewAccess = $user->checkPermission('iconManager:viewIconSets') ||
+                    $user->checkPermission('iconManager:createIconSets') ||
+                    $user->checkPermission('iconManager:editIconSets') ||
+                    $user->checkPermission('iconManager:deleteIconSets') ||
+                    $user->checkPermission('iconManager:manageOptimization');
+                if (!$hasViewAccess) {
+                    throw new ForbiddenHttpException('User does not have permission to view icon sets');
+                }
+                break;
+
+            case 'edit':
+                // Edit page requires create (for new) or edit (for existing)
+                $iconSetId = Craft::$app->getRequest()->getParam('iconSetId');
+                if ($iconSetId) {
+                    // Viewing/editing existing icon set
+                    if (!$user->checkPermission('iconManager:editIconSets')) {
+                        throw new ForbiddenHttpException('User does not have permission to edit icon sets');
+                    }
+                } else {
+                    // Creating new icon set
+                    if (!$user->checkPermission('iconManager:createIconSets')) {
+                        throw new ForbiddenHttpException('User does not have permission to create icon sets');
+                    }
+                }
+                break;
+
+            case 'save':
+                // Save requires create (for new) or edit (for existing)
+                $iconSetId = Craft::$app->getRequest()->getBodyParam('iconSetId');
+                if ($iconSetId) {
+                    // Editing existing
+                    if (!$user->checkPermission('iconManager:editIconSets')) {
+                        throw new ForbiddenHttpException('User does not have permission to edit icon sets');
+                    }
+                } else {
+                    // Creating new
+                    if (!$user->checkPermission('iconManager:createIconSets')) {
+                        throw new ForbiddenHttpException('User does not have permission to create icon sets');
+                    }
+                }
+                break;
+
+            case 'delete':
+            case 'bulk-delete':
+                if (!$user->checkPermission('iconManager:deleteIconSets')) {
+                    throw new ForbiddenHttpException('User does not have permission to delete icon sets');
+                }
+                break;
+
+            case 'bulk-enable':
+            case 'bulk-disable':
+            case 'refresh-icons':
+                if (!$user->checkPermission('iconManager:editIconSets')) {
+                    throw new ForbiddenHttpException('User does not have permission to edit icon sets');
+                }
+                break;
+
+            case 'optimize':
+            case 'apply-optimizations':
+            case 'restore-backup':
+            case 'get-svg-files':
+            case 'save-optimized-svgs':
+            case 'delete-backup':
+                if (!$user->checkPermission('iconManager:manageOptimization')) {
+                    throw new ForbiddenHttpException('User does not have permission to manage SVG optimization');
+                }
+                break;
+        }
+
+        return parent::beforeAction($action);
+    }
     /**
      * Icon sets index
      */

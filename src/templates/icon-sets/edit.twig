@@ -21,13 +21,16 @@
     { label: 'Icon Sets'|t('icon-manager'), url: url('icon-manager/icon-sets') }
 ] %}
 
+{# Permission checks #}
+{% set canManageOptimization = currentUser.can('iconManager:manageOptimization') %}
+
 {% if not isNew %}
     {% set tabs = {
         settings: { label: "Settings"|t('icon-manager'), url: '#settings' },
         preview: { label: "Preview"|t('icon-manager'), url: '#preview' }
     } %}
 
-    {% if iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
+    {% if iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization and canManageOptimization %}
         {% set tabs = tabs|merge({
             optimization: { label: "SVG Optimization"|t('icon-manager'), url: '#optimization' }
         }) %}
@@ -41,7 +44,7 @@
         <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
     </div>
 
-    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
+    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization and canManageOptimization %}
         {% set isDevEnvironment = craft.app.config.general.devMode or (craft.app.env in ['local', 'dev', 'development']) %}
         {% if isDevEnvironment %}
             <div id="optimization-button-container" style="display: none;">
@@ -361,7 +364,7 @@
     {% endif %}
 
     {# SVG Optimization Tab #}
-    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization %}
+    {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization and canManageOptimization %}
     <div id="optimization" class="hidden">
         {% include 'icon-manager/icon-sets/_optimization-tab.twig' %}
     </div>

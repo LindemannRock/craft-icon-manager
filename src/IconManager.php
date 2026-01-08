@@ -192,17 +192,35 @@ class IconManager extends Plugin
     public function getCpNavItem(): ?array
     {
         $item = parent::getCpNavItem();
+        $user = Craft::$app->getUser();
+
+        // Check if user has any access to the plugin
+        $hasIconSetsAccess = $user->checkPermission('iconManager:viewIconSets') ||
+            $user->checkPermission('iconManager:createIconSets') ||
+            $user->checkPermission('iconManager:editIconSets') ||
+            $user->checkPermission('iconManager:deleteIconSets') ||
+            $user->checkPermission('iconManager:manageOptimization');
+        $hasLogsAccess = $user->checkPermission('iconManager:viewLogs');
+        $hasSettingsAccess = $user->checkPermission('iconManager:editSettings');
+
+        // If no access at all, hide the plugin from nav
+        if (!$hasIconSetsAccess && !$hasLogsAccess && !$hasSettingsAccess) {
+            return null;
+        }
 
         if ($item) {
             // Use Craft's built-in folder-grid icon for icon management
             $item['icon'] = '@appicons/folder-grid.svg';
 
-            $item['subnav'] = [
-                'icon-sets' => [
+            $item['subnav'] = [];
+
+            // Icon Sets - show if user has any icon set permission
+            if ($hasIconSetsAccess) {
+                $item['subnav']['icon-sets'] = [
                     'label' => Craft::t('icon-manager', 'Icon Sets'),
                     'url' => 'icon-manager',
-                ],
-            ];
+                ];
+            }
 
             // Add logs section using the logging library (only if installed)
             if (Craft::$app->getPlugins()->isPluginInstalled('logging-library') &&
@@ -212,7 +230,7 @@ class IconManager extends Plugin
                 ]);
             }
 
-            if (Craft::$app->getUser()->checkPermission('iconManager:editSettings')) {
+            if ($hasSettingsAccess) {
                 $item['subnav']['settings'] = [
                     'label' => Craft::t('icon-manager', 'Settings'),
                     'url' => 'icon-manager/settings',
@@ -308,11 +326,31 @@ class IconManager extends Plugin
                 $event->permissions[] = [
                     'heading' => Craft::t('icon-manager', 'Icon Manager'),
                     'permissions' => [
-                        'iconManager:manageIconSets' => [
-                            'label' => Craft::t('icon-manager', 'Manage icon sets'),
+                        'iconManager:viewIconSets' => [
+                            'label' => Craft::t('icon-manager', 'View icon sets'),
+                        ],
+                        'iconManager:createIconSets' => [
+                            'label' => Craft::t('icon-manager', 'Create icon sets'),
+                        ],
+                        'iconManager:editIconSets' => [
+                            'label' => Craft::t('icon-manager', 'Edit icon sets'),
+                        ],
+                        'iconManager:deleteIconSets' => [
+                            'label' => Craft::t('icon-manager', 'Delete icon sets'),
+                        ],
+                        'iconManager:manageOptimization' => [
+                            'label' => Craft::t('icon-manager', 'Manage SVG optimization'),
+                        ],
+                        'iconManager:clearCache' => [
+                            'label' => Craft::t('icon-manager', 'Clear icon cache'),
                         ],
                         'iconManager:viewLogs' => [
                             'label' => Craft::t('icon-manager', 'View logs'),
+                            'nested' => [
+                                'iconManager:downloadLogs' => [
+                                    'label' => Craft::t('icon-manager', 'Download logs'),
+                                ],
+                            ],
                         ],
                         'iconManager:editSettings' => [
                             'label' => Craft::t('icon-manager', 'Edit plugin settings'),
@@ -360,6 +398,11 @@ class IconManager extends Plugin
             ClearCaches::class,
             ClearCaches::EVENT_REGISTER_CACHE_OPTIONS,
             function(RegisterCacheOptionsEvent $event) {
+                // Only show cache option if user has permission to clear icon cache
+                if (!Craft::$app->getUser()->checkPermission('iconManager:clearCache')) {
+                    return;
+                }
+
                 $settings = $this->getSettings();
                 $displayName = $settings->getDisplayName();
 
@@ -432,7 +475,8 @@ class IconManager extends Plugin
             'pluginName' => $settings->pluginName ?? $this->name,
             'logLevel' => $settings->logLevel ?? 'error',
             'itemsPerPage' => $settings->itemsPerPage ?? 50,
-            'permissions' => ['iconManager:viewLogs'],
+            'viewPermissions' => ['iconManager:viewLogs'],
+            'downloadPermissions' => ['iconManager:downloadLogs'],
         ]);
     }
 }
