@@ -66,7 +66,7 @@ class Install extends Migration
         $this->createTable('{{%iconmanager_settings}}', [
             'id' => $this->primaryKey(),
             // Plugin settings
-            'pluginName' => $this->string()->null(),
+            'pluginName' => $this->string()->notNull()->defaultValue('Icon Manager'),
             // General settings
             'iconSetsPath' => $this->string()->notNull()->defaultValue('@root/icons'),
             'enableCache' => $this->boolean()->notNull()->defaultValue(true),
