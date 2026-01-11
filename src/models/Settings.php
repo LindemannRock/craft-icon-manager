@@ -38,9 +38,9 @@ class Settings extends Model
     }
 
     /**
-     * @var string|null The public-facing name of the plugin
+     * @var string The public-facing name of the plugin
      */
-    public ?string $pluginName = 'Icon Manager';
+    public string $pluginName = 'Icon Manager';
     
     /**
      * @var string The path to icon sets folder
