@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.9.3](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.2...v5.9.3) (2026-01-11)
+
+
+### Bug Fixes
+
+* set default pluginName in iconmanager_settings to 'Icon Manager' ([75d4744](https://github.com/LindemannRock/craft-icon-manager/commit/75d4744db6c94613cd9c142733bd85ab819240ef))
+
 ## [5.9.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.1...v5.9.2) (2026-01-11)
 
 
