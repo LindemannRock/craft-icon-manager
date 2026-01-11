@@ -121,7 +121,7 @@ class Install extends Migration
         // Insert default settings row
         $this->insert('{{%iconmanager_settings}}', [
             'id' => 1,
-            'pluginName' => null,
+            'pluginName' => 'Icon Manager',
             'iconSetsPath' => '@root/icons',
             'enableCache' => true,
             'cacheDuration' => 86400,
