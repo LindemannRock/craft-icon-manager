@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.9.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.1...v5.9.2) (2026-01-11)
+
+
+### Bug Fixes
+
+* update pluginName type and improve displayName method in ClearIconCache utility ([944b9ea](https://github.com/LindemannRock/craft-icon-manager/commit/944b9eac135f1ce19b005c0026128b34295d26fd))
+
 ## [5.9.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.0...v5.9.1) (2026-01-11)
 
 
