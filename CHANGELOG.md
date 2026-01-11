@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.9.4](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.3...v5.9.4) (2026-01-11)
+
+
+### Bug Fixes
+
+* set pluginName in iconmanager_settings to not null with default value 'Icon Manager' ([f5e4641](https://github.com/LindemannRock/craft-icon-manager/commit/f5e46418295ae7f8b5ee3710bce1ba9f1acf5085))
+
 ## [5.9.3](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.2...v5.9.3) (2026-01-11)
 
 
