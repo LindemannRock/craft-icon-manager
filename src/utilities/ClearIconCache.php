@@ -24,8 +24,7 @@ class ClearIconCache extends Utility
      */
     public static function displayName(): string
     {
-        $pluginName = IconManager::getInstance()->getSettings()->pluginName;
-        return $pluginName;
+        return IconManager::$plugin?->getSettings()->pluginName ?? 'Icon Manager';
     }
 
     /**
