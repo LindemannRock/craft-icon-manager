@@ -326,32 +326,8 @@
         </div>
     </div>
 
-    <hr>
-
-    {{ forms.lightswitchField({
-        label: 'Enabled'|t('icon-manager'),
-        instructions: 'Whether this icon set should be available for selection.'|t('icon-manager'),
-        id: 'enabled',
-        name: 'enabled',
-        on: iconSet.enabled,
-    }) }}
-
     {% if not isNew %}
-        <hr>
-        <div class="field">
-            <div class="heading">
-                <label>{{ 'Icons'|t('icon-manager') }}</label>
-                <div class="instructions">
-                    <p>{{ 'This icon set contains {count} icons.'|t('icon-manager', {count: iconSet.getIconCount()|number_format}) }}</p>
-                </div>
-            </div>
-            <button type="button" class="btn" onclick="refreshIcons()">
-                {{ 'Refresh Icons'|t('icon-manager') }}
-            </button>
-        </div>
-
-    {% include 'icon-manager/_components/plugin-credit.twig' %}
-
+        {% include 'icon-manager/_components/plugin-credit.twig' %}
     {% endif %}
 
     </div>{# end settings tab #}
@@ -370,6 +346,60 @@
     </div>
     {% endif %}
 
+{% endblock %}
+
+{% block details %}
+    <div class="meta">
+        {{ forms.lightswitchField({
+            label: 'Enabled'|t('icon-manager'),
+            id: 'enabled',
+            name: 'enabled',
+            on: iconSet.enabled
+        }) }}
+
+        {% if not isNew %}
+            <div class="field">
+                <div class="heading">
+                    <label>{{ 'Actions'|t('icon-manager') }}</label>
+                </div>
+                <div class="input">
+                    <button type="button" class="btn" style="width: 100%;" onclick="refreshIcons()">
+                        {{ 'Refresh Icons'|t('icon-manager') }}
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if not isNew %}
+        <fieldset>
+            <dl class="meta read-only">
+                <div class="data">
+                    <dt class="heading">{{ 'Status'|t('icon-manager') }}</dt>
+                    <dd class="value">
+                        <span class="status {{ iconSet.enabled ? 'live' : 'disabled' }}"></span>
+                        <span>{{ iconSet.enabled ? 'Live'|t('icon-manager') : 'Disabled'|t('icon-manager') }}</span>
+                    </dd>
+                </div>
+                <div class="data">
+                    <dt class="heading">{{ 'Icons'|t('icon-manager') }}</dt>
+                    <dd class="value">{{ iconSet.getIconCount()|number_format }}</dd>
+                </div>
+                <div class="data">
+                    <dt class="heading">{{ 'Type'|t('icon-manager') }}</dt>
+                    <dd class="value">{{ iconSet.type }}</dd>
+                </div>
+                <div class="data">
+                    <dt class="heading">{{ 'Created'|t('app') }}</dt>
+                    <dd class="value">{{ iconSet.dateCreated|datetime('short') }}</dd>
+                </div>
+                <div class="data">
+                    <dt class="heading">{{ 'Updated'|t('app') }}</dt>
+                    <dd class="value">{{ iconSet.dateUpdated|datetime('short') }}</dd>
+                </div>
+            </dl>
+        </fieldset>
+    {% endif %}
 {% endblock %}
 
 {% js %}
