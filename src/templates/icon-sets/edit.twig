@@ -359,14 +359,14 @@
     {# Preview Tab #}
     {% if not isNew %}
     <div id="preview" class="hidden">
-        {% include 'icon-manager/icon-sets/_preview-tab.twig' %}
+        {% include 'icon-manager/icon-sets/_partials/preview' %}
     </div>
     {% endif %}
 
     {# SVG Optimization Tab #}
     {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization and canManageOptimization %}
     <div id="optimization" class="hidden">
-        {% include 'icon-manager/icon-sets/_optimization-tab.twig' %}
+        {% include 'icon-manager/icon-sets/_partials/optimization' %}
     </div>
     {% endif %}
 
