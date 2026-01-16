@@ -100,22 +100,14 @@ class IconManager extends Plugin
         parent::init();
         self::$plugin = $this;
 
-        // Bootstrap the base plugin helper
-        PluginHelper::bootstrap($this, 'iconHelper');
-
-        // Override plugin name from config if available, otherwise use from database settings
-        $configFileSettings = Craft::$app->getConfig()->getConfigFromFile('icon-manager');
-        if (isset($configFileSettings['pluginName'])) {
-            $this->name = $configFileSettings['pluginName'];
-        } else {
-            // Get from database settings
-            $settings = $this->getSettings();
-            if (!empty($settings->pluginName)) {
-                $this->name = $settings->pluginName;
-            }
-        }
-
-        $this->_registerLogTarget();
+        // Bootstrap base module (logging + Twig extension)
+        PluginHelper::bootstrap(
+            $this,
+            'iconHelper',
+            ['iconManager:viewLogs'],
+            ['iconManager:downloadLogs']
+        );
+        PluginHelper::applyPluginNameFromConfig($this);
         $this->_registerCpRoutes();
         $this->_registerFieldTypes();
 
@@ -466,23 +458,5 @@ class IconManager extends Plugin
 
         // Clear memory caches
         $this->icons->clearMemoryCache();
-    }
-
-    /**
-     * Register log target for dedicated log file
-     */
-    private function _registerLogTarget(): void
-    {
-        // Configure logging using the new logging library
-        $settings = $this->getSettings();
-
-        LoggingLibrary::configure([
-            'pluginHandle' => $this->handle,
-            'pluginName' => $settings->pluginName ?? $this->name,
-            'logLevel' => $settings->logLevel ?? 'error',
-            'itemsPerPage' => $settings->itemsPerPage ?? 50,
-            'viewPermissions' => ['iconManager:viewLogs'],
-            'downloadPermissions' => ['iconManager:downloadLogs'],
-        ]);
     }
 }
