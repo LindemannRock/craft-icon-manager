@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.4...v5.10.0) (2026-01-16)
+
+
+### Features
+
+* enhance icon set details with status and actions ([bc335f4](https://github.com/LindemannRock/craft-icon-manager/commit/bc335f48fab6ee4f5e35e2dc09cdd253a819eff1))
+
+
+### Bug Fixes
+
+* reorganize and standardize analytics templates ([d6b27a6](https://github.com/LindemannRock/craft-icon-manager/commit/d6b27a6a8538d978634bd1e2ce8f563c15d43df3))
+* update cache location message to use iconHelper.cacheBasePath ([4319373](https://github.com/LindemannRock/craft-icon-manager/commit/4319373342d2b0c9137513ca974fdb1562bdf36b))
+* update hardcoded cache paths with PluginHelper for consistency ([4b313cc](https://github.com/LindemannRock/craft-icon-manager/commit/4b313ccb04e8bafc80aa7d1a6ea9e449bd7262ad))
+* update PluginHelper bootstrap to include download permissions for logging ([69c1060](https://github.com/LindemannRock/craft-icon-manager/commit/69c106070f55056393d324d82e5f5bc6ce354786))
+
 ## [5.9.4](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.3...v5.9.4) (2026-01-11)
 
 
