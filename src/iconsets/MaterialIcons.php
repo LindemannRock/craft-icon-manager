@@ -8,8 +8,8 @@
 
 namespace lindemannrock\iconmanager\iconsets;
 
-use Craft;
 use craft\helpers\Json;
+use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 
 use lindemannrock\iconmanager\models\Icon;
@@ -230,7 +230,7 @@ class MaterialIcons
         }
 
         // Check custom file cache (organized by icon type)
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/material-icons/';
+        $cachePath = PluginHelper::getCachePath(IconManager::$plugin, 'material-icons');
         $cacheFile = $cachePath . "{$type}.cache";
 
         if (file_exists($cacheFile)) {

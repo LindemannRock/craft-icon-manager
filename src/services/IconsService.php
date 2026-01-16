@@ -15,6 +15,7 @@ use craft\helpers\Db;
 
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
+use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
@@ -446,8 +447,6 @@ class IconsService extends Component
      */
     private function _getCachePath(IconSet $iconSet): string
     {
-        $basePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/';
-
         // Organize cache by icon type
         $typeMap = [
             'svg-folder' => 'svg-folder',
@@ -458,7 +457,7 @@ class IconsService extends Component
         ];
 
         $typeFolder = $typeMap[$iconSet->type] ?? 'other';
-        return $basePath . $typeFolder . '/';
+        return PluginHelper::getCachePath(IconManager::$plugin, $typeFolder);
     }
 
     /**

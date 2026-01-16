@@ -8,8 +8,8 @@
 
 namespace lindemannrock\iconmanager\iconsets;
 
-use Craft;
 use craft\helpers\Json;
+use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 
 use lindemannrock\iconmanager\models\Icon;
@@ -275,7 +275,7 @@ class FontAwesome
         }
 
         // Check custom file cache (organized by icon type)
-        $cachePath = Craft::$app->path->getRuntimePath() . '/icon-manager/cache/font-awesome/';
+        $cachePath = PluginHelper::getCachePath(IconManager::$plugin, 'font-awesome');
         $cacheFile = $cachePath . "{$version}_{$license}.cache";
 
         if (file_exists($cacheFile)) {
