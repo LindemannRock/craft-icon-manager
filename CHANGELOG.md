@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.0...v5.10.1) (2026-01-21)
+
+
+### Bug Fixes
+
+* correct header title in general settings template ([9c074c7](https://github.com/LindemannRock/craft-icon-manager/commit/9c074c7996738d1517a7cf29b125fdc23a1e2631))
+
 ## [5.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.4...v5.10.0) (2026-01-16)
 
 
