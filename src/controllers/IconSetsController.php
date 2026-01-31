@@ -40,7 +40,7 @@ class IconSetsController extends Controller
                 if (!$user->checkPermission('iconManager:viewIconSets')) {
                     // Redirect to first accessible section
                     if ($user->checkPermission('iconManager:viewLogs')) {
-                        Craft::$app->getResponse()->redirect('icon-manager/logs')->send();
+                        Craft::$app->getResponse()->redirect('icon-manager/logs/system')->send();
                         return false;
                     }
                     if ($user->checkPermission('iconManager:editSettings')) {

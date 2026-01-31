@@ -254,10 +254,6 @@ class IconManager extends Plugin
                     'icon-manager/settings/svg-optimization' => 'icon-manager/settings/svg-optimization',
                     'icon-manager/settings/<section:\w+>' => 'icon-manager/settings/<section>',
 
-                    // Logging routes
-                    'icon-manager/logs' => 'logging-library/logs/index',
-                    'icon-manager/logs/download' => 'logging-library/logs/download',
-
                     // Icons API routes
                     'icon-manager/icons/render' => 'icon-manager/icons/render',
                     'icon-manager/icons/get-data' => 'icon-manager/icons/get-data',
@@ -343,10 +339,10 @@ class IconManager extends Plugin
                             'label' => Craft::t('icon-manager', 'Clear {name} cache', ['name' => $lowerDisplayName]),
                         ],
                         'iconManager:viewLogs' => [
-                            'label' => Craft::t('icon-manager', 'View logs'),
+                            'label' => Craft::t('icon-manager', 'View system logs'),
                             'nested' => [
                                 'iconManager:downloadLogs' => [
-                                    'label' => Craft::t('icon-manager', 'Download logs'),
+                                    'label' => Craft::t('icon-manager', 'Download system logs'),
                                 ],
                             ],
                         ],
