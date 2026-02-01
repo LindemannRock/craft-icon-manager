@@ -26,6 +26,7 @@ use craft\utilities\ClearCaches;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
+use lindemannrock\base\helpers\CpNavHelper;
 use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\fields\IconManagerField;
 use lindemannrock\iconmanager\models\Settings;
@@ -184,31 +185,15 @@ class IconManager extends Plugin
     public function getCpNavItem(): ?array
     {
         $item = parent::getCpNavItem();
-        $user = Craft::$app->getUser();
-
-        // Check if user has view access to each section
-        $hasIconSetsAccess = $user->checkPermission('iconManager:viewIconSets');
-        $hasLogsAccess = $user->checkPermission('iconManager:viewSystemLogs');
-        $hasSettingsAccess = $user->checkPermission('iconManager:editSettings');
-
-        // If no access at all, hide the plugin from nav
-        if (!$hasIconSetsAccess && !$hasLogsAccess && !$hasSettingsAccess) {
-            return null;
-        }
 
         if ($item) {
             // Use Craft's built-in folder-grid icon for icon management
             $item['icon'] = '@appicons/folder-grid.svg';
 
-            $item['subnav'] = [];
-
-            // Icon Sets - show if user has any icon set permission
-            if ($hasIconSetsAccess) {
-                $item['subnav']['icon-sets'] = [
-                    'label' => Craft::t('icon-manager', 'Icon Sets'),
-                    'url' => 'icon-manager',
-                ];
-            }
+            $settings = $this->getSettings();
+            $user = Craft::$app->getUser();
+            $sections = $this->getCpSections($settings);
+            $item['subnav'] = CpNavHelper::buildSubnav($user, $settings, $sections);
 
             // Add logs section using the logging library
             if (PluginHelper::isPluginEnabled('logging-library')) {
@@ -217,15 +202,55 @@ class IconManager extends Plugin
                 ]);
             }
 
-            if ($hasSettingsAccess) {
-                $item['subnav']['settings'] = [
-                    'label' => Craft::t('icon-manager', 'Settings'),
-                    'url' => 'icon-manager/settings',
-                ];
+            // Hide from nav if no accessible subnav items
+            if (empty($item['subnav'])) {
+                return null;
             }
         }
 
         return $item;
+    }
+
+    /**
+     * Get CP sections for nav + default route resolution
+     *
+     * @param Settings $settings
+     * @param bool $includeIconSets
+     * @param bool $includeLogs
+     * @return array
+     * @since 5.14.0
+     */
+    public function getCpSections(Settings $settings, bool $includeIconSets = true, bool $includeLogs = false): array
+    {
+        $sections = [];
+
+        if ($includeIconSets) {
+            $sections[] = [
+                'key' => 'icon-sets',
+                'label' => Craft::t('icon-manager', 'Icon Sets'),
+                'url' => 'icon-manager',
+                'permissionsAll' => ['iconManager:viewIconSets'],
+            ];
+        }
+
+        if ($includeLogs) {
+            $sections[] = [
+                'key' => 'logs',
+                'label' => Craft::t('icon-manager', 'Logs'),
+                'url' => 'icon-manager/logs',
+                'permissionsAll' => ['iconManager:viewSystemLogs'],
+                'when' => fn() => PluginHelper::isPluginEnabled('logging-library'),
+            ];
+        }
+
+        $sections[] = [
+            'key' => 'settings',
+            'label' => Craft::t('icon-manager', 'Settings'),
+            'url' => 'icon-manager/settings',
+            'permissionsAll' => ['iconManager:editSettings'],
+        ];
+
+        return $sections;
     }
 
     /**

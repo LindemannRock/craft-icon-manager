@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\controllers;
 
 use Craft;
 use craft\web\Controller;
+use lindemannrock\base\helpers\CpNavHelper;
 use lindemannrock\iconmanager\IconManager;
 
 use lindemannrock\iconmanager\models\IconSet;
@@ -39,12 +40,11 @@ class IconSetsController extends Controller
                 // View icon sets list requires viewIconSets permission
                 if (!$user->checkPermission('iconManager:viewIconSets')) {
                     // Redirect to first accessible section
-                    if ($user->checkPermission('iconManager:viewSystemLogs')) {
-                        Craft::$app->getResponse()->redirect('icon-manager/logs')->send();
-                        return false;
-                    }
-                    if ($user->checkPermission('iconManager:editSettings')) {
-                        Craft::$app->getResponse()->redirect('icon-manager/settings')->send();
+                    $settings = IconManager::getInstance()->getSettings();
+                    $sections = IconManager::getInstance()->getCpSections($settings, false, true);
+                    $route = CpNavHelper::firstAccessibleRoute($user, $settings, $sections);
+                    if ($route) {
+                        Craft::$app->getResponse()->redirect($route)->send();
                         return false;
                     }
                     // No access at all
