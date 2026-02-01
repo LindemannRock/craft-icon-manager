@@ -39,8 +39,8 @@ class IconSetsController extends Controller
                 // View icon sets list requires viewIconSets permission
                 if (!$user->checkPermission('iconManager:viewIconSets')) {
                     // Redirect to first accessible section
-                    if ($user->checkPermission('iconManager:viewLogs')) {
-                        Craft::$app->getResponse()->redirect('icon-manager/logs/system')->send();
+                    if ($user->checkPermission('iconManager:viewSystemLogs')) {
+                        Craft::$app->getResponse()->redirect('icon-manager/logs')->send();
                         return false;
                     }
                     if ($user->checkPermission('iconManager:editSettings')) {

@@ -104,8 +104,8 @@ class IconManager extends Plugin
         PluginHelper::bootstrap(
             $this,
             'iconHelper',
-            ['iconManager:viewLogs'],
-            ['iconManager:downloadLogs']
+            ['iconManager:viewSystemLogs'],
+            ['iconManager:downloadSystemLogs']
         );
         PluginHelper::applyPluginNameFromConfig($this);
         $this->_registerCpRoutes();
@@ -188,7 +188,7 @@ class IconManager extends Plugin
 
         // Check if user has view access to each section
         $hasIconSetsAccess = $user->checkPermission('iconManager:viewIconSets');
-        $hasLogsAccess = $user->checkPermission('iconManager:viewLogs');
+        $hasLogsAccess = $user->checkPermission('iconManager:viewSystemLogs');
         $hasSettingsAccess = $user->checkPermission('iconManager:editSettings');
 
         // If no access at all, hide the plugin from nav
@@ -210,11 +210,10 @@ class IconManager extends Plugin
                 ];
             }
 
-            // Add logs section using the logging library (only if installed)
-            if (Craft::$app->getPlugins()->isPluginInstalled('logging-library') &&
-                Craft::$app->getPlugins()->isPluginEnabled('logging-library')) {
+            // Add logs section using the logging library
+            if (PluginHelper::isPluginEnabled('logging-library')) {
                 $item = LoggingLibrary::addLogsNav($item, $this->handle, [
-                    'iconManager:viewLogs',
+                    'iconManager:viewSystemLogs',
                 ]);
             }
 
@@ -339,10 +338,15 @@ class IconManager extends Plugin
                             'label' => Craft::t('icon-manager', 'Clear {name} cache', ['name' => $lowerDisplayName]),
                         ],
                         'iconManager:viewLogs' => [
-                            'label' => Craft::t('icon-manager', 'View system logs'),
+                            'label' => Craft::t('icon-manager', 'View logs'),
                             'nested' => [
-                                'iconManager:downloadLogs' => [
-                                    'label' => Craft::t('icon-manager', 'Download system logs'),
+                                'iconManager:viewSystemLogs' => [
+                                    'label' => Craft::t('icon-manager', 'View system logs'),
+                                    'nested' => [
+                                        'iconManager:downloadSystemLogs' => [
+                                            'label' => Craft::t('icon-manager', 'Download system logs'),
+                                        ],
+                                    ],
                                 ],
                             ],
                         ],
