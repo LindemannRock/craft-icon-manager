@@ -218,7 +218,7 @@ class IconManager extends Plugin
      * @param bool $includeIconSets
      * @param bool $includeLogs
      * @return array
-     * @since 5.14.0
+     * @since 5.11.0
      */
     public function getCpSections(Settings $settings, bool $includeIconSets = true, bool $includeLogs = false): array
     {
