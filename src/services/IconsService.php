@@ -466,7 +466,7 @@ class IconsService extends Component
     private function _getCachedIcons(int $iconSetId): ?array
     {
         $settings = IconManager::getInstance()->getSettings();
-        $cacheKey = 'iconmanager:icons:' . $iconSetId;
+        $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $iconSetId;
 
         // Use Redis/database cache if configured
         if ($settings->cacheStorageMethod === 'redis') {
@@ -504,7 +504,7 @@ class IconsService extends Component
     private function _cacheIcons(int $iconSetId, array $icons, int $duration): void
     {
         $settings = IconManager::getInstance()->getSettings();
-        $cacheKey = 'iconmanager:icons:' . $iconSetId;
+        $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $iconSetId;
 
         // Use Redis/database cache if configured
         if ($settings->cacheStorageMethod === 'redis') {
@@ -514,7 +514,7 @@ class IconsService extends Component
             // Track key in set for selective deletion
             if ($cache instanceof \yii\redis\Cache) {
                 $redis = $cache->redis;
-                $redis->executeCommand('SADD', ['iconmanager-icons-keys', $cacheKey]);
+                $redis->executeCommand('SADD', [PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons'), $cacheKey]);
             }
 
             return;

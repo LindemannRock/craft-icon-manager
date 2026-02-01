@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\controllers;
 
 use Craft;
 use craft\web\Controller;
+use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\ForbiddenHttpException;
@@ -58,7 +59,7 @@ class CacheController extends Controller
                     $redis = $cache->redis;
 
                     // Get all icon cache keys from tracking set
-                    $keys = $redis->executeCommand('SMEMBERS', ['iconmanager-icons-keys']) ?: [];
+                    $keys = $redis->executeCommand('SMEMBERS', [PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons')]) ?: [];
 
                     // Delete icon cache keys using Craft's cache component
                     foreach ($keys as $key) {
@@ -66,7 +67,7 @@ class CacheController extends Controller
                     }
 
                     // Clear the tracking set
-                    $redis->executeCommand('DEL', ['iconmanager-icons-keys']);
+                    $redis->executeCommand('DEL', [PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons')]);
                 }
             } else {
                 // Clear file cache

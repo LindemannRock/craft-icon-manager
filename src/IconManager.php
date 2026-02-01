@@ -429,7 +429,7 @@ class IconManager extends Plugin
                 $redis = $cache->redis;
 
                 // Get all icon cache keys from tracking set
-                $keys = $redis->executeCommand('SMEMBERS', ['iconmanager-icons-keys']) ?: [];
+                $keys = $redis->executeCommand('SMEMBERS', [PluginHelper::getCacheKeySet($this->id, 'icons')]) ?: [];
 
                 // Delete icon cache keys using Craft's cache component
                 foreach ($keys as $key) {
@@ -437,7 +437,7 @@ class IconManager extends Plugin
                 }
 
                 // Clear the tracking set
-                $redis->executeCommand('DEL', ['iconmanager-icons-keys']);
+                $redis->executeCommand('DEL', [PluginHelper::getCacheKeySet($this->id, 'icons')]);
             }
         } else {
             // Clear file cache
