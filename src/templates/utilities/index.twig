@@ -1,4 +1,4 @@
-{% import "_includes/forms" as forms %}
+{% extends 'lindemannrock-base/_layouts/cp-utilities' %}
 
 {# Permission checks #}
 {% set canViewIconSets = currentUser.can('iconManager:viewIconSets') or currentUser.can('iconManager:createIconSets') or currentUser.can('iconManager:editIconSets') or currentUser.can('iconManager:deleteIconSets') or currentUser.can('iconManager:manageOptimization') %}
@@ -6,226 +6,126 @@
 {% set canManageOptimization = currentUser.can('iconManager:manageOptimization') %}
 {% set canEditSettings = currentUser.can('iconManager:editSettings') %}
 
-<div style="margin-bottom: 32px;">
-    <h2>{{ "{pluginName} Overview"|t('icon-manager', {pluginName: iconHelper.fullName}) }}</h2>
-    <p class="light">{{ "Monitor icon set performance, manage cache, and view system status for your icon collections."|t('icon-manager') }}</p>
-</div>
-
-<div style="margin-bottom: 40px;">
-    <h2>{{ "System Overview"|t('icon-manager') }}</h2>
-
-    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch;">
-        <!-- Icon Sets Status Card -->
-        <div class="pane" style="padding: 24px; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); display: flex; flex-direction: column; height: 100%; grid-column: span 1;">
-            <!-- Header -->
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <div style="width: 12px; height: 12px; border-radius: 50%; background: #059669;"></div>
-                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">{{ "Icon Sets"|t('icon-manager') }}</h4>
-            </div>
-
-            <!-- Main Content -->
-            <div style="flex: 1; display: flex; flex-direction: column;">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                    <div style="font-size: 28px; font-weight: 700; color: #059669; line-height: 1;">
-                        {{ iconSetCount }}
-                    </div>
-                    <div style="padding: 3px 10px; border-radius: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: white; background: #059669;">
-                        {{ 'Active'|t('icon-manager') }}
-                    </div>
-                </div>
-                <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
-                    {{ "Total icon sets configured"|t('icon-manager') }}
-                </div>
-
-                <!-- Bottom Boxes -->
-                <div style="margin-top: auto;">
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
-                        <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
-                            <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px;">{{ totalIcons|number_format }}</div>
-                            <div style="font-size: 11px; color: #4b5563; text-transform: uppercase;">{{ 'Total Icons'|t('icon-manager') }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cache Status Card -->
-        <div class="pane" style="padding: 24px; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); display: flex; flex-direction: column; height: 100%; grid-column: span 2;">
-            <!-- Header -->
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <div style="width: 12px; height: 12px; border-radius: 50%; background: {% if cacheEnabled %}#22c55e{% else %}#6b7280{% endif %};"></div>
-                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">
-                    {{ "Cache Status"|t('icon-manager') }}{% if cacheEnabled %} ({{ storageMethod == 'redis' ? 'Redis' : 'File' }}){% endif %}
-                </h4>
-            </div>
-
-            <!-- Main Content -->
-            <div style="flex: 1; display: flex; flex-direction: column;">
-                {% if cacheEnabled %}
-                    {% if storageMethod == 'redis' %}
-                        <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1;">
-                            {{ "Active"|t('icon-manager') }}
-                        </div>
-                    {% else %}
-                        <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
-                            <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1;">
-                                {{ (cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'])|number_format }}
-                            </div>
-                        </div>
-                        <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
-                            {{ "Total cached entries"|t('icon-manager') }}
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
-                        <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1;">
-                            <span style="font-size: 18px; color: #6b7280;">{{ 'Disabled'|t('icon-manager') }}</span>
-                        </div>
-                    </div>
-                    <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
-                        {{ "Cache is disabled"|t('icon-manager') }}
-                    </div>
-                {% endif %}
-
-                <!-- Bottom Boxes -->
-                {% if cacheEnabled and storageMethod != 'redis' %}
-                <div style="margin-top: auto;">
-                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
-                        <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
-                            <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px;">{{ cacheStats['svg-folder']|number_format }}</div>
-                            <div style="font-size: 11px; color: #4b5563; text-transform: uppercase;">{{ 'SVG Folder'|t('icon-manager') }}</div>
-                        </div>
-                        <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
-                            <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px;">{{ cacheStats['svg-sprite']|number_format }}</div>
-                            <div style="font-size: 11px; color: #4b5563; text-transform: uppercase;">{{ 'SVG Sprite'|t('icon-manager') }}</div>
-                        </div>
-                        <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
-                            <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px;">{{ cacheStats['material-icons']|number_format }}</div>
-                            <div style="font-size: 11px; color: #4b5563; text-transform: uppercase;">{{ 'MI'|t('icon-manager') }}</div>
-                        </div>
-                        <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
-                            <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px;">{{ cacheStats['font-awesome']|number_format }}</div>
-                            <div style="font-size: 11px; color: #4b5563; text-transform: uppercase;">{{ 'FA'|t('icon-manager') }}</div>
-                        </div>
-                        <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
-                            <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 4px;">{{ cacheStats['web-font']|number_format }}</div>
-                            <div style="font-size: 11px; color: #4b5563; text-transform: uppercase;">{{ 'Web Font'|t('icon-manager') }}</div>
-                        </div>
-                    </div>
-                </div>
-                {% elseif not cacheEnabled %}
-                <div style="margin-top: auto;">
-                    <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center;">
-                        <p style="font-size: 12px; color: #6b7280; margin: 0;">
-                            {{ "Enable caching in"|t('icon-manager') }} <a href="{{ url('icon-manager/settings') }}">{{ "Settings"|t('icon-manager') }}</a>
-                        </p>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Cache Settings Card -->
-        <div class="pane" style="padding: 24px; margin-block: 0; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); display: flex; flex-direction: column; height: 100%; grid-column: span 1;">
-            <!-- Header -->
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                <div style="width: 12px; height: 12px; border-radius: 50%; background: {% if cacheEnabled %}#0ea5e9{% else %}#6b7280{% endif %};"></div>
-                <h4 style="margin: 0; color: #374151; font-size: 15px; font-weight: 600;">{{ "Cache Settings"|t('icon-manager') }}</h4>
-            </div>
-
-            <!-- Main Content -->
-            <div style="flex: 1; display: flex; flex-direction: column;">
-                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
-                    <div style="font-size: 28px; font-weight: 700; color: #0f172a; line-height: 1;">
-                        {% if cacheEnabled %}
-                            {{ cacheDuration }}
-                        {% else %}
-                            <span style="font-size: 18px; color: #6b7280;">—</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">
-                    {% if cacheEnabled %}
-                        {{ "Cache duration"|t('icon-manager') }}
-                    {% else %}
-                        {{ "No cache configured"|t('icon-manager') }}
-                    {% endif %}
-                </div>
-
-                <!-- Bottom Boxes -->
-                <div style="margin-top: auto;">
-                    <div style="padding: 12px; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-radius: 8px; text-align: center; min-height: 60px; display: flex; flex-direction: column; justify-content: center;">
-                        <div style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 4px;">
-                            {% if cacheEnabled %}
-                                <span style="color: #22c55e;">✓</span> {{ 'Enabled'|t('icon-manager') }}
-                            {% else %}
-                                <span style="color: #6b7280;">✗</span> {{ 'Disabled'|t('icon-manager') }}
-                            {% endif %}
-                        </div>
-                        <div style="font-size: 11px; color: #4b5563; text-transform: uppercase;">{{ 'Cache Status'|t('icon-manager') }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Actions -->
 {% set hasNavigation = canViewIconSets or canEditSettings %}
 {% set hasIconManagement = canEditIconSets %}
 {% set hasAnyQuickAction = hasNavigation or hasIconManagement %}
 
-{% if hasAnyQuickAction %}
-<div style="margin-bottom: 40px;">
-    <h2>{{ 'Quick Actions'|t('icon-manager') }}</h2>
+{% set utilitiesConfig = {
+    plugin: {
+        handle: 'icon-manager',
+        name: iconHelper.fullName,
+    },
+    page: {
+        title: 'Overview'|t('icon-manager'),
+        description: 'Monitor icon set performance, manage cache, and view system status for your icon collections.'|t('icon-manager'),
+    },
+} %}
 
-    <div class="pane">
+{% block overview %}
+    {# Icon Sets Card #}
+    {% include 'lindemannrock-base/_components/cards/unified-card' with {
+        title: 'Icon Sets'|t('icon-manager'),
+        color: lrPaletteColor('emerald').color,
+        value: iconSetCount,
+        valueColor: lrPaletteColor('emerald').color,
+        badge: 'Active'|t('icon-manager'),
+        badgeColor: lrPaletteColor('emerald').color,
+        description: 'Total icon sets configured'|t('icon-manager'),
+        subBoxes: [
+            {value: totalIcons, label: 'Total Icons'|t('icon-manager')},
+        ],
+    } only %}
+
+    {# Cache Status Card #}
+    {% if cacheEnabled %}
+        {% if storageMethod == 'redis' %}
+            {% include 'lindemannrock-base/_components/cards/unified-card' with {
+                title: 'Cache Status'|t('icon-manager') ~ ' (Redis)',
+                color: lrPaletteColor('emerald').color,
+                value: 'Active'|t('icon-manager'),
+            } only %}
+        {% else %}
+            {% set totalCached = cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'] %}
+            {% include 'lindemannrock-base/_components/cards/unified-card' with {
+                title: 'Cache Status'|t('icon-manager') ~ ' (File)',
+                color: lrPaletteColor('emerald').color,
+                value: totalCached,
+                description: 'Total cached entries'|t('icon-manager'),
+                subBoxes: [
+                    {value: cacheStats['svg-folder'], label: 'SVG Folder'|t('icon-manager')},
+                    {value: cacheStats['svg-sprite'], label: 'Sprite'|t('icon-manager')},
+                    {value: cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'], label: 'Fonts'|t('icon-manager')},
+                ],
+            } only %}
+        {% endif %}
+    {% else %}
+        {% include 'lindemannrock-base/_components/cards/unified-card' with {
+            title: 'Cache Status'|t('icon-manager'),
+            color: lrPaletteColor('gray').color,
+            value: 'Disabled'|t('icon-manager'),
+            valueColor: lrPaletteColor('gray').color,
+            description: 'Cache is disabled'|t('icon-manager'),
+        } only %}
+    {% endif %}
+
+    {# Cache Settings Card #}
+    {% include 'lindemannrock-base/_components/cards/unified-card' with {
+        title: 'Cache Settings'|t('icon-manager'),
+        color: cacheEnabled ? lrPaletteColor('sky').color : lrPaletteColor('gray').color,
+        value: cacheEnabled ? cacheDuration : '—',
+        valueColor: cacheEnabled ? null : lrPaletteColor('gray').color,
+        description: cacheEnabled ? 'Cache duration'|t('icon-manager') : 'No cache configured'|t('icon-manager'),
+        subBoxes: [
+            {value: cacheEnabled ? '✓' : '✗', label: cacheEnabled ? 'Enabled'|t('icon-manager') : 'Disabled'|t('icon-manager')},
+        ],
+    } only %}
+{% endblock %}
+
+{% block quickActions %}
+    {% if hasAnyQuickAction %}
+        {# Navigation Section #}
         {% if hasNavigation %}
-        <div style="margin-bottom: 24px;">
-            <h3 style="margin-bottom: 8px;">{{ "Navigation"|t('icon-manager') }}</h3>
-            <p class="light" style="margin-bottom: 16px;">{{ "Access main plugin sections"|t('icon-manager') }}</p>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                {% if canViewIconSets %}
-                <a href="{{ url('icon-manager') }}" class="btn">
-                    {{ "Manage Icon Sets"|t('icon-manager') }}
-                </a>
-                {% endif %}
-                {% if canEditSettings %}
-                <a href="{{ url('icon-manager/settings') }}" class="btn">
-                    {{ "View Settings"|t('icon-manager') }}
-                </a>
-                {% endif %}
-            </div>
-        </div>
+            {% set navButtons = [] %}
+            {% if canViewIconSets %}
+                {% set navButtons = navButtons|merge([{type: 'link', label: 'Manage Icon Sets'|t('icon-manager'), url: url('icon-manager')}]) %}
+            {% endif %}
+            {% if canEditSettings %}
+                {% set navButtons = navButtons|merge([{type: 'link', label: 'View Settings'|t('icon-manager'), url: url('icon-manager/settings')}]) %}
+            {% endif %}
+
+            {% include 'lindemannrock-base/_layouts/cp-utilities/_action-section' with {
+                title: 'Navigation'|t('icon-manager'),
+                description: 'Access main plugin sections'|t('icon-manager'),
+                buttons: navButtons,
+            } only %}
         {% endif %}
 
+        {# Icon Management Section - Custom due to form #}
         {% if hasIconManagement %}
-        {% if hasNavigation %}
-        <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">
+            {% if hasNavigation %}<hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;">{% endif %}
+
+            <div>
+                <h3 style="margin-bottom: 8px;">{{ "Icon Management"|t('icon-manager') }}</h3>
+                <p class="light" style="margin-bottom: 16px;">{{ "Refresh all icon sets to fetch new icons from their sources (CDNs, APIs, directories)."|t('icon-manager') }}</p>
+
+                <form method="post" accept-charset="UTF-8">
+                    {{ csrfInput() }}
+                    {{ actionInput('icon-manager/utilities/refresh-all-icons') }}
+                    {{ redirectInput('utilities/clear-icon-cache') }}
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="submit" class="btn submit">
+                            {{ "Refresh All Icons"|t('icon-manager') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
         {% endif %}
+    {% endif %}
+{% endblock %}
 
-        <div>
-            <h3 style="margin-bottom: 8px;">{{ "Icon Management"|t('icon-manager') }}</h3>
-            <p class="light" style="margin-bottom: 16px;">{{ "Refresh all icon sets to fetch new icons from their sources (CDNs, APIs, directories)."|t('icon-manager') }}</p>
-
-            <form method="post" accept-charset="UTF-8">
-                {{ csrfInput() }}
-                {{ actionInput('icon-manager/utilities/refresh-all-icons') }}
-                {{ redirectInput('utilities/clear-icon-cache') }}
-
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button type="submit" class="btn submit">
-                        {{ "Refresh All Icons"|t('icon-manager') }}
-                    </button>
-                </div>
-            </form>
-        </div>
-        {% endif %}
-    </div>
-</div>
-{% endif %}
-
-<!-- SVG Quality -->
+{% block additionalContent %}
+{# SVG Quality Section #}
 {% if canManageOptimization %}
 <div style="margin-bottom: 40px;" id="svg-quality">
     <h2>{{ 'SVG Quality'|t('icon-manager') }}</h2>
@@ -338,54 +238,54 @@
                                 {% if settings.scanClipPaths %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.clipPaths > 0 %}
-                                        <span style="color: #dc2626; font-weight: 600;">{{ result.issues.clipPaths }}</span>
+                                        <span style="color: {{ lrPaletteColor('red').color }}; font-weight: 600;">{{ result.issues.clipPaths }}</span>
                                     {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                        <span style="color: {{ lrPaletteColor('gray').color }};">—</span>
                                     {% endif %}
                                 </td>
                                 {% endif %}
                                 {% if settings.scanMasks %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.masks > 0 %}
-                                        <span style="color: #dc2626; font-weight: 600;">{{ result.issues.masks }}</span>
+                                        <span style="color: {{ lrPaletteColor('red').color }}; font-weight: 600;">{{ result.issues.masks }}</span>
                                     {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                        <span style="color: {{ lrPaletteColor('gray').color }};">—</span>
                                     {% endif %}
                                 </td>
                                 {% endif %}
                                 {% if settings.scanFilters %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.filters > 0 %}
-                                        <span style="color: #dc2626; font-weight: 600;">{{ result.issues.filters }}</span>
+                                        <span style="color: {{ lrPaletteColor('red').color }}; font-weight: 600;">{{ result.issues.filters }}</span>
                                     {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                        <span style="color: {{ lrPaletteColor('gray').color }};">—</span>
                                     {% endif %}
                                 </td>
                                 {% endif %}
                                 {% if settings.scanComments %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.comments > 0 %}
-                                        <span style="color: #dc2626; font-weight: 600;">{{ result.issues.comments }}</span>
+                                        <span style="color: {{ lrPaletteColor('red').color }}; font-weight: 600;">{{ result.issues.comments }}</span>
                                     {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                        <span style="color: {{ lrPaletteColor('gray').color }};">—</span>
                                     {% endif %}
                                 </td>
                                 {% endif %}
                                 {% if settings.scanInlineStyles %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.inlineStyles > 0 %}
-                                        <span style="color: #dc2626; font-weight: 600;">{{ result.issues.inlineStyles }}</span>
+                                        <span style="color: {{ lrPaletteColor('red').color }}; font-weight: 600;">{{ result.issues.inlineStyles }}</span>
                                     {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                        <span style="color: {{ lrPaletteColor('gray').color }};">—</span>
                                     {% endif %}
                                 </td>
                                 {% endif %}
                                 {% if settings.scanLargeFiles %}
                                 <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                                     {% if result.issues.largeFiles > 0 %}
-                                        <span style="color: #dc2626; font-weight: 600;">{{ result.issues.largeFiles }}</span>
+                                        <span style="color: {{ lrPaletteColor('red').color }}; font-weight: 600;">{{ result.issues.largeFiles }}</span>
                                     {% else %}
-                                        <span style="color: #9ca3af;">—</span>
+                                        <span style="color: {{ lrPaletteColor('gray').color }};">—</span>
                                     {% endif %}
                                 </td>
                                 {% endif %}
@@ -396,7 +296,7 @@
                 </div>
             {% else %}
                 <div class="pane" style="padding: 40px; text-align: center;">
-                    <p style="color: #10b981; font-size: 48px; margin: 0;">✓</p>
+                    <p style="color: {{ lrPaletteColor('emerald').color }}; font-size: 48px; margin: 0;">✓</p>
                     <p style="font-size: 18px; font-weight: 600; margin: 10px 0;">{{ "No SVG icon sets found"|t('icon-manager') }}</p>
                     <p class="light">{{ "Create an SVG Folder icon set to scan for quality issues."|t('icon-manager') }}</p>
                 </div>
@@ -406,17 +306,22 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
 
+{% block scripts %}
 {% js %}
-    // Smooth scroll to SVG Quality section if hash is present
-    if (window.location.hash === '#svg-quality') {
-        setTimeout(function() {
-            document.getElementById('svg-quality').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }, 100);
-    }
+// Smooth scroll to SVG Quality section if hash is present
+if (window.location.hash === '#svg-quality') {
+    setTimeout(function() {
+        document.getElementById('svg-quality').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }, 100);
+}
 {% endjs %}
+{% endblock %}
 
+{% block pluginCredit %}
 {% include 'icon-manager/_components/plugin-credit.twig' %}
+{% endblock %}
