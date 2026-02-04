@@ -26,6 +26,7 @@ use craft\utilities\ClearCaches;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use craft\web\View;
+use lindemannrock\base\helpers\ColorHelper;
 use lindemannrock\base\helpers\CpNavHelper;
 use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\fields\IconManagerField;
@@ -106,7 +107,18 @@ class IconManager extends Plugin
             $this,
             'iconHelper',
             ['iconManager:viewSystemLogs'],
-            ['iconManager:downloadSystemLogs']
+            ['iconManager:downloadSystemLogs'],
+            [
+                'colorSets' => [
+                    'iconType' => [
+                        'svg-folder' => ColorHelper::getPaletteColor('pink'),
+                        'svg-sprite' => ColorHelper::getPaletteColor('indigo'),
+                        'font-awesome' => ColorHelper::getPaletteColor('blue'),
+                        'material-icons' => ColorHelper::getPaletteColor('amber'),
+                        'web-font' => ColorHelper::getPaletteColor('cyan'),
+                    ],
+                ],
+            ]
         );
         PluginHelper::applyPluginNameFromConfig($this);
         $this->_registerCpRoutes();
