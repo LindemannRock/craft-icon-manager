@@ -391,11 +391,11 @@
                 </div>
                 <div class="data">
                     <dt class="heading">{{ 'Created'|t('app') }}</dt>
-                    <dd class="value">{{ iconSet.dateCreated|datetime('short') }}</dd>
+                    <dd class="value">{{ iconSet.dateCreated|lrDatetime('short') }}</dd>
                 </div>
                 <div class="data">
                     <dt class="heading">{{ 'Updated'|t('app') }}</dt>
-                    <dd class="value">{{ iconSet.dateUpdated|datetime('short') }}</dd>
+                    <dd class="value">{{ iconSet.dateUpdated|lrDatetime('short') }}</dd>
                 </div>
             </dl>
         </fieldset>
