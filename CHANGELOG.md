@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.10.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.1...v5.10.2) (2026-02-05)
+
+
+### Bug Fixes
+
+* **iconManager:** update [@since](https://github.com/since) version in getCpSections method ([6193d8f](https://github.com/LindemannRock/craft-icon-manager/commit/6193d8fde2eb2e2de2b05201b86423489488f88d))
+
 ## [5.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.0...v5.10.1) (2026-01-21)
 
 
