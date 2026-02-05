@@ -34,6 +34,8 @@ class SvgSprite
 
     /**
      * Get icons from an SVG sprite file
+     *
+     * @since 1.0.0
      */
     public static function getIcons(IconSet $iconSet): array
     {
@@ -193,6 +195,8 @@ class SvgSprite
 
     /**
      * Get available sprite files from icons directory
+     *
+     * @since 1.0.0
      */
     public static function getAvailableSprites(): array
     {
@@ -223,6 +227,8 @@ class SvgSprite
 
     /**
      * Get sprite file URL for serving
+     *
+     * @since 1.0.0
      */
     public static function getSpriteUrl(IconSet $iconSet): ?string
     {

@@ -37,6 +37,8 @@ class IconsService extends Component
 
     /**
      * Initialize the service
+     *
+     * @since 1.0.0
      */
     public function init(): void
     {
@@ -49,6 +51,7 @@ class IconsService extends Component
      *
      * @param int $iconSetId
      * @return Icon[]
+     * @since 1.0.0
      */
     public function getIconsBySetId(int $iconSetId): array
     {
@@ -138,6 +141,8 @@ class IconsService extends Component
 
     /**
      * Get a specific icon
+     *
+     * @since 1.0.0
      */
     public function getIcon(string $iconSetHandle, string $iconName): ?Icon
     {
@@ -159,6 +164,8 @@ class IconsService extends Component
 
     /**
      * Refresh icons for an icon set
+     *
+     * @since 1.0.0
      */
     public function refreshIconsForSet(IconSet $iconSet): void
     {
@@ -213,6 +220,8 @@ class IconsService extends Component
 
     /**
      * Search icons across all sets
+     *
+     * @since 1.0.0
      */
     public function searchIcons(string $query, array $iconSetHandles = []): array
     {
@@ -431,6 +440,8 @@ class IconsService extends Component
     
     /**
      * Clear memory cache
+     *
+     * @since 1.0.0
      */
     public function clearMemoryCache(): void
     {

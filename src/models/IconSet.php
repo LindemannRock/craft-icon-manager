@@ -93,6 +93,9 @@ class IconSet extends Model
 
     /**
      * Validate that the handle is unique
+     *
+     * @param string $attribute
+     * @since 5.2.0
      */
     public function validateUniqueHandle($attribute)
     {
@@ -115,6 +118,9 @@ class IconSet extends Model
 
     /**
      * Get the display name for this icon set type
+     *
+     * @return string
+     * @since 1.0.0
      */
     public function getTypeLabel(): string
     {
@@ -131,6 +137,9 @@ class IconSet extends Model
 
     /**
      * Get type-specific settings
+     *
+     * @return array
+     * @since 1.0.0
      */
     public function getTypeSettings(): array
     {
@@ -157,6 +166,9 @@ class IconSet extends Model
     
     /**
      * Get available folders from the icon sets path
+     *
+     * @return array
+     * @since 5.3.0
      */
     public static function getAvailableFolders(): array
     {
@@ -210,6 +222,9 @@ class IconSet extends Model
 
     /**
      * Set the icons for this icon set
+     *
+     * @param array $icons
+     * @since 1.0.0
      */
     public function setIcons(array $icons): void
     {
@@ -218,6 +233,9 @@ class IconSet extends Model
 
     /**
      * Get the icons for this icon set
+     *
+     * @return array
+     * @since 1.0.0
      */
     public function getIcons(): array
     {
@@ -226,6 +244,9 @@ class IconSet extends Model
 
     /**
      * Get icon count
+     *
+     * @return int
+     * @since 1.0.0
      */
     public function getIconCount(): int
     {
@@ -244,6 +265,9 @@ class IconSet extends Model
 
     /**
      * Get WebFont CSS for this icon set (if it's a web-font type)
+     *
+     * @return string|null
+     * @since 1.10.0
      */
     public function getWebFontCss(): ?string
     {
@@ -257,6 +281,9 @@ class IconSet extends Model
     /**
      * Get optimization issue count for SVG folder icon sets
      * Includes all issues and warnings (including large files)
+     *
+     * @return int
+     * @since 5.10.0
      */
     public function getOptimizationIssueCount(): int
     {

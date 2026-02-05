@@ -50,6 +50,9 @@ class UtilitiesController extends Controller
 
     /**
      * Refresh all icon sets
+     *
+     * @return Response
+     * @since 1.9.0
      */
     public function actionRefreshAllIcons(): Response
     {
@@ -99,6 +102,9 @@ class UtilitiesController extends Controller
 
     /**
      * Scan SVG files for optimization opportunities
+     *
+     * @return Response
+     * @since 1.10.0
      */
     public function actionScanSvgs(): Response
     {

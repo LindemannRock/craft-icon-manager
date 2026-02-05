@@ -25,6 +25,7 @@ class IconManagerVariable
      * @param string $iconSetHandle
      * @param string $iconName
      * @return Icon|null
+     * @since 1.0.0
      */
     public function getIcon(string $iconSetHandle, string $iconName): ?Icon
     {
@@ -35,6 +36,7 @@ class IconManagerVariable
      * Get all icon sets
      *
      * @return IconSet[]
+     * @since 1.0.0
      */
     public function getIconSets(): array
     {
@@ -45,6 +47,7 @@ class IconManagerVariable
      * Get enabled icon sets
      *
      * @return IconSet[]
+     * @since 1.0.0
      */
     public function getEnabledIconSets(): array
     {
@@ -56,6 +59,7 @@ class IconManagerVariable
      *
      * @param string $handle
      * @return IconSet|null
+     * @since 1.0.0
      */
     public function getIconSet(string $handle): ?IconSet
     {
@@ -67,6 +71,7 @@ class IconManagerVariable
      *
      * @param string $iconSetHandle
      * @return Icon[]
+     * @since 1.0.0
      */
     public function getIcons(string $iconSetHandle): array
     {
@@ -85,6 +90,7 @@ class IconManagerVariable
      * @param string $query
      * @param string[] $iconSetHandles
      * @return Icon[]
+     * @since 1.0.0
      */
     public function searchIcons(string $query, array $iconSetHandles = []): array
     {
@@ -98,6 +104,7 @@ class IconManagerVariable
      * @param string $iconName
      * @param array $options
      * @return string
+     * @since 1.0.0
      */
     public function renderIcon(string $iconSetHandle, string $iconName, array $options = []): string
     {
@@ -114,6 +121,7 @@ class IconManagerVariable
      * Get plugin settings
      *
      * @return \lindemannrock\iconmanager\models\Settings
+     * @since 1.0.0
      */
     public function getSettings()
     {
@@ -124,6 +132,7 @@ class IconManagerVariable
      * Get SVG optimizer service
      *
      * @return \lindemannrock\iconmanager\services\SvgOptimizerService
+     * @since 1.10.0
      */
     public function getSvgOptimizer()
     {
@@ -134,6 +143,7 @@ class IconManagerVariable
      * Get SVGO service
      *
      * @return \lindemannrock\iconmanager\services\SvgoService
+     * @since 1.10.0
      */
     public function getSvgo()
     {
@@ -145,6 +155,7 @@ class IconManagerVariable
      *
      * @param string $iconSetHandle
      * @return string
+     * @since 1.0.0
      */
     public function injectSprite(string $iconSetHandle): string
     {

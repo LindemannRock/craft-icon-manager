@@ -40,6 +40,8 @@ class IconSetsService extends Component
 
     /**
      * Clear icon sets cache
+     *
+     * @since 1.0.0
      */
     public function clearCache(): void
     {
@@ -51,6 +53,7 @@ class IconSetsService extends Component
      * Get all icon sets
      *
      * @return IconSet[]
+     * @since 1.0.0
      */
     public function getAllIconSets(): array
     {
@@ -78,6 +81,7 @@ class IconSetsService extends Component
      * Get all enabled icon sets (only icon sets where enabled=true)
      *
      * @return IconSet[]
+     * @since 1.0.0
      */
     public function getAllEnabledIconSets(): array
     {
@@ -89,6 +93,7 @@ class IconSetsService extends Component
      * (filters by both enabled flag AND whether the icon type is enabled in settings)
      *
      * @return IconSet[]
+     * @since 1.10.0
      */
     public function getAllEnabledIconSetsWithAllowedTypes(): array
     {
@@ -103,6 +108,11 @@ class IconSetsService extends Component
 
     /**
      * Get an icon set by ID
+     *
+     * @param int $id
+     * @param bool $fresh
+     * @return IconSet|null
+     * @since 1.0.0
      */
     public function getIconSetById(int $id, bool $fresh = false): ?IconSet
     {
@@ -119,6 +129,10 @@ class IconSetsService extends Component
 
     /**
      * Get an icon set by handle
+     *
+     * @param string $handle
+     * @return IconSet|null
+     * @since 1.0.0
      */
     public function getIconSetByHandle(string $handle): ?IconSet
     {
@@ -134,6 +148,7 @@ class IconSetsService extends Component
      *
      * @param string[] $handles
      * @return IconSet[]
+     * @since 1.0.0
      */
     public function getIconSetsByHandles(array $handles): array
     {
@@ -151,6 +166,11 @@ class IconSetsService extends Component
 
     /**
      * Save an icon set
+     *
+     * @param IconSet $iconSet
+     * @param bool $runValidation
+     * @return bool
+     * @since 1.0.0
      */
     public function saveIconSet(IconSet $iconSet, bool $runValidation = true): bool
     {
@@ -237,6 +257,10 @@ class IconSetsService extends Component
 
     /**
      * Delete an icon set
+     *
+     * @param IconSet $iconSet
+     * @return bool
+     * @since 1.0.0
      */
     public function deleteIconSet(IconSet $iconSet): bool
     {
@@ -278,6 +302,10 @@ class IconSetsService extends Component
 
     /**
      * Reorder icon sets
+     *
+     * @param array $iconSetIds
+     * @return bool
+     * @since 1.0.0
      */
     public function reorderIconSets(array $iconSetIds): bool
     {

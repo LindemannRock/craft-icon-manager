@@ -115,6 +115,9 @@ class IconSetsController extends Controller
     }
     /**
      * Icon sets index
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionIndex(): Response
     {
@@ -222,6 +225,11 @@ class IconSetsController extends Controller
 
     /**
      * Edit an icon set
+     *
+     * @param int|null $iconSetId
+     * @param IconSet|null $iconSet
+     * @return Response
+     * @since 1.0.0
      */
     public function actionEdit(?int $iconSetId = null, ?IconSet $iconSet = null): Response
     {
@@ -262,6 +270,9 @@ class IconSetsController extends Controller
 
     /**
      * Save an icon set
+     *
+     * @return Response|null
+     * @since 1.0.0
      */
     public function actionSave(): ?Response
     {
@@ -319,6 +330,9 @@ class IconSetsController extends Controller
 
     /**
      * Delete an icon set
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionDelete(): Response
     {
@@ -349,6 +363,9 @@ class IconSetsController extends Controller
 
     /**
      * Bulk enable icon sets
+     *
+     * @return Response
+     * @since 5.10.0
      */
     public function actionBulkEnable(): Response
     {
@@ -376,6 +393,9 @@ class IconSetsController extends Controller
 
     /**
      * Bulk disable icon sets
+     *
+     * @return Response
+     * @since 5.10.0
      */
     public function actionBulkDisable(): Response
     {
@@ -403,6 +423,9 @@ class IconSetsController extends Controller
 
     /**
      * Bulk delete icon sets
+     *
+     * @return Response
+     * @since 5.10.0
      */
     public function actionBulkDelete(): Response
     {
@@ -427,6 +450,9 @@ class IconSetsController extends Controller
 
     /**
      * Refresh icons for an icon set
+     *
+     * @return Response
+     * @since 1.9.0
      */
     public function actionRefreshIcons(): Response
     {
@@ -451,6 +477,10 @@ class IconSetsController extends Controller
 
     /**
      * Optimize SVG files for an icon set (redirects to edit page optimization tab)
+     *
+     * @param int $iconSetId
+     * @return Response
+     * @since 1.14.0
      */
     public function actionOptimize(int $iconSetId): Response
     {
@@ -461,6 +491,9 @@ class IconSetsController extends Controller
 
     /**
      * Apply optimizations to SVG files
+     *
+     * @return Response
+     * @since 1.14.0
      */
     public function actionApplyOptimizations(): Response
     {
@@ -544,6 +577,9 @@ class IconSetsController extends Controller
 
     /**
      * Restore icon set from backup
+     *
+     * @return Response
+     * @since 5.3.0
      */
     public function actionRestoreBackup(): Response
     {
@@ -589,6 +625,9 @@ class IconSetsController extends Controller
 
     /**
      * Get SVG files for client-side optimization
+     *
+     * @return Response
+     * @since 1.14.0
      */
     public function actionGetSvgFiles(): Response
     {
@@ -634,6 +673,9 @@ class IconSetsController extends Controller
 
     /**
      * Save optimized SVG files
+     *
+     * @return Response
+     * @since 1.14.0
      */
     public function actionSaveOptimizedSvgs(): Response
     {
@@ -691,6 +733,9 @@ class IconSetsController extends Controller
 
     /**
      * Delete a backup
+     *
+     * @return Response
+     * @since 5.3.0
      */
     public function actionDeleteBackup(): Response
     {

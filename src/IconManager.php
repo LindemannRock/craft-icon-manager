@@ -159,6 +159,8 @@ class IconManager extends Plugin
     /**
      * Force reload settings from database
      * This is needed because Craft caches settings in a private property
+     *
+     * @since 1.0.0
      */
     public function reloadSettings(): void
     {

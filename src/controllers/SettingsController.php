@@ -36,6 +36,9 @@ class SettingsController extends Controller
 
     /**
      * Settings index
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionIndex(): Response
     {
@@ -44,6 +47,9 @@ class SettingsController extends Controller
 
     /**
      * General settings
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionGeneral(): Response
     {
@@ -58,6 +64,9 @@ class SettingsController extends Controller
 
     /**
      * Icon Types settings
+     *
+     * @return Response
+     * @since 1.10.0
      */
     public function actionIconTypes(): Response
     {
@@ -72,6 +81,9 @@ class SettingsController extends Controller
 
     /**
      * SVG Optimization settings
+     *
+     * @return Response
+     * @since 1.10.0
      */
     public function actionSvgOptimization(): Response
     {
@@ -86,6 +98,9 @@ class SettingsController extends Controller
 
     /**
      * Interface settings
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionInterface(): Response
     {
@@ -100,6 +115,9 @@ class SettingsController extends Controller
 
     /**
      * Cache settings
+     *
+     * @return Response
+     * @since 5.6.0
      */
     public function actionCache(): Response
     {
@@ -114,6 +132,9 @@ class SettingsController extends Controller
 
     /**
      * Save settings
+     *
+     * @return Response|null
+     * @since 1.0.0
      */
     public function actionSave(): ?Response
     {

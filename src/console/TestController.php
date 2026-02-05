@@ -21,6 +21,9 @@ class TestController extends Controller
 {
     /**
      * Test saving icon set settings
+     *
+     * @return int
+     * @since 1.0.0
      */
     public function actionTestSave(): int
     {
@@ -60,6 +63,9 @@ class TestController extends Controller
     
     /**
      * Test icon loading
+     *
+     * @return int
+     * @since 1.0.0
      */
     public function actionTestIcon(): int
     {
@@ -94,6 +100,9 @@ class TestController extends Controller
     
     /**
      * Test settings storage
+     *
+     * @return int
+     * @since 1.0.0
      */
     public function actionTestSettings(): int
     {
@@ -129,6 +138,9 @@ class TestController extends Controller
     
     /**
      * Check config override functionality
+     *
+     * @return int
+     * @since 1.0.0
      */
     public function actionCheckConfig(): int
     {

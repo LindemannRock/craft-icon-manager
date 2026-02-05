@@ -31,6 +31,9 @@ class IconsController extends Controller
 
     /**
      * Render an icon
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionRender(): Response
     {
@@ -61,6 +64,9 @@ class IconsController extends Controller
     
     /**
      * Get icon data for JavaScript (single icon - kept for backwards compatibility)
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionGetData(): Response
     {
@@ -99,6 +105,9 @@ class IconsController extends Controller
 
     /**
      * Get fonts/sprites needed for selected icons (lightweight endpoint for page init)
+     *
+     * @return Response
+     * @since 1.10.0
      */
     public function actionGetAssetsForSelectedIcons(): Response
     {
@@ -168,6 +177,9 @@ class IconsController extends Controller
 
     /**
      * Get all icons for a field in a single batch request
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionGetIconsForField(): Response
     {
@@ -279,6 +291,9 @@ class IconsController extends Controller
 
     /**
      * Serve a web font file
+     *
+     * @return Response
+     * @since 1.10.0
      */
     public function actionServeFont(): Response
     {
@@ -328,6 +343,9 @@ class IconsController extends Controller
 
     /**
      * Serve an SVG sprite file
+     *
+     * @return Response
+     * @since 1.0.0
      */
     public function actionServeSprite(): Response
     {

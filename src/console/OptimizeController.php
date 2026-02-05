@@ -23,26 +23,31 @@ class OptimizeController extends Controller
 {
     /**
      * @var string The optimization engine to use (php or svgo)
+     * @since 1.10.0
      */
     public $engine = 'php';
 
     /**
      * @var int The icon set ID to optimize
+     * @since 1.10.0
      */
     public $set;
 
     /**
      * @var string Path to SVGO config file
+     * @since 1.10.0
      */
     public $config;
 
     /**
      * @var bool Dry run - show what would be optimized without making changes
+     * @since 1.10.0
      */
     public $dryRun = false;
 
     /**
      * @var bool Skip backup creation
+     * @since 1.10.0
      */
     public $noBackup = false;
 
@@ -64,6 +69,7 @@ class OptimizeController extends Controller
      * Optimize SVG icons in an icon set
      *
      * @return int
+     * @since 1.10.0
      */
     public function actionIndex(): int
     {
@@ -576,6 +582,7 @@ class OptimizeController extends Controller
      * Check SVGO availability
      *
      * @return int
+     * @since 1.10.0
      */
     public function actionCheck(): int
     {

@@ -276,6 +276,9 @@ class Settings extends Model
 
     /**
      * Validate log level - debug requires devMode
+     *
+     * @param string $attribute
+     * @since 1.0.0
      */
     public function validateLogLevel($attribute)
     {
@@ -317,6 +320,9 @@ class Settings extends Model
     /**
      * Custom setter for enabledIconTypes to normalize boolean values
      * Converts string values ("1", "") to proper booleans (true, false)
+     *
+     * @param array $value
+     * @since 1.10.0
      */
     public function setEnabledIconTypes(array $value): void
     {
@@ -330,6 +336,9 @@ class Settings extends Model
 
     /**
      * Get the resolved icon sets path
+     *
+     * @return string
+     * @since 1.0.0
      */
     public function getResolvedIconSetsPath(): string
     {

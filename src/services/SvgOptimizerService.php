@@ -29,6 +29,7 @@ class SvgOptimizerService extends Component
      * Scan all SVG icon sets for optimization opportunities
      *
      * @return array Report with issues found
+     * @since 1.10.0
      */
     public function scanAllIconSets(): array
     {
@@ -55,6 +56,7 @@ class SvgOptimizerService extends Component
      *
      * @param object $iconSet The icon set to scan
      * @return array Scan results
+     * @since 1.10.0
      */
     public function scanIconSet($iconSet): array
     {
@@ -313,6 +315,7 @@ class SvgOptimizerService extends Component
      *
      * @param int $bytes File size in bytes
      * @return string Formatted size
+     * @since 1.10.0
      */
     public function formatFileSize(int $bytes): string
     {
@@ -330,6 +333,7 @@ class SvgOptimizerService extends Component
      * @param object $iconSet The icon set
      * @param string $relativePath Relative path to the SVG file
      * @return string|null SVG content or null if not found
+     * @since 1.14.0
      */
     public function getSvgPreview($iconSet, string $relativePath): ?string
     {
@@ -350,6 +354,7 @@ class SvgOptimizerService extends Component
      * @param object $iconSet The icon set to optimize
      * @param bool $createBackup Whether to create a backup before optimization
      * @return array Result with success status, count, and backup path
+     * @since 1.10.0
      */
     public function optimizeIconSet($iconSet, bool $createBackup = true): array
     {
@@ -423,6 +428,7 @@ class SvgOptimizerService extends Component
      * @param string $iconSetName Name of icon set for backup folder
      * @param bool $includeSubfolders Whether to include subdirectories in backup
      * @return string|false Backup path on success, false on failure
+     * @since 5.3.0
      */
     public function createBackupPublic(string $folderPath, string $iconSetName, bool $includeSubfolders = true)
     {
@@ -627,6 +633,7 @@ class SvgOptimizerService extends Component
      *
      * @param string $iconSetName Name of icon set
      * @return array List of backups with metadata
+     * @since 5.3.0
      */
     public function listBackups(string $iconSetName): array
     {
@@ -694,6 +701,7 @@ class SvgOptimizerService extends Component
      * @param string $backupPath Path to backup
      * @param string $targetPath Path to restore to
      * @return bool Success
+     * @since 5.3.0
      */
     public function restoreFromBackup(string $backupPath, string $targetPath): bool
     {
@@ -763,6 +771,7 @@ class SvgOptimizerService extends Component
      *
      * @param string $backupPath Path to backup
      * @return bool Success
+     * @since 5.3.0
      */
     public function deleteBackup(string $backupPath): bool
     {
