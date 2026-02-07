@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.2...v5.11.0) (2026-02-07)
+
+
+### Features
+
+* **gql:** add IconType and IconTypeGenerator for GraphQL integration ([0b24a27](https://github.com/LindemannRock/craft-icon-manager/commit/0b24a27f83d6849a67947fc2f17bc01dbfbc83c5))
+
 ## [5.10.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.1...v5.10.2) (2026-02-05)
 
 
