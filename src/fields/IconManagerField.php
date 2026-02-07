@@ -18,6 +18,8 @@ use craft\base\PreviewableFieldInterface;
 use craft\base\SortableFieldInterface;
 use craft\helpers\Html;
 use craft\helpers\Json;
+use GraphQL\Type\Definition\Type;
+use lindemannrock\iconmanager\gql\types\generators\IconTypeGenerator;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\web\assets\field\IconManagerFieldAsset;
@@ -534,6 +536,21 @@ JS;
     {
         // Allow all conditions for GraphQL
         return null;
+    }
+
+    /**
+     * @inheritdoc
+     * @since 5.11.0
+     */
+    public function getContentGqlType(): Type|array
+    {
+        $type = IconTypeGenerator::generateType($this);
+
+        if ($this->allowMultiple) {
+            return Type::listOf($type);
+        }
+
+        return $type;
     }
 
     /**
