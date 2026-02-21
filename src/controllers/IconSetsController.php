@@ -9,6 +9,7 @@
 namespace lindemannrock\iconmanager\controllers;
 
 use Craft;
+use craft\helpers\App;
 use craft\web\Controller;
 use lindemannrock\base\helpers\CpNavHelper;
 use lindemannrock\iconmanager\IconManager;
@@ -565,7 +566,7 @@ class IconSetsController extends Controller
         }
 
         // Check CRAFT_ENVIRONMENT or ENVIRONMENT variables
-        $environment = getenv('CRAFT_ENVIRONMENT') ?: getenv('ENVIRONMENT');
+        $environment = App::env('CRAFT_ENVIRONMENT') ?: App::env('ENVIRONMENT');
         if ($environment) {
             $allowedEnvironments = ['local', 'dev', 'development'];
             return in_array(strtolower($environment), $allowedEnvironments);
