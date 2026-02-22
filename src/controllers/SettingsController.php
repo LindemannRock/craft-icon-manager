@@ -165,7 +165,9 @@ class SettingsController extends Controller
             Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not save settings.'));
 
             // Get the section to re-render the correct template with errors
-            $section = $this->request->getBodyParam('section', 'general');
+            $section = $this->_validSettingsSection(
+                $this->request->getBodyParam('section', 'general'),
+            );
             $template = "icon-manager/settings/{$section}";
 
             return $this->renderTemplate($template, [
@@ -185,5 +187,18 @@ class SettingsController extends Controller
         }
 
         return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Validate and sanitize the settings section parameter
+     *
+     * @param string $section The section from POST data
+     * @return string A validated section name
+     */
+    private function _validSettingsSection(string $section): string
+    {
+        $allowed = ['general', 'icon-types', 'svg-optimization', 'interface', 'cache'];
+
+        return in_array($section, $allowed, true) ? $section : 'general';
     }
 }
