@@ -1,7 +1,7 @@
 {% extends 'lindemannrock-base/_layouts/cp-utilities' %}
 
 {# Permission checks #}
-{% set canViewIconSets = currentUser.can('iconManager:viewIconSets') or currentUser.can('iconManager:createIconSets') or currentUser.can('iconManager:editIconSets') or currentUser.can('iconManager:deleteIconSets') or currentUser.can('iconManager:manageOptimization') %}
+{% set canViewIconSets = currentUser.can('iconManager:manageIconSets') %}
 {% set canEditIconSets = currentUser.can('iconManager:editIconSets') %}
 {% set canManageOptimization = currentUser.can('iconManager:manageOptimization') %}
 {% set canEditSettings = currentUser.can('iconManager:editSettings') %}

@@ -38,8 +38,8 @@ class IconSetsController extends Controller
         // Check permissions based on action
         switch ($action->id) {
             case 'index':
-                // View icon sets list requires viewIconSets permission
-                if (!$user->checkPermission('iconManager:viewIconSets')) {
+                // View icon sets list requires manageIconSets permission
+                if (!$user->checkPermission('iconManager:manageIconSets')) {
                     // Redirect to first accessible section
                     $settings = IconManager::getInstance()->getSettings();
                     $sections = IconManager::getInstance()->getCpSections($settings, false, true);

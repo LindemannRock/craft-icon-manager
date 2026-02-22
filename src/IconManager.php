@@ -144,6 +144,14 @@ class IconManager extends Plugin
     /**
      * @inheritdoc
      */
+    public function setSettings(array|Model $settings): void
+    {
+        // No-op: settings come from loadFromDatabase() in createSettingsModel()
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function createSettingsModel(): ?Model
     {
         // Load settings from database using the new method
@@ -243,7 +251,7 @@ class IconManager extends Plugin
                 'key' => 'icon-sets',
                 'label' => Craft::t('icon-manager', 'Icon Sets'),
                 'url' => 'icon-manager',
-                'permissionsAll' => ['iconManager:viewIconSets'],
+                'permissionsAll' => ['iconManager:manageIconSets'],
             ];
         }
 
@@ -356,9 +364,6 @@ class IconManager extends Plugin
                         'iconManager:manageIconSets' => [
                             'label' => Craft::t('icon-manager', 'Manage {name} sets', ['name' => $lowerDisplayName]),
                             'nested' => [
-                                'iconManager:viewIconSets' => [
-                                    'label' => Craft::t('icon-manager', 'View {name} sets', ['name' => $lowerDisplayName]),
-                                ],
                                 'iconManager:createIconSets' => [
                                     'label' => Craft::t('icon-manager', 'Create {name} sets', ['name' => $lowerDisplayName]),
                                 ],

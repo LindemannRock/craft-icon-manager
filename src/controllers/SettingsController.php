@@ -175,8 +175,8 @@ class SettingsController extends Controller
 
         // Save settings to database
         if ($settings->saveToDatabase()) {
-            // Update the plugin's cached settings (CRITICAL - forces Craft to refresh)
-            IconManager::$plugin->setSettings($settings->getAttributes());
+            // Reload settings so Craft picks up the new values
+            IconManager::$plugin->reloadSettings();
 
             Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Settings saved.'));
         } else {
