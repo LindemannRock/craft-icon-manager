@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.11.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.0...v5.11.1) (2026-02-23)
+
+
+### Bug Fixes
+
+* **IconSetsController, SettingsController, index.twig:** update permissions for icon sets management ([481d567](https://github.com/LindemannRock/craft-icon-manager/commit/481d5670365ec48212277ee2fb5f59cdc974aa40))
+* **IconSetsController:** use App::env for environment variables ([33c9d12](https://github.com/LindemannRock/craft-icon-manager/commit/33c9d123cead1ccd788316a1108a51a5a026871d))
+* **SettingsController:** validate and sanitize settings section parameter ([fa4e7ee](https://github.com/LindemannRock/craft-icon-manager/commit/fa4e7ee36230216cd10baf10f2ac7c7ccdfea4d5))
+
+
+### Miscellaneous Chores
+
+* add .gitattributes with export-ignore for Packagist distribution ([65f5e79](https://github.com/LindemannRock/craft-icon-manager/commit/65f5e79fb579366f2edf3091edeebb50b30b2887))
+* switch to Craft License for commercial release ([d268974](https://github.com/LindemannRock/craft-icon-manager/commit/d268974fe0ac6fd6f74183009671e860d3d30efc))
+
 ## [5.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.2...v5.11.0) (2026-02-07)
 
 
