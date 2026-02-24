@@ -540,7 +540,6 @@ JS;
 
     /**
      * @inheritdoc
-     * @since 5.11.0
      */
     public function getContentGqlType(): Type|array
     {

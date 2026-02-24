@@ -29,7 +29,6 @@ class SvgOptimizerService extends Component
      * Scan all SVG icon sets for optimization opportunities
      *
      * @return array Report with issues found
-     * @since 1.10.0
      */
     public function scanAllIconSets(): array
     {
@@ -56,7 +55,6 @@ class SvgOptimizerService extends Component
      *
      * @param object $iconSet The icon set to scan
      * @return array Scan results
-     * @since 1.10.0
      */
     public function scanIconSet($iconSet): array
     {
@@ -315,7 +313,6 @@ class SvgOptimizerService extends Component
      *
      * @param int $bytes File size in bytes
      * @return string Formatted size
-     * @since 1.10.0
      */
     public function formatFileSize(int $bytes): string
     {
@@ -354,7 +351,6 @@ class SvgOptimizerService extends Component
      * @param object $iconSet The icon set to optimize
      * @param bool $createBackup Whether to create a backup before optimization
      * @return array Result with success status, count, and backup path
-     * @since 1.10.0
      */
     public function optimizeIconSet($iconSet, bool $createBackup = true): array
     {

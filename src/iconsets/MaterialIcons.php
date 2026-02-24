@@ -66,8 +66,6 @@ class MaterialIcons
 
     /**
      * Get Material Icons
-     *
-     * @since 1.10.0
      */
     public function getIcons(): array
     {
@@ -161,8 +159,6 @@ class MaterialIcons
 
     /**
      * Get required assets (CSS/JS)
-     *
-     * @since 1.10.0
      */
     public function getAssets(): array
     {

@@ -32,8 +32,6 @@ class SvgoService extends Component
 
     /**
      * Check if SVGO is available in the project
-     *
-     * @since 1.10.0
      */
     public function isAvailable(): bool
     {
@@ -49,8 +47,6 @@ class SvgoService extends Component
 
     /**
      * Get the path to SVGO executable
-     *
-     * @since 1.10.0
      */
     public function getSvgoPath(): ?string
     {
@@ -110,8 +106,6 @@ class SvgoService extends Component
 
     /**
      * Get the path to SVGO config file
-     *
-     * @since 1.10.0
      */
     public function getConfigPath(): ?string
     {
@@ -140,8 +134,6 @@ class SvgoService extends Component
 
     /**
      * Optimize an entire icon set using SVGO
-     *
-     * @since 1.10.0
      */
     public function optimizeIconSet(IconSet $iconSet, ?string $customConfigPath = null, bool $createBackup = true): array
     {
@@ -274,8 +266,6 @@ class SvgoService extends Component
 
     /**
      * Optimize a single file using SVGO
-     *
-     * @since 1.10.0
      */
     public function optimizeFile(string $filePath, ?string $customConfigPath = null): array
     {
@@ -338,8 +328,6 @@ class SvgoService extends Component
 
     /**
      * Get SVGO version
-     *
-     * @since 1.10.0
      */
     public function getVersion(): ?string
     {

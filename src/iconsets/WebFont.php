@@ -36,8 +36,6 @@ class WebFont
 
     /**
      * Get icons from a custom web font file
-     *
-     * @since 1.10.0
      */
     public static function getIcons(IconSet $iconSet): array
     {
@@ -198,8 +196,6 @@ class WebFont
 
     /**
      * Get @font-face CSS for this font
-     *
-     * @since 1.10.0
      */
     public static function getFontFaceCss(IconSet $iconSet): string
     {
@@ -256,8 +252,6 @@ CSS;
 
     /**
      * Get available font files from icons directory
-     *
-     * @since 1.10.0
      */
     public static function getAvailableFonts(): array
     {
@@ -284,8 +278,6 @@ CSS;
 
     /**
      * Get assets (fonts) needed for this icon set
-     *
-     * @since 1.10.0
      */
     public static function getAssets(IconSet $iconSet): array
     {

@@ -42,7 +42,6 @@ class CacheController extends Controller
      * Clear all icon caches
      *
      * @return mixed
-     * @since 1.8.0
      */
     public function actionClear(): mixed
     {

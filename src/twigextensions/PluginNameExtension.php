@@ -38,7 +38,6 @@ class PluginNameExtension extends AbstractExtension implements GlobalsInterface
     /**
      * Make plugin name helper available as global Twig variable
      *
-     * @since 1.0.0
      * @return array
      */
     public function getGlobals(): array
@@ -61,7 +60,6 @@ class PluginNameHelper
     /**
      * Get display name (singular, without "Manager")
      *
-     * @since 1.0.0
      * @return string
      */
     public function getDisplayName(): string
@@ -72,7 +70,6 @@ class PluginNameHelper
     /**
      * Get plural display name (without "Manager")
      *
-     * @since 1.0.0
      * @return string
      */
     public function getPluralDisplayName(): string
@@ -83,7 +80,6 @@ class PluginNameHelper
     /**
      * Get full plugin name (as configured)
      *
-     * @since 1.0.0
      * @return string
      */
     public function getFullName(): string
@@ -94,7 +90,6 @@ class PluginNameHelper
     /**
      * Get lowercase display name (singular, without "Manager")
      *
-     * @since 1.0.0
      * @return string
      */
     public function getLowerDisplayName(): string
@@ -105,7 +100,6 @@ class PluginNameHelper
     /**
      * Get lowercase plural display name (without "Manager")
      *
-     * @since 1.0.0
      * @return string
      */
     public function getPluralLowerDisplayName(): string
@@ -117,7 +111,6 @@ class PluginNameHelper
      * Magic getter to allow property-style access in Twig
      * Enables: {{ iconHelper.displayName }} instead of {{ iconHelper.getDisplayName() }}
      *
-     * @since 1.0.0
      * @param string $name
      * @return string|null
      */

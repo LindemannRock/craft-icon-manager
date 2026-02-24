@@ -33,7 +33,6 @@ class IconsController extends Controller
      * Render an icon
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionRender(): Response
     {
@@ -66,7 +65,6 @@ class IconsController extends Controller
      * Get icon data for JavaScript (single icon - kept for backwards compatibility)
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionGetData(): Response
     {
@@ -179,7 +177,6 @@ class IconsController extends Controller
      * Get all icons for a field in a single batch request
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionGetIconsForField(): Response
     {
@@ -345,7 +342,6 @@ class IconsController extends Controller
      * Serve an SVG sprite file
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionServeSprite(): Response
     {

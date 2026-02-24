@@ -67,8 +67,6 @@ class FontAwesome
 
     /**
      * Get Font Awesome icons
-     *
-     * @since 1.0.0
      */
     public function getIcons(): array
     {
@@ -107,8 +105,6 @@ class FontAwesome
 
     /**
      * Get required assets (CSS/JS)
-     *
-     * @since 1.0.0
      */
     public function getAssets(): array
     {
@@ -188,8 +184,6 @@ class FontAwesome
     
     /**
      * Get admin panel assets for preview
-     *
-     * @since 1.0.0
      */
     public function getAdminAssets(): array
     {

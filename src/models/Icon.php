@@ -112,7 +112,6 @@ class Icon extends Model implements \JsonSerializable
      * Get JSON data for picker without content (loaded via AJAX on-demand)
      *
      * @return array
-     * @since 1.0.0
      */
     public function toPickerArray(): array
     {
@@ -307,7 +306,6 @@ class Icon extends Model implements \JsonSerializable
      * Check if the icon exists and can be rendered
      *
      * @return bool
-     * @since 1.0.0
      */
     public function exists(): bool
     {
@@ -335,7 +333,6 @@ class Icon extends Model implements \JsonSerializable
      * Get the icon's SVG content
      *
      * @return string|null
-     * @since 1.0.0
      */
     public function getSvg(): ?string
     {
@@ -424,7 +421,6 @@ class Icon extends Model implements \JsonSerializable
      * - For sprite icons: returns use reference
      *
      * @return \Twig\Markup|null
-     * @since 1.0.0
      */
     public function getContent()
     {
@@ -492,7 +488,6 @@ class Icon extends Model implements \JsonSerializable
      *
      * @param array $options
      * @return \Twig\Markup
-     * @since 1.0.0
      */
     public function render(array $options = [])
     {
@@ -749,7 +744,6 @@ class Icon extends Model implements \JsonSerializable
      *
      * @param string $search
      * @return bool
-     * @since 1.0.0
      */
     public function matchesKeywords(string $search): bool
     {
@@ -779,7 +773,6 @@ class Icon extends Model implements \JsonSerializable
      * Get the icon set this icon belongs to
      *
      * @return IconSet|null
-     * @since 1.0.0
      */
     public function getIconSet(): ?IconSet
     {

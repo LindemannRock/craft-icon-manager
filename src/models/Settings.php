@@ -278,7 +278,6 @@ class Settings extends Model
      * Validate log level - debug requires devMode
      *
      * @param string $attribute
-     * @since 1.0.0
      */
     public function validateLogLevel($attribute)
     {
@@ -338,7 +337,6 @@ class Settings extends Model
      * Get the resolved icon sets path
      *
      * @return string
-     * @since 1.0.0
      */
     public function getResolvedIconSetsPath(): string
     {

@@ -120,7 +120,6 @@ class IconSet extends Model
      * Get the display name for this icon set type
      *
      * @return string
-     * @since 1.0.0
      */
     public function getTypeLabel(): string
     {
@@ -139,7 +138,6 @@ class IconSet extends Model
      * Get type-specific settings
      *
      * @return array
-     * @since 1.0.0
      */
     public function getTypeSettings(): array
     {
@@ -224,7 +222,6 @@ class IconSet extends Model
      * Set the icons for this icon set
      *
      * @param array $icons
-     * @since 1.0.0
      */
     public function setIcons(array $icons): void
     {
@@ -235,7 +232,6 @@ class IconSet extends Model
      * Get the icons for this icon set
      *
      * @return array
-     * @since 1.0.0
      */
     public function getIcons(): array
     {
@@ -246,7 +242,6 @@ class IconSet extends Model
      * Get icon count
      *
      * @return int
-     * @since 1.0.0
      */
     public function getIconCount(): int
     {

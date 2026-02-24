@@ -38,7 +38,6 @@ class SettingsController extends Controller
      * Settings index
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionIndex(): Response
     {
@@ -49,7 +48,6 @@ class SettingsController extends Controller
      * General settings
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionGeneral(): Response
     {
@@ -100,7 +98,6 @@ class SettingsController extends Controller
      * Interface settings
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionInterface(): Response
     {
@@ -134,7 +131,6 @@ class SettingsController extends Controller
      * Save settings
      *
      * @return Response|null
-     * @since 1.0.0
      */
     public function actionSave(): ?Response
     {

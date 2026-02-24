@@ -118,7 +118,6 @@ class IconSetsController extends Controller
      * Icon sets index
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionIndex(): Response
     {
@@ -230,7 +229,6 @@ class IconSetsController extends Controller
      * @param int|null $iconSetId
      * @param IconSet|null $iconSet
      * @return Response
-     * @since 1.0.0
      */
     public function actionEdit(?int $iconSetId = null, ?IconSet $iconSet = null): Response
     {
@@ -273,7 +271,6 @@ class IconSetsController extends Controller
      * Save an icon set
      *
      * @return Response|null
-     * @since 1.0.0
      */
     public function actionSave(): ?Response
     {
@@ -333,7 +330,6 @@ class IconSetsController extends Controller
      * Delete an icon set
      *
      * @return Response
-     * @since 1.0.0
      */
     public function actionDelete(): Response
     {
