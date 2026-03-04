@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.11.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.1...v5.11.2) (2026-03-04)
+
+
+### Bug Fixes
+
+* **settings:** improve validation and error handling for settings ([93e1f4a](https://github.com/LindemannRock/craft-icon-manager/commit/93e1f4a9a1b9a87ee8bded0b796dd9714f34f6bf))
+
+
+### Miscellaneous Chores
+
+* **.gitignore:** remove development files and update internal directory ([4df5ec2](https://github.com/LindemannRock/craft-icon-manager/commit/4df5ec29880d8a55cf3c239fce1f40992b8056b7))
+
 ## [5.11.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.0...v5.11.1) (2026-02-23)
 
 
