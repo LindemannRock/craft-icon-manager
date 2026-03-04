@@ -43,6 +43,7 @@
             disabled: settings.isOverriddenByConfig('cacheStorageMethod'),
             warning: settings.isOverriddenByConfig('cacheStorageMethod') ?
                 "This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>."|t('icon-manager')|raw : null,
+            errors: settings.getErrors('cacheStorageMethod')
         }) }}
 
         {% set craftUsesRedis = craft.app.cache is defined and craft.app.cache.className is defined and craft.app.cache.className == 'yii\\redis\\Cache' %}
@@ -80,7 +81,8 @@
             on: settings.enableCache,
             toggle: 'cache-settings',
             warning: settings.isOverriddenByConfig('enableCache') ? 'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('enableCache')
+            disabled: settings.isOverriddenByConfig('enableCache'),
+            errors: settings.getErrors('enableCache')
         }) }}
 
         <div id="cache-settings" class="{{ not settings.enableCache ? 'hidden' }}">
@@ -95,7 +97,8 @@
                 max: 604800,
                 tip: 'Min: 60 (1 minute), Max: 604800 (7 days)'|t('icon-manager'),
                 warning: settings.isOverriddenByConfig('cacheDuration') ? 'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-                disabled: settings.isOverriddenByConfig('cacheDuration')
+                disabled: settings.isOverriddenByConfig('cacheDuration'),
+                errors: settings.getErrors('cacheDuration')
             }) }}
         </div>
 

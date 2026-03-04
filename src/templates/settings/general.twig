@@ -38,7 +38,8 @@
             value: settings.pluginName ?? 'Icon Manager',
             placeholder: 'Icon Manager',
             warning: settings.isOverriddenByConfig('pluginName') ? 'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('pluginName')
+            disabled: settings.isOverriddenByConfig('pluginName'),
+            errors: settings.getErrors('pluginName')
         }) }}
 
         <hr>
@@ -55,7 +56,8 @@
             suggestAliases: true,
             required: true,
             warning: settings.isOverriddenByConfig('iconSetsPath') ? 'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : 'All icon sets will look for icons relative to this path.',
-            disabled: settings.isOverriddenByConfig('iconSetsPath')
+            disabled: settings.isOverriddenByConfig('iconSetsPath'),
+            errors: settings.getErrors('iconSetsPath')
         }) }}
 
         <hr>
@@ -82,7 +84,8 @@
             value: settings.logLevel,
             options: logOptions,
             warning: settings.isOverriddenByConfig('logLevel') ? 'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('logLevel')
+            disabled: settings.isOverriddenByConfig('logLevel'),
+            errors: settings.getErrors('logLevel')
         }) }}
 
         <div class="buttons">

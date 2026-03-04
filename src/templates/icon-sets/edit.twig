@@ -68,6 +68,14 @@
         {{ hiddenInput('iconSetId', iconSet.id) }}
     {% endif %}
 
+    {% if iconSet.hasErrors() %}
+        {{ include('lindemannrock-base/_partials/error-summary', {
+            errors: iconSet.getErrors(),
+            linkMode: 'field-id',
+            translationCategory: 'icon-manager'
+        }) }}
+    {% endif %}
+
     {# Settings Tab #}
     <div id="settings">
 

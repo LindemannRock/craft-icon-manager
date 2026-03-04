@@ -136,6 +136,9 @@ class SettingsController extends Controller
     {
         $this->requirePostRequest();
         $this->requirePermission('iconManager:editSettings');
+        $section = $this->_validSettingsSection(
+            $this->request->getBodyParam('section', 'general'),
+        );
 
         // Load current settings from database
         $settings = Settings::loadFromDatabase();
@@ -156,14 +159,16 @@ class SettingsController extends Controller
             }
         }
 
-        // Validate
-        if (!$settings->validate()) {
+        $attributesToValidate = $this->_validationAttributesForSection($section);
+        $attributesToValidate = array_values(array_filter(
+            $attributesToValidate,
+            fn(string $attribute): bool => !$settings->isOverriddenByConfig($attribute),
+        ));
+
+        // Validate only current section attributes
+        if (!$settings->validate($attributesToValidate)) {
             Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not save settings.'));
 
-            // Get the section to re-render the correct template with errors
-            $section = $this->_validSettingsSection(
-                $this->request->getBodyParam('section', 'general'),
-            );
             $template = "icon-manager/settings/{$section}";
 
             return $this->renderTemplate($template, [
@@ -171,8 +176,8 @@ class SettingsController extends Controller
             ]);
         }
 
-        // Save settings to database
-        if ($settings->saveToDatabase()) {
+        // Save only current section attributes
+        if ($settings->saveToDatabase($attributesToValidate)) {
             // Reload settings so Craft picks up the new values
             IconManager::$plugin->reloadSettings();
 
@@ -196,5 +201,55 @@ class SettingsController extends Controller
         $allowed = ['general', 'icon-types', 'svg-optimization', 'interface', 'cache'];
 
         return in_array($section, $allowed, true) ? $section : 'general';
+    }
+
+    /**
+     * Get settings attributes that belong to a section
+     *
+     * @param string $section
+     * @return array<int, string>
+     */
+    private function _validationAttributesForSection(string $section): array
+    {
+        return match ($section) {
+            'general' => ['pluginName', 'iconSetsPath', 'logLevel'],
+            'icon-types' => ['enabledIconTypes'],
+            'svg-optimization' => [
+                'enableOptimization',
+                'enableOptimizationBackup',
+                'scanClipPaths',
+                'scanMasks',
+                'scanFilters',
+                'scanComments',
+                'scanInlineStyles',
+                'scanLargeFiles',
+                'scanWidthHeight',
+                'scanWidthHeightWithViewBox',
+                'optimizeConvertColorsToHex',
+                'optimizeConvertCssClasses',
+                'optimizeConvertEmptyTags',
+                'optimizeConvertInlineStyles',
+                'optimizeFlattenGroups',
+                'optimizeMinifyCoordinates',
+                'optimizeMinifyTransformations',
+                'optimizeRemoveComments',
+                'optimizeRemoveDefaultAttributes',
+                'optimizeRemoveDeprecatedAttributes',
+                'optimizeRemoveDoctype',
+                'optimizeRemoveEnableBackground',
+                'optimizeRemoveEmptyAttributes',
+                'optimizeRemoveInkscapeFootprints',
+                'optimizeRemoveInvisibleCharacters',
+                'optimizeRemoveMetadata',
+                'optimizeRemoveWhitespace',
+                'optimizeRemoveUnusedNamespaces',
+                'optimizeRemoveUnusedMasks',
+                'optimizeRemoveWidthHeight',
+                'optimizeSortAttributes',
+            ],
+            'interface' => ['itemsPerPage'],
+            'cache' => ['cacheStorageMethod', 'enableCache', 'cacheDuration'],
+            default => [],
+        };
     }
 }

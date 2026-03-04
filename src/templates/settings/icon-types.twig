@@ -40,7 +40,8 @@
             name: 'settings[enabledIconTypes][svg-folder]',
             on: settings.enabledIconTypes['svg-folder'] ?? true,
             warning: settings.isOverriddenByConfig('enabledIconTypes.svg-folder') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-folder\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('enabledIconTypes.svg-folder')
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.svg-folder'),
+            errors: settings.getErrors('enabledIconTypes')
         }) }}
 
         {{ forms.lightswitchField({
@@ -50,7 +51,8 @@
             name: 'settings[enabledIconTypes][svg-sprite]',
             on: settings.enabledIconTypes['svg-sprite'] ?? true,
             warning: settings.isOverriddenByConfig('enabledIconTypes.svg-sprite') ? 'This is being overridden by the <code>enabledIconTypes[\'svg-sprite\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('enabledIconTypes.svg-sprite')
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.svg-sprite'),
+            errors: settings.getErrors('enabledIconTypes')
         }) }}
 
         {{ forms.lightswitchField({
@@ -60,7 +62,8 @@
             name: 'settings[enabledIconTypes][font-awesome]',
             on: settings.enabledIconTypes['font-awesome'] ?? true,
             warning: settings.isOverriddenByConfig('enabledIconTypes.font-awesome') ? 'This is being overridden by the <code>enabledIconTypes[\'font-awesome\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('enabledIconTypes.font-awesome')
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.font-awesome'),
+            errors: settings.getErrors('enabledIconTypes')
         }) }}
 
         {{ forms.lightswitchField({
@@ -70,7 +73,8 @@
             name: 'settings[enabledIconTypes][material-icons]',
             on: settings.enabledIconTypes['material-icons'] ?? false,
             warning: settings.isOverriddenByConfig('enabledIconTypes.material-icons') ? 'This is being overridden by the <code>enabledIconTypes[\'material-icons\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('enabledIconTypes.material-icons')
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.material-icons'),
+            errors: settings.getErrors('enabledIconTypes')
         }) }}
 
         {{ forms.lightswitchField({
@@ -80,7 +84,8 @@
             name: 'settings[enabledIconTypes][web-font]',
             on: settings.enabledIconTypes['web-font'] ?? false,
             warning: settings.isOverriddenByConfig('enabledIconTypes.web-font') ? 'This is being overridden by the <code>enabledIconTypes[\'web-font\']</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('enabledIconTypes.web-font')
+            disabled: settings.isOverriddenByConfig('enabledIconTypes.web-font'),
+            errors: settings.getErrors('enabledIconTypes')
         }) }}
 
         <div class="buttons">
