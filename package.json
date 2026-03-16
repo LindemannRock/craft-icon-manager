@@ -1,12 +1,19 @@
 {
-  "name": "icon-manager",
+  "name": "@lindemannrock/icon-manager",
   "version": "1.0.0",
-  "description": "Build tools for Icon Manager plugin",
+  "private": true,
   "scripts": {
-    "minify": "npm run minify:js",
-    "minify:js": "terser src/web/assets/field/dist/IconManagerField.js -o src/web/assets/field/dist/IconManagerField.min.js -c -m"
+    "build": "cd src/web/assets/field && npm run build",
+    "build:js": "cd src/web/assets/field && npm run build:js"
   },
-  "devDependencies": {
-    "terser": "^5.31.6"
-  }
+  "author": {
+    "name": "Bilal Harry Lindemann",
+    "email": "hello@lindemannrock.com",
+    "url": "https://lindemannrock.com"
+  },
+  "company": {
+    "name": "LindemannRock",
+    "url": "https://lindemannrock.com"
+  },
+  "license": "Proprietary"
 }

@@ -8,7 +8,6 @@
 
 namespace lindemannrock\iconmanager\web\assets\field;
 
-use Craft;
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
 
@@ -30,9 +29,8 @@ class IconManagerFieldAsset extends AssetBundle
             CpAsset::class,
         ];
 
-        // Use minified JS in production
         $this->js = [
-            Craft::$app->getConfig()->getGeneral()->devMode ? 'IconManagerField.js' : 'IconManagerField.min.js',
+            'IconManagerField.js',
         ];
 
         parent::init();
