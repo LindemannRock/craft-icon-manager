@@ -124,8 +124,6 @@ class IconManager extends Plugin
                     'ctaLabel' => 'Open Icon Manager',
                     'ctaUrl' => 'icon-manager',
                     'redirectUri' => 'icon-manager',
-                    'sidebarColor' => '#EC4899',
-                    'uiColor' => '#EC4899',
                     'confettiPreset' => 'surprise',
                 ],
             ]
