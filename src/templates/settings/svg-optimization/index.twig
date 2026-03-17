@@ -49,19 +49,16 @@
 		{{ redirectInput('icon-manager/settings/svg-optimization') }}
 		{{ hiddenInput('section', 'svg-optimization') }}
 
-		{# General Tab #}
 		<div id="general">
-			{% include "icon-manager/settings/svg-optimization/_general-tab" %}
+			{% include "icon-manager/settings/svg-optimization/_partials/general" %}
 		</div>
 
-		{# Scan Controls Tab #}
 		<div id="scan-controls" class="hidden">
-			{% include "icon-manager/settings/svg-optimization/_scan-controls-tab" %}
+			{% include "icon-manager/settings/svg-optimization/_partials/scan-controls" %}
 		</div>
 
-		{# PHP Optimizer Tab #}
 		<div id="php-optimizer" class="hidden">
-			{% include "icon-manager/settings/svg-optimization/_php-optimizer-tab" %}
+			{% include "icon-manager/settings/svg-optimization/_partials/php-optimizer" %}
 		</div>
 
 	</form>
@@ -70,7 +67,6 @@
 {% endblock %}
 
 {% js %}
-// Hide/show tabs and content when Enable Optimization toggle changes
 const enableOptSwitch = document.getElementById('enableOptimization');
 if (enableOptSwitch) {
     enableOptSwitch.addEventListener('change', function() {
@@ -81,25 +77,22 @@ if (enableOptSwitch) {
         const phpOptimizerContent = document.getElementById('php-optimizer');
 
         if (isEnabled) {
-            // Show tabs and make them clickable
             if (scanControlsTab) scanControlsTab.parentElement.style.display = '';
             if (phpOptimizerTab) phpOptimizerTab.parentElement.style.display = '';
         } else {
-            // Hide tabs
             if (scanControlsTab) scanControlsTab.parentElement.style.display = 'none';
             if (phpOptimizerTab) phpOptimizerTab.parentElement.style.display = 'none';
 
-            // Switch to general tab if user was on a hidden tab
             if (scanControlsContent && !scanControlsContent.classList.contains('hidden')) {
                 scanControlsContent.classList.add('hidden');
                 document.getElementById('general').classList.remove('hidden');
-                document.querySelector('a[href="#general"]').classList.add('sel');
+                document.querySelector('a[href=\"#general\"]').classList.add('sel');
                 if (scanControlsTab) scanControlsTab.classList.remove('sel');
             }
             if (phpOptimizerContent && !phpOptimizerContent.classList.contains('hidden')) {
                 phpOptimizerContent.classList.add('hidden');
                 document.getElementById('general').classList.remove('hidden');
-                document.querySelector('a[href="#general"]').classList.add('sel');
+                document.querySelector('a[href=\"#general\"]').classList.add('sel');
                 if (phpOptimizerTab) phpOptimizerTab.classList.remove('sel');
             }
         }
