@@ -25,7 +25,7 @@ return [
         // Basic plugin configuration and paths
 
         'pluginName' => 'Icon Manager',
-        'iconSetsPath' => '@root/src/icons',
+        'iconSetsPath' => '@root/icons',
         'logLevel' => 'error',             // Options: 'debug', 'info', 'warning', 'error'
 
 
@@ -62,7 +62,7 @@ return [
         'scanWidthHeightWithViewBox' => false, // Scan for width/height even with viewBox
 
         // PHP Optimizer rules (what to apply during optimization)
-        // Risky rules remain enabled by default to preserve pre-v8 behavior.
+        // Risky rules are grouped in the CP and only applied when explicitly allowed.
         'optimizeAllowRiskyRules' => true,
 
         // Conversion rules
@@ -130,7 +130,7 @@ return [
 
     // Dev environment settings
     'dev' => [
-        'iconSetsPath' => '@root/src/icons',
+        'iconSetsPath' => '@root/icons',
         'logLevel' => 'info',                 // More detailed logging in development
         'enabledIconTypes' => [
             'svg-folder' => true,
