@@ -118,6 +118,16 @@ class IconManager extends Plugin
                         'web-font' => ColorHelper::getPaletteColor('cyan'),
                     ],
                 ],
+                'installExperience' => [
+                    'headline' => 'Icon Manager',
+                    'body' => 'Browse icon sets, optimize SVGs, and manage reusable assets from one control panel workspace.',
+                    'ctaLabel' => 'Open Icon Manager',
+                    'ctaUrl' => 'icon-manager',
+                    'redirectUri' => 'icon-manager',
+                    'sidebarColor' => '#EC4899',
+                    'uiColor' => '#EC4899',
+                    'confettiPreset' => 'surprise',
+                ],
             ]
         );
         PluginHelper::applyPluginNameFromConfig($this);
