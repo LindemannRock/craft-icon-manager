@@ -125,6 +125,7 @@ See [Usage](#usage) below for template examples and advanced features.
 - **Performance Optimized**: File or Redis caching for fast icon loading
 - **Security**: SVG sanitization to prevent XSS attacks
 - **Twig Integration**: Easy icon rendering in templates with automatic HTML safety
+- **GraphQL Support**: Icon fields expose structured icon data in Craft GraphQL schemas
 
 ## Development Status
 
@@ -344,26 +345,39 @@ Control which optimization rules are applied during PHP optimization:
 ```php
 // config/icon-manager.php
 return [
+    // Risky rule gate
+    'optimizeAllowRiskyRules' => true,
+
     // Conversion rules
     'optimizeConvertColorsToHex' => true,
     'optimizeConvertCssClasses' => true,
     'optimizeConvertEmptyTags' => true,
     'optimizeConvertInlineStyles' => true,
+    'optimizeFixAttributeNames' => true,
 
     // Minification rules
     'optimizeMinifyCoordinates' => true,
     'optimizeMinifyTransformations' => true,
 
-    // Removal rules (13 settings)
+    // Removal rules
+    'optimizeRemoveAriaAndRole' => false,
     'optimizeRemoveComments' => true,
+    'optimizeRemoveDataAttributes' => false,
     'optimizeRemoveDefaultAttributes' => true,
     'optimizeRemoveDeprecatedAttributes' => true,
     'optimizeRemoveDoctype' => true,
+    'optimizeRemoveDuplicateElements' => true,
     'optimizeRemoveEnableBackground' => true,
     'optimizeRemoveEmptyAttributes' => true,
+    'optimizeRemoveEmptyGroups' => true,
+    'optimizeRemoveEmptyTextElements' => true,
     'optimizeRemoveInkscapeFootprints' => true,
     'optimizeRemoveInvisibleCharacters' => true,
     'optimizeRemoveMetadata' => true,
+    'optimizeRemoveNonStandardAttributes' => false,
+    'optimizeRemoveNonStandardTags' => false,
+    'optimizeRemoveTitleAndDesc' => false,
+    'optimizeRemoveUnsafeElements' => true,
     'optimizeRemoveWhitespace' => true,
     'optimizeRemoveUnusedNamespaces' => true,
     'optimizeRemoveUnusedMasks' => true,
@@ -371,11 +385,12 @@ return [
 
     // Structure rules
     'optimizeFlattenGroups' => true,
+    'optimizeScopeSvgStyles' => false,
     'optimizeSortAttributes' => true,
 ];
 ```
 
-All rules default to `true` for comprehensive optimization. Toggle any off to skip that optimization.
+Most cleanup rules default to `true`. Some v8 rules are intentionally more conservative by default, especially risky or security-sensitive rules.
 
 ### Creating Icon Sets
 
@@ -464,6 +479,22 @@ Add an Icon field to any element:
 ```
 
 Note: The `|raw` filter is not needed - icons are automatically rendered safely.
+
+### GraphQL
+
+Icon Manager fields expose GraphQL types for both single-select and multi-select field values.
+
+Available GraphQL fields:
+- `name`
+- `label`
+- `type`
+- `value`
+- `iconSetHandle`
+- `customLabel`
+- `svg`
+- `content`
+
+Single-select fields resolve to one icon object. Multi-select fields resolve to a list of icon objects.
 
 ### Template Variables
 
@@ -825,12 +856,17 @@ Uses [mathiasreker/php-svg-optimizer v8](https://github.com/mathiasreker/php-svg
 - No additional installation required
 - Works in CP interface
 - 32 toggleable optimization rules organized in 5 categories:
-  - **Risky Rules**: Explicit opt-in required by v8 for risky removals
+  - **Risky Rules**: Explicit opt-in required by v8 before risky rules are applied
   - **Conversion**: Colors to hex, CSS classes/styles to attributes, empty tags to self-closing, attribute-name fixes
   - **Minification**: Coordinates, transformations
   - **Removal**: Comments, metadata, deprecated attributes, duplicate elements, unsafe elements, whitespace, unused masks/namespaces, width/height, and more
   - **Structure**: Flatten groups, scope styles, sort attributes
-- All rules enabled by default for comprehensive optimization
+- Risky rules are grouped in the CP and hidden when `Allow Risky Rules` is disabled
+- Current risky rules in `php-svg-optimizer` v8.5.x:
+  - `removeDataAttributes`
+  - `removeEnableBackgroundAttribute`
+  - `removeWidthHeightAttributes`
+  - `scopeSvgStyles`
 - Control which rules to apply via Settings → SVG Optimization → PHP Optimizer
 - Supports 77 SVG properties for CSS-to-attribute conversion
 - Auto-preserves legal comments (`<!--! -->`)
@@ -845,6 +881,7 @@ Control optimization behavior in Icon Manager → Settings → SVG Optimization:
 - **Scan Controls**: What scanner detects and displays in UI
 - **PHP Optimizer**: What actually gets applied during optimization
 - Optimization may modify files even when scan shows 0 issues (applies all enabled rules)
+- `Unused Clip-Paths` is still scan-only in the PHP optimizer path because upstream does not currently expose a clip-path cleanup rule
 
 ### SVGO (Advanced)
 
@@ -961,6 +998,36 @@ Before optimization, a backup is automatically created (unless `--noBackup` is u
 - Need simple, reliable optimization
 - Only need basic cleanup (comments, metadata)
 
+### Internal Verification Fixtures
+
+Icon Manager includes an internal SVG fixture pack for validating optimizer upgrades and regression-checking both engines.
+
+**Location:**
+- `plugins/icon-manager/.internal/optimization-fixtures`
+
+**Purpose:**
+- Exercise intentionally problematic SVGs against the installed `php-svg-optimizer`
+- Validate risky-rule handling
+- Run the same fixtures through SVGO
+- Confirm optimized output remains parseable SVG
+
+**Run PHP optimizer verification:**
+
+```bash
+ddev exec "./craft icon-manager/optimize/verify --engine=php --path=plugins/icon-manager/.internal/optimization-fixtures --keepOutputs=1"
+```
+
+**Run SVGO verification:**
+
+```bash
+ddev exec "./craft icon-manager/optimize/verify --engine=svgo --path=plugins/icon-manager/.internal/optimization-fixtures --config=plugins/icon-manager/.internal/optimization-fixtures/svgo.fixture.config.mjs --keepOutputs=1"
+```
+
+**Notes:**
+- Verification outputs are written to `storage/runtime/icon-manager/verify/`
+- This verifies structural integrity and rule execution, not pixel-perfect visual equivalence
+- After dependency upgrades, run the fixture pack and then spot-check a few real-world icons
+
 ### Understanding the Three Settings Areas
 
 Icon Manager has three separate configuration areas for SVG optimization:
@@ -985,9 +1052,10 @@ return [
     // ... 8 scan settings
 
     // PHP optimizer rules (what to apply)
+    'optimizeAllowRiskyRules' => true,
     'optimizeRemoveComments' => true,
     'optimizeConvertInlineStyles' => true,
-    // ... 21 optimization rules
+    // ... 32 optimization rules
 ];
 ```
 
@@ -1016,7 +1084,7 @@ export default {
 - These are **independent** - you can scan for things you don't optimize, or optimize things you don't scan for
 
 **PHP Optimizer vs SVGO:**
-- **PHP Optimizer**: Uses settings from Icon Manager (21 toggles in CP)
+- **PHP Optimizer**: Uses settings from Icon Manager (32 toggles in CP plus risky-rule gating)
 - **SVGO**: Uses `svgo.config.js` file (independent of Icon Manager settings)
 
 **Example Scenario:**
