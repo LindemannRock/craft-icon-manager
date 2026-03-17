@@ -62,26 +62,39 @@ return [
         'scanWidthHeightWithViewBox' => false, // Scan for width/height even with viewBox
 
         // PHP Optimizer rules (what to apply during optimization)
+        // Risky rules remain enabled by default to preserve pre-v8 behavior.
+        'optimizeAllowRiskyRules' => true,
+
         // Conversion rules
         'optimizeConvertColorsToHex' => true,
         'optimizeConvertCssClasses' => true,
         'optimizeConvertEmptyTags' => true,
         'optimizeConvertInlineStyles' => true,
+        'optimizeFixAttributeNames' => true,
 
         // Minification rules
         'optimizeMinifyCoordinates' => true,
         'optimizeMinifyTransformations' => true,
 
         // Removal rules
+        'optimizeRemoveAriaAndRole' => false,
         'optimizeRemoveComments' => true,
+        'optimizeRemoveDataAttributes' => false,
         'optimizeRemoveDefaultAttributes' => true,
         'optimizeRemoveDeprecatedAttributes' => true,
         'optimizeRemoveDoctype' => true,
+        'optimizeRemoveDuplicateElements' => true,
+        'optimizeRemoveEmptyGroups' => true,
         'optimizeRemoveEnableBackground' => true,
         'optimizeRemoveEmptyAttributes' => true,
+        'optimizeRemoveEmptyTextElements' => true,
         'optimizeRemoveInkscapeFootprints' => true,
         'optimizeRemoveInvisibleCharacters' => true,
         'optimizeRemoveMetadata' => true,
+        'optimizeRemoveNonStandardAttributes' => false,
+        'optimizeRemoveNonStandardTags' => false,
+        'optimizeRemoveTitleAndDesc' => false,
+        'optimizeRemoveUnsafeElements' => true,
         'optimizeRemoveWhitespace' => true,
         'optimizeRemoveUnusedNamespaces' => true,
         'optimizeRemoveUnusedMasks' => true,
@@ -89,6 +102,7 @@ return [
 
         // Structure rules
         'optimizeFlattenGroups' => true,
+        'optimizeScopeSvgStyles' => false,
         'optimizeSortAttributes' => true,
 
 

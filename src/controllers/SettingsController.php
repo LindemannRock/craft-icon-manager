@@ -169,7 +169,9 @@ class SettingsController extends Controller
         if (!$settings->validate($attributesToValidate)) {
             Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not save settings.'));
 
-            $template = "icon-manager/settings/{$section}";
+            $template = $section === 'svg-optimization'
+                ? 'icon-manager/settings/svg-optimization/index'
+                : "icon-manager/settings/{$section}";
 
             return $this->renderTemplate($template, [
                 'settings' => $settings,
@@ -246,6 +248,18 @@ class SettingsController extends Controller
                 'optimizeRemoveUnusedMasks',
                 'optimizeRemoveWidthHeight',
                 'optimizeSortAttributes',
+                'optimizeFixAttributeNames',
+                'optimizeRemoveAriaAndRole',
+                'optimizeRemoveDataAttributes',
+                'optimizeRemoveDuplicateElements',
+                'optimizeRemoveEmptyGroups',
+                'optimizeRemoveEmptyTextElements',
+                'optimizeRemoveNonStandardAttributes',
+                'optimizeRemoveNonStandardTags',
+                'optimizeRemoveTitleAndDesc',
+                'optimizeRemoveUnsafeElements',
+                'optimizeScopeSvgStyles',
+                'optimizeAllowRiskyRules',
             ],
             'interface' => ['itemsPerPage'],
             'cache' => ['cacheStorageMethod', 'enableCache', 'cacheDuration'],

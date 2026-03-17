@@ -819,16 +819,17 @@ The plugin scans SVG files and identifies:
 
 ### PHP Optimizer (Default)
 
-Uses [mathiasreker/php-svg-optimizer v7.3](https://github.com/mathiasreker/php-svg-optimizer) with 21 user-controlled optimization rules. Available in the Control Panel via Icon Manager → Icon Sets → [Set] → Optimize.
+Uses [mathiasreker/php-svg-optimizer v8](https://github.com/mathiasreker/php-svg-optimizer) with 32 user-controlled optimization rules plus explicit risky-rule handling. Available in the Control Panel via Icon Manager → Icon Sets → [Set] → Optimize.
 
 **Features:**
 - No additional installation required
 - Works in CP interface
-- 21 toggleable optimization rules organized in 4 categories:
-  - **Conversion**: Colors to hex, CSS classes/styles to attributes, empty tags to self-closing
+- 32 toggleable optimization rules organized in 5 categories:
+  - **Risky Rules**: Explicit opt-in required by v8 for risky removals
+  - **Conversion**: Colors to hex, CSS classes/styles to attributes, empty tags to self-closing, attribute-name fixes
   - **Minification**: Coordinates, transformations
-  - **Removal**: Comments, metadata, deprecated attributes, whitespace, unused masks/namespaces, width/height
-  - **Structure**: Flatten groups, sort attributes
+  - **Removal**: Comments, metadata, deprecated attributes, duplicate elements, unsafe elements, whitespace, unused masks/namespaces, width/height, and more
+  - **Structure**: Flatten groups, scope styles, sort attributes
 - All rules enabled by default for comprehensive optimization
 - Control which rules to apply via Settings → SVG Optimization → PHP Optimizer
 - Supports 77 SVG properties for CSS-to-attribute conversion
@@ -838,7 +839,7 @@ Uses [mathiasreker/php-svg-optimizer v7.3](https://github.com/mathiasreker/php-s
 Control optimization behavior in Icon Manager → Settings → SVG Optimization:
 - **General tab**: Enable optimization, automatic backups
 - **Scan Controls tab**: What issues to detect in scans (8 detection rules)
-- **PHP Optimizer tab**: What optimizations to apply (21 optimization rules)
+- **PHP Optimizer tab**: What optimizations to apply (32 optimization rules plus risky-rule switch)
 
 **Important:** Scan Controls and PHP Optimizer Settings are separate:
 - **Scan Controls**: What scanner detects and displays in UI

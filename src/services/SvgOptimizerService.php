@@ -530,11 +530,12 @@ class SvgOptimizerService extends Component
     private function optimizeSvgFile(string $filePath): bool
     {
         try {
-            // Get user's optimization settings - ALL rules are user-controlled
+            // Get user's optimization settings - all exposed rules are user-controlled
             $settings = IconManager::getInstance()->getSettings();
 
-            // Build rules array based on user settings (all 21 rules)
+            // Build rules array based on user settings.
             $rules = [];
+            $usesRiskyRules = false;
 
             // Conversion rules
             if ($settings->optimizeConvertColorsToHex) {
@@ -549,6 +550,9 @@ class SvgOptimizerService extends Component
             if ($settings->optimizeConvertInlineStyles) {
                 $rules['convertInlineStylesToAttributes'] = true;
             }
+            if ($settings->optimizeFixAttributeNames) {
+                $rules['fixAttributeNames'] = true;
+            }
 
             // Minification rules
             if ($settings->optimizeMinifyCoordinates) {
@@ -559,8 +563,15 @@ class SvgOptimizerService extends Component
             }
 
             // Removal rules
+            if ($settings->optimizeRemoveAriaAndRole) {
+                $rules['removeAriaAndRole'] = true;
+            }
             if ($settings->optimizeRemoveComments) {
                 $rules['removeComments'] = true;  // Auto-preserves legal comments (<!--! -->)
+            }
+            if ($settings->optimizeRemoveDataAttributes) {
+                $rules['removeDataAttributes'] = true;
+                $usesRiskyRules = true;
             }
             if ($settings->optimizeRemoveDefaultAttributes) {
                 $rules['removeDefaultAttributes'] = true;
@@ -571,11 +582,21 @@ class SvgOptimizerService extends Component
             if ($settings->optimizeRemoveDoctype) {
                 $rules['removeDoctype'] = true;
             }
+            if ($settings->optimizeRemoveDuplicateElements) {
+                $rules['removeDuplicateElements'] = true;
+            }
+            if ($settings->optimizeRemoveEmptyGroups) {
+                $rules['removeEmptyGroups'] = true;
+            }
             if ($settings->optimizeRemoveEnableBackground) {
                 $rules['removeEnableBackgroundAttribute'] = true;
+                $usesRiskyRules = true;
             }
             if ($settings->optimizeRemoveEmptyAttributes) {
                 $rules['removeEmptyAttributes'] = true;
+            }
+            if ($settings->optimizeRemoveEmptyTextElements) {
+                $rules['removeEmptyTextAttributes'] = true;
             }
             if ($settings->optimizeRemoveInkscapeFootprints) {
                 $rules['removeInkscapeFootprints'] = true;
@@ -585,6 +606,18 @@ class SvgOptimizerService extends Component
             }
             if ($settings->optimizeRemoveMetadata) {
                 $rules['removeMetadata'] = true;
+            }
+            if ($settings->optimizeRemoveNonStandardAttributes) {
+                $rules['removeNonStandardAttributes'] = true;
+            }
+            if ($settings->optimizeRemoveNonStandardTags) {
+                $rules['removeNonStandardTags'] = true;
+            }
+            if ($settings->optimizeRemoveTitleAndDesc) {
+                $rules['removeTitleAndDesc'] = true;
+            }
+            if ($settings->optimizeRemoveUnsafeElements) {
+                $rules['removeUnsafeElements'] = true;
             }
             if ($settings->optimizeRemoveWhitespace) {
                 $rules['removeUnnecessaryWhitespace'] = true;
@@ -597,19 +630,34 @@ class SvgOptimizerService extends Component
             }
             if ($settings->optimizeRemoveWidthHeight) {
                 $rules['removeWidthHeightAttributes'] = true;
+                $usesRiskyRules = true;
             }
 
             // Structure rules
             if ($settings->optimizeFlattenGroups) {
                 $rules['flattenGroups'] = true;
             }
+            if ($settings->optimizeScopeSvgStyles) {
+                $rules['scopeSvgStyles'] = true;
+                $usesRiskyRules = true;
+            }
             if ($settings->optimizeSortAttributes) {
                 $rules['sortAttributes'] = true;
             }
 
-            // Apply optimization with user-controlled rules
-            $svgOptimizer = SvgOptimizerFacade::fromFile($filePath)
-                ->withRules(...$rules)
+            $optimizer = SvgOptimizerFacade::fromFile($filePath);
+            $supportedRuleNames = $this->getSupportedRuleNames($optimizer);
+            $supportedRules = array_intersect_key($rules, array_flip($supportedRuleNames));
+
+            $optimizer = $optimizer->withRules(...$supportedRules);
+
+            // v8 gates risky rules explicitly; preserve legacy behavior when enabled in settings.
+            if ($usesRiskyRules && $settings->optimizeAllowRiskyRules && method_exists($optimizer, 'allowRisky')) {
+                $optimizer = $optimizer->allowRisky();
+            }
+
+            // Apply optimization with user-controlled rules.
+            $svgOptimizer = $optimizer
                 ->optimize()
                 ->saveToFile($filePath);
 
@@ -689,6 +737,26 @@ class SvgOptimizerService extends Component
         }
 
         return $size;
+    }
+
+    /**
+     * Get the rule names supported by the installed optimizer version.
+     *
+     * This keeps the plugin compatible with both current v7 installs and v8 upgrades.
+     *
+     * @param object $optimizer
+     * @return array<int, string>
+     */
+    private function getSupportedRuleNames(object $optimizer): array
+    {
+        $method = new \ReflectionMethod($optimizer, 'withRules');
+        $ruleNames = [];
+
+        foreach ($method->getParameters() as $parameter) {
+            $ruleNames[] = $parameter->getName();
+        }
+
+        return $ruleNames;
     }
 
     /**

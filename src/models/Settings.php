@@ -134,7 +134,7 @@ class Settings extends Model
     public bool $scanWidthHeightWithViewBox = false;
 
     // PHP SVG Optimizer Settings (control what optimizations to apply)
-    // All 21 available rules from php-svg-optimizer v7.3
+    // Exposes the plugin-supported v8 rule set plus risky-rule opt-in.
 
     /**
      * @var bool Convert colors to hex format
@@ -241,6 +241,66 @@ class Settings extends Model
      */
     public bool $optimizeSortAttributes = true;
 
+    /**
+     * @var bool Fix invalid or legacy attribute names
+     */
+    public bool $optimizeFixAttributeNames = true;
+
+    /**
+     * @var bool Remove aria-* and role attributes
+     */
+    public bool $optimizeRemoveAriaAndRole = false;
+
+    /**
+     * @var bool Remove data-* attributes
+     */
+    public bool $optimizeRemoveDataAttributes = false;
+
+    /**
+     * @var bool Remove duplicate SVG elements
+     */
+    public bool $optimizeRemoveDuplicateElements = true;
+
+    /**
+     * @var bool Remove empty groups
+     */
+    public bool $optimizeRemoveEmptyGroups = true;
+
+    /**
+     * @var bool Remove empty text elements
+     */
+    public bool $optimizeRemoveEmptyTextElements = true;
+
+    /**
+     * @var bool Remove non-standard SVG attributes
+     */
+    public bool $optimizeRemoveNonStandardAttributes = false;
+
+    /**
+     * @var bool Remove non-standard SVG tags
+     */
+    public bool $optimizeRemoveNonStandardTags = false;
+
+    /**
+     * @var bool Remove <title> and <desc> elements
+     */
+    public bool $optimizeRemoveTitleAndDesc = false;
+
+    /**
+     * @var bool Remove unsafe SVG elements
+     */
+    public bool $optimizeRemoveUnsafeElements = true;
+
+    /**
+     * @var bool Scope SVG styles
+     */
+    public bool $optimizeScopeSvgStyles = false;
+
+    /**
+     * @var bool Allow risky optimizer rules
+     */
+    public bool $optimizeAllowRiskyRules = true;
+
 
     /**
      * @inheritdoc
@@ -263,7 +323,7 @@ class Settings extends Model
         return [
             [['iconSetsPath'], 'required'],
             [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
-            [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes'], 'boolean'],
+            [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes', 'optimizeFixAttributeNames', 'optimizeRemoveAriaAndRole', 'optimizeRemoveDataAttributes', 'optimizeRemoveDuplicateElements', 'optimizeRemoveEmptyGroups', 'optimizeRemoveEmptyTextElements', 'optimizeRemoveNonStandardAttributes', 'optimizeRemoveNonStandardTags', 'optimizeRemoveTitleAndDesc', 'optimizeRemoveUnsafeElements', 'optimizeScopeSvgStyles', 'optimizeAllowRiskyRules'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['cacheStorageMethod'], 'in', 'range' => ['file', 'redis']],
             [['itemsPerPage'], 'integer', 'min' => 10, 'max' => 500],
@@ -401,6 +461,18 @@ class Settings extends Model
             'optimizeRemoveUnusedMasks',
             'optimizeRemoveWidthHeight',
             'optimizeSortAttributes',
+            'optimizeFixAttributeNames',
+            'optimizeRemoveAriaAndRole',
+            'optimizeRemoveDataAttributes',
+            'optimizeRemoveDuplicateElements',
+            'optimizeRemoveEmptyGroups',
+            'optimizeRemoveEmptyTextElements',
+            'optimizeRemoveNonStandardAttributes',
+            'optimizeRemoveNonStandardTags',
+            'optimizeRemoveTitleAndDesc',
+            'optimizeRemoveUnsafeElements',
+            'optimizeScopeSvgStyles',
+            'optimizeAllowRiskyRules',
         ];
     }
 
