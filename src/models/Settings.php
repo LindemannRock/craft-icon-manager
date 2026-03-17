@@ -68,7 +68,7 @@ class Settings extends Model
     public array $enabledIconTypes = [
         'svg-folder' => true,
         'svg-sprite' => true,
-        'font-awesome' => true,
+        'font-awesome' => false,
         'material-icons' => false,
         'web-font' => false,
     ];

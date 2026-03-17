@@ -8,10 +8,13 @@
 
 namespace lindemannrock\iconmanager\console;
 
+use Craft;
 use craft\console\Controller;
 use craft\helpers\Console;
+use craft\helpers\FileHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\services\SvgoService;
+use MathiasReker\PhpSvgOptimizer\Service\Facade\SvgOptimizerFacade;
 use yii\console\ExitCode;
 
 /**
@@ -21,6 +24,31 @@ use yii\console\ExitCode;
  */
 class OptimizeController extends Controller
 {
+    /**
+     * @var string Path to an SVG file or directory for rule verification
+     */
+    public $path = '';
+
+    /**
+     * @var bool Include risky rules in verification runs
+     */
+    public $includeRisky = true;
+
+    /**
+     * @var bool Keep optimized verification outputs in runtime storage
+     */
+    public $keepOutputs = false;
+
+    /**
+     * @var array<int, string>
+     */
+    private const RISKY_RULES = [
+        'removeDataAttributes',
+        'removeEnableBackgroundAttribute',
+        'removeWidthHeightAttributes',
+        'scopeSvgStyles',
+    ];
+
     /**
      * @var string The optimization engine to use (php or svgo)
      */
@@ -57,7 +85,289 @@ class OptimizeController extends Controller
         $options[] = 'config';
         $options[] = 'dryRun';
         $options[] = 'noBackup';
+        $options[] = 'path';
+        $options[] = 'includeRisky';
+        $options[] = 'keepOutputs';
         return $options;
+    }
+
+    /**
+     * Verify installed optimizer rules against one SVG file or a directory of SVG files.
+     *
+     * This does not prove visual equivalence, but it does prove that each rule can run,
+     * produce parseable SVG output, and avoid obvious structural breakage.
+     *
+     * @param string|null $path Path to an SVG file or directory
+     * @return int
+     * @since 5.11.3
+     */
+    public function actionVerify(?string $path = null): int
+    {
+        $targetPath = $path ?: $this->path;
+
+        if ($targetPath === '') {
+            $this->stderr("Error: Provide a file or directory path.\n", Console::FG_RED);
+            $this->stdout("Example: ./craft icon-manager/optimize/verify --path=/absolute/path/to/svgs\n");
+            return ExitCode::USAGE;
+        }
+
+        $resolvedPath = Craft::getAlias($targetPath);
+        $svgFiles = $this->resolveSvgFiles($resolvedPath);
+
+        if ($svgFiles === []) {
+            $this->stderr("No SVG files found at: {$resolvedPath}\n", Console::FG_RED);
+            return ExitCode::DATAERR;
+        }
+
+        if ($this->engine === 'svgo') {
+            return $this->verifySvgoFiles($resolvedPath, $svgFiles);
+        }
+
+        if ($this->engine !== 'php') {
+            $this->stderr("Error: Unknown engine '{$this->engine}'\n", Console::FG_RED);
+            $this->stdout("Available engines: php, svgo\n");
+            return ExitCode::USAGE;
+        }
+
+        return $this->verifyPhpRules($resolvedPath, $svgFiles);
+    }
+
+    /**
+     * Run the full PHP optimizer rule surface against the provided SVG files.
+     *
+     * @param string $resolvedPath
+     * @param array<int, string> $svgFiles
+     * @return int
+     */
+    private function verifyPhpRules(string $resolvedPath, array $svgFiles): int
+    {
+        $supportedRules = $this->getSupportedRuleNames();
+        $safeRules = array_values(array_diff($supportedRules, self::RISKY_RULES));
+        $rulesToVerify = $this->includeRisky ? $supportedRules : $safeRules;
+
+        $this->stdout("\n");
+        $this->stdout("Icon Manager - PHP Optimizer Verification\n", Console::FG_CYAN);
+        $this->stdout("========================================\n\n");
+        $this->stdout("Path:         ", Console::FG_YELLOW);
+        $this->stdout($resolvedPath . "\n");
+        $this->stdout("SVG files:    ", Console::FG_YELLOW);
+        $this->stdout(count($svgFiles) . "\n");
+        $this->stdout("Rules tested: ", Console::FG_YELLOW);
+        $this->stdout(count($rulesToVerify) . "\n");
+        $this->stdout("Risky rules:  ", Console::FG_YELLOW);
+        $this->stdout($this->includeRisky ? "included\n" : "skipped\n");
+        $this->stdout("\n");
+
+        $summary = [
+            'files' => count($svgFiles),
+            'ruleRuns' => 0,
+            'comboRuns' => 0,
+            'changedRuns' => 0,
+            'failures' => [],
+        ];
+
+        foreach ($svgFiles as $filePath) {
+            $content = file_get_contents($filePath);
+            if ($content === false) {
+                $summary['failures'][] = [
+                    'file' => $filePath,
+                    'rule' => 'read',
+                    'message' => 'Could not read file contents',
+                ];
+                continue;
+            }
+
+            $relativeLabel = $this->getRelativeDisplayPath($resolvedPath, $filePath);
+            $this->stdout("Verifying {$relativeLabel}\n", Console::FG_YELLOW);
+
+            foreach ($rulesToVerify as $ruleName) {
+                $summary['ruleRuns']++;
+                $result = $this->verifyRulesForContent($content, [$ruleName => true], in_array($ruleName, self::RISKY_RULES, true));
+
+                if (!$result['success']) {
+                    $summary['failures'][] = [
+                        'file' => $filePath,
+                        'rule' => $ruleName,
+                        'message' => $result['message'],
+                    ];
+                    $this->stdout("  [FAIL] {$ruleName}: {$result['message']}\n", Console::FG_RED);
+                    continue;
+                }
+
+                if ($result['changed']) {
+                    $summary['changedRuns']++;
+                }
+
+                if ($this->keepOutputs) {
+                    $this->persistVerificationOutput($filePath, $ruleName, $result['content']);
+                }
+            }
+
+            $summary['comboRuns']++;
+            $safeCombo = $this->verifyRulesForContent($content, array_fill_keys($safeRules, true), false);
+            if (!$safeCombo['success']) {
+                $summary['failures'][] = [
+                    'file' => $filePath,
+                    'rule' => 'all-safe-rules',
+                    'message' => $safeCombo['message'],
+                ];
+                $this->stdout("  [FAIL] all-safe-rules: {$safeCombo['message']}\n", Console::FG_RED);
+            } elseif ($safeCombo['changed']) {
+                $summary['changedRuns']++;
+            }
+
+            if ($this->keepOutputs && $safeCombo['success']) {
+                $this->persistVerificationOutput($filePath, 'all-safe-rules', $safeCombo['content']);
+            }
+
+            if ($this->includeRisky) {
+                $summary['comboRuns']++;
+                $allRules = array_fill_keys($supportedRules, true);
+                $allCombo = $this->verifyRulesForContent($content, $allRules, true);
+
+                if (!$allCombo['success']) {
+                    $summary['failures'][] = [
+                        'file' => $filePath,
+                        'rule' => 'all-rules',
+                        'message' => $allCombo['message'],
+                    ];
+                    $this->stdout("  [FAIL] all-rules: {$allCombo['message']}\n", Console::FG_RED);
+                } elseif ($allCombo['changed']) {
+                    $summary['changedRuns']++;
+                }
+
+                if ($this->keepOutputs && $allCombo['success']) {
+                    $this->persistVerificationOutput($filePath, 'all-rules', $allCombo['content']);
+                }
+            }
+        }
+
+        $this->stdout("\nSummary\n", Console::FG_CYAN);
+        $this->stdout("-------\n");
+        $this->stdout("Files checked:      {$summary['files']}\n");
+        $this->stdout("Individual rules:   {$summary['ruleRuns']}\n");
+        $this->stdout("Rule combinations:  {$summary['comboRuns']}\n");
+        $this->stdout("Changed outputs:    {$summary['changedRuns']}\n");
+        $this->stdout("Failures:           " . count($summary['failures']) . "\n");
+
+        if ($this->keepOutputs) {
+            $this->stdout("Saved outputs:      " . Craft::$app->path->getRuntimePath() . "/icon-manager/verify\n");
+        }
+
+        if ($summary['failures'] !== []) {
+            $this->stdout("\nFailures\n", Console::FG_RED);
+            $this->stdout("--------\n");
+
+            foreach ($summary['failures'] as $failure) {
+                $this->stdout($failure['file'] . " :: " . $failure['rule'] . " :: " . $failure['message'] . "\n", Console::FG_RED);
+            }
+
+            $this->stdout("\n");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        $this->stdout("\nAll requested rule checks completed without parser or optimizer failures.\n", Console::FG_GREEN);
+        $this->stdout("This verifies structural validity, not visual equivalence. Spot-check representative icons before release.\n\n", Console::FG_YELLOW);
+
+        return ExitCode::OK;
+    }
+
+    /**
+     * Run fixture or corpus verification through the configured SVGO engine.
+     *
+     * @param string $resolvedPath
+     * @param array<int, string> $svgFiles
+     * @return int
+     */
+    private function verifySvgoFiles(string $resolvedPath, array $svgFiles): int
+    {
+        $svgoService = new SvgoService();
+
+        if (!$svgoService->isAvailable()) {
+            $this->stderr("SVGO is not available.\n", Console::FG_RED);
+            return ExitCode::UNAVAILABLE;
+        }
+
+        $this->stdout("\n");
+        $this->stdout("Icon Manager - SVGO Verification\n", Console::FG_CYAN);
+        $this->stdout("================================\n\n");
+        $this->stdout("Path:         ", Console::FG_YELLOW);
+        $this->stdout($resolvedPath . "\n");
+        $this->stdout("SVG files:    ", Console::FG_YELLOW);
+        $this->stdout(count($svgFiles) . "\n");
+        $this->stdout("SVGO path:    ", Console::FG_YELLOW);
+        $this->stdout($svgoService->getSvgoPath() . "\n");
+        $this->stdout("Config:       ", Console::FG_YELLOW);
+        $this->stdout(($this->config ?: $svgoService->getConfigPath() ?: 'default') . "\n\n");
+
+        $failures = [];
+        $changedRuns = 0;
+
+        foreach ($svgFiles as $filePath) {
+            $relativeLabel = $this->getRelativeDisplayPath($resolvedPath, $filePath);
+            $this->stdout("Verifying {$relativeLabel}\n", Console::FG_YELLOW);
+
+            $tempFile = $this->copyToVerificationTemp($filePath);
+            $result = $svgoService->optimizeFile($tempFile, $this->config ?: null);
+
+            if (($result['success'] ?? false) === false && (($result['changed'] ?? false) === false)) {
+                if (($result['message'] ?? '') !== 'No optimization needed') {
+                    $failures[] = [
+                        'file' => $filePath,
+                        'message' => $result['message'] ?? 'Unknown SVGO error',
+                    ];
+                    $this->stdout("  [FAIL] " . ($result['message'] ?? 'Unknown SVGO error') . "\n", Console::FG_RED);
+                    @unlink($tempFile);
+                    continue;
+                }
+            }
+
+            $optimizedContent = file_get_contents($tempFile);
+            if ($optimizedContent === false || !$this->isValidSvgContent($optimizedContent)) {
+                $failures[] = [
+                    'file' => $filePath,
+                    'message' => 'Optimized output is not valid SVG XML',
+                ];
+                $this->stdout("  [FAIL] Optimized output is not valid SVG XML\n", Console::FG_RED);
+                @unlink($tempFile);
+                continue;
+            }
+
+            if (($result['changed'] ?? false) === true) {
+                $changedRuns++;
+            }
+
+            if ($this->keepOutputs) {
+                $this->persistVerificationOutput($filePath, 'svgo', $optimizedContent);
+            }
+
+            @unlink($tempFile);
+        }
+
+        $this->stdout("\nSummary\n", Console::FG_CYAN);
+        $this->stdout("-------\n");
+        $this->stdout("Files checked:   " . count($svgFiles) . "\n");
+        $this->stdout("Changed outputs: {$changedRuns}\n");
+        $this->stdout("Failures:        " . count($failures) . "\n");
+
+        if ($this->keepOutputs) {
+            $this->stdout("Saved outputs:   " . Craft::$app->path->getRuntimePath() . "/icon-manager/verify/svgo\n");
+        }
+
+        if ($failures !== []) {
+            $this->stdout("\nFailures\n", Console::FG_RED);
+            $this->stdout("--------\n");
+            foreach ($failures as $failure) {
+                $this->stdout($failure['file'] . " :: " . $failure['message'] . "\n", Console::FG_RED);
+            }
+            $this->stdout("\n");
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
+
+        $this->stdout("\nSVGO verification completed without parser or optimizer failures.\n", Console::FG_GREEN);
+        $this->stdout("This verifies structural validity, not visual equivalence. Spot-check representative outputs before release.\n\n", Console::FG_YELLOW);
+
+        return ExitCode::OK;
     }
 
     /**
@@ -621,5 +931,145 @@ class OptimizeController extends Controller
 
             return ExitCode::UNAVAILABLE;
         }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function resolveSvgFiles(string $path): array
+    {
+        if (is_file($path)) {
+            return strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'svg' ? [$path] : [];
+        }
+
+        if (!is_dir($path)) {
+            return [];
+        }
+
+        $files = [];
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && strtolower($file->getExtension()) === 'svg') {
+                $files[] = $file->getPathname();
+            }
+        }
+
+        sort($files);
+
+        return $files;
+    }
+
+    /**
+     * @return array{success: bool, changed: bool, message: string, content: string}
+     */
+    private function verifyRulesForContent(string $content, array $rules, bool $allowRisky): array
+    {
+        try {
+            $optimizer = SvgOptimizerFacade::fromString($content)
+                ->withRules(...$rules);
+
+            if ($allowRisky && method_exists($optimizer, 'allowRisky')) {
+                $optimizer = $optimizer->allowRisky();
+            }
+
+            $optimized = $optimizer->optimize();
+            $optimizedContent = $optimized->getContent();
+
+            if (!$this->isValidSvgContent($optimizedContent)) {
+                return [
+                    'success' => false,
+                    'changed' => false,
+                    'message' => 'Optimized output is not valid SVG XML',
+                    'content' => $optimizedContent,
+                ];
+            }
+
+            return [
+                'success' => true,
+                'changed' => $optimizedContent !== $content,
+                'message' => '',
+                'content' => $optimizedContent,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'changed' => false,
+                'message' => $e->getMessage(),
+                'content' => '',
+            ];
+        }
+    }
+
+    private function isValidSvgContent(string $content): bool
+    {
+        if (trim($content) === '') {
+            return false;
+        }
+
+        $previous = libxml_use_internal_errors(true);
+        libxml_clear_errors();
+
+        $document = new \DOMDocument();
+        $loaded = $document->loadXML($content, \LIBXML_NONET);
+        $errors = libxml_get_errors();
+
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+
+        if (!$loaded || $errors !== []) {
+            return false;
+        }
+
+        $root = $document->documentElement;
+
+        return $root instanceof \DOMElement && strtolower($root->localName ?: $root->nodeName) === 'svg';
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getSupportedRuleNames(): array
+    {
+        $method = new \ReflectionMethod(SvgOptimizerFacade::class, 'withRules');
+        $rules = [];
+
+        foreach ($method->getParameters() as $parameter) {
+            $rules[] = $parameter->getName();
+        }
+
+        return $rules;
+    }
+
+    private function persistVerificationOutput(string $sourceFilePath, string $ruleName, string $content): void
+    {
+        $baseDir = Craft::$app->path->getRuntimePath() . '/icon-manager/verify/' . $ruleName;
+        FileHelper::createDirectory($baseDir);
+        file_put_contents($baseDir . '/' . basename($sourceFilePath), $content);
+    }
+
+    private function copyToVerificationTemp(string $sourceFilePath): string
+    {
+        $tempDir = Craft::$app->path->getRuntimePath() . '/icon-manager/verify-temp';
+        FileHelper::createDirectory($tempDir);
+
+        $tempFile = $tempDir . '/' . uniqid('svgo-', true) . '-' . basename($sourceFilePath);
+        copy($sourceFilePath, $tempFile);
+
+        return $tempFile;
+    }
+
+    private function getRelativeDisplayPath(string $basePath, string $filePath): string
+    {
+        if (is_dir($basePath)) {
+            $prefix = rtrim($basePath, '/') . '/';
+            if (str_starts_with($filePath, $prefix)) {
+                return substr($filePath, strlen($prefix));
+            }
+        }
+
+        return basename($filePath);
     }
 }
