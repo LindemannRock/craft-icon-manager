@@ -1,5 +1,25 @@
 # Changelog
 
+## [5.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.2...v5.12.0) (2026-03-17)
+
+
+### Features
+
+* **installExperience:** add installation experience configuration ([1413712](https://github.com/LindemannRock/craft-icon-manager/commit/14137120148a88aeca14f6fff156f886351be21e))
+* **svg-optimization:** add new settings for SVG optimization controls ([d10231e](https://github.com/LindemannRock/craft-icon-manager/commit/d10231e9b2120bf1a33457c8e794513cdb2c1867))
+* **svg-optimization:** upgrade to php-svg-optimizer v8 with new rules ([6ca94f1](https://github.com/LindemannRock/craft-icon-manager/commit/6ca94f1eacb3692f13a3c30f874de10aa7d1356c))
+
+
+### Bug Fixes
+
+* **settings:** remove redundant submit button from settings forms ([8747610](https://github.com/LindemannRock/craft-icon-manager/commit/8747610c50dd6dd05eaa9eca9fad5823393ad137))
+
+
+### Miscellaneous Chores
+
+* **git:** update .gitignore and .gitattributes for asset management ([26b10f0](https://github.com/LindemannRock/craft-icon-manager/commit/26b10f0c80a65108dea7f66936d67548479960ea))
+* **templates:** remove unused info-box and plugin-credit components ([cc4953f](https://github.com/LindemannRock/craft-icon-manager/commit/cc4953f5ddc5411bc3db5bfd0447e2676fecec80))
+
 ## [5.11.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.1...v5.11.2) (2026-03-04)
 
 
