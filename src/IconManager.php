@@ -119,9 +119,9 @@ class IconManager extends Plugin
                     ],
                 ],
                 'installExperience' => [
-                    'headline' => 'Icon Manager',
-                    'body' => 'Browse icon sets, optimize SVGs, and manage reusable assets from one control panel workspace.',
-                    'ctaLabel' => 'Open Icon Manager',
+                    'headline' => Craft::t('icon-manager', 'Icon Manager'),
+                    'body' => Craft::t('icon-manager', 'Browse icon sets, optimize SVGs, and manage reusable assets from one control panel workspace.'),
+                    'ctaLabel' => Craft::t('icon-manager', 'Open Icon Manager'),
                     'ctaUrl' => 'icon-manager',
                     'redirectUri' => 'icon-manager',
                     'confettiPreset' => 'surprise',
