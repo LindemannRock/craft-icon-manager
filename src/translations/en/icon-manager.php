@@ -10,6 +10,10 @@
  */
 
 return [
+    'Icon Manager' => 'Icon Manager',
+    'Browse icon sets, optimize SVGs, and manage reusable assets from one control panel workspace.' => 'Browse icon sets, optimize SVGs, and manage reusable assets from one control panel workspace.',
+    'Open Icon Manager' => 'Open Icon Manager',
+
     'Icon Sets' => 'Icon Sets',
     'Settings' => 'Settings',
     'Logs' => 'Logs',
