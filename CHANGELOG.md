@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.12.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.0...v5.12.1) (2026-04-05)
+
+
+### Bug Fixes
+
+* read-only settings page accessibility flag ([1b3726f](https://github.com/LindemannRock/craft-icon-manager/commit/1b3726fd730b93d527519da9f62400d725c2511c))
+* translate installation experience strings to Craft CMS ([b70eb10](https://github.com/LindemannRock/craft-icon-manager/commit/b70eb10fed76940dc3ef835c810805808fb5c183))
+
 ## [5.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.2...v5.12.0) (2026-03-17)
 
 
