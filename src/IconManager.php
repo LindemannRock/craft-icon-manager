@@ -169,7 +169,7 @@ class IconManager extends Plugin
     {
         // Load settings from database using the new method
         try {
-            return Settings::loadFromDatabase();
+            return PluginHelper::applyConfigOverridesToSettings(Settings::loadFromDatabase(), 'icon-manager');
         } catch (\Exception $e) {
             // Database might not be ready during installation
             $this->logInfo('Could not load settings from database', ['error' => $e->getMessage()]);
