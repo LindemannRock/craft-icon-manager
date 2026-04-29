@@ -5,7 +5,7 @@
  * English translation strings
  *
  * @link      https://lindemannrock.com
- * @copyright Copyright (c) 2025 LindemannRock
+ * @copyright Copyright (c) 2026 LindemannRock
  * @since     1.0.0
  */
 
