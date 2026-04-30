@@ -189,7 +189,7 @@ return [
     'Clear' => 'Clear',
 
     // Settings Descriptions
-    'The public-facing name of the plugin' => 'The public-facing name of the plugin',
+    'The name of the plugin as it appears in the Control Panel menu' => 'The name of the plugin as it appears in the Control Panel menu',
     'Provide the full path to your icon files. Also supports aliases.' => 'Provide the full path to your icon files. Also supports aliases.',
     'Whether to cache icon data for better performance.' => 'Whether to cache icon data for better performance.',
     'How long to cache icon data, in seconds.' => 'How long to cache icon data, in seconds.',
