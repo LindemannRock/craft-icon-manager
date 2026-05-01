@@ -18,7 +18,7 @@ use yii\web\ForbiddenHttpException;
 /**
  * Cache Controller
  *
- * @since 1.8.0
+ * @since 1.0.0
  */
 class CacheController extends Controller
 {

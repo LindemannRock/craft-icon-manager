@@ -15,7 +15,7 @@ use lindemannrock\iconmanager\IconManager;
 /**
  * Clear Icon Cache utility
  *
- * @since 1.7.0
+ * @since 1.0.0
  */
 class ClearIconCache extends Utility
 {

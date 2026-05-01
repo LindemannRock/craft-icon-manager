@@ -20,7 +20,7 @@ use lindemannrock\logginglibrary\services\LoggingService;
  *
  * Supports SVG sprite files with <symbol> elements
  * Automatically extracts symbol IDs from sprite file
- * @since 1.0.0
+ * @since 1.10.0
  */
 class SvgSprite
 {

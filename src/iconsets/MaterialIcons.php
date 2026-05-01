@@ -24,7 +24,7 @@ use lindemannrock\logginglibrary\services\LoggingService;
  * - Material Symbols (variable font)
  * - Multiple styles (outlined, rounded, sharp, two-tone)
  * - Variable font axes (weight, grade, optical size)
- * @since 1.10.0
+ * @since 1.0.0
  */
 class MaterialIcons
 {

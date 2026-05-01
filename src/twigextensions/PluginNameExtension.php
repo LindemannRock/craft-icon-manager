@@ -23,7 +23,7 @@ use Twig\Extension\GlobalsInterface;
  * - {{ iconHelper.fullName }}                // "Icon Manager" (as configured)
  * - {{ iconHelper.lowerDisplayName }}        // "icon" (lowercase singular)
  * - {{ iconHelper.pluralLowerDisplayName }}  // "icons" (lowercase plural)
- * @since 1.0.0
+ * @since 5.3.0
  */
 class PluginNameExtension extends AbstractExtension implements GlobalsInterface
 {
@@ -53,7 +53,7 @@ class PluginNameExtension extends AbstractExtension implements GlobalsInterface
  *
  * Helper class that exposes Settings methods as properties for clean Twig syntax.
  *
- * @since 1.0.0
+ * @since 5.3.0
  */
 class PluginNameHelper
 {
