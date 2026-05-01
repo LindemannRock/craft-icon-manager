@@ -22,11 +22,9 @@
 {% import "_includes/forms" as forms %}
 
 {% block content %}
-    <form method="post" accept-charset="UTF-8">
-        {{ actionInput('icon-manager/settings/save') }}
-        {{ csrfInput() }}
-        {{ redirectInput('icon-manager/settings/general') }}
-        {{ hiddenInput('section', 'general') }}
+    {{ actionInput('icon-manager/settings/save') }}
+    {{ redirectInput('icon-manager/settings/general') }}
+    {{ hiddenInput('section', 'general') }}
 
         <h2 class="first">{{ "General Settings"|t('icon-manager') }}</h2>
 
@@ -87,8 +85,6 @@
             disabled: settings.isOverriddenByConfig('logLevel'),
             errors: settings.getErrors('logLevel')
         }) }}
-
-    </form>
 
     {% include 'lindemannrock-base/_components/plugin-credit' %}
 {% endblock %}

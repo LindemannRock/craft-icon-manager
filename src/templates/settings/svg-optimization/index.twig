@@ -43,11 +43,9 @@
 {% import "_includes/forms" as forms %}
 
 {% block content %}
-	<form method="post" accept-charset="UTF-8">
-		{{ actionInput('icon-manager/settings/save') }}
-		{{ csrfInput() }}
-		{{ redirectInput('icon-manager/settings/svg-optimization') }}
-		{{ hiddenInput('section', 'svg-optimization') }}
+	{{ actionInput('icon-manager/settings/save') }}
+	{{ redirectInput('icon-manager/settings/svg-optimization') }}
+	{{ hiddenInput('section', 'svg-optimization') }}
 
 		<div id="general">
 			{% include "icon-manager/settings/svg-optimization/_partials/general" %}
@@ -60,8 +58,6 @@
 		<div id="php-optimizer" class="hidden">
 			{% include "icon-manager/settings/svg-optimization/_partials/php-optimizer" %}
 		</div>
-
-	</form>
 
 	{% include 'lindemannrock-base/_components/plugin-credit' %}
 {% endblock %}

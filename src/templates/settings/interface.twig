@@ -24,11 +24,9 @@
 {% block content %}
     {% set pluginName = iconHelper.fullName %}
 
-    <form method="post" accept-charset="UTF-8">
-        {{ actionInput('icon-manager/settings/save') }}
-        {{ csrfInput() }}
-        {{ redirectInput('icon-manager/settings/interface') }}
-        {{ hiddenInput('section', 'interface') }}
+    {{ actionInput('icon-manager/settings/save') }}
+    {{ redirectInput('icon-manager/settings/interface') }}
+    {{ hiddenInput('section', 'interface') }}
 
         <h2 class="first">{{ "Interface Settings"|t('icon-manager') }}</h2>
 
@@ -47,8 +45,6 @@
                 "This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>."|t('icon-manager')|raw : null,
             errors: settings.getErrors('itemsPerPage')
         }) }}
-
-    </form>
 
     {% include 'lindemannrock-base/_components/plugin-credit' %}
 {% endblock %}
