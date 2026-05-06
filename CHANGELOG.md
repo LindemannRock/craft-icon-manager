@@ -1,5 +1,21 @@
 # Changelog
 
+## [5.13.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.1...v5.13.0) (2026-05-06)
+
+
+### Features
+
+* add issue templates for bug reports, feature requests, and questions ([84fbf98](https://github.com/LindemannRock/craft-icon-manager/commit/84fbf983d55764d155b1234d33eeb46e14ba6e6d))
+
+
+### Bug Fixes
+
+* apply config overrides through shared settings helper ([95b6129](https://github.com/LindemannRock/craft-icon-manager/commit/95b61290c4e06d6c9fbd0bdbdd8e73a99faa88d4))
+* clarify plugin name description in Settings model ([b84d3ba](https://github.com/LindemannRock/craft-icon-manager/commit/b84d3bac80d369fff9452ba650698c1103dc8374))
+* drop PAT requirement for release-please — use built-in GITHUB_TOKEN ([6fcee64](https://github.com/LindemannRock/craft-icon-manager/commit/6fcee64818b3afe97898dec0ba5a4b5d2979fb97))
+* **translations:** clarify plugin name description in settings ([bf48d37](https://github.com/LindemannRock/craft-icon-manager/commit/bf48d378dca5e729ee542e6cf15370d39be05116))
+* update copyright year in English translation strings ([861b1ba](https://github.com/LindemannRock/craft-icon-manager/commit/861b1ba3d9f386fc3c653961c259e9f9f13c3acd))
+
 ## [5.12.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.0...v5.12.1) (2026-04-05)
 
 
