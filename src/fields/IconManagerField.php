@@ -178,9 +178,11 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
      */
     public function normalizeValue(mixed $value, ?ElementInterface $element = null): mixed
     {
-        // Check if we're processing a POST request and merge custom labels from separate inputs
+        // Check if we're processing a POST request and merge custom labels from separate inputs.
+        // Console guard must come first: getIsPost() is web-only, so calling it on a
+        // console Request fatals before the second condition can short-circuit it.
         $request = Craft::$app->getRequest();
-        if ($request->getIsPost() && !$request->getIsConsoleRequest()) {
+        if (!$request->getIsConsoleRequest() && $request->getIsPost()) {
             $customLabelInputs = [];
 
             // Get custom label values from POST (they're in the fields array)
