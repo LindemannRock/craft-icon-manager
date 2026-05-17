@@ -56,16 +56,15 @@ class CacheController extends Controller
 
             if ($settings->cacheStorageMethod === 'redis') {
                 // Clear Redis cache
-                $cache = Craft::$app->cache;
-                if ($cache instanceof \yii\redis\Cache) {
-                    $redis = $cache->redis;
+                if ($redisCache = PluginHelper::getRedisCacheOrLog(IconManager::$plugin->id)) {
+                    $redis = $redisCache->redis;
 
                     // Get all icon cache keys from tracking set
                     $keys = $redis->executeCommand('SMEMBERS', [PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons')]) ?: [];
 
                     // Delete icon cache keys using Craft's cache component
                     foreach ($keys as $key) {
-                        $cache->delete($key);
+                        $redisCache->delete($key);
                     }
 
                     // Clear the tracking set
