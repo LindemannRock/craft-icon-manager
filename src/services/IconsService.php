@@ -166,14 +166,27 @@ class IconsService extends Component
         $transaction = $db->beginTransaction();
 
         try {
-            // Clear custom file cache for this icon set
-            $cachePath = $this->_getCachePath($iconSet);
-            $cacheFile = $cachePath . 'set_' . $iconSet->id . '.cache';
-            if (file_exists($cacheFile)) {
-                @unlink($cacheFile);
+            // Invalidate this set's cache entry (Redis or file) plus the in-memory copy
+            $settings = IconManager::getInstance()->getSettings();
+            $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $iconSet->id;
+
+            if ($settings->cacheStorageMethod === 'redis') {
+                Craft::$app->cache->delete($cacheKey);
+
+                if ($redisCache = PluginHelper::getRedisCacheOrLog(IconManager::$plugin->id)) {
+                    $redisCache->redis->executeCommand('SREM', [
+                        PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons'),
+                        $cacheKey,
+                    ]);
+                }
+            } else {
+                $cachePath = $this->_getCachePath($iconSet);
+                $cacheFile = $cachePath . 'set_' . $iconSet->id . '.cache';
+                if (file_exists($cacheFile)) {
+                    @unlink($cacheFile);
+                }
             }
 
-            // Clear memory cache
             unset($this->_iconsBySetId[$iconSet->id]);
 
             // Delete existing icons
@@ -508,13 +521,14 @@ class IconsService extends Component
 
         // Use Redis/database cache if configured
         if ($settings->cacheStorageMethod === 'redis') {
-            $cache = Craft::$app->cache;
-            $cache->set($cacheKey, $icons, $duration);
+            Craft::$app->cache->set($cacheKey, $icons, $duration);
 
             // Track key in set for selective deletion
-            if ($cache instanceof \yii\redis\Cache) {
-                $redis = $cache->redis;
-                $redis->executeCommand('SADD', [PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons'), $cacheKey]);
+            if ($redisCache = PluginHelper::getRedisCacheOrLog(IconManager::$plugin->id)) {
+                $redisCache->redis->executeCommand('SADD', [
+                    PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons'),
+                    $cacheKey,
+                ]);
             }
 
             return;
