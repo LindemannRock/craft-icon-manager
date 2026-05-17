@@ -13,7 +13,7 @@
         {{ forms.textField({
             name: 'fieldDefaults[' ~ field.handle ~ ']',
             value: feed.fieldDefaults[field.handle] ?? '',
-            placeholder: 'e.g., alhatab:health-gluten-free'
+            placeholder: 'e.g., my-icons:home'
         }) }}
         
         {% if field.allowMultiple %}
@@ -21,7 +21,7 @@
         {% endif %}
         
         <p class="instructions">
-            {{ 'Formats: "iconSet:iconName" or just "iconName" (uses alhatab set)'|t('icon-manager') }}
+            {{ 'Formats: "iconSet:iconName" or just "iconName" (uses the default icon set)'|t('icon-manager') }}
         </p>
     </td>
 </tr>

@@ -38,7 +38,7 @@ class TestController extends Controller
         
         // Update settings
         $iconSet->settings = [
-            'folder' => '/alhatab',
+            'folder' => '/my-icons',
             'includeSubfolders' => false,
         ];
         
