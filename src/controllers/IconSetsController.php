@@ -171,11 +171,20 @@ class IconSetsController extends Controller
             });
         }
 
-        // Apply sorting
-        usort($iconSets, function($a, $b) use ($sort, $dir) {
-            $aValue = null;
-            $bValue = null;
+        // Pre-compute expensive sort values once per icon set. usort can call
+        // the comparator O(N log N) times — without this, getIconCount() runs
+        // a DB lookup and getOptimizationIssueCount() runs a full disk scan
+        // every single comparison.
+        $sortValues = [];
+        if (in_array($sort, ['iconCount', 'optimizationIssueCount'], true)) {
+            foreach ($iconSets as $iconSet) {
+                $sortValues[$iconSet->id] = $sort === 'iconCount'
+                    ? $iconSet->getIconCount()
+                    : $iconSet->getOptimizationIssueCount();
+            }
+        }
 
+        usort($iconSets, function($a, $b) use ($sort, $dir, $sortValues) {
             switch ($sort) {
                 case 'name':
                     $aValue = strtolower($a->name);
@@ -186,12 +195,9 @@ class IconSetsController extends Controller
                     $bValue = strtolower($b->type);
                     break;
                 case 'iconCount':
-                    $aValue = $a->getIconCount();
-                    $bValue = $b->getIconCount();
-                    break;
                 case 'optimizationIssueCount':
-                    $aValue = $a->getOptimizationIssueCount();
-                    $bValue = $b->getOptimizationIssueCount();
+                    $aValue = $sortValues[$a->id];
+                    $bValue = $sortValues[$b->id];
                     break;
                 default:
                     $aValue = strtolower($a->name);
