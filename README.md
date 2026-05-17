@@ -1288,6 +1288,24 @@ Verify the path exists:
 ls /path/to/your/project/icons
 ```
 
+### Refresh Icons Doesn't Update the Count or Preview
+
+You changed SVG files on disk (added new files, deleted files, removed a whole subfolder), clicked **Refresh Icons** on the icon set's edit page, but the **Icons** count and the **Preview** tab still show the pre-change state.
+
+**Force-wipe the cache:**
+- Go to **Utilities → Clear Icon Cache**. This works regardless of storage method and iterates the tracked Redis keys + per-set file caches.
+
+**Check your Cache Storage Method:**
+- Icon Manager → Settings → Cache → **Cache Storage Method**
+- If set to **Redis/Database**, verify Redis is reachable: `ddev redis ping` or your platform's equivalent.
+
+**Check the plugin log for cache-component warnings:**
+- Look for lines like `icon-manager: cacheStorageMethod=redis configured, but Craft's cache component is …`
+- This means Redis is selected as the storage method but Craft's `cache` component isn't `\yii\redis\Cache` (e.g., a decorator or profiler wraps it). Redis operations silently no-op in that state. Either fix the cache component in `config/app.php`, or switch the plugin's storage method to **File**.
+
+**Quick workaround for a single set:**
+- Temporarily switch Cache Storage Method to **File**, save settings, click **Refresh Icons** on the set, then switch back to Redis if you want.
+
 ### Icons Not Rendering in Templates
 
 **Check the icon exists:**
