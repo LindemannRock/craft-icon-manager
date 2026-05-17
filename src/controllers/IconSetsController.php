@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\controllers;
 
 use Craft;
 use craft\helpers\App;
+use craft\helpers\FileHelper;
 use craft\web\Controller;
 use lindemannrock\base\helpers\CpNavHelper;
 use lindemannrock\iconmanager\IconManager;
@@ -707,13 +708,38 @@ class IconSetsController extends Controller
                 return $this->asJson(['success' => false, 'error' => 'Failed to create backup']);
             }
 
-            // Save optimized files
+            // Save optimized files — every `file['path']` is admin-supplied via
+            // POST, so each one must be confined to the icon set's folder and
+            // must be an .svg. Without this guard `file_put_contents` would
+            // honor a crafted `../../../something` and overwrite arbitrary
+            // files within the web server's permissions.
             $savedCount = 0;
+            $normalizedFolderPath = FileHelper::normalizePath($folderPath);
             foreach ($files as $file) {
-                if (isset($file['path']) && isset($file['content'])) {
-                    if (file_put_contents($file['path'], $file['content']) !== false) {
-                        $savedCount++;
-                    }
+                if (!isset($file['path']) || !isset($file['content'])) {
+                    continue;
+                }
+
+                $resolvedPath = FileHelper::normalizePath($file['path']);
+                if (!str_starts_with($resolvedPath . DIRECTORY_SEPARATOR, $normalizedFolderPath . DIRECTORY_SEPARATOR)) {
+                    $this->logWarning('Rejected optimized SVG write: path escapes icon set folder', [
+                        'iconSetId' => $iconSetId,
+                        'requestedPath' => $file['path'],
+                        'folderPath' => $normalizedFolderPath,
+                    ]);
+                    continue;
+                }
+
+                if (strtolower(pathinfo($resolvedPath, PATHINFO_EXTENSION)) !== 'svg') {
+                    $this->logWarning('Rejected optimized SVG write: not a .svg path', [
+                        'iconSetId' => $iconSetId,
+                        'requestedPath' => $file['path'],
+                    ]);
+                    continue;
+                }
+
+                if (file_put_contents($resolvedPath, $file['content']) !== false) {
+                    $savedCount++;
                 }
             }
 

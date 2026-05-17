@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\services;
 
 use Craft;
 use craft\base\Component;
+use craft\helpers\FileHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 use MathiasReker\PhpSvgOptimizer\Service\Facade\SvgOptimizerFacade;
@@ -58,9 +59,7 @@ class SvgOptimizerService extends Component
      */
     public function scanIconSet($iconSet): array
     {
-        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
         $folder = $iconSet->settings['folder'] ?? '';
-        $folderPath = Craft::getAlias($basePath . '/' . $folder);
         $includeSubfolders = $iconSet->settings['includeSubfolders'] ?? false;
 
         $result = [
@@ -81,8 +80,11 @@ class SvgOptimizerService extends Component
             'icons' => [],
         ];
 
-        if (!is_dir($folderPath)) {
-            $this->logWarning("Icon set folder not found", ['folderPath' => $folderPath]);
+        $folderPath = $this->resolveIconSetFolder($iconSet);
+        if ($folderPath === null || !is_dir($folderPath)) {
+            if ($folderPath !== null) {
+                $this->logWarning("Icon set folder not found", ['folderPath' => $folderPath]);
+            }
             return $result;
         }
 
@@ -113,6 +115,32 @@ class SvgOptimizerService extends Component
         }
 
         return $result;
+    }
+
+    /**
+     * Resolve an icon set's filesystem folder, returning null when the
+     * `folder` setting escapes the configured icons base path. Use at every
+     * read/write entry point so an admin can't traverse out of the icons
+     * directory via `../` in the icon set settings.
+     */
+    private function resolveIconSetFolder($iconSet): ?string
+    {
+        $rawBase = IconManager::getInstance()->getSettings()->iconSetsPath;
+        $basePath = FileHelper::normalizePath(Craft::getAlias($rawBase));
+        $folder = $iconSet->settings['folder'] ?? '';
+        $folderPath = FileHelper::normalizePath(Craft::getAlias($rawBase . '/' . $folder));
+
+        if (!str_starts_with($folderPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            $this->logWarning("Icon set folder escapes base path", [
+                'iconSetId' => $iconSet->id ?? null,
+                'folder' => $folder,
+                'basePath' => $basePath,
+                'resolvedPath' => $folderPath,
+            ]);
+            return null;
+        }
+
+        return $folderPath;
     }
 
     /**
@@ -334,9 +362,22 @@ class SvgOptimizerService extends Component
      */
     public function getSvgPreview($iconSet, string $relativePath): ?string
     {
-        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
-        $folder = $iconSet->settings['folder'] ?? '';
-        $fullPath = Craft::getAlias($basePath . '/' . $folder . '/' . $relativePath);
+        $folderPath = $this->resolveIconSetFolder($iconSet);
+        if ($folderPath === null) {
+            return null;
+        }
+
+        $fullPath = FileHelper::normalizePath($folderPath . DIRECTORY_SEPARATOR . $relativePath);
+
+        // Reject if the relative path joined to the (safe) folder escapes the folder
+        if (!str_starts_with($fullPath . DIRECTORY_SEPARATOR, $folderPath . DIRECTORY_SEPARATOR)) {
+            $this->logWarning("SVG preview path escapes icon set folder", [
+                'folderPath' => $folderPath,
+                'relativePath' => $relativePath,
+                'resolvedPath' => $fullPath,
+            ]);
+            return null;
+        }
 
         if (file_exists($fullPath)) {
             return file_get_contents($fullPath);
@@ -363,12 +404,10 @@ class SvgOptimizerService extends Component
             ];
         }
 
-        $basePath = $settings->iconSetsPath;
-        $folder = $iconSet->settings['folder'] ?? '';
-        $folderPath = Craft::getAlias($basePath . '/' . $folder);
         $includeSubfolders = $iconSet->settings['includeSubfolders'] ?? false;
+        $folderPath = $this->resolveIconSetFolder($iconSet);
 
-        if (!is_dir($folderPath)) {
+        if ($folderPath === null || !is_dir($folderPath)) {
             return [
                 'success' => false,
                 'error' => 'Icon set folder not found',
@@ -769,6 +808,11 @@ class SvgOptimizerService extends Component
      */
     public function restoreFromBackup(string $backupPath, string $targetPath): bool
     {
+        if (!$this->isWithinBackupRoot($backupPath)) {
+            $this->logWarning("Backup restore rejected: path escapes backup directory", ['backupPath' => $backupPath]);
+            return false;
+        }
+
         if (!is_dir($backupPath)) {
             return false;
         }
@@ -839,11 +883,29 @@ class SvgOptimizerService extends Component
      */
     public function deleteBackup(string $backupPath): bool
     {
+        if (!$this->isWithinBackupRoot($backupPath)) {
+            $this->logWarning("Backup delete rejected: path escapes backup directory", ['backupPath' => $backupPath]);
+            return false;
+        }
+
         if (!is_dir($backupPath)) {
             return false;
         }
 
         return $this->deleteDirectory($backupPath);
+    }
+
+    /**
+     * Containment guard for backup operations — assert the supplied path lives
+     * inside `runtime/icon-manager/backups`. Stops admin-supplied POST bodies
+     * from steering restore/delete at arbitrary directories.
+     */
+    private function isWithinBackupRoot(string $path): bool
+    {
+        $backupRoot = FileHelper::normalizePath(Craft::$app->path->getRuntimePath() . '/icon-manager/backups');
+        $normalized = FileHelper::normalizePath($path);
+
+        return str_starts_with($normalized . DIRECTORY_SEPARATOR, $backupRoot . DIRECTORY_SEPARATOR);
     }
 
     /**

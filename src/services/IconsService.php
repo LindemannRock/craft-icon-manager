@@ -282,13 +282,25 @@ class IconsService extends Component
         $folder = $settings['folder'] ?? '';
         $includeSubfolders = $settings['includeSubfolders'] ?? false;
 
-        $basePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath();
-        
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
+
         // If folder is empty, use the base path itself
         if (empty($folder)) {
             $folderPath = $basePath;
         } else {
             $folderPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $folder);
+        }
+
+        // Reject `folder` settings whose resolved path escapes the icons base
+        // (admin path-traversal guard).
+        if (!str_starts_with($folderPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            $this->logWarning("Icon set folder escapes base path", [
+                'iconSetId' => $iconSet->id,
+                'folder' => $folder,
+                'basePath' => $basePath,
+                'resolvedPath' => $folderPath,
+            ]);
+            return $icons;
         }
 
         if (!is_dir($folderPath)) {
