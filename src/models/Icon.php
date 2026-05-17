@@ -391,27 +391,31 @@ class Icon extends Model implements \JsonSerializable
 
     /**
      * Sanitize SVG content to prevent XSS attacks
+     *
+     * Delegates to Craft's Html::sanitizeSvg() which wraps enshrined/svg-sanitize
+     * with Craft's allowed-attributes list. Covers <script>, <foreignObject>,
+     * and xlink:href javascript: URIs that the previous regex-based
+     * implementation missed.
+     *
+     * The library doesn't process CSS inside <style> blocks, so url(javascript:...)
+     * survives library sanitization. The post-process below strips javascript:
+     * from <style> contents as defense-in-depth.
      */
     private function sanitizeSvg(?string $svg): ?string
     {
-        if (!$svg) {
+        if ($svg === null || $svg === '') {
             return null;
         }
 
-        // Remove any script tags
-        $svg = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi', '', $svg);
+        $sanitized = Html::sanitizeSvg($svg);
 
-        // Remove event handlers
-        $svg = preg_replace('/\son\w+\s*=\s*["\'][^"\']*["\']/i', '', $svg);
-        $svg = preg_replace('/\son\w+\s*=\s*[^\s>]*/i', '', $svg);
+        $stripped = preg_replace_callback(
+            '/<style\b[^>]*>(.*?)<\/style>/is',
+            static fn(array $m): string => str_ireplace('javascript:', '', $m[0]),
+            $sanitized,
+        );
 
-        // Remove javascript: protocol
-        $svg = preg_replace('/href\s*=\s*["\']?\s*javascript:[^"\']*["\']?/i', 'href="#"', $svg);
-
-        // Remove data: URLs with script content
-        $svg = preg_replace('/src\s*=\s*["\']?\s*data:[^"\']*script[^"\']*["\']?/i', 'src=""', $svg);
-
-        return $svg;
+        return $stripped ?? $sanitized;
     }
 
     /**

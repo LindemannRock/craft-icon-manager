@@ -148,6 +148,89 @@ final class IconsServiceCacheTest extends TestCase
     }
 
     /**
+     * Same contract as the file-cache test above, but for the Redis storage
+     * method. Pre-fix, refreshIconsForSet() only invalidated the file path —
+     * Redis kept the stale icon list and every "Refresh Icons" click was a
+     * no-op for users on Redis (the reported "I deleted icons but the count
+     * is still 123" symptom). This test pins both sides of the fix: the
+     * cached value is deleted, AND the key is removed from the SADD tracking
+     * set used by the Clear-Icon-Cache utility.
+     */
+    public function testRefreshIconsForSetClearsRedisCacheAndRescans(): void
+    {
+        if (!(Craft::$app->cache instanceof \yii\redis\Cache)) {
+            $this->markTestSkipped('Redis cache not configured for this environment.');
+        }
+
+        $settings = IconManager::getInstance()->getSettings();
+        $settings->cacheStorageMethod = 'redis';
+
+        $cacheKey = null;
+        $trackingSet = PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons');
+
+        try {
+            $root = $this->seedTempIconRoot();
+            file_put_contents($root . '/post-refresh.svg', <<<'SVG'
+                <?xml version="1.0" encoding="UTF-8"?>
+                <svg xmlns="http://www.w3.org/2000/svg">
+                    <symbol id="redis-fresh-a" viewBox="0 0 24 24"><path d="M0"/></symbol>
+                    <symbol id="redis-fresh-b" viewBox="0 0 24 24"><path d="M0"/></symbol>
+                </svg>
+                SVG);
+
+            [$setId, $iconSet] = $this->seedIconSet('svg-sprite', 5, [
+                'spriteFile' => 'post-refresh.svg',
+            ]);
+            $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $setId;
+
+            // Warm Redis: SET via _cacheIcons + SADD into the tracking set.
+            IconManager::getInstance()->icons->getIconsBySetId($setId);
+            $this->assertNotFalse(
+                Craft::$app->cache->get($cacheKey),
+                'getIconsBySetId() should have populated the Redis cache entry.'
+            );
+
+            $redis = Craft::$app->cache->redis;
+            $trackedKeys = $redis->executeCommand('SMEMBERS', [$trackingSet]) ?: [];
+            $this->assertContains(
+                $cacheKey,
+                $trackedKeys,
+                '_cacheIcons() should have added the cache key to the tracking set.'
+            );
+
+            IconManager::getInstance()->icons->refreshIconsForSet($iconSet);
+
+            $this->assertFalse(
+                Craft::$app->cache->get($cacheKey),
+                'refreshIconsForSet() should drop the Redis cache entry.'
+            );
+
+            $trackedKeysAfter = $redis->executeCommand('SMEMBERS', [$trackingSet]) ?: [];
+            $this->assertNotContains(
+                $cacheKey,
+                $trackedKeysAfter,
+                'refreshIconsForSet() should SREM the cache key from the tracking set.'
+            );
+
+            $rowCount = $this->countRows('{{%iconmanager_icons}}', ['iconSetId' => $setId]);
+            $this->assertSame(2, $rowCount);
+
+            $fresh = IconManager::getInstance()->icons->getIconsBySetId($setId);
+            $this->assertCount(2, $fresh);
+            $names = array_map(fn($icon) => $icon->name, $fresh);
+            sort($names);
+            $this->assertSame(['redis-fresh-a', 'redis-fresh-b'], $names);
+        } finally {
+            // Redis is non-transactional and the test re-warms the cache after
+            // refresh — clean up explicitly so we don't leak keys to later runs.
+            if ($cacheKey !== null && Craft::$app->cache instanceof \yii\redis\Cache) {
+                Craft::$app->cache->delete($cacheKey);
+                Craft::$app->cache->redis->executeCommand('SREM', [$trackingSet, $cacheKey]);
+            }
+        }
+    }
+
+    /**
      * Insert an iconset row + N stale icon rows by hand (bypassing
      * saveIconSet so we don't trigger an immediate scan-and-replace). Returns
      * the new id and a populated IconSet model.

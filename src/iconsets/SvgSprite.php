@@ -119,8 +119,9 @@ class SvgSprite
             $dom = new \DOMDocument();
 
             // Suppress warnings for malformed HTML/SVG
+            // LIBXML_NONET disables network fetches during parsing — blocks XXE/SSRF via DOCTYPE references
             $previousValue = libxml_use_internal_errors(true);
-            $dom->loadXML($svgContent);
+            $dom->loadXML($svgContent, LIBXML_NONET);
             libxml_clear_errors();
             libxml_use_internal_errors($previousValue);
 
