@@ -284,14 +284,17 @@ class Icon extends Model implements \JsonSerializable
 
     /**
      * Get label from translation system
+     *
+     * Looks up the icon name in the `icon-manager` translation category, so
+     * sites can localize icon names by adding key/value pairs to their
+     * `config/translations/{lang}/icon-manager.php` file (Craft's standard
+     * translation override path). Returns null when no translation exists.
      */
     private function getTranslatedLabel(): ?string
     {
         try {
-            // Try to translate the icon name using your translation system
-            $translated = Craft::t('alhatab', $this->name);
+            $translated = Craft::t('icon-manager', $this->name);
 
-            // If translation exists (not the same as the original key), use it
             if ($translated !== $this->name) {
                 return $translated;
             }
