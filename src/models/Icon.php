@@ -379,7 +379,7 @@ class Icon extends Model implements \JsonSerializable
         }
 
         // Sanitize SVG for security
-        $sanitized = $this->sanitizeSvg($svg);
+        $sanitized = self::sanitizeSvg($svg);
 
         if (empty($sanitized)) {
             $this->logWarning("SVG content removed during sanitization: {$this->name}", [
@@ -404,7 +404,7 @@ class Icon extends Model implements \JsonSerializable
      * survives library sanitization. The post-process below strips javascript:
      * from <style> contents as defense-in-depth.
      */
-    private function sanitizeSvg(?string $svg): ?string
+    public static function sanitizeSvg(?string $svg): ?string
     {
         if ($svg === null || $svg === '') {
             return null;

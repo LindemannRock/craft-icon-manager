@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace lindemannrock\iconmanager\tests\Integration;
 
+use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
+use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\tests\TestCase;
 
 /**
@@ -62,5 +64,44 @@ final class IconSanitizationTest extends TestCase
 
         // Sanity check: legitimate SVG primitives survive sanitization.
         $this->assertStringContainsStringIgnoringCase('<rect', $sanitized, 'legitimate <rect> element should survive');
+    }
+
+    /**
+     * Pins SvgOptimizerService::getSvgPreview() through the same sanitizer.
+     * Pre-fix, the optimization tab rendered raw file_get_contents() via
+     * `{{ svgPreview|raw }}` — a malicious SVG on disk would execute its
+     * payload in the CP for any admin viewing the Optimization preview.
+     */
+    public function testGetSvgPreviewStripsScriptForeignObjectAndJavascriptUris(): void
+    {
+        $root = $this->seedTempIconRoot();
+
+        $maliciousSvg = <<<'SVG'
+            <?xml version="1.0" encoding="UTF-8"?>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
+                <script>alert('preview-script')</script>
+                <foreignObject width="100" height="100">
+                    <body xmlns="http://www.w3.org/1999/xhtml"><script>alert('preview-foreignObject')</script></body>
+                </foreignObject>
+                <a xlink:href="javascript:alert('preview-xlink')"><circle r="5"/></a>
+                <style>.x { background: url(javascript:alert('preview-css')); }</style>
+                <rect width="10" height="10" onclick="alert('preview-onclick')"/>
+            </svg>
+            SVG;
+
+        file_put_contents($root . '/evil.svg', $maliciousSvg);
+
+        $iconSet = new IconSet();
+        $iconSet->type = 'svg-folder';
+        $iconSet->settings = ['folder' => ''];
+
+        $sanitized = IconManager::getInstance()->svgOptimizer->getSvgPreview($iconSet, 'evil.svg');
+
+        $this->assertNotNull($sanitized, 'getSvgPreview should return the sanitized SVG.');
+        $this->assertStringNotContainsStringIgnoringCase('<script', $sanitized);
+        $this->assertStringNotContainsStringIgnoringCase('<foreignObject', $sanitized);
+        $this->assertStringNotContainsStringIgnoringCase('javascript:', $sanitized);
+        $this->assertStringNotContainsStringIgnoringCase('onclick', $sanitized);
+        $this->assertStringContainsStringIgnoringCase('<rect', $sanitized);
     }
 }

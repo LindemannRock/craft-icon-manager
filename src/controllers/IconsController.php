@@ -9,6 +9,7 @@
 namespace lindemannrock\iconmanager\controllers;
 
 use Craft;
+use craft\helpers\FileHelper;
 use craft\web\Controller;
 
 use lindemannrock\iconmanager\IconManager;
@@ -27,7 +28,7 @@ class IconsController extends Controller
     /**
      * @var array<int|string>|bool|int Allow anonymous access
      */
-    protected array|bool|int $allowAnonymous = ['render', 'serve-sprite'];
+    protected array|bool|int $allowAnonymous = ['render', 'serve-sprite', 'serve-font'];
 
     /**
      * Render an icon
@@ -315,7 +316,16 @@ class IconsController extends Controller
             throw new \yii\web\NotFoundHttpException('Font file not found');
         }
 
-        $fontPath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $fontFile;
+        // Containment guard: the iconSet `fontFile` setting is admin-controlled but
+        // this action is anonymous-accessible, so a misconfigured (or malicious) admin
+        // setting `fontFile = '../../etc/passwd'` would let any visitor exfiltrate
+        // arbitrary readable files. Reject any resolved path that escapes the base.
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
+        $fontPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $fontFile);
+
+        if (!str_starts_with($fontPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            throw new \yii\web\NotFoundHttpException('Font file not found');
+        }
 
         if (!file_exists($fontPath)) {
             throw new \yii\web\NotFoundHttpException('Font file does not exist');

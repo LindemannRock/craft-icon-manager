@@ -12,6 +12,7 @@ use Craft;
 use craft\base\Component;
 use craft\helpers\FileHelper;
 use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 use MathiasReker\PhpSvgOptimizer\Service\Facade\SvgOptimizerFacade;
 
@@ -380,7 +381,8 @@ class SvgOptimizerService extends Component
         }
 
         if (file_exists($fullPath)) {
-            return file_get_contents($fullPath);
+            $svg = file_get_contents($fullPath);
+            return $svg === false ? null : Icon::sanitizeSvg($svg);
         }
 
         return null;

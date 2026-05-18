@@ -209,8 +209,10 @@ class WebFont
         $fontName = pathinfo($settings['fontFile'], PATHINFO_FILENAME);
         $cssPrefix = $settings['cssPrefix'] ?? 'icon';
 
-        // Get font URL - use controller action to serve the font file
-        $fontUrl = \craft\helpers\UrlHelper::cpUrl('icon-manager/icons/serve-font', [
+        // Get font URL - use actionUrl so the URL works on both CP and site templates.
+        // The matching action is in $allowAnonymous so unauthenticated frontend visitors
+        // can fetch the font; cpUrl was returning 403 on public pages.
+        $fontUrl = \craft\helpers\UrlHelper::actionUrl('icon-manager/icons/serve-font', [
             'iconSet' => $iconSet->handle,
             'file' => basename($settings['fontFile']),
         ]);
