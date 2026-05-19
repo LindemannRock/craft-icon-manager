@@ -92,6 +92,20 @@ class IconSet extends Model
     }
 
     /**
+     * @inheritdoc
+     */
+    public function attributeLabels(): array
+    {
+        return [
+            'name' => Craft::t('icon-manager', 'Name'),
+            'handle' => Craft::t('icon-manager', 'Handle'),
+            'type' => Craft::t('icon-manager', 'Type'),
+            'enabled' => Craft::t('icon-manager', 'Enabled'),
+            'sortOrder' => Craft::t('icon-manager', 'Sort Order'),
+        ];
+    }
+
+    /**
      * Validate that the handle is unique
      *
      * @param string $attribute

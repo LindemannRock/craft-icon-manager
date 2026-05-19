@@ -139,6 +139,21 @@ class Icon extends Model implements \JsonSerializable
     }
 
     /**
+     * @inheritdoc
+     */
+    public function attributeLabels(): array
+    {
+        return [
+            'iconSetId' => Craft::t('icon-manager', 'Icon Set'),
+            'type' => Craft::t('icon-manager', 'Type'),
+            'name' => Craft::t('icon-manager', 'Name'),
+            'value' => Craft::t('icon-manager', 'Value'),
+            'label' => Craft::t('icon-manager', 'Label'),
+            'path' => Craft::t('icon-manager', 'Path'),
+        ];
+    }
+
+    /**
      * Get the display label with smart resolution
      * Priority: 1. Site-specific custom label 2. General custom label 3. JSON file 4. Database label 5. Translation 6. Filename
      *

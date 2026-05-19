@@ -335,6 +335,21 @@ class Settings extends Model
     }
 
     /**
+     * @inheritdoc
+     */
+    public function attributeLabels(): array
+    {
+        return [
+            'iconSetsPath' => Craft::t('icon-manager', 'Icon Sets Path'),
+            'pluginName' => Craft::t('icon-manager', 'Plugin Name'),
+            'logLevel' => Craft::t('icon-manager', 'Log Level'),
+            'cacheDuration' => Craft::t('icon-manager', 'Cache Duration'),
+            'cacheStorageMethod' => Craft::t('icon-manager', 'Cache Storage Method'),
+            'itemsPerPage' => Craft::t('icon-manager', 'Items Per Page'),
+        ];
+    }
+
+    /**
      * Validate log level - debug requires devMode
      *
      * @param string $attribute
