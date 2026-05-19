@@ -5,7 +5,7 @@
  * Comprehensive icon management field supporting SVG libraries and icon fonts
  *
  * @link      https://lindemannrock.com
- * @copyright Copyright (c) 2025 LindemannRock
+ * @copyright Copyright (c) 2025-2026 LindemannRock
  */
 
 namespace lindemannrock\iconmanager;
