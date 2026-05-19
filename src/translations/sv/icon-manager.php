@@ -122,9 +122,9 @@ return [
 
     // Settings: General
     'General Settings' => 'Allmänna inställningar',
-    'Plugin name' => 'Plugin-namn',
+    'Plugin Name' => 'Plugin-namn',
     'The name of the plugin as it appears in the Control Panel menu' => 'Namnet på plugin-programmet som det visas i kontrollpanelmenyn',
-    'Icons Path' => 'Ikonsökväg',
+    'Icon Sets Path' => 'Ikonsökväg',
     'Provide the full path to your icon files. Also supports aliases.' => 'Ange den fullständiga sökvägen till era ikonfiler. Stödjer även alias.',
 
     // Settings: Logging

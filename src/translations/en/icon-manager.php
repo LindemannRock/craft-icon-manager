@@ -59,13 +59,17 @@ return [
     'Filters' => 'Filters',
     'Handle' => 'Handle',
     'Icons' => 'Icons',
+    'Label' => 'Label',
     'Live' => 'Live',
     'Name' => 'Name',
+    'Path' => 'Path',
     'Refresh Icons' => 'Refresh Icons',
     'Restore' => 'Restore',
     'Size' => 'Size',
+    'Sort Order' => 'Sort Order',
     'Status' => 'Status',
     'Type' => 'Type',
+    'Value' => 'Value',
     'icon set' => 'icon set',
     'icon sets' => 'icon sets',
     'day' => 'day',
@@ -120,9 +124,9 @@ return [
 
     // Settings: General
     'General Settings' => 'General Settings',
-    'Plugin name' => 'Plugin name',
+    'Plugin Name' => 'Plugin Name',
     'The name of the plugin as it appears in the Control Panel menu' => 'The name of the plugin as it appears in the Control Panel menu',
-    'Icons Path' => 'Icons Path',
+    'Icon Sets Path' => 'Icon Sets Path',
     'Provide the full path to your icon files. Also supports aliases.' => 'Provide the full path to your icon files. Also supports aliases.',
 
     // Settings: Logging

@@ -122,9 +122,9 @@ return [
 
     // Settings: General
     'General Settings' => 'Generelle innstillinger',
-    'Plugin name' => 'Plugin-navn',
+    'Plugin Name' => 'Plugin-navn',
     'The name of the plugin as it appears in the Control Panel menu' => 'Navnet på Plugin-programmet slik det vises i kontrollpanelmenyen',
-    'Icons Path' => 'Ikonbane',
+    'Icon Sets Path' => 'Ikonbane',
     'Provide the full path to your icon files. Also supports aliases.' => 'Angi full bane til ikonfilene Deres. Støtter også alias.',
 
     // Settings: Logging

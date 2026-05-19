@@ -122,9 +122,9 @@ return [
 
     // Settings: General
     'General Settings' => 'Definições gerais',
-    'Plugin name' => 'Nome do plugin',
+    'Plugin Name' => 'Nome do plugin',
     'The name of the plugin as it appears in the Control Panel menu' => 'O nome do plugin tal como aparece no menu do painel de controlo',
-    'Icons Path' => 'Caminho dos ícones',
+    'Icon Sets Path' => 'Caminho dos ícones',
     'Provide the full path to your icon files. Also supports aliases.' => 'Forneça o caminho completo para os seus ficheiros de ícones. Também suporta aliases.',
 
     // Settings: Logging

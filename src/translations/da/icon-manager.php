@@ -122,9 +122,9 @@ return [
 
     // Settings: General
     'General Settings' => 'Generelle indstillinger',
-    'Plugin name' => 'Plugin-navn',
+    'Plugin Name' => 'Plugin-navn',
     'The name of the plugin as it appears in the Control Panel menu' => 'Navnet på plugin-programmet, som det vises i kontrolpanelmenuen',
-    'Icons Path' => 'Ikonsti',
+    'Icon Sets Path' => 'Ikonsti',
     'Provide the full path to your icon files. Also supports aliases.' => 'Angiv den fulde sti til Deres ikonfiler. Understøtter også aliasser.',
 
     // Settings: Logging

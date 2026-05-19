@@ -122,9 +122,9 @@ return [
 
     // Settings: General
     'General Settings' => '一般設定',
-    'Plugin name' => 'プラグイン名',
+    'Plugin Name' => 'プラグイン名',
     'The name of the plugin as it appears in the Control Panel menu' => 'コントロールパネルのメニューに表示されるプラグインの名前',
-    'Icons Path' => 'アイコンパス',
+    'Icon Sets Path' => 'アイコンパス',
     'Provide the full path to your icon files. Also supports aliases.' => 'アイコンファイルへのフルパスを指定してください。エイリアスもサポートされています。',
 
     // Settings: Logging

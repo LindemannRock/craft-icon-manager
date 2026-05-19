@@ -122,9 +122,9 @@ return [
 
     // Settings: General
     'General Settings' => 'Algemene instellingen',
-    'Plugin name' => 'Pluginnaam',
+    'Plugin Name' => 'Pluginnaam',
     'The name of the plugin as it appears in the Control Panel menu' => 'De naam van de plugin zoals deze verschijnt in het bedieningspaneelmenu',
-    'Icons Path' => 'Iconenpad',
+    'Icon Sets Path' => 'Iconenpad',
     'Provide the full path to your icon files. Also supports aliases.' => 'Geef het volledige pad naar uw iconbestanden op. Aliassen worden ook ondersteund.',
 
     // Settings: Logging
