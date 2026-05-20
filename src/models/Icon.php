@@ -418,6 +418,9 @@ class Icon extends Model implements \JsonSerializable
      * The library doesn't process CSS inside <style> blocks, so url(javascript:...)
      * survives library sanitization. The post-process below strips javascript:
      * from <style> contents as defense-in-depth.
+     *
+     * @since 5.14.0 Promoted from private instance method to public static for
+     *   reuse from SvgOptimizerService::getSvgPreview() and IconManagerVariable::injectSprite().
      */
     public static function sanitizeSvg(?string $svg): ?string
     {
