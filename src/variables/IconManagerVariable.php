@@ -8,6 +8,7 @@
 
 namespace lindemannrock\iconmanager\variables;
 
+use craft\helpers\FileHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
@@ -162,7 +163,15 @@ class IconManagerVariable
             return '';
         }
 
-        $spritePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $spriteFile;
+        // Containment guard: this method's output is rendered into front-end
+        // templates, so an admin-misconfigured `spriteFile = '../...'` would
+        // leak file contents to public visitors.
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
+        $spritePath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $spriteFile);
+
+        if (!str_starts_with($spritePath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            return '';
+        }
 
         if (!file_exists($spritePath)) {
             return '';
@@ -173,10 +182,14 @@ class IconManagerVariable
             return '';
         }
 
-        // Strip any <style> tags to prevent CSS pollution
-        $spriteContent = preg_replace('/<style[^>]*>[\s\S]*?<\/style>/i', '', $spriteContent);
+        // Sanitize sprite content: <symbol> and <defs> survive sanitization,
+        // but <script>, <foreignObject>, event handlers, and javascript: URIs
+        // are stripped before the content reaches public visitors.
+        $sanitized = Icon::sanitizeSvg($spriteContent);
+        if ($sanitized === null) {
+            return '';
+        }
 
-        // Return the sprite wrapped in a hidden div
-        return '<div style="display:none;">' . $spriteContent . '</div>';
+        return '<div style="display:none;">' . $sanitized . '</div>';
     }
 }
