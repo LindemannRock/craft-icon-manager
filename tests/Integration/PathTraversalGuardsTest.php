@@ -17,6 +17,7 @@ use craft\helpers\StringHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\tests\TestCase;
+use lindemannrock\iconmanager\variables\IconManagerVariable;
 
 /**
  * Pins the path-traversal guards added to the optimizer and the icon scanner.
@@ -93,6 +94,69 @@ final class PathTraversalGuardsTest extends TestCase
 
         FileHelper::removeDirectory($maliciousSource);
         FileHelper::removeDirectory($target);
+    }
+
+    public function testInjectSpriteRejectsSpriteFileTraversal(): void
+    {
+        $this->seedTempIconRoot();
+
+        [, $iconSet] = $this->seedIconSet('svg-sprite', 0, [
+            'spriteFile' => '../escape-target.svg',
+        ]);
+
+        $variable = new IconManagerVariable();
+        $output = $variable->injectSprite($iconSet->handle);
+
+        $this->assertSame(
+            '',
+            $output,
+            'injectSprite() must return empty string when spriteFile escapes the icons base.',
+        );
+    }
+
+    /**
+     * Pre-fix, injectSprite() rendered raw sprite content (minus <style>) into
+     * front-end templates. <script>, <foreignObject>, and event handlers all
+     * survived — public-facing XSS via an admin-uploaded sprite. This test
+     * pins the Icon::sanitizeSvg() pipe added in pass #3, including the
+     * survival of <symbol> + <defs> which sprites depend on.
+     */
+    public function testInjectSpriteSanitizesMaliciousContent(): void
+    {
+        $root = $this->seedTempIconRoot();
+
+        $maliciousSprite = <<<'SVG'
+            <?xml version="1.0" encoding="UTF-8"?>
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <script>alert('sprite-script')</script>
+                <foreignObject>
+                    <body xmlns="http://www.w3.org/1999/xhtml"><script>alert('sprite-foreignObject')</script></body>
+                </foreignObject>
+                <defs>
+                    <symbol id="legit-icon" viewBox="0 0 24 24" onclick="alert('sprite-onclick')">
+                        <path d="M12 0L0 12h24z"/>
+                    </symbol>
+                </defs>
+            </svg>
+            SVG;
+        file_put_contents($root . '/sprite.svg', $maliciousSprite);
+
+        [, $iconSet] = $this->seedIconSet('svg-sprite', 0, [
+            'spriteFile' => 'sprite.svg',
+        ]);
+
+        $variable = new IconManagerVariable();
+        $output = $variable->injectSprite($iconSet->handle);
+
+        $this->assertNotSame('', $output, 'Output should not be empty for a valid sprite file.');
+        $this->assertStringNotContainsStringIgnoringCase('<script', $output);
+        $this->assertStringNotContainsStringIgnoringCase('<foreignObject', $output);
+        $this->assertStringNotContainsStringIgnoringCase('onclick', $output);
+
+        // Sprite-essential elements must survive.
+        $this->assertStringContainsStringIgnoringCase('<symbol', $output);
+        $this->assertStringContainsStringIgnoringCase('id="legit-icon"', $output);
+        $this->assertStringContainsStringIgnoringCase('<path', $output);
     }
 
     public function testDeleteBackupRejectsPathOutsideBackupRoot(): void
