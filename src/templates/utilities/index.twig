@@ -23,7 +23,7 @@
 
 {% block overview %}
     {# Icon Sets Card #}
-    {% include 'lindemannrock-base/_components/cards/unified-card' with {
+    {% include 'lindemannrock-base/_components/unified-card' with {
         title: 'Icon Sets'|t('icon-manager'),
         color: lrPaletteColor('emerald').color,
         value: iconSetCount,
@@ -39,14 +39,14 @@
     {# Cache Status Card #}
     {% if cacheEnabled %}
         {% if storageMethod == 'redis' %}
-            {% include 'lindemannrock-base/_components/cards/unified-card' with {
+            {% include 'lindemannrock-base/_components/unified-card' with {
                 title: 'Cache Status'|t('icon-manager') ~ ' (Redis)',
                 color: lrPaletteColor('emerald').color,
                 value: 'Active'|t('icon-manager'),
             } only %}
         {% else %}
             {% set totalCached = cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'] %}
-            {% include 'lindemannrock-base/_components/cards/unified-card' with {
+            {% include 'lindemannrock-base/_components/unified-card' with {
                 title: 'Cache Status'|t('icon-manager') ~ ' (File)',
                 color: lrPaletteColor('emerald').color,
                 value: totalCached,
@@ -59,7 +59,7 @@
             } only %}
         {% endif %}
     {% else %}
-        {% include 'lindemannrock-base/_components/cards/unified-card' with {
+        {% include 'lindemannrock-base/_components/unified-card' with {
             title: 'Cache Status'|t('icon-manager'),
             color: lrPaletteColor('gray').color,
             value: 'Disabled'|t('icon-manager'),
@@ -69,7 +69,7 @@
     {% endif %}
 
     {# Cache Settings Card #}
-    {% include 'lindemannrock-base/_components/cards/unified-card' with {
+    {% include 'lindemannrock-base/_components/unified-card' with {
         title: 'Cache Settings'|t('icon-manager'),
         color: cacheEnabled ? lrPaletteColor('sky').color : lrPaletteColor('gray').color,
         value: cacheEnabled ? cacheDuration : '—',
