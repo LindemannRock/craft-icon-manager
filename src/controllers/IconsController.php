@@ -376,7 +376,15 @@ class IconsController extends Controller
             throw new \yii\web\NotFoundHttpException('Sprite file not found');
         }
 
-        $spritePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $spriteFile;
+        // Containment guard — `serve-sprite` is anonymous-accessible (in $allowAnonymous),
+        // so an admin (mis)configuring `spriteFile = '../../etc/passwd'` would expose
+        // arbitrary readable files. Mirrors the same guard in actionServeFont().
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
+        $spritePath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $spriteFile);
+
+        if (!str_starts_with($spritePath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            throw new \yii\web\NotFoundHttpException('Sprite file not found');
+        }
 
         if (!file_exists($spritePath)) {
             throw new \yii\web\NotFoundHttpException('Sprite file does not exist');
