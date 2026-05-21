@@ -15,6 +15,7 @@ use craft\helpers\Db;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
 use lindemannrock\iconmanager\IconManager;
+use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\tests\TestCase;
 use lindemannrock\iconmanager\variables\IconManagerVariable;
@@ -159,6 +160,94 @@ final class PathTraversalGuardsTest extends TestCase
         $this->assertStringContainsStringIgnoringCase('<path', $output);
     }
 
+    /**
+     * Third copy of the sprite path-traversal pattern: `Icon::_registerSprite()`
+     * is called from `Icon::render()` whenever a Twig template renders a
+     * sprite-type icon. Pass #3 fixed `actionServeSprite()` and `injectSprite()`
+     * but missed this internal render path. Tested via reflection because the
+     * method is private.
+     */
+    public function testRegisterSpriteRejectsSpriteFileTraversal(): void
+    {
+        $this->seedTempIconRoot();
+
+        [, $iconSet] = $this->seedIconSet('svg-sprite', 0, [
+            'spriteFile' => '../escape-from-icon-render.svg',
+        ]);
+
+        $icon = new Icon();
+        $icon->type = Icon::TYPE_SPRITE;
+        $icon->iconSetHandle = $iconSet->handle;
+        $icon->name = 'evil-symbol';
+        $icon->value = 'evil-symbol';
+
+        $registered = $this->captureRegisteredHtml(function () use ($icon) {
+            $method = new \ReflectionMethod($icon, '_registerSprite');
+            $method->setAccessible(true);
+            $method->invoke($icon);
+        });
+
+        $this->assertSame(
+            '',
+            $registered,
+            '_registerSprite() must abort silently when spriteFile escapes the icons base.',
+        );
+    }
+
+    /**
+     * Pre-fix, `_registerSprite()` only stripped `<style>` tags before
+     * `registerHtml()`. Event handlers, `<script>`, and `<foreignObject>`
+     * survived into the rendered page. This test pins the `Icon::sanitizeSvg()`
+     * pipe added in pass #4 (batch 5) — including the survival of `<symbol>`
+     * + `<defs>` which sprites depend on.
+     */
+    public function testRegisterSpriteSanitizesMaliciousContent(): void
+    {
+        $root = $this->seedTempIconRoot();
+
+        $maliciousSprite = <<<'SVG'
+            <?xml version="1.0" encoding="UTF-8"?>
+            <svg xmlns="http://www.w3.org/2000/svg">
+                <script>alert('render-sprite-script')</script>
+                <foreignObject>
+                    <body xmlns="http://www.w3.org/1999/xhtml"><script>alert('render-sprite-foreignObject')</script></body>
+                </foreignObject>
+                <defs>
+                    <symbol id="render-sprite-icon" viewBox="0 0 24 24" onclick="alert('render-sprite-onclick')">
+                        <path d="M12 0L0 12h24z"/>
+                    </symbol>
+                </defs>
+            </svg>
+            SVG;
+        file_put_contents($root . '/render-sprite.svg', $maliciousSprite);
+
+        [, $iconSet] = $this->seedIconSet('svg-sprite', 0, [
+            'spriteFile' => 'render-sprite.svg',
+        ]);
+
+        $icon = new Icon();
+        $icon->type = Icon::TYPE_SPRITE;
+        $icon->iconSetHandle = $iconSet->handle;
+        $icon->name = 'render-sprite-icon';
+        $icon->value = 'render-sprite-icon';
+
+        $registered = $this->captureRegisteredHtml(function () use ($icon) {
+            $method = new \ReflectionMethod($icon, '_registerSprite');
+            $method->setAccessible(true);
+            $method->invoke($icon);
+        });
+
+        $this->assertNotSame('', $registered, 'Sprite registration should have produced output for a valid file.');
+        $this->assertStringNotContainsStringIgnoringCase('<script', $registered);
+        $this->assertStringNotContainsStringIgnoringCase('<foreignObject', $registered);
+        $this->assertStringNotContainsStringIgnoringCase('onclick', $registered);
+
+        // Sprite-essential elements must survive.
+        $this->assertStringContainsStringIgnoringCase('<symbol', $registered);
+        $this->assertStringContainsStringIgnoringCase('id="render-sprite-icon"', $registered);
+        $this->assertStringContainsStringIgnoringCase('<path', $registered);
+    }
+
     public function testDeleteBackupRejectsPathOutsideBackupRoot(): void
     {
         $maliciousTarget = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::MARKER_PREFIX . 'delete_target_' . bin2hex(random_bytes(3));
@@ -175,6 +264,28 @@ final class PathTraversalGuardsTest extends TestCase
         $this->assertFileExists($maliciousTarget . '/keep-me.txt');
 
         FileHelper::removeDirectory($maliciousTarget);
+    }
+
+    /**
+     * Run a callable that may call `View::registerHtml(...)` and return the
+     * concatenated HTML that was newly registered at POS_BEGIN during the
+     * call. Reads the private `_html` property via reflection because
+     * craft\web\View doesn't expose registered content directly.
+     */
+    private function captureRegisteredHtml(callable $fn): string
+    {
+        $view = Craft::$app->getView();
+        $prop = new \ReflectionProperty($view, '_html');
+        $prop->setAccessible(true);
+
+        $before = $prop->getValue($view)[\yii\web\View::POS_BEGIN] ?? [];
+
+        $fn();
+
+        $after = $prop->getValue($view)[\yii\web\View::POS_BEGIN] ?? [];
+        $newEntries = array_diff_key($after, $before);
+
+        return implode('', $newEntries);
     }
 
     /**
