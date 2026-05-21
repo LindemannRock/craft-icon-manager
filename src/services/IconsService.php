@@ -520,7 +520,13 @@ class IconsService extends Component
         }
 
         $data = file_get_contents($cacheFile);
-        return unserialize($data);
+
+        // `allowed_classes` restricts deserialization to the Icon model only —
+        // even if the cache file is tampered with (filesystem compromise), PHP
+        // can't instantiate arbitrary classes with __destruct/__wakeup gadgets.
+        $icons = @unserialize($data, ['allowed_classes' => [Icon::class]]);
+
+        return is_array($icons) ? $icons : null;
     }
 
     /**
