@@ -1,6 +1,44 @@
 # Changelog
 
-## [5.13.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.1...v5.13.0) (2026-05-06)
+## [5.14.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.13.0...v5.14.0) - 2026-05-21
+
+
+### Added
+
+* add attribute labels for Icon, IconSet, and Settings models ([1c948ad](https://github.com/LindemannRock/craft-icon-manager/commit/1c948add7c2b0d7061110838653fdb6eb9334653))
+* add new properties to SettingsRecord for enhanced configuration ([0f41315](https://github.com/LindemannRock/craft-icon-manager/commit/0f41315c27a591cfcc620cfb2d1e1975e7a6c954))
+* add pre-commit hook for ECS and PHPStan checks ([12f4351](https://github.com/LindemannRock/craft-icon-manager/commit/12f43514d65f7865fa757c0b626b452ea8f28e28))
+* **guards:** implement path traversal guards for icon set operations ([38d1683](https://github.com/LindemannRock/craft-icon-manager/commit/38d1683a6e625bceb25e7bdba76741ea01408346))
+* **i18n:** Add 12-language translation support across EN, DE, FR, NL, ES, AR, IT, PT, JA, SV, DA, NO ([5deba6e](https://github.com/LindemannRock/craft-icon-manager/commit/5deba6e630a78fcdb787ed0573ab998ac8e5fd3e))
+* **i18n:** add translation issue template for reporting language problems ([c16bc3b](https://github.com/LindemannRock/craft-icon-manager/commit/c16bc3b5fd93cd504b432f47b02b7e2c8b2b2bc3))
+* **icon:** enhance SVG sanitization and improve font serving security ([bfa3ade](https://github.com/LindemannRock/craft-icon-manager/commit/bfa3adefdf821b680b32e987e1b45912b047e4e5))
+* promote sanitizeSvg method to public static for reuse ([0a38c65](https://github.com/LindemannRock/craft-icon-manager/commit/0a38c65fe4557b3634dea9e6d1f2673992c8fc41))
+* **tests:** add integration tests for IconsService and SvgSprite functionality ([f9f8486](https://github.com/LindemannRock/craft-icon-manager/commit/f9f84863b04ce96e58ab8de0fba1d66bbc8bf213))
+* **variable:** add tests for sprite injection and sanitization ([779f941](https://github.com/LindemannRock/craft-icon-manager/commit/779f941ded57a4e8086b40ca6098b9663cb8b659))
+
+
+### Fixed
+
+* add containment guard and sanitize sprite content in renderIcon method ([f869ca1](https://github.com/LindemannRock/craft-icon-manager/commit/f869ca15739157bad4ee9bee83c86567f9c824d0))
+* **cache:** switch Redis cache deletion to use PluginHelper ([5e9529c](https://github.com/LindemannRock/craft-icon-manager/commit/5e9529c23b1b08273426df0179c6b07d43732a7e))
+* correct label casing for plugin name and icon sets path ([00c0a85](https://github.com/LindemannRock/craft-icon-manager/commit/00c0a8524508c31f3ce364c550686789264b63b0))
+* enhance sprite content sanitization and containment guard ([2a1be01](https://github.com/LindemannRock/craft-icon-manager/commit/2a1be01a7a819843619b8fce1e5a5c62b095d5e0))
+* **fields:** correct console guard short-circuit order ([de1ec84](https://github.com/LindemannRock/craft-icon-manager/commit/de1ec84c419579f6e1258f960cb73297b0e7f0c1))
+* **i18n:** correct label casing for plugin name and icon sets path in multiple languages ([af966c2](https://github.com/LindemannRock/craft-icon-manager/commit/af966c21243a7d053b1e3fe5aae7a14d5a50b02b))
+* **i18n:** correct translation category for icon names ([0af3d6c](https://github.com/LindemannRock/craft-icon-manager/commit/0af3d6cbc69874331539dc3f080ed16729308c6e))
+* **icon:** enhance SVG sanitization to prevent XSS vulnerabilities ([e75a51a](https://github.com/LindemannRock/craft-icon-manager/commit/e75a51ad135f68fdd547f4ed6143e1c541e906c7))
+* **iconSets:** update icon set folder path and placeholder text ([da2fa13](https://github.com/LindemannRock/craft-icon-manager/commit/da2fa13ffbfe11f3bd70a23d9c04d51b3aadad55))
+* **icons:** switch cache invalidation to use PluginHelper for Redis ([7173c8a](https://github.com/LindemannRock/craft-icon-manager/commit/7173c8a7ede03fc5e9cae6268250437b811d97fd))
+* **plugin:** switch cache deletion to use PluginHelper for Redis ([b59a94c](https://github.com/LindemannRock/craft-icon-manager/commit/b59a94c2474a32a850f147e8ddfb1ec478d42c7b))
+* restrict unserialize to Icon model for cache loading ([9dfeac4](https://github.com/LindemannRock/craft-icon-manager/commit/9dfeac47fc9a68b95d59d07afee173a0f2ba6566))
+* **serve-sprite:** add containment guard to prevent arbitrary file access ([a1eed0c](https://github.com/LindemannRock/craft-icon-manager/commit/a1eed0cdd398a59fd8a024991d0d1425e758e82e))
+* switch cache serialization from serialize to JSON encoding ([3e4d9ea](https://github.com/LindemannRock/craft-icon-manager/commit/3e4d9ea498f1946304ecb68718d6213ad67ba258))
+* switch cache serialization from unserialize to JSON encoding ([41fe3c4](https://github.com/LindemannRock/craft-icon-manager/commit/41fe3c433662dbf2e537838be75feb16b65f0ae5))
+* update card includes to remove unnecessary path segments ([a146068](https://github.com/LindemannRock/craft-icon-manager/commit/a14606861836f93a949d7da60840fc5766aff822))
+* update copyright year to 2025-2026 in multiple files ([2fd06bf](https://github.com/LindemannRock/craft-icon-manager/commit/2fd06bf02438099f71688800ffa4dabff2182b50))
+* update copyright year to 2025-2026 in OptimizeController ([9163475](https://github.com/LindemannRock/craft-icon-manager/commit/91634751bd142c58836cdd5a0ace0236af451291))
+
+## [5.13.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.1...v5.13.0) - 2026-05-06
 
 
 ### Features
@@ -16,7 +54,7 @@
 * **translations:** clarify plugin name description in settings ([bf48d37](https://github.com/LindemannRock/craft-icon-manager/commit/bf48d378dca5e729ee542e6cf15370d39be05116))
 * update copyright year in English translation strings ([861b1ba](https://github.com/LindemannRock/craft-icon-manager/commit/861b1ba3d9f386fc3c653961c259e9f9f13c3acd))
 
-## [5.12.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.0...v5.12.1) (2026-04-05)
+## [5.12.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.0...v5.12.1) - 2026-04-05
 
 
 ### Bug Fixes
@@ -24,7 +62,7 @@
 * read-only settings page accessibility flag ([1b3726f](https://github.com/LindemannRock/craft-icon-manager/commit/1b3726fd730b93d527519da9f62400d725c2511c))
 * translate installation experience strings to Craft CMS ([b70eb10](https://github.com/LindemannRock/craft-icon-manager/commit/b70eb10fed76940dc3ef835c810805808fb5c183))
 
-## [5.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.2...v5.12.0) (2026-03-17)
+## [5.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.2...v5.12.0) - 2026-03-17
 
 
 ### Features
@@ -44,7 +82,7 @@
 * **git:** update .gitignore and .gitattributes for asset management ([26b10f0](https://github.com/LindemannRock/craft-icon-manager/commit/26b10f0c80a65108dea7f66936d67548479960ea))
 * **templates:** remove unused info-box and plugin-credit components ([cc4953f](https://github.com/LindemannRock/craft-icon-manager/commit/cc4953f5ddc5411bc3db5bfd0447e2676fecec80))
 
-## [5.11.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.1...v5.11.2) (2026-03-04)
+## [5.11.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.1...v5.11.2) - 2026-03-04
 
 
 ### Bug Fixes
@@ -56,7 +94,7 @@
 
 * **.gitignore:** remove development files and update internal directory ([4df5ec2](https://github.com/LindemannRock/craft-icon-manager/commit/4df5ec29880d8a55cf3c239fce1f40992b8056b7))
 
-## [5.11.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.0...v5.11.1) (2026-02-23)
+## [5.11.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.11.0...v5.11.1) - 2026-02-23
 
 
 ### Bug Fixes
@@ -71,28 +109,28 @@
 * add .gitattributes with export-ignore for Packagist distribution ([65f5e79](https://github.com/LindemannRock/craft-icon-manager/commit/65f5e79fb579366f2edf3091edeebb50b30b2887))
 * switch to Craft License for commercial release ([d268974](https://github.com/LindemannRock/craft-icon-manager/commit/d268974fe0ac6fd6f74183009671e860d3d30efc))
 
-## [5.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.2...v5.11.0) (2026-02-07)
+## [5.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.2...v5.11.0) - 2026-02-07
 
 
 ### Features
 
 * **gql:** add IconType and IconTypeGenerator for GraphQL integration ([0b24a27](https://github.com/LindemannRock/craft-icon-manager/commit/0b24a27f83d6849a67947fc2f17bc01dbfbc83c5))
 
-## [5.10.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.1...v5.10.2) (2026-02-05)
+## [5.10.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.1...v5.10.2) - 2026-02-05
 
 
 ### Bug Fixes
 
 * **iconManager:** update [@since](https://github.com/since) version in getCpSections method ([6193d8f](https://github.com/LindemannRock/craft-icon-manager/commit/6193d8fde2eb2e2de2b05201b86423489488f88d))
 
-## [5.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.0...v5.10.1) (2026-01-21)
+## [5.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.10.0...v5.10.1) - 2026-01-21
 
 
 ### Bug Fixes
 
 * correct header title in general settings template ([9c074c7](https://github.com/LindemannRock/craft-icon-manager/commit/9c074c7996738d1517a7cf29b125fdc23a1e2631))
 
-## [5.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.4...v5.10.0) (2026-01-16)
+## [5.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.4...v5.10.0) - 2026-01-16
 
 
 ### Features
@@ -107,35 +145,35 @@
 * update hardcoded cache paths with PluginHelper for consistency ([4b313cc](https://github.com/LindemannRock/craft-icon-manager/commit/4b313ccb04e8bafc80aa7d1a6ea9e449bd7262ad))
 * update PluginHelper bootstrap to include download permissions for logging ([69c1060](https://github.com/LindemannRock/craft-icon-manager/commit/69c106070f55056393d324d82e5f5bc6ce354786))
 
-## [5.9.4](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.3...v5.9.4) (2026-01-11)
+## [5.9.4](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.3...v5.9.4) - 2026-01-11
 
 
 ### Bug Fixes
 
 * set pluginName in iconmanager_settings to not null with default value 'Icon Manager' ([f5e4641](https://github.com/LindemannRock/craft-icon-manager/commit/f5e46418295ae7f8b5ee3710bce1ba9f1acf5085))
 
-## [5.9.3](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.2...v5.9.3) (2026-01-11)
+## [5.9.3](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.2...v5.9.3) - 2026-01-11
 
 
 ### Bug Fixes
 
 * set default pluginName in iconmanager_settings to 'Icon Manager' ([75d4744](https://github.com/LindemannRock/craft-icon-manager/commit/75d4744db6c94613cd9c142733bd85ab819240ef))
 
-## [5.9.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.1...v5.9.2) (2026-01-11)
+## [5.9.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.1...v5.9.2) - 2026-01-11
 
 
 ### Bug Fixes
 
 * update pluginName type and improve displayName method in ClearIconCache utility ([944b9ea](https://github.com/LindemannRock/craft-icon-manager/commit/944b9eac135f1ce19b005c0026128b34295d26fd))
 
-## [5.9.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.0...v5.9.1) (2026-01-11)
+## [5.9.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.9.0...v5.9.1) - 2026-01-11
 
 
 ### Bug Fixes
 
 * simplify displayName method in ClearIconCache utility ([13303e5](https://github.com/LindemannRock/craft-icon-manager/commit/13303e5972da19cdcf3c8735aef90ddf96609d80))
 
-## [5.9.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.8.0...v5.9.0) (2026-01-08)
+## [5.9.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.8.0...v5.9.0) - 2026-01-08
 
 
 ### Features
@@ -150,21 +188,21 @@
 * refactor quick actions visibility logic in index.twig ([0ded170](https://github.com/LindemannRock/craft-icon-manager/commit/0ded170412ebe7009c8f2f3faf8585008707e787))
 * update success message for settings save action ([76843a0](https://github.com/LindemannRock/craft-icon-manager/commit/76843a03d9f28c5f9d0f5cd76889ffb4ae3c3b7f))
 
-## [5.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.1...v5.8.0) (2026-01-06)
+## [5.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.1...v5.8.0) - 2026-01-06
 
 
 ### Features
 
 * migrate to shared base plugin ([5ac5983](https://github.com/LindemannRock/craft-icon-manager/commit/5ac5983f2572aeb7c706966ea54692a2009c7309))
 
-## [5.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.0...v5.7.1) (2026-01-04)
+## [5.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.7.0...v5.7.1) - 2026-01-04
 
 
 ### Bug Fixes
 
 * add missing PHP SVG Optimizer settings to installation migration ([356a658](https://github.com/LindemannRock/craft-icon-manager/commit/356a658c6b984e303c40d9ed4b1113f5415f2aff))
 
-## [5.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.6.0...v5.7.0) (2025-12-19)
+## [5.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.6.0...v5.7.0) - 2025-12-19
 
 
 ### Features
@@ -177,7 +215,7 @@
 
 * improve display name handling by trimming whitespace in cache options ([dcba4b8](https://github.com/LindemannRock/craft-icon-manager/commit/dcba4b8dee069cdb3ffd0a58d6b6913b7b30b00e))
 
-## [5.6.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.5.0...v5.6.0) (2025-12-16)
+## [5.6.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.5.0...v5.6.0) - 2025-12-16
 
 
 ### Features
@@ -192,7 +230,7 @@
 
 * refine cache status display for Redis storage method ([bd5d1c9](https://github.com/LindemannRock/craft-icon-manager/commit/bd5d1c9e55f717f606c8132dae904b57075a2ed8))
 
-## [5.5.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.4.0...v5.5.0) (2025-12-04)
+## [5.5.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.4.0...v5.5.0) - 2025-12-04
 
 
 ### Features
@@ -203,14 +241,14 @@
 * Refactor and enhance various components for improved functionality and clarity ([1da2e6b](https://github.com/LindemannRock/craft-icon-manager/commit/1da2e6b85b25a154d76f7f30b11d7c3e568d4248))
 * update titles in settings templates for clarity ([c049862](https://github.com/LindemannRock/craft-icon-manager/commit/c049862990e4c78c435c0a545c8e013a88f1e666))
 
-## [5.4.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.3.0...v5.4.0) (2025-11-15)
+## [5.4.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.3.0...v5.4.0) - 2025-11-15
 
 
 ### Features
 
 * add MIT License file ([7cb19b7](https://github.com/LindemannRock/craft-icon-manager/commit/7cb19b7f8c1111005b78800349c2c557edf062ae))
 
-## [5.3.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.2.0...v5.3.0) (2025-11-14)
+## [5.3.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.2.0...v5.3.0) - 2025-11-14
 
 
 ### Features
@@ -226,7 +264,7 @@
 
 * update php-svg-optimizer version to ^7.3 for compatibility ([65c107c](https://github.com/LindemannRock/craft-icon-manager/commit/65c107c59b26b9db324b22e40ec25949d8cddfaf))
 
-## [5.2.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.2...v5.2.0) (2025-11-06)
+## [5.2.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.2...v5.2.0) - 2025-11-06
 
 
 ### Features
@@ -240,21 +278,21 @@
 * add custom setter for enabledIconTypes to normalize boolean values ([5d29ac1](https://github.com/LindemannRock/craft-icon-manager/commit/5d29ac19fd7dbc3dba03b8f2a6a7c69b8beb0bc4))
 * update logging documentation and configuration examples for improved clarity and best practices ([f0f5c96](https://github.com/LindemannRock/craft-icon-manager/commit/f0f5c96e92e75071fee8abed886813f07a288c41))
 
-## [5.1.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.1...v5.1.2) (2025-10-26)
+## [5.1.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.1...v5.1.2) - 2025-10-26
 
 
 ### Bug Fixes
 
 * improve config attribute override detection in Settings model ([0c6d665](https://github.com/LindemannRock/craft-icon-manager/commit/0c6d665cea2190b13aadb36d2176f4ee8d108c9e))
 
-## [5.1.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.0...v5.1.1) (2025-10-26)
+## [5.1.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.1.0...v5.1.1) - 2025-10-26
 
 
 ### Bug Fixes
 
 * reorganize configuration settings and update log level instructions ([2eae2e1](https://github.com/LindemannRock/craft-icon-manager/commit/2eae2e13c408f66591e232d6650c09981abcc564))
 
-## [5.1.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.2...v5.1.0) (2025-10-26)
+## [5.1.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.2...v5.1.0) - 2025-10-26
 
 
 ### Features
@@ -266,7 +304,7 @@
 
 * settings management for Icon Manager plugin ([842681a](https://github.com/LindemannRock/craft-icon-manager/commit/842681a6bb4c5ee570b8f4de0d3bf025b27c2384))
 
-## [5.0.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.1...v5.0.2) (2025-10-22)
+## [5.0.2](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.1...v5.0.2) - 2025-10-22
 
 
 ### Bug Fixes
@@ -275,21 +313,21 @@
 * update icon sets table layout and enhance bulk actions functionality ([e8e454c](https://github.com/LindemannRock/craft-icon-manager/commit/e8e454cff96e60ed70284f3b8af9a80feccba700))
 * update logging configuration to use error level by default and set items per page ([ab77756](https://github.com/LindemannRock/craft-icon-manager/commit/ab7775645a4fc5613a9b15443951c79a74da60fc))
 
-## [5.0.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.0...v5.0.1) (2025-10-20)
+## [5.0.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.0.0...v5.0.1) - 2025-10-20
 
 
 ### Miscellaneous Chores
 
 * update logging library dependency to version 5.0 and enhance README with additional badges ([9ca3cc1](https://github.com/LindemannRock/craft-icon-manager/commit/9ca3cc1b4ec7c4892b3376f83d3f1e18a9462d7e))
 
-## [5.0.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.19.0...v5.0.0) (2025-10-20)
+## [5.0.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.19.0...v5.0.0) - 2025-10-20
 
 
 ### Miscellaneous Chores
 
 * bump version scheme to match Craft 5 ([fcf3353](https://github.com/LindemannRock/craft-icon-manager/commit/fcf3353578e9a48b2aaa8e9a7a671befaffa952d))
 
-## [1.19.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.3...v1.19.0) (2025-10-19)
+## [1.19.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.3...v1.19.0) - 2025-10-19
 
 
 ### Features
@@ -302,49 +340,49 @@
 * remove unnecessary whitespace in icon set edit template ([f0b9e9d](https://github.com/LindemannRock/craft-icon-manager/commit/f0b9e9d2c5aeee222b0011117d44f31c8176b004))
 * set selected subnav item for icon sets edit template ([3fe45e1](https://github.com/LindemannRock/craft-icon-manager/commit/3fe45e12e851a52755a27391f552aa0884634e1b))
 
-## [1.18.3](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.2...v1.18.3) (2025-10-17)
+## [1.18.3](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.2...v1.18.3) - 2025-10-17
 
 
 ### Bug Fixes
 
 * use settings for plugin name in logging configuration ([1c80df9](https://github.com/LindemannRock/craft-icon-manager/commit/1c80df924b679fc3d2425e4fefd6cab08a542a99))
 
-## [1.18.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.1...v1.18.2) (2025-10-16)
+## [1.18.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.1...v1.18.2) - 2025-10-16
 
 
 ### Bug Fixes
 
 * update installation instructions for Composer and DDEV ([aea61a1](https://github.com/LindemannRock/craft-icon-manager/commit/aea61a1afaad99ea8883a0e2154053cbdce3c9a9))
 
-## [1.18.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.0...v1.18.1) (2025-10-16)
+## [1.18.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.18.0...v1.18.1) - 2025-10-16
 
 
 ### Bug Fixes
 
 * remove logging-library repository configuration from composer.json ([21673b9](https://github.com/LindemannRock/craft-icon-manager/commit/21673b98d39b976093996106fa595bf4f2713287))
 
-## [1.18.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.2...v1.18.0) (2025-10-16)
+## [1.18.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.2...v1.18.0) - 2025-10-16
 
 
 ### Features
 
 * Update logging configuration and add detailed logging documentation ([a9a55dc](https://github.com/LindemannRock/craft-icon-manager/commit/a9a55dc68645d37c8d55783564af9b6a775dafef))
 
-## [1.17.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.1...v1.17.2) (2025-10-16)
+## [1.17.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.1...v1.17.2) - 2025-10-16
 
 
 ### Bug Fixes
 
 * Update display name retrieval for Icon Manager field ([f02b431](https://github.com/LindemannRock/craft-icon-manager/commit/f02b4310a360268444a12e58b1d4a90ea7dd592e))
 
-## [1.17.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.0...v1.17.1) (2025-10-15)
+## [1.17.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.17.0...v1.17.1) - 2025-10-15
 
 
 ### Bug Fixes
 
 * Improve error logging for database settings loading and validation ([dbbe29c](https://github.com/LindemannRock/craft-icon-manager/commit/dbbe29cfc6cb04b57ceb35fa66f21945eb54ae63))
 
-## [1.17.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.16.0...v1.17.0) (2025-10-11)
+## [1.17.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.16.0...v1.17.0) - 2025-10-11
 
 
 ### Features
@@ -356,63 +394,63 @@
 
 * Implement proper multi-site support for custom labels and metadata ([a9a4d25](https://github.com/LindemannRock/craft-icon-manager/commit/a9a4d25f471bd052fe83f509ee27cd5a49714dcb))
 
-## [1.16.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.15.0...v1.16.0) (2025-10-11)
+## [1.16.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.15.0...v1.16.0) - 2025-10-11
 
 
 ### Features
 
 * Enhance documentation with detailed configuration and usage examples ([b203fe7](https://github.com/LindemannRock/craft-icon-manager/commit/b203fe7e61c650804672beb5b2abd51f6949ace0))
 
-## [1.15.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.1...v1.15.0) (2025-10-11)
+## [1.15.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.1...v1.15.0) - 2025-10-11
 
 
 ### Features
 
 * Add granular scan control settings for SVG optimization ([26bbea2](https://github.com/LindemannRock/craft-icon-manager/commit/26bbea2c5945cb81345d94013281ea3c37414a03))
 
-## [1.14.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.0...v1.14.1) (2025-10-11)
+## [1.14.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.14.0...v1.14.1) - 2025-10-11
 
 
 ### Bug Fixes
 
 * Add plugin credit to preview and optimization tabs ([b7463ae](https://github.com/LindemannRock/craft-icon-manager/commit/b7463aea0111d13a69326cf2c002d6303054ad20))
 
-## [1.14.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.2...v1.14.0) (2025-10-10)
+## [1.14.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.2...v1.14.0) - 2025-10-10
 
 
 ### Features
 
 * Add icon preview tab and improve SVG optimization ([b3a0d84](https://github.com/LindemannRock/craft-icon-manager/commit/b3a0d84520871479f72db50c9dc96a3c4fe205e3))
 
-## [1.13.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.1...v1.13.2) (2025-10-10)
+## [1.13.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.1...v1.13.2) - 2025-10-10
 
 
 ### Bug Fixes
 
 * Preserve legal/license comments in SVG optimization ([c44c198](https://github.com/LindemannRock/craft-icon-manager/commit/c44c1981b0983b392e27818bef7e191672774d16))
 
-## [1.13.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.0...v1.13.1) (2025-10-10)
+## [1.13.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.13.0...v1.13.1) - 2025-10-10
 
 
 ### Bug Fixes
 
 * Improve optimization page layout and formatting ([432ccbe](https://github.com/LindemannRock/craft-icon-manager/commit/432ccbe7ac501f6e9340ea0c2157cd90abcfde86))
 
-## [1.13.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.12.0...v1.13.0) (2025-10-10)
+## [1.13.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.12.0...v1.13.0) - 2025-10-10
 
 
 ### Features
 
 * Enhance issue display logic and improve UI for optimization tab ([20af172](https://github.com/LindemannRock/craft-icon-manager/commit/20af172060247f062b9c4fedd0d977821a17df9f))
 
-## [1.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.11.0...v1.12.0) (2025-10-10)
+## [1.12.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.11.0...v1.12.0) - 2025-10-10
 
 
 ### Features
 
 * Add global SVG optimization settings with UI controls ([114f784](https://github.com/LindemannRock/craft-icon-manager/commit/114f784755de22b92852b2d1320ea62fd785aa22))
 
-## [1.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.1...v1.11.0) (2025-10-10)
+## [1.11.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.1...v1.11.0) - 2025-10-10
 
 
 ### Features
@@ -425,14 +463,14 @@
 
 * Initialize logging handle in IconsService ([2806b38](https://github.com/LindemannRock/craft-icon-manager/commit/2806b38e3e4a10f2da42b2800b829bea6ded4541))
 
-## [1.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.0...v1.10.1) (2025-10-09)
+## [1.10.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.10.0...v1.10.1) - 2025-10-09
 
 
 ### Bug Fixes
 
 * logging to use LoggingLibrary trait consistently ([55b73af](https://github.com/LindemannRock/craft-icon-manager/commit/55b73af79fc44b79f986f0b35963077caffd1a28))
 
-## [1.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.9.0...v1.10.0) (2025-10-09)
+## [1.10.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.9.0...v1.10.0) - 2025-10-09
 
 
 ### Features
@@ -450,14 +488,14 @@
 * logging configuration to use correct log levels ([fa554a7](https://github.com/LindemannRock/craft-icon-manager/commit/fa554a7bbc832d51749042e12ef5487ab7a91f05))
 * replace inline icon embedding with single batch AJAX request ([58f7256](https://github.com/LindemannRock/craft-icon-manager/commit/58f72562574b8ac8eeb6010feee3db51df61603d))
 
-## [1.9.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.8.0...v1.9.0) (2025-10-02)
+## [1.9.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.8.0...v1.9.0) - 2025-10-02
 
 
 ### Features
 
 * add refresh all icons button to utilities page ([1d22674](https://github.com/LindemannRock/craft-icon-manager/commit/1d226743f25168b44ebc618ba8a5198ed0be57aa))
 
-## [1.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.1...v1.8.0) (2025-10-01)
+## [1.8.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.1...v1.8.0) - 2025-10-01
 
 
 ### Features
@@ -470,14 +508,14 @@
 
 * update PHP requirement from ^8.0.2 to ^8.2 in composer.json ([327b028](https://github.com/LindemannRock/craft-icon-manager/commit/327b028abfeb0780c9c51a08f70f469a92ba9e8d))
 
-## [1.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.0...v1.7.1) (2025-09-25)
+## [1.7.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.7.0...v1.7.1) - 2025-09-25
 
 
 ### Miscellaneous Chores
 
 * **docs:** correct formatting and update log level settings in README ([eceae47](https://github.com/LindemannRock/craft-icon-manager/commit/eceae471237b9880148352fa3fce4ebbdae083ee))
 
-## [1.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.6...v1.7.0) (2025-09-25)
+## [1.7.0](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.6...v1.7.0) - 2025-09-25
 
 
 ### Features
@@ -489,56 +527,56 @@
 
 * disable log viewer on Servd edge servers ([b8ac3c7](https://github.com/LindemannRock/craft-icon-manager/commit/b8ac3c79b68e0683360b3c163026940c359391d9))
 
-## [1.6.6](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.5...v1.6.6) (2025-09-24)
+## [1.6.6](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.5...v1.6.6) - 2025-09-24
 
 
 ### Bug Fixes
 
 * disable log viewer on Servd edge servers ([3e6a9a0](https://github.com/LindemannRock/craft-icon-manager/commit/3e6a9a06cb959b3fa8cb065734b62eead9779d5c))
 
-## [1.6.5](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.4...v1.6.5) (2025-09-24)
+## [1.6.5](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.4...v1.6.5) - 2025-09-24
 
 
 ### Bug Fixes
 
 * enable log viewer for all environments ([2e98842](https://github.com/LindemannRock/craft-icon-manager/commit/2e9884263cc6cebf90ebde0709742526779cf9f6))
 
-## [1.6.4](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.3...v1.6.4) (2025-09-24)
+## [1.6.4](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.3...v1.6.4) - 2025-09-24
 
 
 ### Bug Fixes
 
 * update log viewer disable condition for Servd environment ([718c391](https://github.com/LindemannRock/craft-icon-manager/commit/718c39131d698d7531c447f3ddc1cbd8a21ec1ba))
 
-## [1.6.3](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.2...v1.6.3) (2025-09-24)
+## [1.6.3](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.2...v1.6.3) - 2025-09-24
 
 
 ### Bug Fixes
 
 * disable log viewer on Servd environment ([fd3b66d](https://github.com/LindemannRock/craft-icon-manager/commit/fd3b66dd7ab8b66fc9b34c8553e386eaa0c28b96))
 
-## [1.6.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.1...v1.6.2) (2025-09-24)
+## [1.6.2](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.1...v1.6.2) - 2025-09-24
 
 
 ### Bug Fixes
 
 * prevent duplicate log warnings for console requests in Settings model ([2d7613a](https://github.com/LindemannRock/craft-icon-manager/commit/2d7613ae2a990db9c4130f502c9c3d8d0d50c2be))
 
-## [1.6.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.0...v1.6.1) (2025-09-24)
+## [1.6.1](https://github.com/LindemannRock/craft-icon-manager/compare/v1.6.0...v1.6.1) - 2025-09-24
 
 
 ### Bug Fixes
 
 * update repository name and links in README and composer.json ([c9f1a8c](https://github.com/LindemannRock/craft-icon-manager/commit/c9f1a8c6164212768e0831f52037a9fcd13941f6))
 
-## [1.6.0](https://github.com/LindemannRock/icon-manager/compare/v1.5.0...v1.6.0) (2025-09-24)
+## [1.6.0](https://github.com/LindemannRock/icon-manager/compare/v1.5.0...v1.6.0) - 2025-09-24
 
 
 ### Features
 
 * integrate logging library and enhance settings validation ([ddeea93](https://github.com/LindemannRock/icon-manager/commit/ddeea93f879d31154c4bbc88f915fc22168f10ef))
 
-## [1.5.0](https://github.com/LindemannRock/icon-manager/compare/v1.4.1...v1.5.0) (2025-09-22)
+## [1.5.0](https://github.com/LindemannRock/icon-manager/compare/v1.4.1...v1.5.0) - 2025-09-22
 
 
 ### Features
@@ -552,77 +590,77 @@
 
 * update .gitignore to properly exclude logs and add backup files ([69bae12](https://github.com/LindemannRock/icon-manager/commit/69bae12f1fcfc75c5ea2235ed532f4000832d79e))
 
-## [1.4.1](https://github.com/LindemannRock/icon-manager/compare/v1.4.0...v1.4.1) (2025-09-15)
+## [1.4.1](https://github.com/LindemannRock/icon-manager/compare/v1.4.0...v1.4.1) - 2025-09-15
 
 
 ### Bug Fixes
 
 * update copyright notice and format in LICENSE file ([6e97c76](https://github.com/LindemannRock/icon-manager/commit/6e97c766f8528b67b98a7693bfd8637dc1301d71))
 
-## [1.4.0](https://github.com/LindemannRock/icon-manager/compare/v1.3.0...v1.4.0) (2025-09-14)
+## [1.4.0](https://github.com/LindemannRock/icon-manager/compare/v1.3.0...v1.4.0) - 2025-09-14
 
 
 ### Features
 
 * add plugin credit component to icon sets and settings pages ([3f6b68a](https://github.com/LindemannRock/icon-manager/commit/3f6b68a92f87a3b2bca93a315eae5f881c28126f))
 
-## [1.3.0](https://github.com/LindemannRock/icon-manager/compare/v1.2.0...v1.3.0) (2025-09-12)
+## [1.3.0](https://github.com/LindemannRock/icon-manager/compare/v1.2.0...v1.3.0) - 2025-09-12
 
 
 ### Features
 
 * add eager loading support and fix custom label site isolation ([88a5207](https://github.com/LindemannRock/icon-manager/commit/88a520777fec519d1db17b205275b5b4f2c56e51))
 
-## [1.2.0](https://github.com/LindemannRock/icon-manager/compare/v1.1.4...v1.2.0) (2025-09-12)
+## [1.2.0](https://github.com/LindemannRock/icon-manager/compare/v1.1.4...v1.2.0) - 2025-09-12
 
 
 ### Features
 
 * add eager loading support to IconManagerField ([5e793e6](https://github.com/LindemannRock/icon-manager/commit/5e793e6501270727641812191d48d89020bb2463))
 
-## [1.1.4](https://github.com/LindemannRock/icon-manager/compare/v1.1.3...v1.1.4) (2025-09-10)
+## [1.1.4](https://github.com/LindemannRock/icon-manager/compare/v1.1.3...v1.1.4) - 2025-09-10
 
 
 ### Bug Fixes
 
 * update requirements for Craft CMS and PHP versions in README ([62a0be2](https://github.com/LindemannRock/icon-manager/commit/62a0be27102a85712fa97b50fb1f74d75a0e5d16))
 
-## [1.1.3](https://github.com/LindemannRock/icon-manager/compare/v1.1.2...v1.1.3) (2025-09-10)
+## [1.1.3](https://github.com/LindemannRock/icon-manager/compare/v1.1.2...v1.1.3) - 2025-09-10
 
 
 ### Bug Fixes
 
 * update display name and icon method in ClearIconCache utility ([583dbf0](https://github.com/LindemannRock/icon-manager/commit/583dbf043c6b43b80a67f88c33ec498c62f0ad4c))
 
-## [1.1.2](https://github.com/LindemannRock/icon-manager/compare/v1.1.1...v1.1.2) (2025-09-01)
+## [1.1.2](https://github.com/LindemannRock/icon-manager/compare/v1.1.1...v1.1.2) - 2025-09-01
 
 
 ### Bug Fixes
 
 * include essential Control Panel JavaScript assets ([0616bba](https://github.com/LindemannRock/icon-manager/commit/0616bbab30a9ee406552e4b166b249131c2efca0))
 
-## [1.1.1](https://github.com/LindemannRock/icon-manager/compare/v1.1.0...v1.1.1) (2025-09-01)
+## [1.1.1](https://github.com/LindemannRock/icon-manager/compare/v1.1.0...v1.1.1) - 2025-09-01
 
 
 ### Bug Fixes
 
 * update license to MIT in composer.json and LICENSE.md ([56e5c45](https://github.com/LindemannRock/icon-manager/commit/56e5c4512f4ba30a0f551bcf8985cf85e7df6870))
 
-## [1.1.0](https://github.com/LindemannRock/icon-manager/compare/v1.0.1...v1.1.0) (2025-09-01)
+## [1.1.0](https://github.com/LindemannRock/icon-manager/compare/v1.0.1...v1.1.0) - 2025-09-01
 
 
 ### Features
 
 * add comprehensive configuration and metadata documentation ([248c3cb](https://github.com/LindemannRock/icon-manager/commit/248c3cb46c0e6f38ad0b8cf6daa5ac533c7d41ae))
 
-## [1.0.1](https://github.com/LindemannRock/icon-manager/compare/v1.0.0...v1.0.1) (2025-09-01)
+## [1.0.1](https://github.com/LindemannRock/icon-manager/compare/v1.0.0...v1.0.1) - 2025-09-01
 
 
 ### Bug Fixes
 
 * update documentation and changelog URLs to use 'main' branch ([bff8aec](https://github.com/LindemannRock/icon-manager/commit/bff8aecd5a4998c25f05d393f71406485a36430a))
 
-## 1.0.0 (2025-09-01)
+## 1.0.0 - 2025-09-01
 
 
 ### Features
