@@ -605,9 +605,20 @@ class IconSetsController extends Controller
         }
 
         try {
-            $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+            $rawBase = IconManager::getInstance()->getSettings()->iconSetsPath;
+            $basePath = FileHelper::normalizePath(Craft::getAlias($rawBase));
             $folder = $iconSet->settings['folder'] ?? '';
-            $targetPath = Craft::getAlias($basePath . '/' . $folder);
+            $targetPath = FileHelper::normalizePath(Craft::getAlias($rawBase . '/' . $folder));
+
+            // Containment guard — the iconSet `folder` is admin-controlled and the restore
+            // path determines where the backup contents land. A traversal here lets a
+            // dev-environment admin write backup contents to arbitrary directories.
+            if (!str_starts_with($targetPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+                Craft::$app->getSession()->setError(
+                    Craft::t('icon-manager', 'Failed to restore from backup.')
+                );
+                return $this->redirectToPostedUrl();
+            }
 
             if (IconManager::getInstance()->svgOptimizer->restoreFromBackup($backupPath, $targetPath)) {
                 Craft::$app->getSession()->setNotice(
@@ -645,9 +656,16 @@ class IconSetsController extends Controller
             return $this->asJson(['success' => false, 'error' => 'Icon set not found']);
         }
 
-        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+        $rawBase = IconManager::getInstance()->getSettings()->iconSetsPath;
+        $basePath = FileHelper::normalizePath(Craft::getAlias($rawBase));
         $folder = $iconSet->settings['folder'] ?? '';
-        $folderPath = Craft::getAlias($basePath . '/' . $folder);
+        $folderPath = FileHelper::normalizePath(Craft::getAlias($rawBase . '/' . $folder));
+
+        // Containment guard — admin-supplied `folder` could escape the icons base
+        // and dump arbitrary SVG file contents into the JSON response.
+        if (!str_starts_with($folderPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            return $this->asJson(['success' => false, 'error' => 'Folder not found']);
+        }
 
         if (!is_dir($folderPath)) {
             return $this->asJson(['success' => false, 'error' => 'Folder not found']);
