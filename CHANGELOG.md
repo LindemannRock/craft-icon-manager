@@ -1,5 +1,43 @@
 # Changelog
 
+## [5.14.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.13.0...v5.14.0) (2026-05-21)
+
+
+### Added
+
+* add attribute labels for Icon, IconSet, and Settings models ([1c948ad](https://github.com/LindemannRock/craft-icon-manager/commit/1c948add7c2b0d7061110838653fdb6eb9334653))
+* add new properties to SettingsRecord for enhanced configuration ([0f41315](https://github.com/LindemannRock/craft-icon-manager/commit/0f41315c27a591cfcc620cfb2d1e1975e7a6c954))
+* add pre-commit hook for ECS and PHPStan checks ([12f4351](https://github.com/LindemannRock/craft-icon-manager/commit/12f43514d65f7865fa757c0b626b452ea8f28e28))
+* **guards:** implement path traversal guards for icon set operations ([38d1683](https://github.com/LindemannRock/craft-icon-manager/commit/38d1683a6e625bceb25e7bdba76741ea01408346))
+* **i18n:** Add 12-language translation support across EN, DE, FR, NL, ES, AR, IT, PT, JA, SV, DA, NO ([5deba6e](https://github.com/LindemannRock/craft-icon-manager/commit/5deba6e630a78fcdb787ed0573ab998ac8e5fd3e))
+* **i18n:** add translation issue template for reporting language problems ([c16bc3b](https://github.com/LindemannRock/craft-icon-manager/commit/c16bc3b5fd93cd504b432f47b02b7e2c8b2b2bc3))
+* **icon:** enhance SVG sanitization and improve font serving security ([bfa3ade](https://github.com/LindemannRock/craft-icon-manager/commit/bfa3adefdf821b680b32e987e1b45912b047e4e5))
+* promote sanitizeSvg method to public static for reuse ([0a38c65](https://github.com/LindemannRock/craft-icon-manager/commit/0a38c65fe4557b3634dea9e6d1f2673992c8fc41))
+* **tests:** add integration tests for IconsService and SvgSprite functionality ([f9f8486](https://github.com/LindemannRock/craft-icon-manager/commit/f9f84863b04ce96e58ab8de0fba1d66bbc8bf213))
+* **variable:** add tests for sprite injection and sanitization ([779f941](https://github.com/LindemannRock/craft-icon-manager/commit/779f941ded57a4e8086b40ca6098b9663cb8b659))
+
+
+### Fixed
+
+* add containment guard and sanitize sprite content in renderIcon method ([f869ca1](https://github.com/LindemannRock/craft-icon-manager/commit/f869ca15739157bad4ee9bee83c86567f9c824d0))
+* **cache:** switch Redis cache deletion to use PluginHelper ([5e9529c](https://github.com/LindemannRock/craft-icon-manager/commit/5e9529c23b1b08273426df0179c6b07d43732a7e))
+* correct label casing for plugin name and icon sets path ([00c0a85](https://github.com/LindemannRock/craft-icon-manager/commit/00c0a8524508c31f3ce364c550686789264b63b0))
+* enhance sprite content sanitization and containment guard ([2a1be01](https://github.com/LindemannRock/craft-icon-manager/commit/2a1be01a7a819843619b8fce1e5a5c62b095d5e0))
+* **fields:** correct console guard short-circuit order ([de1ec84](https://github.com/LindemannRock/craft-icon-manager/commit/de1ec84c419579f6e1258f960cb73297b0e7f0c1))
+* **i18n:** correct label casing for plugin name and icon sets path in multiple languages ([af966c2](https://github.com/LindemannRock/craft-icon-manager/commit/af966c21243a7d053b1e3fe5aae7a14d5a50b02b))
+* **i18n:** correct translation category for icon names ([0af3d6c](https://github.com/LindemannRock/craft-icon-manager/commit/0af3d6cbc69874331539dc3f080ed16729308c6e))
+* **icon:** enhance SVG sanitization to prevent XSS vulnerabilities ([e75a51a](https://github.com/LindemannRock/craft-icon-manager/commit/e75a51ad135f68fdd547f4ed6143e1c541e906c7))
+* **iconSets:** update icon set folder path and placeholder text ([da2fa13](https://github.com/LindemannRock/craft-icon-manager/commit/da2fa13ffbfe11f3bd70a23d9c04d51b3aadad55))
+* **icons:** switch cache invalidation to use PluginHelper for Redis ([7173c8a](https://github.com/LindemannRock/craft-icon-manager/commit/7173c8a7ede03fc5e9cae6268250437b811d97fd))
+* **plugin:** switch cache deletion to use PluginHelper for Redis ([b59a94c](https://github.com/LindemannRock/craft-icon-manager/commit/b59a94c2474a32a850f147e8ddfb1ec478d42c7b))
+* restrict unserialize to Icon model for cache loading ([9dfeac4](https://github.com/LindemannRock/craft-icon-manager/commit/9dfeac47fc9a68b95d59d07afee173a0f2ba6566))
+* **serve-sprite:** add containment guard to prevent arbitrary file access ([a1eed0c](https://github.com/LindemannRock/craft-icon-manager/commit/a1eed0cdd398a59fd8a024991d0d1425e758e82e))
+* switch cache serialization from serialize to JSON encoding ([3e4d9ea](https://github.com/LindemannRock/craft-icon-manager/commit/3e4d9ea498f1946304ecb68718d6213ad67ba258))
+* switch cache serialization from unserialize to JSON encoding ([41fe3c4](https://github.com/LindemannRock/craft-icon-manager/commit/41fe3c433662dbf2e537838be75feb16b65f0ae5))
+* update card includes to remove unnecessary path segments ([a146068](https://github.com/LindemannRock/craft-icon-manager/commit/a14606861836f93a949d7da60840fc5766aff822))
+* update copyright year to 2025-2026 in multiple files ([2fd06bf](https://github.com/LindemannRock/craft-icon-manager/commit/2fd06bf02438099f71688800ffa4dabff2182b50))
+* update copyright year to 2025-2026 in OptimizeController ([9163475](https://github.com/LindemannRock/craft-icon-manager/commit/91634751bd142c58836cdd5a0ace0236af451291))
+
 ## [5.13.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.12.1...v5.13.0) (2026-05-06)
 
 
