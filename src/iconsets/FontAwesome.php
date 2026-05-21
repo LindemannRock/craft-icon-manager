@@ -283,10 +283,16 @@ class FontAwesome
             $mtime = filemtime($cacheFile);
             if (time() - $mtime <= $settings->cacheDuration) {
                 $data = file_get_contents($cacheFile);
-                return unserialize($data) ?? [];
+                $decoded = json_decode($data, true);
+                if (is_array($decoded)) {
+                    return $decoded;
+                }
+                // Corrupt or legacy serialize-format file — drop it and re-cache below.
+                @unlink($cacheFile);
+            } else {
+                // Cache expired, delete it
+                @unlink($cacheFile);
             }
-            // Cache expired, delete it
-            @unlink($cacheFile);
         }
 
         // Load from file and cache it
@@ -297,7 +303,7 @@ class FontAwesome
             \craft\helpers\FileHelper::createDirectory($cachePath);
         }
 
-        file_put_contents($cacheFile, serialize($definitions));
+        file_put_contents($cacheFile, json_encode($definitions));
 
         return $definitions;
     }
