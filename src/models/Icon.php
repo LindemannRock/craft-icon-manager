@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\models;
 
 use Craft;
 use craft\base\Model;
+use craft\helpers\FileHelper;
 use craft\helpers\Html;
 use craft\helpers\StringHelper;
 use craft\helpers\Template;
@@ -743,7 +744,15 @@ class Icon extends Model implements \JsonSerializable
             return;
         }
 
-        $spritePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $spriteFile;
+        // Containment guard: this method's output is registered into the page
+        // via View::registerHtml(), so an admin-misconfigured `spriteFile = '../...'`
+        // would leak file contents to whoever views the rendered page.
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
+        $spritePath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $spriteFile);
+
+        if (!str_starts_with($spritePath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            return;
+        }
 
         if (!file_exists($spritePath)) {
             return;
@@ -754,12 +763,17 @@ class Icon extends Model implements \JsonSerializable
             return;
         }
 
-        // Strip any <style> tags to prevent CSS pollution
-        $spriteContent = preg_replace('/<style[^>]*>[\s\S]*?<\/style>/i', '', $spriteContent);
+        // Sanitize sprite content before injecting into the page. <symbol> and
+        // <defs> survive sanitization; <script>, <foreignObject>, event
+        // handlers, and javascript: URIs are stripped.
+        $sanitized = self::sanitizeSvg($spriteContent);
+        if ($sanitized === null) {
+            return;
+        }
 
         // Inject sprite into page
         $view = Craft::$app->getView();
-        $view->registerHtml('<div style="display:none;">' . $spriteContent . '</div>', \yii\web\View::POS_BEGIN);
+        $view->registerHtml('<div style="display:none;">' . $sanitized . '</div>', \yii\web\View::POS_BEGIN);
 
         $registeredSprites[$this->iconSetHandle] = true;
     }
