@@ -47,6 +47,14 @@ class SvgSprite
 
         $spritePath = self::getSpritePath($settings['spriteFile']);
 
+        if ($spritePath === null) {
+            self::log('warning', 'Sprite file path escapes icons base', [
+                'spriteFile' => $settings['spriteFile'],
+                'iconSetHandle' => $iconSet->handle,
+            ]);
+            return [];
+        }
+
         if (!file_exists($spritePath)) {
             self::log('error', 'Sprite file not found', [
                 'spritePath' => $spritePath,
@@ -177,10 +185,24 @@ class SvgSprite
     /**
      * Get full path to sprite file
      */
-    protected static function getSpritePath(string $spriteFile): string
+    /**
+     * Resolve the sprite file path within the configured icons base. Returns
+     * null when the `spriteFile` setting escapes the base via `../` traversal —
+     * containment guard for admin-misconfigured icon sets, matching the
+     * pattern used by `IconsService::_scanSvgFolder()` and the controller's
+     * `actionServeFont` / `actionServeSprite` actions.
+     */
+    protected static function getSpritePath(string $spriteFile): ?string
     {
         $settings = IconManager::getInstance()->getSettings();
-        return $settings->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $spriteFile;
+        $basePath = FileHelper::normalizePath($settings->getResolvedIconSetsPath());
+        $spritePath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $spriteFile);
+
+        if (!str_starts_with($spritePath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            return null;
+        }
+
+        return $spritePath;
     }
 
     /**
@@ -250,8 +272,11 @@ class SvgSprite
             return \craft\helpers\UrlHelper::siteUrl($relativePath);
         }
 
-        // Fallback to controller action if file is outside webroot
-        return \craft\helpers\UrlHelper::cpUrl('icon-manager/icons/serve-sprite', [
+        // Fallback to controller action if file is outside webroot. Use actionUrl
+        // so the URL works on both CP and site templates (`serve-sprite` is in
+        // `$allowAnonymous`); cpUrl would leak the CP trigger path and return 403
+        // for unauthenticated front-end visitors.
+        return \craft\helpers\UrlHelper::actionUrl('icon-manager/icons/serve-sprite', [
             'iconSet' => $iconSet->handle,
             'file' => basename($settings['spriteFile']),
         ]);
