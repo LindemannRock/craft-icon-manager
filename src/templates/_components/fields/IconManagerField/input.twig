@@ -7,28 +7,6 @@
 
 {% import "_includes/forms" as forms %}
 
-{% if craft.app.config.general.devMode %}
-{# DEBUG: Show current site info (devMode only) #}
-{% set currentSite = craft.app.sites.currentSite %}
-{% set siteParam = craft.app.request.getParam('site') %}
-{% set siteFromParam = siteParam ? craft.app.sites.getSiteByHandle(siteParam) : null %}
-<div style="background: #fef3c7; border: 2px solid #f59e0b; padding: 12px; margin-bottom: 16px; font-family: monospace; font-size: 13px;">
-    <strong>DEBUG (devMode):</strong><br>
-    <strong>currentSite:</strong> ID={{ currentSite.id }} Handle={{ currentSite.handle }} Lang={{ currentSite.language }}<br>
-    <strong>URL ?site param:</strong> {{ siteParam ?? 'NOT SET' }}<br>
-    <strong>Site from param:</strong> {{ siteFromParam ? 'ID=' ~ siteFromParam.id ~ ' Lang=' ~ siteFromParam.language : 'NULL' }}<br>
-    {% if field.allowMultiple and value and value|length > 0 %}
-        <strong>Icons:</strong><br>
-        {% for icon in value %}
-            [{{ loop.index0 }}] {{ icon.name }}<br>
-            &nbsp;&nbsp;getDisplayLabel(): {{ icon.getDisplayLabel() }}<br>
-            &nbsp;&nbsp;customLabel: {{ icon.customLabel ?? 'null' }}<br>
-            &nbsp;&nbsp;getSiteSpecificCustomLabel(): {{ icon.getSiteSpecificCustomLabel() ?? 'null' }}<br>
-        {% endfor %}
-    {% endif %}
-</div>
-{% endif %}
-
 <div id="{{ id }}" class="icon-manager-field icon-size-{{ field.iconSize }}">
     {# Inject sprites for any sprite icon sets being used #}
     {% set spriteIconSets = [] %}
