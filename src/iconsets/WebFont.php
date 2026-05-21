@@ -49,6 +49,14 @@ class WebFont
 
         $fontPath = self::getFontPath($settings['fontFile']);
 
+        if ($fontPath === null) {
+            self::log('warning', 'Font file path escapes icons base', [
+                'fontFile' => $settings['fontFile'],
+                'iconSetHandle' => $iconSet->handle,
+            ]);
+            return [];
+        }
+
         if (!file_exists($fontPath)) {
             self::log('error', 'Font file not found', [
                 'fontPath' => $fontPath,
@@ -176,10 +184,23 @@ class WebFont
     /**
      * Get full path to font file
      */
-    protected static function getFontPath(string $fontFile): string
+    /**
+     * Resolve the font file path within the configured icons base. Returns
+     * null when the `fontFile` setting escapes the base via `../` traversal —
+     * containment guard for admin-misconfigured icon sets, matching the
+     * pattern used by the controller's `actionServeFont` action.
+     */
+    protected static function getFontPath(string $fontFile): ?string
     {
         $settings = IconManager::getInstance()->getSettings();
-        return $settings->getResolvedIconSetsPath() . DIRECTORY_SEPARATOR . $fontFile;
+        $basePath = FileHelper::normalizePath($settings->getResolvedIconSetsPath());
+        $fontPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $fontFile);
+
+        if (!str_starts_with($fontPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            return null;
+        }
+
+        return $fontPath;
     }
 
     /**
@@ -205,7 +226,6 @@ class WebFont
             return '';
         }
 
-        $fontPath = self::getFontPath($settings['fontFile']);
         $fontName = pathinfo($settings['fontFile'], PATHINFO_FILENAME);
         $cssPrefix = $settings['cssPrefix'] ?? 'icon';
 
