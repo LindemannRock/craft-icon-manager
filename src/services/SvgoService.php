@@ -150,12 +150,19 @@ class SvgoService extends Component
         $folder = $settings['folder'] ?? '';
         $includeSubfolders = $settings['includeSubfolders'] ?? false;
 
-        $basePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath();
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
 
         if (empty($folder)) {
             $folderPath = $basePath;
         } else {
             $folderPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $folder);
+        }
+
+        // Containment guard — same pattern as IconsService::_scanSvgFolder().
+        // Admin-controlled `folder = '../...'` would otherwise let SVGO
+        // overwrite `.svg`-named files anywhere on disk.
+        if (!str_starts_with($folderPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+            throw new \Exception("Icon set folder escapes the configured icons base.");
         }
 
         if (!is_dir($folderPath)) {
