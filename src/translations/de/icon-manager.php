@@ -122,19 +122,11 @@ return [
 
     // Settings: General
     'General Settings' => 'Allgemeine Einstellungen',
-    'Plugin Name' => 'Plugin-Name',
-    'The name of the plugin as it appears in the Control Panel menu' => 'Der Name des Plugins, wie er im Control-Panel-Menü erscheint',
     'Icon Sets Path' => 'Icon-Pfad',
     'Provide the full path to your icon files. Also supports aliases.' => 'Geben Sie den vollständigen Pfad zu Ihren Icon-Dateien an. Aliase werden ebenfalls unterstützt.',
 
     // Settings: Logging
     'Logging Settings' => 'Protokollierungseinstellungen',
-    'Log Level' => 'Protokollierungsstufe',
-    'Choose what types of messages to log. Debug level requires devMode to be enabled.' => 'Wählen Sie, welche Arten von Meldungen protokolliert werden sollen. Die Debug-Stufe erfordert aktiviertes devMode.',
-    'Error (Critical errors only)' => 'Fehler (Nur kritische Fehler)',
-    'Warning (Errors and warnings)' => 'Warnung (Fehler und Warnungen)',
-    'Info (General information)' => 'Info (Allgemeine Informationen)',
-    'Debug (Detailed debugging)' => 'Debug (Detailliertes Debugging)',
 
     // Settings: Cache
     'Cache Settings' => 'Cache-Einstellungen',
@@ -277,8 +269,6 @@ return [
 
     // Settings: Interface
     'Interface Settings' => 'Oberflächen-Einstellungen',
-    'Items Per Page' => 'Einträge pro Seite',
-    'Number of icon sets to show per page' => 'Anzahl der Icon-Sets, die pro Seite angezeigt werden',
 
     // Icon Sets: Index
     'New Icon Set' => 'Neues Icon-Set',
@@ -489,13 +479,10 @@ return [
     'Create an SVG Folder icon set to scan for quality issues.' => 'Erstellen Sie ein SVG-Ordner-Icon-Set, um nach Qualitätsproblemen zu scannen.',
 
     // Config overrides
-    'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.' => 'Diese Einstellung wird durch <code>pluginName</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.',
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Diese Einstellung wird durch <code>iconSetsPath</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Diese Einstellung wird durch <code>enableCache</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Diese Einstellung wird durch <code>cacheDuration</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.',
     'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Diese Einstellung wird durch <code>cacheStorageMethod</code> in <code>config/icon-manager.php</code> überschrieben.',
-    'This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>.' => 'Diese Einstellung wird durch <code>itemsPerPage</code> in <code>config/icon-manager.php</code> überschrieben.',
-    'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.' => 'Diese Einstellung wird durch <code>logLevel</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Diese Einstellung wird durch <code>enabledIconTypes['svg-folder']</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Diese Einstellung wird durch <code>enabledIconTypes['svg-sprite']</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Diese Einstellung wird durch <code>enabledIconTypes['font-awesome']</code> in der <code>config/icon-manager.php</code>-Datei überschrieben.",

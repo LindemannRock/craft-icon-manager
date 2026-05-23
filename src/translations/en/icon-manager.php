@@ -124,19 +124,11 @@ return [
 
     // Settings: General
     'General Settings' => 'General Settings',
-    'Plugin Name' => 'Plugin Name',
-    'The name of the plugin as it appears in the Control Panel menu' => 'The name of the plugin as it appears in the Control Panel menu',
     'Icon Sets Path' => 'Icon Sets Path',
     'Provide the full path to your icon files. Also supports aliases.' => 'Provide the full path to your icon files. Also supports aliases.',
 
     // Settings: Logging
     'Logging Settings' => 'Logging Settings',
-    'Log Level' => 'Log Level',
-    'Choose what types of messages to log. Debug level requires devMode to be enabled.' => 'Choose what types of messages to log. Debug level requires devMode to be enabled.',
-    'Error (Critical errors only)' => 'Error (Critical errors only)',
-    'Warning (Errors and warnings)' => 'Warning (Errors and warnings)',
-    'Info (General information)' => 'Info (General information)',
-    'Debug (Detailed debugging)' => 'Debug (Detailed debugging)',
 
     // Settings: Cache
     'Cache Settings' => 'Cache Settings',
@@ -279,8 +271,6 @@ return [
 
     // Settings: Interface
     'Interface Settings' => 'Interface Settings',
-    'Items Per Page' => 'Items Per Page',
-    'Number of icon sets to show per page' => 'Number of icon sets to show per page',
 
     // Icon Sets: Index
     'New Icon Set' => 'New Icon Set',
@@ -491,13 +481,10 @@ return [
     'Create an SVG Folder icon set to scan for quality issues.' => 'Create an SVG Folder icon set to scan for quality issues.',
 
     // Config overrides
-    'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.' => 'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.',
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.',
     'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>.' => 'This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.' => 'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file.",

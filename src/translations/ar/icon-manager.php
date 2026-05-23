@@ -122,19 +122,11 @@ return [
 
     // Settings: General
     'General Settings' => 'الإعدادات العامة',
-    'Plugin Name' => 'اسم الإضافة',
-    'The name of the plugin as it appears in the Control Panel menu' => 'اسم الإضافة كما يظهر في قائمة لوحة التحكم',
     'Icon Sets Path' => 'مسار الأيقونات',
     'Provide the full path to your icon files. Also supports aliases.' => 'أدخل المسار الكامل لملفات الأيقونات. يدعم أيضاً الأسماء المستعارة.',
 
     // Settings: Logging
     'Logging Settings' => 'إعدادات التسجيل',
-    'Log Level' => 'مستوى التسجيل',
-    'Choose what types of messages to log. Debug level requires devMode to be enabled.' => 'اختر أنواع الرسائل المراد تسجيلها. يتطلب مستوى Debug تفعيل devMode.',
-    'Error (Critical errors only)' => 'خطأ (الأخطاء الحرجة فقط)',
-    'Warning (Errors and warnings)' => 'تحذير (الأخطاء والتحذيرات)',
-    'Info (General information)' => 'معلومات (معلومات عامة)',
-    'Debug (Detailed debugging)' => 'Debug (تصحيح تفصيلي)',
 
     // Settings: Cache
     'Cache Settings' => 'إعدادات Cache',
@@ -277,8 +269,6 @@ return [
 
     // Settings: Interface
     'Interface Settings' => 'إعدادات الواجهة',
-    'Items Per Page' => 'العناصر في الصفحة',
-    'Number of icon sets to show per page' => 'عدد مجموعات الأيقونات المراد عرضها في الصفحة',
 
     // Icon Sets: Index
     'New Icon Set' => 'مجموعة أيقونات جديدة',
@@ -489,13 +479,10 @@ return [
     'Create an SVG Folder icon set to scan for quality issues.' => 'أنشئ مجموعة أيقونات مجلد SVG لفحص مشكلات الجودة.',
 
     // Config overrides
-    'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>pluginName</code> في ملف <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>iconSetsPath</code> في ملف <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>enableCache</code> في ملف <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>cacheDuration</code> في ملف <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>cacheStorageMethod</code> في <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>itemsPerPage</code> في <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>logLevel</code> في ملف <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "يتم تجاوز هذا الإعداد بواسطة إعداد <code>enabledIconTypes['svg-folder']</code> في ملف <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "يتم تجاوز هذا الإعداد بواسطة إعداد <code>enabledIconTypes['svg-sprite']</code> في ملف <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "يتم تجاوز هذا الإعداد بواسطة إعداد <code>enabledIconTypes['font-awesome']</code> في ملف <code>config/icon-manager.php</code>.",

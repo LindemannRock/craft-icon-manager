@@ -122,19 +122,11 @@ return [
 
     // Settings: General
     'General Settings' => '一般設定',
-    'Plugin Name' => 'プラグイン名',
-    'The name of the plugin as it appears in the Control Panel menu' => 'コントロールパネルのメニューに表示されるプラグインの名前',
     'Icon Sets Path' => 'アイコンパス',
     'Provide the full path to your icon files. Also supports aliases.' => 'アイコンファイルへのフルパスを指定してください。エイリアスもサポートされています。',
 
     // Settings: Logging
     'Logging Settings' => 'ログ設定',
-    'Log Level' => 'ログレベル',
-    'Choose what types of messages to log. Debug level requires devMode to be enabled.' => '記録するメッセージの種類を選択してください。Debug レベルには devMode の有効化が必要です。',
-    'Error (Critical errors only)' => 'エラー（重大なエラーのみ）',
-    'Warning (Errors and warnings)' => '警告（エラーと警告）',
-    'Info (General information)' => '情報（一般情報）',
-    'Debug (Detailed debugging)' => 'Debug（詳細なデバッグ）',
 
     // Settings: Cache
     'Cache Settings' => 'キャッシュ設定',
@@ -277,8 +269,6 @@ return [
 
     // Settings: Interface
     'Interface Settings' => 'インターフェース設定',
-    'Items Per Page' => '1 ページあたりの件数',
-    'Number of icon sets to show per page' => '1 ページに表示するアイコンセットの件数',
 
     // Icon Sets: Index
     'New Icon Set' => '新しいアイコンセット',
@@ -489,13 +479,10 @@ return [
     'Create an SVG Folder icon set to scan for quality issues.' => '品質の問題をスキャンするために SVG フォルダーのアイコンセットを作成してください。',
 
     // Config overrides
-    'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>pluginName</code> 設定によって上書きされています。',
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>iconSetsPath</code> 設定によって上書きされています。',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>enableCache</code> 設定によって上書きされています。',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>cacheDuration</code> 設定によって上書きされています。',
     'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => '<code>config/icon-manager.php</code> の <code>cacheStorageMethod</code> 設定によって上書きされています。',
-    'This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>.' => '<code>config/icon-manager.php</code> の <code>itemsPerPage</code> 設定によって上書きされています。',
-    'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>logLevel</code> 設定によって上書きされています。',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "<code>config/icon-manager.php</code> ファイルの <code>enabledIconTypes['svg-folder']</code> 設定によって上書きされています。",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "<code>config/icon-manager.php</code> ファイルの <code>enabledIconTypes['svg-sprite']</code> 設定によって上書きされています。",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "<code>config/icon-manager.php</code> ファイルの <code>enabledIconTypes['font-awesome']</code> 設定によって上書きされています。",

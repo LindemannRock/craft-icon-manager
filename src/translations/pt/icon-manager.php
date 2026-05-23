@@ -122,19 +122,11 @@ return [
 
     // Settings: General
     'General Settings' => 'Definições gerais',
-    'Plugin Name' => 'Nome do plugin',
-    'The name of the plugin as it appears in the Control Panel menu' => 'O nome do plugin tal como aparece no menu do painel de controlo',
     'Icon Sets Path' => 'Caminho dos ícones',
     'Provide the full path to your icon files. Also supports aliases.' => 'Forneça o caminho completo para os seus ficheiros de ícones. Também suporta aliases.',
 
     // Settings: Logging
     'Logging Settings' => 'Definições de log',
-    'Log Level' => 'Nível de log',
-    'Choose what types of messages to log. Debug level requires devMode to be enabled.' => 'Escolha que tipos de mensagens registar. O nível Debug requer que o devMode esteja ativado.',
-    'Error (Critical errors only)' => 'Erro (apenas erros críticos)',
-    'Warning (Errors and warnings)' => 'Aviso (erros e avisos)',
-    'Info (General information)' => 'Info (informação geral)',
-    'Debug (Detailed debugging)' => 'Debug (depuração detalhada)',
 
     // Settings: Cache
     'Cache Settings' => 'Definições de cache',
@@ -277,8 +269,6 @@ return [
 
     // Settings: Interface
     'Interface Settings' => 'Definições de interface',
-    'Items Per Page' => 'Itens por página',
-    'Number of icon sets to show per page' => 'Número de conjuntos de ícones a apresentar por página',
 
     // Icon Sets: Index
     'New Icon Set' => 'Novo conjunto de ícones',
@@ -489,13 +479,10 @@ return [
     'Create an SVG Folder icon set to scan for quality issues.' => 'Crie um conjunto de ícones de pasta SVG para analisar problemas de qualidade.',
 
     // Config overrides
-    'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>pluginName</code> no ficheiro <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>iconSetsPath</code> no ficheiro <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>enableCache</code> no ficheiro <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>cacheDuration</code> no ficheiro <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Esta definição está a ser substituída por <code>cacheStorageMethod</code> em <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>.' => 'Esta definição está a ser substituída por <code>itemsPerPage</code> em <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>logLevel</code> no ficheiro <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta definição está a ser substituída por <code>enabledIconTypes['svg-folder']</code> no ficheiro <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta definição está a ser substituída por <code>enabledIconTypes['svg-sprite']</code> no ficheiro <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta definição está a ser substituída por <code>enabledIconTypes['font-awesome']</code> no ficheiro <code>config/icon-manager.php</code>.",

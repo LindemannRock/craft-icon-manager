@@ -122,19 +122,11 @@ return [
 
     // Settings: General
     'General Settings' => 'Generelle innstillinger',
-    'Plugin Name' => 'Plugin-navn',
-    'The name of the plugin as it appears in the Control Panel menu' => 'Navnet på Plugin-programmet slik det vises i kontrollpanelmenyen',
     'Icon Sets Path' => 'Ikonbane',
     'Provide the full path to your icon files. Also supports aliases.' => 'Angi full bane til ikonfilene Deres. Støtter også alias.',
 
     // Settings: Logging
     'Logging Settings' => 'Logginnstillinger',
-    'Log Level' => 'Loggnivå',
-    'Choose what types of messages to log. Debug level requires devMode to be enabled.' => 'Velg hvilke typer meldinger som skal logges. Debug-nivå krever at devMode er aktivert.',
-    'Error (Critical errors only)' => 'Feil (kun kritiske feil)',
-    'Warning (Errors and warnings)' => 'Advarsel (feil og advarsler)',
-    'Info (General information)' => 'Info (generell informasjon)',
-    'Debug (Detailed debugging)' => 'Debug (detaljert feilsøking)',
 
     // Settings: Cache
     'Cache Settings' => 'Cache-innstillinger',
@@ -277,8 +269,6 @@ return [
 
     // Settings: Interface
     'Interface Settings' => 'Grensesnittinnstillinger',
-    'Items Per Page' => 'Elementer per side',
-    'Number of icon sets to show per page' => 'Antall Icon-sett som skal vises per side',
 
     // Icon Sets: Index
     'New Icon Set' => 'Nytt Icon-sett',
@@ -489,13 +479,10 @@ return [
     'Create an SVG Folder icon set to scan for quality issues.' => 'Opprett et SVG-mappe Icon-sett for å skanne etter kvalitetsproblemer.',
 
     // Config overrides
-    'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne innstillingen overstyres av <code>pluginName</code> i filen <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne innstillingen overstyres av <code>iconSetsPath</code> i filen <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne innstillingen overstyres av <code>enableCache</code> i filen <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne innstillingen overstyres av <code>cacheDuration</code> i filen <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Denne innstillingen overstyres av <code>cacheStorageMethod</code> i <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>itemsPerPage</code> setting in <code>config/icon-manager.php</code>.' => 'Denne innstillingen overstyres av <code>itemsPerPage</code> i <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne innstillingen overstyres av <code>logLevel</code> i filen <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Denne innstillingen overstyres av <code>enabledIconTypes['svg-folder']</code> i filen <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Denne innstillingen overstyres av <code>enabledIconTypes['svg-sprite']</code> i filen <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Denne innstillingen overstyres av <code>enabledIconTypes['font-awesome']</code> i filen <code>config/icon-manager.php</code>.",
