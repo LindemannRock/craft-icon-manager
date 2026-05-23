@@ -126,6 +126,25 @@ return [
 
         'enableCache' => true,
         'cacheDuration' => 86400,             // 24 hours
+
+
+        // ========================================
+        // BASE PLUGIN OVERRIDES
+        // ========================================
+        // These settings override lindemannrock-base defaults for this plugin only.
+        // Global defaults: config/lindemannrock-base.php
+        // To customize globally: copy to config/lindemannrock-base.php
+
+        /**
+         * Date/time formatting overrides
+         * Override base plugin date/time display settings for this plugin
+         * Defaults: from config/lindemannrock-base.php
+         */
+        // 'timeFormat' => '24',      // '12' (AM/PM) or '24' (military)
+        // 'monthFormat' => 'short',  // 'numeric' (01), 'short' (Jan), 'long' (January)
+        // 'dateOrder' => 'dmy',      // 'dmy', 'mdy', 'ymd'
+        // 'dateSeparator' => '/',    // '/', '-', '.'
+        // 'showSeconds' => false,    // Show seconds in time display
     ],
 
     // Dev environment settings
