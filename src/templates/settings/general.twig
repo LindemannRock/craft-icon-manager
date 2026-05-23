@@ -28,17 +28,10 @@
 
         <h2 class="first">{{ "General Settings"|t('icon-manager') }}</h2>
 
-        {{ forms.textField({
-            label: 'Plugin Name'|t('icon-manager'),
-            instructions: 'The name of the plugin as it appears in the Control Panel menu'|t('icon-manager'),
-            id: 'pluginName',
-            name: 'settings[pluginName]',
-            value: settings.pluginName ?? 'Icon Manager',
-            placeholder: 'Icon Manager',
-            warning: settings.isOverriddenByConfig('pluginName') ? 'This is being overridden by the <code>pluginName</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('pluginName'),
-            errors: settings.getErrors('pluginName')
-        }) }}
+        {% include 'lindemannrock-base/_partials/field-plugin-name' with {
+            settings: settings,
+            pluginHandle: 'icon-manager',
+        } only %}
 
         <hr>
 
@@ -62,29 +55,10 @@
 
         <h2>{{ 'Logging Settings'|t('icon-manager') }}</h2>
 
-        {% set logOptions = [
-            {value: 'error', label: 'Error (Critical errors only)'|t('icon-manager')},
-            {value: 'warning', label: 'Warning (Errors and warnings)'|t('icon-manager')},
-            {value: 'info', label: 'Info (General information)'|t('icon-manager')},
-        ] %}
-
-        {% if craft.app.config.general.devMode %}
-            {% set logOptions = logOptions|merge([
-                {value: 'debug', label: 'Debug (Detailed debugging)'|t('icon-manager')}
-            ]) %}
-        {% endif %}
-
-        {{ forms.selectField({
-            label: 'Log Level'|t('icon-manager'),
-            instructions: 'Choose what types of messages to log. Debug level requires devMode to be enabled.'|t('icon-manager'),
-            id: 'logLevel',
-            name: 'settings[logLevel]',
-            value: settings.logLevel,
-            options: logOptions,
-            warning: settings.isOverriddenByConfig('logLevel') ? 'This is being overridden by the <code>logLevel</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
-            disabled: settings.isOverriddenByConfig('logLevel'),
-            errors: settings.getErrors('logLevel')
-        }) }}
+        {% include 'lindemannrock-base/_partials/field-log-level' with {
+            settings: settings,
+            pluginHandle: 'icon-manager',
+        } only %}
 
     {% include 'lindemannrock-base/_components/plugin-credit' %}
 {% endblock %}
