@@ -11,6 +11,10 @@ namespace lindemannrock\iconmanager\models;
 use Craft;
 use craft\base\Model;
 use craft\behaviors\EnvAttributeParserBehavior;
+use lindemannrock\base\traits\DateFormatSettingsTrait;
+use lindemannrock\base\traits\ItemsPerPageSettingsTrait;
+use lindemannrock\base\traits\LogLevelSettingsTrait;
+use lindemannrock\base\traits\PluginNameSettingsTrait;
 use lindemannrock\base\traits\SettingsConfigTrait;
 use lindemannrock\base\traits\SettingsDisplayNameTrait;
 use lindemannrock\base\traits\SettingsPersistenceTrait;
@@ -23,7 +27,11 @@ use lindemannrock\logginglibrary\traits\LoggingTrait;
  */
 class Settings extends Model
 {
+    use DateFormatSettingsTrait;
+    use ItemsPerPageSettingsTrait;
+    use LogLevelSettingsTrait;
     use LoggingTrait;
+    use PluginNameSettingsTrait;
     use SettingsConfigTrait;
     use SettingsDisplayNameTrait;
     use SettingsPersistenceTrait;
@@ -72,16 +80,6 @@ class Settings extends Model
         'material-icons' => false,
         'web-font' => false,
     ];
-
-    /**
-     * @var string Log level for the plugin
-     */
-    public string $logLevel = 'error';
-
-    /**
-     * @var int Items per page in CP element index
-     */
-    public int $itemsPerPage = 100;
 
     /**
      * @var bool Enable SVG optimization features
@@ -320,18 +318,14 @@ class Settings extends Model
      */
     protected function defineRules(): array
     {
-        return [
+        return array_merge([
             [['iconSetsPath'], 'required'],
-            [['iconSetsPath', 'pluginName', 'logLevel'], 'string'],
+            [['iconSetsPath'], 'string'],
             [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes', 'optimizeFixAttributeNames', 'optimizeRemoveAriaAndRole', 'optimizeRemoveDataAttributes', 'optimizeRemoveDuplicateElements', 'optimizeRemoveEmptyGroups', 'optimizeRemoveEmptyTextElements', 'optimizeRemoveNonStandardAttributes', 'optimizeRemoveNonStandardTags', 'optimizeRemoveTitleAndDesc', 'optimizeRemoveUnsafeElements', 'optimizeScopeSvgStyles', 'optimizeAllowRiskyRules'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['cacheStorageMethod'], 'in', 'range' => ['file', 'redis']],
-            [['itemsPerPage'], 'integer', 'min' => 10, 'max' => 500],
-            [['itemsPerPage'], 'default', 'value' => 100],
             [['enabledIconTypes'], 'safe'],
-            [['logLevel'], 'in', 'range' => ['debug', 'info', 'warning', 'error']],
-            [['logLevel'], 'validateLogLevel'],
-        ];
+        ], $this->pluginNameSettingsRules(), $this->logLevelSettingsRules(), $this->dateFormatSettingsRules(), $this->itemsPerPageSettingsRules());
     }
 
     /**
@@ -339,56 +333,11 @@ class Settings extends Model
      */
     public function attributeLabels(): array
     {
-        return [
+        return array_merge([
             'iconSetsPath' => Craft::t('icon-manager', 'Icon Sets Path'),
-            'pluginName' => Craft::t('icon-manager', 'Plugin Name'),
-            'logLevel' => Craft::t('icon-manager', 'Log Level'),
             'cacheDuration' => Craft::t('icon-manager', 'Cache Duration'),
             'cacheStorageMethod' => Craft::t('icon-manager', 'Cache Storage Method'),
-            'itemsPerPage' => Craft::t('icon-manager', 'Items Per Page'),
-        ];
-    }
-
-    /**
-     * Validate log level - debug requires devMode
-     *
-     * @param string $attribute
-     */
-    public function validateLogLevel($attribute)
-    {
-        $logLevel = $this->$attribute;
-
-        // Reset session warning when devMode is true - allows warning to show again if devMode changes
-        if (Craft::$app->getConfig()->getGeneral()->devMode && !Craft::$app->getRequest()->getIsConsoleRequest()) {
-            Craft::$app->getSession()->remove('im_debug_config_warning');
-        }
-
-        // Debug level is only allowed when devMode is enabled - auto-fallback to info
-        if ($logLevel === 'debug' && !Craft::$app->getConfig()->getGeneral()->devMode) {
-            $this->$attribute = 'info';
-
-            // Only log warning once per session for config overrides
-            if ($this->isOverriddenByConfig('logLevel')) {
-                if (!Craft::$app->getRequest()->getIsConsoleRequest()) {
-                    // Web request - use session to prevent duplicate warnings
-                    if (Craft::$app->getSession()->get('im_debug_config_warning') === null) {
-                        $this->logWarning('Log level "debug" from config file changed to "info" because devMode is disabled', [
-                            'configFile' => 'config/icon-manager.php',
-                        ]);
-                        Craft::$app->getSession()->set('im_debug_config_warning', true);
-                    }
-                } else {
-                    // Console request - just log without session
-                    $this->logWarning('Log level "debug" from config file changed to "info" because devMode is disabled', [
-                        'configFile' => 'config/icon-manager.php',
-                    ]);
-                }
-            } else {
-                // Database setting - save the correction
-                $this->logWarning('Log level automatically changed from "debug" to "info" because devMode is disabled');
-                $this->saveToDatabase();
-            }
-        }
+        ], $this->pluginNameSettingsLabel(), $this->logLevelSettingsLabel(), $this->dateFormatSettingsLabels(), $this->itemsPerPageSettingsLabel());
     }
 
     /**
@@ -488,6 +437,7 @@ class Settings extends Model
             'optimizeRemoveUnsafeElements',
             'optimizeScopeSvgStyles',
             'optimizeAllowRiskyRules',
+            'showSeconds',
         ];
     }
 
