@@ -124,6 +124,12 @@ class Install extends Migration
             'logLevel' => $this->string(20)->notNull()->defaultValue('error'),
             // UI settings
             'itemsPerPage' => $this->integer()->notNull()->defaultValue(100),
+            // Base plugin overrides (nullable — null = inherit from base config / defaults).
+            'timeFormat' => $this->string(2)->null(),
+            'monthFormat' => $this->string(20)->null(),
+            'dateOrder' => $this->string(3)->null(),
+            'dateSeparator' => $this->string(1)->null(),
+            'showSeconds' => $this->boolean()->null(),
             // System fields
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),
@@ -190,6 +196,12 @@ class Install extends Migration
             'optimizeSortAttributes' => true,
             'logLevel' => 'error',
             'itemsPerPage' => 100,
+            // Base plugin overrides — seeded null so cascade falls through to base config / defaults.
+            'timeFormat' => null,
+            'monthFormat' => null,
+            'dateOrder' => null,
+            'dateSeparator' => null,
+            'showSeconds' => null,
             'dateCreated' => Db::prepareDateForDb(new \DateTime()),
             'dateUpdated' => Db::prepareDateForDb(new \DateTime()),
             'uid' => StringHelper::UUID(),
