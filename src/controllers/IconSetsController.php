@@ -351,8 +351,7 @@ class IconSetsController extends Controller
 
         Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Icon set saved.'));
 
-        // Always redirect to the edit page after saving
-        return $this->redirect('icon-manager/icon-sets/' . $iconSet->id);
+        return $this->redirectToPostedUrl($iconSet);
     }
 
     /**
