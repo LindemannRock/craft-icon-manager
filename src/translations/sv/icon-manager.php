@@ -62,7 +62,6 @@ return [
     'Handle' => 'Handtag',
     'Icons' => 'Ikoner',
     'Label' => 'Etikett',
-    'Live' => 'Live',
     'Name' => 'Namn',
     'Path' => 'Sökväg',
     'Refresh Icons' => 'Uppdatera ikoner',

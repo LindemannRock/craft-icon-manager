@@ -62,7 +62,6 @@ return [
     'Handle' => 'ハンドル',
     'Icons' => 'アイコン',
     'Label' => 'ラベル',
-    'Live' => 'ライブ',
     'Name' => '名前',
     'Path' => 'パス',
     'Refresh Icons' => 'アイコンを更新する',

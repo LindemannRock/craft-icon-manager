@@ -62,7 +62,6 @@ return [
     'Handle' => 'Handle',
     'Icons' => 'Icone',
     'Label' => 'Etichetta',
-    'Live' => 'Live',
     'Name' => 'Nome',
     'Path' => 'Percorso',
     'Refresh Icons' => 'Aggiorna icone',

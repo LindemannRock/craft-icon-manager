@@ -62,7 +62,6 @@ return [
     'Handle' => 'Handle',
     'Icons' => 'Icons',
     'Label' => 'Bezeichnung',
-    'Live' => 'Live',
     'Name' => 'Name',
     'Path' => 'Pfad',
     'Refresh Icons' => 'Icons aktualisieren',

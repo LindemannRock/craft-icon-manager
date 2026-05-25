@@ -62,7 +62,6 @@ return [
     'Handle' => 'Handle',
     'Icons' => 'Ikoner',
     'Label' => 'Etiket',
-    'Live' => 'Live',
     'Name' => 'Navn',
     'Path' => 'Sti',
     'Refresh Icons' => 'Opdater ikoner',
