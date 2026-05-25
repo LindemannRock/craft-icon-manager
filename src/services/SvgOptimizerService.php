@@ -740,13 +740,14 @@ class SvgOptimizerService extends Component
             $backupName = basename($backupPath);
             $size = $this->getDirectorySize($backupPath);
             $timestamp = filemtime($backupPath);
+            $dateTime = (new \DateTime('@' . $timestamp))->setTimezone(new \DateTimeZone('UTC'));
 
             $backups[] = [
                 'name' => $backupName,
                 'path' => $backupPath,
                 'size' => $size,
                 'date' => $timestamp,
-                'formattedDate' => date('Y-m-d H:i:s', $timestamp),
+                'dateTime' => $dateTime,
             ];
         }
 
