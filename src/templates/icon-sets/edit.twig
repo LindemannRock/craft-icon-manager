@@ -73,11 +73,7 @@
 
 {% block content %}
     {{ actionInput('icon-manager/icon-sets/save') }}
-    {% if iconSet.id %}
-        {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id) }}
-    {% else %}
-        {{ redirectInput('icon-manager/icon-sets/{id}') }}
-    {% endif %}
+    {{ redirectInput('icon-manager/icon-sets') }}
 
     {% if not isNew %}
         {{ hiddenInput('iconSetId', iconSet.id) }}
