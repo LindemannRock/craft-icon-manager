@@ -70,6 +70,7 @@ return [
     'Refresh Icons' => 'Uppdatera ikoner',
     'Restore' => 'Återställ',
     'Save' => 'Spara',
+    'Save and continue editing' => 'Spara och fortsätt redigera',
     'Set status' => 'Ställ in status',
     'Size' => 'Storlek',
     'Sort Order' => 'Sorteringsordning',

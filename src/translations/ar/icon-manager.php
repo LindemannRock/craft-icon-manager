@@ -70,6 +70,7 @@ return [
     'Refresh Icons' => 'تحديث الأيقونات',
     'Restore' => 'استعادة',
     'Save' => 'حفظ',
+    'Save and continue editing' => 'حفظ وإكمال التحرير',
     'Set status' => 'تعيين الحالة',
     'Size' => 'الحجم',
     'Sort Order' => 'ترتيب الفرز',

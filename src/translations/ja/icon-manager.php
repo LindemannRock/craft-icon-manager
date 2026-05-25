@@ -70,6 +70,7 @@ return [
     'Refresh Icons' => 'アイコンを更新する',
     'Restore' => '復元する',
     'Save' => '保存する',
+    'Save and continue editing' => '保存して編集を続ける',
     'Set status' => 'ステータスを設定する',
     'Size' => 'サイズ',
     'Sort Order' => '並び順',

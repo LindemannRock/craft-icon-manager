@@ -68,6 +68,7 @@ return [
     'Refresh Icons' => 'Refresh Icons',
     'Restore' => 'Restore',
     'Save' => 'Save',
+    'Save and continue editing' => 'Save and continue editing',
     'Set status' => 'Set status',
     'Size' => 'Size',
     'Sort Order' => 'Sort Order',

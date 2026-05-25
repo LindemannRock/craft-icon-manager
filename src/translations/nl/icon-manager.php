@@ -70,6 +70,7 @@ return [
     'Refresh Icons' => 'Iconen vernieuwen',
     'Restore' => 'Herstellen',
     'Save' => 'Opslaan',
+    'Save and continue editing' => 'Opslaan en doorgaan met aanpassen',
     'Set status' => 'Status instellen',
     'Size' => 'Grootte',
     'Sort Order' => 'Sorteervolgorde',

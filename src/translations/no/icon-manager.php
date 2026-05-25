@@ -70,6 +70,7 @@ return [
     'Refresh Icons' => 'Oppdater ikoner',
     'Restore' => 'Gjenopprett',
     'Save' => 'Lagre',
+    'Save and continue editing' => 'Lagre og fortsett redigering',
     'Set status' => 'Sett status',
     'Size' => 'Størrelse',
     'Sort Order' => 'Sorteringsrekkefølge',

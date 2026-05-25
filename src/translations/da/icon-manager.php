@@ -70,6 +70,7 @@ return [
     'Refresh Icons' => 'Opdater ikoner',
     'Restore' => 'Gendan',
     'Save' => 'Gem',
+    'Save and continue editing' => 'Gem og fortsæt med redigering',
     'Set status' => 'Indstil status',
     'Size' => 'Størrelse',
     'Sort Order' => 'Sorteringsrækkefølge',
