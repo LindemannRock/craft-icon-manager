@@ -182,16 +182,16 @@
         actions: {
             type: 'menu',
             icon: 'settings',
-            title: 'Actions'|t('app'),
+            title: 'Actions'|t('icon-manager'),
             items: [
                 {
-                    label: 'Edit'|t('app'),
+                    label: 'Edit'|t('icon-manager'),
                     url: url('icon-manager/icon-sets/' ~ item.id),
                     permission: 'iconManager:editIconSets',
                 },
                 {type: 'divider'},
                 {
-                    label: 'Delete'|t('app'),
+                    label: 'Delete'|t('icon-manager'),
                     class: 'error',
                     permission: 'iconManager:deleteIconSets',
                     jsAction: 'delete',
@@ -205,8 +205,8 @@
 {% block bulkActions %}
     {% if canEdit %}
         <div>
-            <button type="button" class="btn menubtn secondary" id="lr-bulk-status-btn" aria-label="{{ 'Set status'|t('app') }}">
-                {{ 'Set status'|t('app') }}
+            <button type="button" class="btn menubtn secondary" id="lr-bulk-status-btn" aria-label="{{ 'Set status'|t('icon-manager') }}">
+                {{ 'Set status'|t('icon-manager') }}
             </button>
             <div class="menu">
                 <ul>
@@ -218,10 +218,10 @@
     {% endif %}
     {% if canDelete %}
         <div>
-            <button type="button" class="btn secondary menubtn" data-icon="settings" title="{{ 'Actions'|t('app') }}" id="lr-bulk-actions-btn"></button>
+            <button type="button" class="btn secondary menubtn" data-icon="settings" title="{{ 'Actions'|t('icon-manager') }}" id="lr-bulk-actions-btn"></button>
             <div class="menu">
                 <ul>
-                    <li><a id="lr-bulk-delete-action" class="error">{{ 'Delete...'|t('app') }}</a></li>
+                    <li><a id="lr-bulk-delete-action" class="error">{{ 'Delete...'|t('icon-manager') }}</a></li>
                 </ul>
             </div>
         </div>

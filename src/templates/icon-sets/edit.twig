@@ -41,7 +41,7 @@
 
 {% block actionButton %}
     <div id="save-button-container">
-        <input type="submit" class="btn submit" value="{{ 'Save'|t('app') }}">
+        <input type="submit" class="btn submit" value="{{ 'Save'|t('icon-manager') }}">
     </div>
 
     {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization and canManageOptimization %}
@@ -396,11 +396,11 @@
                     <dd class="value">{{ iconSet.type }}</dd>
                 </div>
                 <div class="data">
-                    <dt class="heading">{{ 'Created at'|t('app') }}</dt>
+                    <dt class="heading">{{ 'Created at'|t('icon-manager') }}</dt>
                     <dd class="value">{{ iconSet.dateCreated|lrDatetime }}</dd>
                 </div>
                 <div class="data">
-                    <dt class="heading">{{ 'Updated at'|t('app') }}</dt>
+                    <dt class="heading">{{ 'Updated at'|t('icon-manager') }}</dt>
                     <dd class="value">{{ iconSet.dateUpdated|lrDatetime }}</dd>
                 </div>
             </dl>
