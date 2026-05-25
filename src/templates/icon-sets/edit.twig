@@ -10,6 +10,8 @@
 
 {% set fullPageForm = true %}
 {% set selectedSubnavItem = 'icon-sets' %}
+{% set saveShortcutRedirect = cpUrl('icon-manager/icon-sets/{id}') %}
+{% set retainScrollOnSaveShortcut = true %}
 
 {% set title = isNew ? 'New Icon Set'|t('icon-manager') : iconSet.name %}
 {% set pluginName = iconHelper.fullName %}
@@ -41,7 +43,20 @@
 
 {% block actionButton %}
     <div id="save-button-container">
-        <input type="submit" class="btn submit" value="{{ 'Save'|t('icon-manager') }}">
+        <div class="btngroup submit">
+            <button type="submit" class="btn submit">{{ 'Save'|t('icon-manager') }}</button>
+            <button type="button" class="btn submit menubtn"></button>
+            <div class="menu">
+                <ul role="listbox">
+                    <li>
+                        <a class="formsubmit" role="option" tabindex="0" data-redirect="{{ cpUrl('icon-manager/icon-sets/{id}')|hash }}">
+                            <span class="label">{{ 'Save and continue editing'|t('icon-manager') }}</span>
+                            <span class="shortcut" id="save-shortcut"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     {% if not isNew and iconSet.type in ['svg-folder', 'folder'] and plugin.settings.enableOptimization and canManageOptimization %}
