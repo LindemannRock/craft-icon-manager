@@ -3,6 +3,14 @@
  #
  # Uses the base plugin's cp-table layout for consistent styling.
  #
+ # Follows the canonical CP table index-page pattern (in-memory variant) —
+ # see plugins/base/docs/template-guides/cp-table-index-pattern.md.
+ # IconSetsController::actionIndex() owns query-param parsing, allowlist
+ # validation, filter, sort, and pagination. This template stays
+ # presentational and renders the already-sliced `iconSets` plus the
+ # filter/sort state handed in. Permission booleans (`canCreate`, `canEdit`,
+ # `canDelete`) likewise arrive from the controller.
+ #
  # @link      https://lindemannrock.com
  # @copyright Copyright (c) 2026 LindemannRock
  #}
@@ -11,18 +19,6 @@
 
 {% set plugin = craft.app.plugins.getPlugin('icon-manager') %}
 {% set settings = plugin.settings %}
-
-{# Permission checks #}
-{% set canCreate = currentUser.can('iconManager:createIconSets') %}
-{% set canEdit = currentUser.can('iconManager:editIconSets') %}
-{% set canDelete = currentUser.can('iconManager:deleteIconSets') %}
-
-{# Get query parameters #}
-{% set search = craft.app.request.getParam('search', '') %}
-{% set statusFilter = craft.app.request.getParam('status', 'all') %}
-{% set typeFilter = craft.app.request.getParam('type', 'all') %}
-{% set sort = craft.app.request.getParam('sort', 'name') %}
-{% set dir = craft.app.request.getParam('dir', 'asc') %}
 
 {# Build columns array - conditionally include Optimize column #}
 {% set columns = [
@@ -112,7 +108,6 @@
     newButton: canCreate ? {
         url: url('icon-manager/icon-sets/new'),
         label: 'New Icon Set'|t('icon-manager'),
-        permission: 'iconManager:createIconSets',
     } : null,
 } %}
 
@@ -236,118 +231,113 @@
 {% block scripts %}
 <script>
 (function() {
-    const canEdit = {{ canEdit ? 'true' : 'false' }};
-    const canDelete = {{ canDelete ? 'true' : 'false' }};
+    if (typeof Craft === 'undefined') return;
 
-    // Selection state (managed by cp-table layout)
-    let selectedIds = new Set();
-
-    // Listen for selection changes from cp-table
-    document.addEventListener('lr:selectionChanged', function(e) {
-        selectedIds = new Set(e.detail.selectedIds);
-    });
-
-    // Initialize bulk action menu buttons
+    // Initialise menubtn instances — without `new Craft.MenuBtn(...)`, the
+    // bulk-action buttons don't open their menus so the items inside are
+    // unreachable.
     const bulkStatusBtn = document.getElementById('lr-bulk-status-btn');
-    if (bulkStatusBtn && typeof Craft !== 'undefined' && Craft.MenuBtn) {
+    if (bulkStatusBtn && Craft.MenuBtn) {
         new Craft.MenuBtn(bulkStatusBtn);
     }
-
     const bulkActionsBtn = document.getElementById('lr-bulk-actions-btn');
-    if (bulkActionsBtn && typeof Craft !== 'undefined' && Craft.MenuBtn) {
+    if (bulkActionsBtn && Craft.MenuBtn) {
         new Craft.MenuBtn(bulkActionsBtn);
     }
 
-    // Bulk enable
-    document.getElementById('lr-bulk-enable-action')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        const ids = Array.from(selectedIds);
-        if (ids.length === 0) return;
+    // Pre-translated strings: keep |t() in Twig (so they're translatable)
+    // and emit as JSON-encoded JS literals via |json_encode|raw — avoids
+    // the |e('js') trap (produces \uXXXX garbage when re-quoted).
+    const T = {
+        iconSetDeleted: {{ 'Icon set deleted'|t('icon-manager')|json_encode|raw }},
+        deleteFailed: {{ 'Failed to delete icon set'|t('icon-manager')|json_encode|raw }},
+        deleteConfirmTemplate: {{ 'Delete icon set "{name}"? This cannot be undone.'|t('icon-manager')|json_encode|raw }},
+        bulkEnabledTemplate: {{ 'Enabled {count} icon sets'|t('icon-manager')|json_encode|raw }},
+        bulkEnableFailed: {{ 'Failed to enable icon sets'|t('icon-manager')|json_encode|raw }},
+        bulkDisabledTemplate: {{ 'Disabled {count} icon sets'|t('icon-manager')|json_encode|raw }},
+        bulkDisableFailed: {{ 'Failed to disable icon sets'|t('icon-manager')|json_encode|raw }},
+        bulkDeletedTemplate: {{ 'Deleted {count} icon sets'|t('icon-manager')|json_encode|raw }},
+        bulkDeleteFailed: {{ 'Failed to delete icon sets'|t('icon-manager')|json_encode|raw }},
+        bulkDeleteConfirmTemplate: {{ 'Delete {count} icon set(s)? This cannot be undone.'|t('icon-manager')|json_encode|raw }},
+    };
 
-        Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-enable', {
-            data: { iconSetIds: ids }
+    function selectedIds() {
+        return window.lrTableSelection ? window.lrTableSelection.getSelectedIds() : [];
+    }
+
+    // ---------------------------------------------------------------------
+    // Row-action handlers. Delegated listener on `document`, narrowed by
+    // `a[data-action]` + an explicit action-name allowlist. preventDefault
+    // only after the match — leaves unrelated `data-action` elements
+    // (e.g. Craft toolbar forms) alone. See cp-table-index-pattern.md.
+    // Confirmation lives here (single source of truth); do not also set
+    // `confirm:` on the action item.
+    // ---------------------------------------------------------------------
+    document.addEventListener('click', function(e) {
+        const trigger = e.target.closest('a[data-action]');
+        if (!trigger) return;
+
+        const action = trigger.dataset.action;
+        if (action !== 'delete') return;
+
+        const id = parseInt(trigger.dataset.id || '0', 10);
+        const name = trigger.dataset.name || '';
+        if (!id) return;
+        e.preventDefault();
+
+        if (!confirm(T.deleteConfirmTemplate.replace('{name}', name))) return;
+
+        Craft.sendActionRequest('POST', 'icon-manager/icon-sets/delete', {
+            data: { iconSetId: id },
         }).then(function(response) {
             if (response.data.success) {
-                Craft.cp.displayNotice(`Enabled ${response.data.enabled} icon set${response.data.enabled > 1 ? 's' : ''}`);
-                setTimeout(() => window.location.reload(), 1000);
+                Craft.cp.displayNotice(T.iconSetDeleted);
+                setTimeout(function() { window.location.reload(); }, 500);
+            } else if (response.data.error) {
+                Craft.cp.displayError(response.data.error);
             }
-        }).catch(function(error) {
-            Craft.cp.displayError('{{ 'Failed to enable icon sets'|t('icon-manager')|e('js') }}');
+        }).catch(function() {
+            Craft.cp.displayError(T.deleteFailed);
         });
     });
 
-    // Bulk disable
-    document.getElementById('lr-bulk-disable-action')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        const ids = Array.from(selectedIds);
-        if (ids.length === 0) return;
-
-        Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-disable', {
-            data: { iconSetIds: ids }
+    // ---------------------------------------------------------------------
+    // Bulk actions. Each posts the selected IDs to its endpoint; the
+    // controller returns `count` (rows successfully changed).
+    // ---------------------------------------------------------------------
+    function runBulkStatus(endpoint, successTemplate, errorFallback) {
+        const ids = selectedIds();
+        if (!ids.length) return;
+        Craft.sendActionRequest('POST', endpoint, {
+            data: { iconSetIds: ids },
         }).then(function(response) {
-            if (response.data.success) {
-                Craft.cp.displayNotice(`Disabled ${response.data.disabled} icon set${response.data.disabled > 1 ? 's' : ''}`);
-                setTimeout(() => window.location.reload(), 1000);
+            const count = response.data.count || 0;
+            if (count > 0) {
+                Craft.cp.displayNotice(successTemplate.replace('{count}', count));
+                setTimeout(function() { window.location.reload(); }, 1000);
             }
-        }).catch(function(error) {
-            Craft.cp.displayError('{{ 'Failed to disable icon sets'|t('icon-manager')|e('js') }}');
-        });
-    });
-
-    // Bulk delete
-    document.getElementById('lr-bulk-delete-action')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        const ids = Array.from(selectedIds);
-        if (ids.length === 0) return;
-
-        if (!confirm(`{{ 'Delete'|t('app')|e('js') }} ${ids.length} {{ 'icon set'|t('icon-manager')|e('js') }}${ids.length > 1 ? 's' : ''}?`)) return;
-
-        Craft.sendActionRequest('POST', 'icon-manager/icon-sets/bulk-delete', {
-            data: { iconSetIds: ids }
-        }).then(function(response) {
-            if (response.data.success) {
-                Craft.cp.displayNotice(`Deleted ${response.data.deleted} icon set${response.data.deleted > 1 ? 's' : ''}`);
-                setTimeout(() => window.location.reload(), 1000);
-            }
-        }).catch(function(error) {
-            Craft.cp.displayError('{{ 'Failed to delete icon sets'|t('icon-manager')|e('js') }}');
-        });
-    });
-
-    // Individual delete from row-actions menu
-    function attachDeleteListeners() {
-        document.querySelectorAll('[data-action="delete"]').forEach(deleteLink => {
-            if (deleteLink._hasListener) return;
-            deleteLink._hasListener = true;
-
-            deleteLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const row = this.closest('tr');
-                const id = this.dataset.id;
-                const name = this.dataset.name;
-
-                if (!confirm(`{{ 'Delete'|t('app')|e('js') }} "${name}"?`)) return;
-
-                Craft.sendActionRequest('POST', 'icon-manager/icon-sets/delete', {
-                    data: { iconSetId: id }
-                }).then(function(response) {
-                    if (response.data.success) {
-                        row.remove();
-                        Craft.cp.displayNotice('{{ 'Icon set deleted'|t('icon-manager')|e('js') }}');
-
-                        // Check if table is now empty
-                        if (document.querySelectorAll('tbody tr').length === 0) {
-                            window.location.reload();
-                        }
-                    }
-                }).catch(function(error) {
-                    Craft.cp.displayError('{{ 'Failed to delete icon set'|t('icon-manager')|e('js') }}');
-                });
-            });
+        }).catch(function() {
+            Craft.cp.displayError(errorFallback);
         });
     }
-    attachDeleteListeners();
+
+    document.getElementById('lr-bulk-enable-action')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        runBulkStatus('icon-manager/icon-sets/bulk-enable', T.bulkEnabledTemplate, T.bulkEnableFailed);
+    });
+
+    document.getElementById('lr-bulk-disable-action')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        runBulkStatus('icon-manager/icon-sets/bulk-disable', T.bulkDisabledTemplate, T.bulkDisableFailed);
+    });
+
+    document.getElementById('lr-bulk-delete-action')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        const ids = selectedIds();
+        if (!ids.length) return;
+        if (!confirm(T.bulkDeleteConfirmTemplate.replace('{count}', ids.length))) return;
+        runBulkStatus('icon-manager/icon-sets/bulk-delete', T.bulkDeletedTemplate, T.bulkDeleteFailed);
+    });
 })();
 </script>
 {% endblock %}
