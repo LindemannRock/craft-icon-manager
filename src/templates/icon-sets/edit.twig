@@ -384,7 +384,7 @@
                     <dt class="heading">{{ 'Status'|t('icon-manager') }}</dt>
                     <dd class="value">
                         <span class="status {{ iconSet.enabled ? 'live' : 'disabled' }}"></span>
-                        <span>{{ iconSet.enabled ? 'Live'|t('icon-manager') : 'Disabled'|t('icon-manager') }}</span>
+                        <span>{{ iconSet.enabled ? 'Enabled'|t('icon-manager') : 'Disabled'|t('icon-manager') }}</span>
                     </dd>
                 </div>
                 <div class="data">
@@ -396,11 +396,11 @@
                     <dd class="value">{{ iconSet.type }}</dd>
                 </div>
                 <div class="data">
-                    <dt class="heading">{{ 'Created'|t('app') }}</dt>
+                    <dt class="heading">{{ 'Created at'|t('app') }}</dt>
                     <dd class="value">{{ iconSet.dateCreated|lrDatetime }}</dd>
                 </div>
                 <div class="data">
-                    <dt class="heading">{{ 'Updated'|t('app') }}</dt>
+                    <dt class="heading">{{ 'Updated at'|t('app') }}</dt>
                     <dd class="value">{{ iconSet.dateUpdated|lrDatetime }}</dd>
                 </div>
             </dl>

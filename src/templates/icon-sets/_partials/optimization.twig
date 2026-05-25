@@ -364,7 +364,7 @@
                             <code style="font-size: 12px;">{{ backup.name }}</code>
                         </td>
                         <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
-                            {{ backup.formattedDate }}
+                            {{ backup.dateTime|lrDatetime }}
                         </td>
                         <td class="thin" style="padding: 8px; text-align: center; border: 1px solid #e5e7eb;">
                             {{ craft.iconManager.svgOptimizer.formatFileSize(backup.size) }}
