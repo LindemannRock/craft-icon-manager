@@ -292,6 +292,7 @@ return [
     'Manage Icon Sets' => 'Gestionar conjuntos de iconos',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => '¿Está seguro de que desea eliminar este conjunto de iconos?',
     'Choose a type' => 'Elegir un tipo',
     'What this icon set will be called in the control panel.' => 'Cómo se llamará este conjunto de iconos en el panel de control.',
     "How you'll refer to this icon set in templates." => 'Cómo hará referencia a este conjunto de iconos en las plantillas.',

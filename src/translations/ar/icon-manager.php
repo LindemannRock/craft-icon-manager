@@ -292,6 +292,7 @@ return [
     'Manage Icon Sets' => 'إدارة مجموعات الأيقونات',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => 'هل أنت متأكد أنك تريد حذف مجموعة الأيقونات هذه؟',
     'Choose a type' => 'اختر نوعاً',
     'What this icon set will be called in the control panel.' => 'ما الاسم الذي ستُعرف به مجموعة الأيقونات هذه في لوحة التحكم.',
     "How you'll refer to this icon set in templates." => 'كيف ستشير إلى مجموعة الأيقونات هذه في القوالب.',

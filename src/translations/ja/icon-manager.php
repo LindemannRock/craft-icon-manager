@@ -292,6 +292,7 @@ return [
     'Manage Icon Sets' => 'アイコンセットを管理する',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => 'このアイコンセットを削除しますか？',
     'Choose a type' => 'タイプを選択してください',
     'What this icon set will be called in the control panel.' => 'コントロールパネルでのこのアイコンセットの名前です。',
     "How you'll refer to this icon set in templates." => 'テンプレートでこのアイコンセットを参照する方法です。',

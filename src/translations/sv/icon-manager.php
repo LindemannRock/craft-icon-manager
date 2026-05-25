@@ -292,6 +292,7 @@ return [
     'Manage Icon Sets' => 'Hantera ikonuppsättningar',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => 'Är ni säkra på att ni vill ta bort den här ikonuppsättningen?',
     'Choose a type' => 'Välj en typ',
     'What this icon set will be called in the control panel.' => 'Vad den här ikonuppsättningen kommer att heta i kontrollpanelen.',
     "How you'll refer to this icon set in templates." => 'Hur ni refererar till den här ikonuppsättningen i mallar.',

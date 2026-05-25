@@ -290,6 +290,7 @@ return [
     'Manage Icon Sets' => 'Manage Icon Sets',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => 'Are you sure you want to delete this icon set?',
     'Choose a type' => 'Choose a type',
     'What this icon set will be called in the control panel.' => 'What this icon set will be called in the control panel.',
     "How you'll refer to this icon set in templates." => "How you'll refer to this icon set in templates.",

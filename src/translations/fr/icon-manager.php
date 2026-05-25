@@ -292,6 +292,7 @@ return [
     'Manage Icon Sets' => 'Gérer les jeux d\'icônes',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => 'Voulez-vous vraiment supprimer ce jeu d\'icônes ?',
     'Choose a type' => 'Choisir un type',
     'What this icon set will be called in the control panel.' => 'Le nom sous lequel ce jeu d\'icônes apparaîtra dans le panneau de contrôle.',
     "How you'll refer to this icon set in templates." => 'Comment vous ferez référence à ce jeu d\'icônes dans les templates.',

@@ -292,6 +292,7 @@ return [
     'Manage Icon Sets' => 'Administrer Icon-sett',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => 'Er De sikker på at De vil slette dette Icon-settet?',
     'Choose a type' => 'Velg en type',
     'What this icon set will be called in the control panel.' => 'Hva dette Icon-settet vil hete i kontrollpanelet.',
     "How you'll refer to this icon set in templates." => 'Hvordan De vil referere til dette Icon-settet i maler.',

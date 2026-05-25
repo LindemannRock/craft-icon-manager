@@ -292,6 +292,7 @@ return [
     'Manage Icon Sets' => 'Iconensets beheren',
 
     // Icon Sets: Edit
+    'Are you sure you want to delete this icon set?' => 'Weet u zeker dat u deze iconenset wilt verwijderen?',
     'Choose a type' => 'Kies een type',
     'What this icon set will be called in the control panel.' => 'Hoe deze iconenset wordt genoemd in het bedieningspaneel.',
     "How you'll refer to this icon set in templates." => 'Hoe u naar deze iconenset verwijst in templates.',
