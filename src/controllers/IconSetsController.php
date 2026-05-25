@@ -124,53 +124,99 @@ class IconSetsController extends Controller
     {
         $request = Craft::$app->getRequest();
         $settings = IconManager::getInstance()->getSettings();
+        $user = Craft::$app->getUser();
 
-        // Get query parameters
-        $search = $request->getQueryParam('search', '');
-        $statusFilter = $request->getQueryParam('status', 'all');
-        $typeFilter = $request->getQueryParam('type', 'all');
-        $sort = $request->getQueryParam('sort', 'name');
-        $dir = $request->getQueryParam('dir', 'asc');
-        $page = max(1, (int)$request->getQueryParam('page', 1));
-        $limit = $settings->itemsPerPage ?? 100;
+        // ---- Param parsing + allowlist validation -------------------------
+        // Every parameter that controls filtering or sorting goes through an
+        // explicit allowlist. Off-list values snap back to the default.
 
-        // Get all icon sets whose types are enabled in settings
+        $statusFilter = (string) $request->getQueryParam('status', 'all');
+        $validStatuses = ['all', 'enabled', 'disabled'];
+        if (!in_array($statusFilter, $validStatuses, true)) {
+            $statusFilter = 'all';
+        }
+
+        $typeFilter = (string) $request->getQueryParam('type', 'all');
+        $validTypes = ['all', 'svg-folder', 'svg-sprite', 'font-awesome', 'material-icons', 'web-font'];
+        if (!in_array($typeFilter, $validTypes, true)) {
+            $typeFilter = 'all';
+        }
+
+        // 64-char defensive clamp on free-text search. Keeps a runaway payload
+        // (URL of any length) from reaching the filter loop.
+        $search = trim((string) $request->getQueryParam('search', ''));
+        if (mb_strlen($search) > 64) {
+            $search = mb_substr($search, 0, 64);
+        }
+
+        $validSortFields = ['name', 'type', 'iconCount', 'optimizationIssueCount', 'enabled'];
+        $sort = (string) $request->getQueryParam('sort', 'name');
+        if (!in_array($sort, $validSortFields, true)) {
+            $sort = 'name';
+        }
+        $dir = strtolower((string) $request->getQueryParam('dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        $page = max(1, (int) $request->getQueryParam('page', 1));
+        $limit = max(1, (int) $settings->itemsPerPage);
+
+        // ---- Load + filter ------------------------------------------------
         $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
         $enabledTypes = $settings->enabledIconTypes ?? [];
 
         // Filter by allowed types (from settings)
-        $iconSets = array_filter($iconSets, function($iconSet) use ($enabledTypes) {
-            return ($enabledTypes[$iconSet->type] ?? false) === true;
-        });
+        $iconSets = array_values(array_filter($iconSets, fn($iconSet): bool =>
+            ($enabledTypes[$iconSet->type] ?? false) === true
+        ));
 
-        // Apply status filter
         if ($statusFilter === 'enabled') {
-            $iconSets = array_filter($iconSets, function($iconSet) {
-                return $iconSet->enabled;
-            });
+            $iconSets = array_values(array_filter($iconSets, fn($iconSet): bool => $iconSet->enabled));
         } elseif ($statusFilter === 'disabled') {
-            $iconSets = array_filter($iconSets, function($iconSet) {
-                return !$iconSet->enabled;
-            });
+            $iconSets = array_values(array_filter($iconSets, fn($iconSet): bool => !$iconSet->enabled));
         }
 
-        // Apply type filter
         if ($typeFilter !== 'all') {
-            $iconSets = array_filter($iconSets, function($iconSet) use ($typeFilter) {
-                return $iconSet->type === $typeFilter;
-            });
+            $iconSets = array_values(array_filter($iconSets, fn($iconSet): bool => $iconSet->type === $typeFilter));
         }
 
-        // Apply search filter
         if ($search !== '') {
-            $searchLower = strtolower($search);
-            $iconSets = array_filter($iconSets, function($iconSet) use ($searchLower) {
-                return
-                    stripos($iconSet->name, $searchLower) !== false ||
-                    stripos($iconSet->handle, $searchLower) !== false;
-            });
+            $needle = mb_strtolower($search);
+            $iconSets = array_values(array_filter($iconSets, fn($iconSet): bool =>
+                stripos((string) $iconSet->name, $needle) !== false ||
+                stripos((string) $iconSet->handle, $needle) !== false
+            ));
         }
 
+        // ---- Sort + paginate ----------------------------------------------
+        $iconSets = $this->sortIconSets($iconSets, $sort, $dir);
+
+        // totalCount is computed *after* filtering so the pager reflects what
+        // the user can actually see, not the underlying set size.
+        $totalCount = count($iconSets);
+        $offset = ($page - 1) * $limit;
+        $iconSets = array_slice($iconSets, $offset, $limit);
+
+        return $this->renderTemplate('icon-manager/icon-sets/index', [
+            'iconSets' => $iconSets,
+            'statusFilter' => $statusFilter,
+            'typeFilter' => $typeFilter,
+            'search' => $search,
+            'sort' => $sort,
+            'dir' => $dir,
+            'page' => $page,
+            'limit' => $limit,
+            'totalCount' => $totalCount,
+            'canCreate' => $user->checkPermission('iconManager:createIconSets'),
+            'canEdit' => $user->checkPermission('iconManager:editIconSets'),
+            'canDelete' => $user->checkPermission('iconManager:deleteIconSets'),
+        ]);
+    }
+
+    /**
+     * @param IconSet[] $iconSets
+     * @return IconSet[]
+     */
+    private function sortIconSets(array $iconSets, string $sort, string $dir): array
+    {
         // Pre-compute expensive sort values once per icon set. usort can call
         // the comparator O(N log N) times — without this, getIconCount() runs
         // a DB lookup and getOptimizationIssueCount() runs a full disk scan
@@ -184,50 +230,26 @@ class IconSetsController extends Controller
             }
         }
 
-        usort($iconSets, function($a, $b) use ($sort, $dir, $sortValues) {
-            switch ($sort) {
-                case 'name':
-                    $aValue = strtolower($a->name);
-                    $bValue = strtolower($b->name);
-                    break;
-                case 'type':
-                    $aValue = strtolower($a->type);
-                    $bValue = strtolower($b->type);
-                    break;
-                case 'iconCount':
-                case 'optimizationIssueCount':
-                    $aValue = $sortValues[$a->id];
-                    $bValue = $sortValues[$b->id];
-                    break;
-                default:
-                    $aValue = strtolower($a->name);
-                    $bValue = strtolower($b->name);
+        $multiplier = $dir === 'desc' ? -1 : 1;
+
+        usort($iconSets, function(IconSet $a, IconSet $b) use ($sort, $multiplier, $sortValues): int {
+            $cmp = match ($sort) {
+                'type' => strcasecmp((string) $a->type, (string) $b->type),
+                'iconCount', 'optimizationIssueCount' => $sortValues[$a->id] <=> $sortValues[$b->id],
+                'enabled' => ((int) $a->enabled) <=> ((int) $b->enabled),
+                default => strcasecmp((string) $a->name, (string) $b->name),
+            };
+
+            // Stable tie-break by name so equal primary keys don't shuffle
+            // between requests — keeps pagination predictable.
+            if ($cmp === 0 && $sort !== 'name') {
+                $cmp = strcasecmp((string) $a->name, (string) $b->name);
             }
 
-            if ($aValue === $bValue) {
-                return 0;
-            }
-
-            $result = $aValue < $bValue ? -1 : 1;
-            return $dir === 'desc' ? -$result : $result;
+            return $cmp * $multiplier;
         });
 
-        // Get total count
-        $totalCount = count($iconSets);
-        $totalPages = $totalCount > 0 ? (int)ceil($totalCount / $limit) : 1;
-
-        // Apply pagination
-        $offset = ($page - 1) * $limit;
-        $iconSets = array_slice($iconSets, $offset, $limit);
-
-        return $this->renderTemplate('icon-manager/icon-sets/index', [
-            'iconSets' => $iconSets,
-            'totalCount' => $totalCount,
-            'totalPages' => $totalPages,
-            'page' => $page,
-            'limit' => $limit,
-            'offset' => $offset,
-        ]);
+        return $iconSets;
     }
 
     /**
@@ -377,21 +399,21 @@ class IconSetsController extends Controller
         $this->requireAcceptsJson();
 
         $iconSetIds = Craft::$app->getRequest()->getRequiredBodyParam('iconSetIds');
-        $enabled = 0;
+        $count = 0;
 
         foreach ($iconSetIds as $iconSetId) {
             $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
             if ($iconSet) {
                 $iconSet->enabled = true;
                 if (IconManager::getInstance()->iconSets->saveIconSet($iconSet)) {
-                    $enabled++;
+                    $count++;
                 }
             }
         }
 
         return $this->asJson([
             'success' => true,
-            'enabled' => $enabled,
+            'count' => $count,
         ]);
     }
 
@@ -407,21 +429,21 @@ class IconSetsController extends Controller
         $this->requireAcceptsJson();
 
         $iconSetIds = Craft::$app->getRequest()->getRequiredBodyParam('iconSetIds');
-        $disabled = 0;
+        $count = 0;
 
         foreach ($iconSetIds as $iconSetId) {
             $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
             if ($iconSet) {
                 $iconSet->enabled = false;
                 if (IconManager::getInstance()->iconSets->saveIconSet($iconSet)) {
-                    $disabled++;
+                    $count++;
                 }
             }
         }
 
         return $this->asJson([
             'success' => true,
-            'disabled' => $disabled,
+            'count' => $count,
         ]);
     }
 
@@ -437,18 +459,18 @@ class IconSetsController extends Controller
         $this->requireAcceptsJson();
 
         $iconSetIds = Craft::$app->getRequest()->getRequiredBodyParam('iconSetIds');
-        $deleted = 0;
+        $count = 0;
 
         foreach ($iconSetIds as $iconSetId) {
             $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
             if ($iconSet && IconManager::getInstance()->iconSets->deleteIconSet($iconSet)) {
-                $deleted++;
+                $count++;
             }
         }
 
         return $this->asJson([
             'success' => true,
-            'deleted' => $deleted,
+            'count' => $count,
         ]);
     }
 
