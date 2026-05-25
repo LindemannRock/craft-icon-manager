@@ -138,7 +138,7 @@ return [
     // Settings: General
     'General Settings' => 'Allmänna inställningar',
     'Icon Sets Path' => 'Ikonsökväg',
-    'Provide the full path to your icon files. Also supports aliases.' => 'Ange den fullständiga sökvägen till era ikonfiler. Stödjer även alias.',
+    'Provide the full path to your icon files. Also supports aliases.' => 'Ange den fullständiga sökvägen till dina ikonfiler. Stödjer även alias.',
 
     // Settings: Logging
     'Logging Settings' => 'Logginställningar',
@@ -292,13 +292,13 @@ return [
     'Manage Icon Sets' => 'Hantera ikonuppsättningar',
 
     // Icon Sets: Edit
-    'Are you sure you want to delete this icon set?' => 'Är ni säkra på att ni vill ta bort den här ikonuppsättningen?',
+    'Are you sure you want to delete this icon set?' => 'Är du säker på att du vill ta bort den här ikonuppsättningen?',
     'Choose a type' => 'Välj en typ',
     'What this icon set will be called in the control panel.' => 'Vad den här ikonuppsättningen kommer att heta i kontrollpanelen.',
-    "How you'll refer to this icon set in templates." => 'Hur ni refererar till den här ikonuppsättningen i mallar.',
+    "How you'll refer to this icon set in templates." => 'Hur du refererar till den här ikonuppsättningen i mallar.',
     'The type of icon set.' => 'Typen av ikonuppsättning.',
     'SVG Folder Settings' => 'Inställningar för SVG-mapp',
-    'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.' => 'Välj mappen där era SVG-ikoner finns. Detta är relativt till er inställning för ikonsökväg.',
+    'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.' => 'Välj mappen där dina SVG-ikoner finns. Detta är relativt till din inställning för ikonsökväg.',
     'Include Subfolders' => 'Inkludera undermappar',
     'Whether to include icons from subfolders.' => 'Huruvida ikoner från undermappar ska inkluderas.',
     'SVG Sprite Settings' => 'Inställningar för SVG-sprite',
@@ -315,9 +315,9 @@ return [
     'Kit' => 'Kit',
     'Local Files' => 'Lokala filer',
     'Kit Code' => 'Kit-kod',
-    'Your Font Awesome kit code (the part after kit.fontawesome.com/). Example: if your kit URL is https://kit.fontawesome.com/abc123def456.js, enter "abc123def456"' => 'Er Font Awesome-kit-kod (den del som kommer efter kit.fontawesome.com/). Exempel: om er kit-URL är https://kit.fontawesome.com/abc123def456.js, ange "abc123def456"',
-    'How to find your Kit Code' => 'Hur ni hittar er kit-kod',
-    '1. Go to fontawesome.com and sign in to your account' => '1. Gå till fontawesome.com och logga in på ert konto',
+    'Your Font Awesome kit code (the part after kit.fontawesome.com/). Example: if your kit URL is https://kit.fontawesome.com/abc123def456.js, enter "abc123def456"' => 'Din Font Awesome-kit-kod (den del som kommer efter kit.fontawesome.com/). Exempel: om din kit-URL är https://kit.fontawesome.com/abc123def456.js, ange "abc123def456"',
+    'How to find your Kit Code' => 'Hur du hittar din kit-kod',
+    '1. Go to fontawesome.com and sign in to your account' => '1. Gå till fontawesome.com och logga in på ditt konto',
     '2. Navigate to "Kits" in your account dashboard' => '2. Navigera till "Kits" i kontots översikt',
     "3. Copy the code from your kit's embed script" => '3. Kopiera koden från kitets inbäddningsskript',
     'Example: <script src="https://kit.fontawesome.com/abc123def456.js" crossorigin="anonymous"></script>' => 'Exempel: <script src="https://kit.fontawesome.com/abc123def456.js" crossorigin="anonymous"></script>',
@@ -353,13 +353,13 @@ return [
     // Icon Sets: Web Font
     'Web Font Settings' => 'Inställningar för webbteckensnitt',
     'Font File' => 'Teckensnittsfil',
-    'Select your font file. This is relative to your Icons Path setting.' => 'Välj er teckensnittsfil. Detta är relativt till er inställning för ikonsökväg.',
+    'Select your font file. This is relative to your Icons Path setting.' => 'Välj din teckensnittsfil. Detta är relativt till din inställning för ikonsökväg.',
     'CSS Prefix' => 'CSS-prefix',
     'CSS class prefix for icons (e.g., "icon" will generate "icon-home", "icon-settings", etc.)' => 'CSS-klassprefix för ikoner (t.ex. "icon" genererar "icon-home", "icon-settings" etc.)',
     'Optional Metadata' => 'Valfri metadata',
-    'You can add a metadata JSON file alongside your font to provide keywords for search.' => 'Ni kan lägga till en JSON-metadatafil bredvid ert teckensnitt för att ge sökord för sökning.',
-    'Name it the same as your font file with "-metadata.json" suffix.' => 'Namnge den likadant som er teckensnittsfil med suffixet "-metadata.json".',
-    'Example: If your font is "my-icons.woff", create "my-icons-metadata.json"' => 'Exempel: Om ert teckensnitt är "my-icons.woff", skapa "my-icons-metadata.json"',
+    'You can add a metadata JSON file alongside your font to provide keywords for search.' => 'Du kan lägga till en JSON-metadatafil bredvid ditt teckensnitt för att ge sökord för sökning.',
+    'Name it the same as your font file with "-metadata.json" suffix.' => 'Namnge den likadant som din teckensnittsfil med suffixet "-metadata.json".',
+    'Example: If your font is "my-icons.woff", create "my-icons-metadata.json"' => 'Exempel: Om ditt teckensnitt är "my-icons.woff", skapa "my-icons-metadata.json"',
     'Format: { "icon-name": ["keyword1", "keyword2"], ... }' => 'Format: { "icon-name": ["keyword1", "keyword2"], ... }',
 
     // Icon Sets: Preview
@@ -383,7 +383,7 @@ return [
     'Scan Results' => 'Skanningsresultat',
     'Scan results not available.' => 'Skanningsresultat är inte tillgängliga.',
     'Scan shows issues based on Scan Controls. Optimization applies all enabled rules to all files.' => 'Skanningen visar problem baserade på skanningskontroller. Optimering tillämpar alla aktiverade regler på alla filer.',
-    'This will create a backup and optimize all SVG files. Continue?' => 'Det här skapar en säkerhetskopia och optimerar alla SVG-filer. Vill ni fortsätta?',
+    'This will create a backup and optimize all SVG files. Continue?' => 'Det här skapar en säkerhetskopia och optimerar alla SVG-filer. Vill du fortsätta?',
     'Issue Breakdown' => 'Problemuppdelning',
     'Review each file to see which issues were detected.' => 'Granska varje fil för att se vilka problem som identifierades.',
     'File Details' => 'Fildetaljer',
@@ -411,15 +411,15 @@ return [
     'Files over 10KB (may be normal for complex icons)' => 'Filer över 10 KB (kan vara normalt för komplexa ikoner)',
     'Over 10KB (may be normal)' => 'Över 10 KB (kan vara normalt)',
     'No Issues Detected' => 'Inga problem identifierades',
-    'No issues found based on your Scan Controls settings.' => 'Inga problem hittades baserat på era inställningar för skanningskontroller.',
+    'No issues found based on your Scan Controls settings.' => 'Inga problem hittades baserat på dina inställningar för skanningskontroller.',
     'Clean' => 'Ren',
     'View optimization details' => 'Visa optimeringsdetaljer',
     'Optimize' => 'Optimera',
     'Backups' => 'Säkerhetskopior',
     'Restore previous versions of this icon set from backups created during optimization.' => 'Återställ tidigare versioner av den här ikonuppsättningen från säkerhetskopior skapade under optimering.',
     'Backup Name' => 'Namn på säkerhetskopia',
-    'Are you sure you want to delete this backup? This cannot be undone.' => 'Är ni säkra på att ni vill ta bort den här säkerhetskopian? Det här går inte att ångra.',
-    'This will replace all current files with files from this backup. Continue?' => 'Det här ersätter alla aktuella filer med filer från den här säkerhetskopian. Vill ni fortsätta?',
+    'Are you sure you want to delete this backup? This cannot be undone.' => 'Är du säker på att du vill ta bort den här säkerhetskopian? Det här går inte att ångra.',
+    'This will replace all current files with files from this backup. Continue?' => 'Det här ersätter alla aktuella filer med filer från den här säkerhetskopian. Vill du fortsätta?',
 
     // Field type: Settings
     'Allowed Icon Sets' => 'Tillåtna ikonuppsättningar',
@@ -451,7 +451,7 @@ return [
     'No icon selected' => 'Ingen ikon vald',
     'No icons selected' => 'Inga ikoner valda',
     'No icons found' => 'Inga ikoner hittades',
-    'No icons match your search' => 'Inga ikoner matchar er sökning',
+    'No icons match your search' => 'Inga ikoner matchar din sökning',
     'Edit Selection' => 'Redigera urval',
     'Custom Labels' => 'Anpassade etiketter',
     'Custom Label' => 'Anpassad etikett',
@@ -465,7 +465,7 @@ return [
     'Formats: "iconSet:iconName" or just "iconName" (uses the default icon set)' => 'Format: "iconSet:iconName" eller bara "iconName" (använder standardikonuppsättningen)',
 
     // Utilities
-    'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Övervaka prestanda för ikonuppsättningar, hantera cache och visa systemstatus för era ikonsamlingar.',
+    'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Övervaka prestanda för ikonuppsättningar, hantera cache och visa systemstatus för dina ikonsamlingar.',
     'Access main plugin sections' => 'Åtkomst till plugin-programmets huvudavsnitt',
     'View Settings' => 'Visa inställningar',
     'Total Icons' => 'Totalt antal ikoner',

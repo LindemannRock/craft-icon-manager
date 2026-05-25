@@ -138,7 +138,7 @@ return [
     // Settings: General
     'General Settings' => 'Generelle innstillinger',
     'Icon Sets Path' => 'Ikonbane',
-    'Provide the full path to your icon files. Also supports aliases.' => 'Angi full bane til ikonfilene Deres. Støtter også alias.',
+    'Provide the full path to your icon files. Also supports aliases.' => 'Angi full bane til ikonfilene dine. Støtter også alias.',
 
     // Settings: Logging
     'Logging Settings' => 'Logginnstillinger',
@@ -292,13 +292,13 @@ return [
     'Manage Icon Sets' => 'Administrer Icon-sett',
 
     // Icon Sets: Edit
-    'Are you sure you want to delete this icon set?' => 'Er De sikker på at De vil slette dette Icon-settet?',
+    'Are you sure you want to delete this icon set?' => 'Er du sikker på at du vil slette dette Icon-settet?',
     'Choose a type' => 'Velg en type',
     'What this icon set will be called in the control panel.' => 'Hva dette Icon-settet vil hete i kontrollpanelet.',
-    "How you'll refer to this icon set in templates." => 'Hvordan De vil referere til dette Icon-settet i maler.',
+    "How you'll refer to this icon set in templates." => 'Hvordan du vil referere til dette Icon-settet i maler.',
     'The type of icon set.' => 'Typen Icon-sett.',
     'SVG Folder Settings' => 'Innstillinger for SVG-mappe',
-    'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.' => 'Velg mappen der SVG-ikonene Deres finnes. Dette er relativt til innstillingen for ikonbane.',
+    'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.' => 'Velg mappen der SVG-ikonene dine finnes. Dette er relativt til innstillingen for ikonbane.',
     'Include Subfolders' => 'Inkluder undermapper',
     'Whether to include icons from subfolders.' => 'Hvorvidt ikoner fra undermapper skal inkluderes.',
     'SVG Sprite Settings' => 'Innstillinger for SVG-sprite',
@@ -315,9 +315,9 @@ return [
     'Kit' => 'Kit',
     'Local Files' => 'Lokale filer',
     'Kit Code' => 'Kit-kode',
-    'Your Font Awesome kit code (the part after kit.fontawesome.com/). Example: if your kit URL is https://kit.fontawesome.com/abc123def456.js, enter "abc123def456"' => 'Font Awesome kit-koden Deres (delen etter kit.fontawesome.com/). Eksempel: hvis kit-URL-en er https://kit.fontawesome.com/abc123def456.js, skriv inn "abc123def456"',
-    'How to find your Kit Code' => 'Slik finner De Kit-koden',
-    '1. Go to fontawesome.com and sign in to your account' => '1. Gå til fontawesome.com og logg inn på kontoen Deres',
+    'Your Font Awesome kit code (the part after kit.fontawesome.com/). Example: if your kit URL is https://kit.fontawesome.com/abc123def456.js, enter "abc123def456"' => 'Font Awesome kit-koden din (delen etter kit.fontawesome.com/). Eksempel: hvis kit-URL-en er https://kit.fontawesome.com/abc123def456.js, skriv inn "abc123def456"',
+    'How to find your Kit Code' => 'Slik finner du Kit-koden',
+    '1. Go to fontawesome.com and sign in to your account' => '1. Gå til fontawesome.com og logg inn på kontoen din',
     '2. Navigate to "Kits" in your account dashboard' => '2. Naviger til "Kits" i kontoens oversikt',
     "3. Copy the code from your kit's embed script" => '3. Kopier koden fra kitets innbyggingsskript',
     'Example: <script src="https://kit.fontawesome.com/abc123def456.js" crossorigin="anonymous"></script>' => 'Eksempel: <script src="https://kit.fontawesome.com/abc123def456.js" crossorigin="anonymous"></script>',
@@ -353,11 +353,11 @@ return [
     // Icon Sets: Web Font
     'Web Font Settings' => 'Innstillinger for Web Font',
     'Font File' => 'Typesnittfil',
-    'Select your font file. This is relative to your Icons Path setting.' => 'Velg typesnittfilen Deres. Dette er relativt til innstillingen for ikonbane.',
+    'Select your font file. This is relative to your Icons Path setting.' => 'Velg typesnittfilen din. Dette er relativt til innstillingen for ikonbane.',
     'CSS Prefix' => 'CSS-prefiks',
     'CSS class prefix for icons (e.g., "icon" will generate "icon-home", "icon-settings", etc.)' => 'CSS-klasseprefiks for ikoner (f.eks. «icon» genererer «icon-home», «icon-settings», osv.)',
     'Optional Metadata' => 'Valgfrie metadata',
-    'You can add a metadata JSON file alongside your font to provide keywords for search.' => 'De kan legge til en JSON-metadatafil ved siden av typesnittet for å gi nøkkelord for søk.',
+    'You can add a metadata JSON file alongside your font to provide keywords for search.' => 'Du kan legge til en JSON-metadatafil ved siden av typesnittet for å gi nøkkelord for søk.',
     'Name it the same as your font file with "-metadata.json" suffix.' => 'Gi den samme navn som typesnittfilen med suffikset "-metadata.json".',
     'Example: If your font is "my-icons.woff", create "my-icons-metadata.json"' => 'Eksempel: Hvis typesnittet er "my-icons.woff", opprett "my-icons-metadata.json"',
     'Format: { "icon-name": ["keyword1", "keyword2"], ... }' => 'Format: { "icon-name": ["keyword1", "keyword2"], ... }',
@@ -418,7 +418,7 @@ return [
     'Backups' => 'Sikkerhetskopier',
     'Restore previous versions of this icon set from backups created during optimization.' => 'Gjenopprett tidligere versjoner av dette Icon-settet fra sikkerhetskopier opprettet under optimalisering.',
     'Backup Name' => 'Navn på sikkerhetskopi',
-    'Are you sure you want to delete this backup? This cannot be undone.' => 'Er De sikker på at De vil slette denne sikkerhetskopien? Dette kan ikke angres.',
+    'Are you sure you want to delete this backup? This cannot be undone.' => 'Er du sikker på at du vil slette denne sikkerhetskopien? Dette kan ikke angres.',
     'This will replace all current files with files from this backup. Continue?' => 'Dette vil erstatte alle gjeldende filer med filer fra denne sikkerhetskopien. Fortsette?',
 
     // Field type: Settings
@@ -465,7 +465,7 @@ return [
     'Formats: "iconSet:iconName" or just "iconName" (uses the default icon set)' => 'Formater: "iconSet:iconName" eller bare "iconName" (bruker standard Icon-sett)',
 
     // Utilities
-    'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Overvåk ytelsen til Icon-sett, administrer cache og vis systemstatus for ikonsamlingene Deres.',
+    'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Overvåk ytelsen til Icon-sett, administrer cache og vis systemstatus for ikonsamlingene dine.',
     'Access main plugin sections' => 'Tilgang til Plugin-programmets hovedseksjoner',
     'View Settings' => 'Vis innstillinger',
     'Total Icons' => 'Totalt antall ikoner',
