@@ -998,12 +998,9 @@ Before optimization, a backup is automatically created (unless `--noBackup` is u
 - Need simple, reliable optimization
 - Only need basic cleanup (comments, metadata)
 
-### Internal Verification Fixtures
+### Optimizer Verification Fixtures
 
-Icon Manager includes an internal SVG fixture pack for validating optimizer upgrades and regression-checking both engines.
-
-**Location:**
-- `plugins/icon-manager/.internal/optimization-fixtures`
+Icon Manager can verify an SVG fixture directory against either optimizer engine. Use this after optimizer dependency upgrades or when validating a custom SVGO configuration against representative project icons.
 
 **Purpose:**
 - Exercise intentionally problematic SVGs against the installed `php-svg-optimizer`
@@ -1011,16 +1008,18 @@ Icon Manager includes an internal SVG fixture pack for validating optimizer upgr
 - Run the same fixtures through SVGO
 - Confirm optimized output remains parseable SVG
 
+Prepare a fixture directory with SVG files that represent the icon shapes and SVG features used by the project.
+
 **Run PHP optimizer verification:**
 
 ```bash
-ddev exec "./craft icon-manager/optimize/verify --engine=php --path=plugins/icon-manager/.internal/optimization-fixtures --keepOutputs=1"
+ddev exec "./craft icon-manager/optimize/verify --engine=php --path=path/to/svg-fixtures --keepOutputs=1"
 ```
 
 **Run SVGO verification:**
 
 ```bash
-ddev exec "./craft icon-manager/optimize/verify --engine=svgo --path=plugins/icon-manager/.internal/optimization-fixtures --config=plugins/icon-manager/.internal/optimization-fixtures/svgo.fixture.config.mjs --keepOutputs=1"
+ddev exec "./craft icon-manager/optimize/verify --engine=svgo --path=path/to/svg-fixtures --config=path/to/svgo.config.mjs --keepOutputs=1"
 ```
 
 **Notes:**
