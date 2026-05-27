@@ -1300,7 +1300,7 @@ You changed SVG files on disk (added new files, deleted files, removed a whole s
 
 **Check the plugin log for cache-component warnings:**
 - Look for lines like `icon-manager: cacheStorageMethod=redis configured, but Craft's cache component is …`
-- This means Redis is selected as the storage method but Craft's `cache` component isn't `\yii\redis\Cache` (e.g., a decorator or profiler wraps it). Redis operations silently no-op in that state. Either fix the cache component in `config/app.php`, or switch the plugin's storage method to **File**.
+- This means Redis is selected as the storage method but Craft's `cache` component is not a Redis-backed Yii cache. Icon Manager logs this warning and skips Redis-specific cache operations until the cache component is fixed. Either configure Redis in `config/app.php`, or switch the plugin's storage method to **File**.
 
 **Quick workaround for a single set:**
 - Temporarily switch Cache Storage Method to **File**, save settings, click **Refresh Icons** on the set, then switch back to Redis if you want.
