@@ -4,9 +4,10 @@
 {% set canViewIconSets = currentUser.can('iconManager:manageIconSets') %}
 {% set canEditIconSets = currentUser.can('iconManager:editIconSets') %}
 {% set canManageOptimization = currentUser.can('iconManager:manageOptimization') %}
-{% set canEditSettings = currentUser.can('iconManager:editSettings') %}
+{% set canClearCache = currentUser.can('iconManager:clearCache') %}
+{% set canManageSettings = currentUser.can('iconManager:manageSettings') %}
 
-{% set hasNavigation = canViewIconSets or canEditSettings %}
+{% set hasNavigation = canViewIconSets or canManageSettings %}
 {% set hasIconManagement = canEditIconSets %}
 {% set hasAnyQuickAction = hasNavigation or hasIconManagement %}
 
@@ -23,6 +24,7 @@
 
 {% block overview %}
     {# Icon Sets Card #}
+    {% if canViewIconSets %}
     {% include 'lindemannrock-base/_components/unified-card' with {
         title: 'Icon Sets'|t('icon-manager'),
         color: lrPaletteColor('emerald').color,
@@ -35,8 +37,10 @@
             {value: totalIcons, label: 'Total Icons'|t('icon-manager')},
         ],
     } only %}
+    {% endif %}
 
     {# Cache Status Card #}
+    {% if canClearCache %}
     {% if cacheEnabled %}
         {% if storageMethod == 'redis' %}
             {% include 'lindemannrock-base/_components/unified-card' with {
@@ -67,8 +71,10 @@
             description: 'Cache is disabled'|t('icon-manager'),
         } only %}
     {% endif %}
+    {% endif %}
 
     {# Cache Settings Card #}
+    {% if canManageSettings %}
     {% include 'lindemannrock-base/_components/unified-card' with {
         title: 'Cache Settings'|t('icon-manager'),
         color: cacheEnabled ? lrPaletteColor('sky').color : lrPaletteColor('gray').color,
@@ -79,6 +85,7 @@
             {value: cacheEnabled ? '✓' : '✗', label: cacheEnabled ? 'Enabled'|t('icon-manager') : 'Disabled'|t('icon-manager')},
         ],
     } only %}
+    {% endif %}
 {% endblock %}
 
 {% block quickActions %}
@@ -89,8 +96,8 @@
             {% if canViewIconSets %}
                 {% set navButtons = navButtons|merge([{type: 'link', label: 'Manage Icon Sets'|t('icon-manager'), url: url('icon-manager')}]) %}
             {% endif %}
-            {% if canEditSettings %}
-                {% set navButtons = navButtons|merge([{type: 'link', label: 'View Settings'|t('icon-manager'), url: url('icon-manager/settings')}]) %}
+            {% if canManageSettings %}
+                {% set navButtons = navButtons|merge([{type: 'link', label: 'Manage settings'|t('icon-manager'), url: url('icon-manager/settings')}]) %}
             {% endif %}
 
             {% include 'lindemannrock-base/_layouts/cp-utilities/_action-section' with {
