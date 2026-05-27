@@ -34,11 +34,11 @@ return [
     'Edit {name} sets' => 'Edit {name} sets',
     'Delete {name} sets' => 'Delete {name} sets',
     'Manage SVG optimization' => 'Manage SVG optimization',
-    'Clear {name} cache' => 'Clear {name} cache',
+    'Clear cache' => 'Clear cache',
     'View logs' => 'View logs',
     'View system logs' => 'View system logs',
     'Download system logs' => 'Download system logs',
-    'Edit plugin settings' => 'Edit plugin settings',
+    'Manage settings' => 'Manage settings',
 
     // Common
     'All' => 'All',
@@ -465,7 +465,6 @@ return [
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Monitor icon set performance, manage cache, and view system status for your icon collections.',
     'Access main plugin sections' => 'Access main plugin sections',
-    'View Settings' => 'View Settings',
     'Total Icons' => 'Total Icons',
     'Total icon sets configured' => 'Total icon sets configured',
     'Cache Status' => 'Cache Status',

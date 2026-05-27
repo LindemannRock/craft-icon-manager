@@ -48,12 +48,17 @@ class ClearIconCache extends Utility
      */
     public static function contentHtml(): string
     {
-        $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
+        $user = Craft::$app->getUser();
+        $iconSets = [];
         $totalIcons = 0;
 
-        foreach ($iconSets as $iconSet) {
-            $icons = IconManager::getInstance()->icons->getIconsBySetId($iconSet->id);
-            $totalIcons += count($icons);
+        if ($user->getIdentity() && $user->checkPermission('iconManager:manageIconSets')) {
+            $iconSets = IconManager::getInstance()->iconSets->getAllIconSets();
+
+            foreach ($iconSets as $iconSet) {
+                $icons = IconManager::getInstance()->icons->getIconsBySetId($iconSet->id);
+                $totalIcons += count($icons);
+            }
         }
 
         $settings = IconManager::getInstance()->getSettings();
@@ -81,7 +86,7 @@ class ClearIconCache extends Utility
         ];
 
         // Only count files when using file storage (Redis counts are not displayed)
-        if ($settings->cacheStorageMethod === 'file') {
+        if ($user->getIdentity() && $user->checkPermission('iconManager:clearCache') && $settings->cacheStorageMethod === 'file') {
             $runtimePath = Craft::$app->path->getRuntimePath();
             $cacheBasePath = $runtimePath . '/icon-manager/cache/';
             foreach (array_keys($cacheStats) as $type) {

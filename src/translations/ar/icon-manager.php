@@ -36,11 +36,11 @@ return [
     'Edit {name} sets' => 'تعديل مجموعات {name}',
     'Delete {name} sets' => 'حذف مجموعات {name}',
     'Manage SVG optimization' => 'إدارة تحسين SVG',
-    'Clear {name} cache' => 'مسح Cache الخاص بـ {name}',
+    'Clear cache' => 'مسح Cache',
     'View logs' => 'عرض السجلات',
     'View system logs' => 'عرض سجلات النظام',
     'Download system logs' => 'تنزيل سجلات النظام',
-    'Edit plugin settings' => 'تعديل إعدادات الإضافة',
+    'Manage settings' => 'إدارة الإعدادات',
 
     // Common
     'All' => 'الكل',
@@ -467,7 +467,6 @@ return [
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'راقب أداء مجموعات الأيقونات، وأدر Cache، واعرض حالة النظام لمجموعات الأيقونات الخاصة بك.',
     'Access main plugin sections' => 'الوصول إلى الأقسام الرئيسية للإضافة',
-    'View Settings' => 'عرض الإعدادات',
     'Total Icons' => 'إجمالي الأيقونات',
     'Total icon sets configured' => 'إجمالي مجموعات الأيقونات المُعدَّة',
     'Cache Status' => 'حالة Cache',

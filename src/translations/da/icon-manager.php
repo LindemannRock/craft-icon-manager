@@ -36,11 +36,11 @@ return [
     'Edit {name} sets' => 'Rediger {name}-sæt',
     'Delete {name} sets' => 'Slet {name}-sæt',
     'Manage SVG optimization' => 'Administrer SVG-optimering',
-    'Clear {name} cache' => 'Ryd {name}-cache',
+    'Clear cache' => 'Ryd cache',
     'View logs' => 'Vis logfiler',
     'View system logs' => 'Vis systemlogfiler',
     'Download system logs' => 'Download systemlogfiler',
-    'Edit plugin settings' => 'Rediger plugin-indstillinger',
+    'Manage settings' => 'Administrer indstillinger',
 
     // Common
     'All' => 'Alle',
@@ -467,7 +467,6 @@ return [
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Overvåg ikonsætters ydeevne, administrer cache og se systemstatus for Deres ikonsamlinger.',
     'Access main plugin sections' => 'Få adgang til plugin-programmets hovedsektioner',
-    'View Settings' => 'Vis indstillinger',
     'Total Icons' => 'Ikoner i alt',
     'Total icon sets configured' => 'Samlede konfigurerede ikonsæt',
     'Cache Status' => 'Cache-status',

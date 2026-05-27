@@ -36,11 +36,11 @@ return [
     'Edit {name} sets' => 'Modifier les jeux {name}',
     'Delete {name} sets' => 'Supprimer les jeux {name}',
     'Manage SVG optimization' => 'Gérer l\'optimisation SVG',
-    'Clear {name} cache' => 'Vider le cache {name}',
+    'Clear cache' => 'Vider le cache',
     'View logs' => 'Afficher les journaux',
     'View system logs' => 'Afficher les journaux système',
     'Download system logs' => 'Télécharger les journaux système',
-    'Edit plugin settings' => 'Modifier les paramètres du plugin',
+    'Manage settings' => 'Gérer les paramètres',
 
     // Common
     'All' => 'Tous',
@@ -467,7 +467,6 @@ return [
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Surveillez les performances des jeux d\'icônes, gérez le cache et consultez l\'état du système pour vos collections d\'icônes.',
     'Access main plugin sections' => 'Accéder aux sections principales du plugin',
-    'View Settings' => 'Afficher les paramètres',
     'Total Icons' => 'Total des icônes',
     'Total icon sets configured' => 'Total des jeux d\'icônes configurés',
     'Cache Status' => 'Statut du cache',

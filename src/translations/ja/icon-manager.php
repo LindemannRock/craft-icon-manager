@@ -36,11 +36,11 @@ return [
     'Edit {name} sets' => '{name} セットを編集する',
     'Delete {name} sets' => '{name} セットを削除する',
     'Manage SVG optimization' => 'SVG 最適化を管理する',
-    'Clear {name} cache' => '{name} のキャッシュを削除する',
+    'Clear cache' => 'キャッシュを削除する',
     'View logs' => 'ログを表示する',
     'View system logs' => 'システムログを表示する',
     'Download system logs' => 'システムログをダウンロードする',
-    'Edit plugin settings' => 'プラグイン設定を編集する',
+    'Manage settings' => '設定を管理する',
 
     // Common
     'All' => 'すべて',
@@ -467,7 +467,6 @@ return [
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'アイコンセットのパフォーマンスを監視し、キャッシュを管理して、アイコンコレクションのシステム状態を表示します。',
     'Access main plugin sections' => 'プラグインのメインセクションにアクセスする',
-    'View Settings' => '設定を表示する',
     'Total Icons' => 'アイコンの合計',
     'Total icon sets configured' => '設定されたアイコンセットの合計',
     'Cache Status' => 'キャッシュのステータス',

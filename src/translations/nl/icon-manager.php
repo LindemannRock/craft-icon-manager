@@ -36,11 +36,11 @@ return [
     'Edit {name} sets' => '{name}-sets bewerken',
     'Delete {name} sets' => '{name}-sets verwijderen',
     'Manage SVG optimization' => 'SVG-optimalisatie beheren',
-    'Clear {name} cache' => '{name}-cache wissen',
+    'Clear cache' => 'Cache wissen',
     'View logs' => 'Logboeken bekijken',
     'View system logs' => 'Systeemlogboeken bekijken',
     'Download system logs' => 'Systeemlogboeken downloaden',
-    'Edit plugin settings' => 'Plugininstellingen bewerken',
+    'Manage settings' => 'Instellingen beheren',
 
     // Common
     'All' => 'Alle',
@@ -467,7 +467,6 @@ return [
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Bewaak de prestaties van iconensets, beheer de cache en bekijk de systeemstatus van uw iconencollecties.',
     'Access main plugin sections' => 'Toegang tot de belangrijkste pluginsecties',
-    'View Settings' => 'Instellingen bekijken',
     'Total Icons' => 'Totaal iconen',
     'Total icon sets configured' => 'Totaal geconfigureerde iconensets',
     'Cache Status' => 'Cachestatus',
