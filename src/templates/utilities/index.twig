@@ -1,13 +1,13 @@
 {% extends 'lindemannrock-base/_layouts/cp-utilities' %}
 
 {# Permission checks #}
-{% set canViewIconSets = currentUser.can('iconManager:manageIconSets') %}
+{% set canManageIconSets = currentUser.can('iconManager:manageIconSets') %}
 {% set canEditIconSets = currentUser.can('iconManager:editIconSets') %}
 {% set canManageOptimization = currentUser.can('iconManager:manageOptimization') %}
 {% set canClearCache = currentUser.can('iconManager:clearCache') %}
 {% set canManageSettings = currentUser.can('iconManager:manageSettings') %}
 
-{% set hasNavigation = canViewIconSets or canManageSettings %}
+{% set hasNavigation = canManageIconSets or canManageSettings %}
 {% set hasIconManagement = canEditIconSets %}
 {% set hasAnyQuickAction = hasNavigation or hasIconManagement %}
 
@@ -24,7 +24,7 @@
 
 {% block overview %}
     {# Icon Sets Card #}
-    {% if canViewIconSets %}
+    {% if canManageIconSets %}
     {% include 'lindemannrock-base/_components/unified-card' with {
         title: 'Icon Sets'|t('icon-manager'),
         color: lrPaletteColor('emerald').color,
@@ -93,7 +93,7 @@
         {# Navigation Section #}
         {% if hasNavigation %}
             {% set navButtons = [] %}
-            {% if canViewIconSets %}
+            {% if canManageIconSets %}
                 {% set navButtons = navButtons|merge([{type: 'link', label: 'Manage Icon Sets'|t('icon-manager'), url: url('icon-manager')}]) %}
             {% endif %}
             {% if canManageSettings %}
