@@ -398,7 +398,7 @@ class IconManager extends Plugin
                             ],
                         ],
                         'iconManager:clearCache' => [
-                            'label' => Craft::t('icon-manager', 'Clear {name} cache', ['name' => $lowerDisplayName]),
+                            'label' => Craft::t('icon-manager', 'Clear cache'),
                         ],
                         'iconManager:viewLogs' => [
                             'label' => Craft::t('icon-manager', 'View logs'),
@@ -414,7 +414,7 @@ class IconManager extends Plugin
                             ],
                         ],
                         'iconManager:editSettings' => [
-                            'label' => Craft::t('icon-manager', 'Edit plugin settings'),
+                            'label' => Craft::t('icon-manager', 'Manage settings'),
                         ],
                     ],
                 ];
