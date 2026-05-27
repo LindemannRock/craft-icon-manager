@@ -288,7 +288,7 @@ class IconManager extends Plugin
             'key' => 'settings',
             'label' => Craft::t('icon-manager', 'Settings'),
             'url' => 'icon-manager/settings',
-            'permissionsAll' => ['iconManager:editSettings'],
+            'permissionsAll' => ['iconManager:manageSettings'],
         ];
 
         return $sections;
@@ -413,7 +413,7 @@ class IconManager extends Plugin
                                 ],
                             ],
                         ],
-                        'iconManager:editSettings' => [
+                        'iconManager:manageSettings' => [
                             'label' => Craft::t('icon-manager', 'Manage settings'),
                         ],
                     ],
