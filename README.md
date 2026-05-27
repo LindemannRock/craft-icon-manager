@@ -1215,10 +1215,10 @@ Icon Manager provides granular permissions for controlling access to plugin feat
 | **Edit icon sets** | Edit existing icon sets, enable/disable sets, refresh icons |
 | **Delete icon sets** | Delete icon sets |
 | **Manage SVG optimization** | Access the SVG Optimization tab, apply optimizations, manage backups |
-| **Clear icon cache** | Clear icon caches (also controls visibility in Craft's Clear Caches utility) |
+| **Clear cache** | Clear icon caches (also controls visibility in Craft's Clear Caches utility) |
 | **View logs** | View plugin logs in the Control Panel |
 | ↳ **Download logs** | Download log files (nested under View logs) |
-| **Edit plugin settings** | Access and modify plugin settings |
+| **Manage settings** | Access and modify plugin settings |
 
 ### Permission Behavior
 
@@ -1230,7 +1230,7 @@ Icon Manager provides granular permissions for controlling access to plugin feat
 - The SVG Optimization tab on icon set edit pages requires **Manage SVG optimization** permission
 
 **Cache Management:**
-- The "Icon Manager caches" option in Craft's Clear Caches utility only appears for users with **Clear icon cache** permission
+- The "Icon Manager caches" option in Craft's Clear Caches utility only appears for users with **Clear cache** permission
 - The Clear Icon Cache utility page respects this permission
 
 **Logs:**
@@ -1238,7 +1238,7 @@ Icon Manager provides granular permissions for controlling access to plugin feat
 - The Download button in the logs viewer requires **Download logs** permission
 
 **Settings:**
-- The Settings navigation item only appears for users with **Edit plugin settings** permission
+- The Settings navigation item only appears for users with **Manage settings** permission
 
 ### Example Permission Configurations
 
@@ -1252,7 +1252,7 @@ Icon Manager provides granular permissions for controlling access to plugin feat
 - ✓ Edit icon sets
 - ✓ Delete icon sets
 - ✗ Manage SVG optimization (optional)
-- ✓ Clear icon cache
+- ✓ Clear cache
 
 **Developer** (full access):
 - ✓ All permissions
