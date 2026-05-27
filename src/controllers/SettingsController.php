@@ -51,7 +51,7 @@ class SettingsController extends Controller
      */
     public function actionGeneral(): Response
     {
-        $this->requirePermission('iconManager:editSettings');
+        $this->requirePermission('iconManager:manageSettings');
 
         $settings = IconManager::$plugin->getSettings();
 
@@ -68,7 +68,7 @@ class SettingsController extends Controller
      */
     public function actionIconTypes(): Response
     {
-        $this->requirePermission('iconManager:editSettings');
+        $this->requirePermission('iconManager:manageSettings');
 
         $settings = IconManager::$plugin->getSettings();
 
@@ -85,7 +85,7 @@ class SettingsController extends Controller
      */
     public function actionSvgOptimization(): Response
     {
-        $this->requirePermission('iconManager:editSettings');
+        $this->requirePermission('iconManager:manageSettings');
 
         $settings = IconManager::$plugin->getSettings();
 
@@ -101,7 +101,7 @@ class SettingsController extends Controller
      */
     public function actionInterface(): Response
     {
-        $this->requirePermission('iconManager:editSettings');
+        $this->requirePermission('iconManager:manageSettings');
 
         $settings = IconManager::$plugin->getSettings();
 
@@ -118,7 +118,7 @@ class SettingsController extends Controller
      */
     public function actionCache(): Response
     {
-        $this->requirePermission('iconManager:editSettings');
+        $this->requirePermission('iconManager:manageSettings');
 
         $settings = IconManager::$plugin->getSettings();
 
@@ -135,7 +135,7 @@ class SettingsController extends Controller
     public function actionSave(): ?Response
     {
         $this->requirePostRequest();
-        $this->requirePermission('iconManager:editSettings');
+        $this->requirePermission('iconManager:manageSettings');
         $section = $this->_validSettingsSection(
             $this->request->getBodyParam('section', 'general'),
         );
