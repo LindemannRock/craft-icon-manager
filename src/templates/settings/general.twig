@@ -39,7 +39,7 @@
 
         {{ forms.autosuggestField({
             label: 'Icon Sets Path'|t('icon-manager'),
-            instructions: 'Provide the full path to your icon files. Also supports aliases.'|t('icon-manager'),
+            instructions: 'Use Craft path aliases: @root/src/icons, @storage/icon-manager/icons, or @webroot/dist/assets/icons. Environment variables like $ENV_VAR are supported when they resolve inside those roots.'|t('icon-manager'),
             id: 'iconSetsPath',
             name: 'settings[iconSetsPath]',
             value: settings.iconSetsPath,
