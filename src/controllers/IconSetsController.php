@@ -626,10 +626,9 @@ class IconSetsController extends Controller
         }
 
         try {
-            $rawBase = IconManager::getInstance()->getSettings()->iconSetsPath;
-            $basePath = FileHelper::normalizePath(Craft::getAlias($rawBase));
+            $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
             $folder = $iconSet->settings['folder'] ?? '';
-            $targetPath = FileHelper::normalizePath(Craft::getAlias($rawBase . '/' . $folder));
+            $targetPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $folder);
 
             // Containment guard — the iconSet `folder` is admin-controlled and the restore
             // path determines where the backup contents land. A traversal here lets a
@@ -677,10 +676,9 @@ class IconSetsController extends Controller
             return $this->asJson(['success' => false, 'error' => 'Icon set not found']);
         }
 
-        $rawBase = IconManager::getInstance()->getSettings()->iconSetsPath;
-        $basePath = FileHelper::normalizePath(Craft::getAlias($rawBase));
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
         $folder = $iconSet->settings['folder'] ?? '';
-        $folderPath = FileHelper::normalizePath(Craft::getAlias($rawBase . '/' . $folder));
+        $folderPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $folder);
 
         // Containment guard — admin-supplied `folder` could escape the icons base
         // and dump arbitrary SVG file contents into the JSON response.
@@ -742,10 +740,16 @@ class IconSetsController extends Controller
         }
 
         try {
-            $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
+            $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
             $folder = $iconSet->settings['folder'] ?? '';
-            $folderPath = Craft::getAlias($basePath . '/' . $folder);
+            $folderPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $folder);
             $includeSubfolders = $iconSet->settings['includeSubfolders'] ?? false;
+
+            // The icon-set folder is admin-controlled. It must stay inside
+            // the configured icons base before backup creation or writes.
+            if (!str_starts_with($folderPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
+                return $this->asJson(['success' => false, 'error' => 'Folder not found']);
+            }
 
             // Create backup first
             $backupPath = IconManager::getInstance()->svgOptimizer->createBackupPublic($folderPath, $iconSet->name, $includeSubfolders);
