@@ -3,12 +3,13 @@
  * Icon Manager plugin for Craft CMS 5.x
  *
  * @link      https://lindemannrock.com
- * @copyright Copyright (c) 2025 LindemannRock
+ * @copyright Copyright (c) 2025-2026 LindemannRock
  */
 
 namespace lindemannrock\iconmanager\controllers;
 
 use Craft;
+use craft\helpers\FileHelper;
 use craft\web\Controller;
 
 use lindemannrock\iconmanager\IconManager;
@@ -54,9 +55,11 @@ class SettingsController extends Controller
         $this->requirePermission('iconManager:manageSettings');
 
         $settings = IconManager::$plugin->getSettings();
+        $settings->validate(['iconSetsPath']);
 
         return $this->renderTemplate('icon-manager/settings/general', [
             'settings' => $settings,
+            'resolvedIconSetsPath' => $this->resolvedIconSetsPath($settings),
         ]);
     }
 
@@ -91,6 +94,7 @@ class SettingsController extends Controller
 
         return $this->renderTemplate('icon-manager/settings/svg-optimization/index', [
             'settings' => $settings,
+            'optimizationBackupPath' => $this->optimizationBackupPath(),
         ]);
     }
 
@@ -184,6 +188,8 @@ class SettingsController extends Controller
 
             return $this->renderTemplate($template, [
                 'settings' => $settings,
+                'resolvedIconSetsPath' => $section === 'general' ? $this->resolvedIconSetsPath($settings) : null,
+                'optimizationBackupPath' => $section === 'svg-optimization' ? $this->optimizationBackupPath() : null,
             ]);
         }
 
@@ -281,5 +287,23 @@ class SettingsController extends Controller
             'cache' => ['cacheStorageMethod', 'enableCache', 'cacheDuration'],
             default => [],
         };
+    }
+
+    private function resolvedIconSetsPath(Settings $settings): ?string
+    {
+        if ($settings->hasErrors('iconSetsPath')) {
+            return null;
+        }
+
+        try {
+            return FileHelper::normalizePath($settings->getResolvedIconSetsPath());
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private function optimizationBackupPath(): string
+    {
+        return FileHelper::normalizePath(Craft::$app->path->getRuntimePath() . '/icon-manager/backups');
     }
 }
