@@ -20,7 +20,16 @@
     id: 'enableOptimizationBackup',
     name: 'settings[enableOptimizationBackup]',
     on: settings.enableOptimizationBackup,
+    toggle: 'optimization-backup-info',
     warning: settings.isOverriddenByConfig('enableOptimizationBackup') ? 'This is being overridden by the <code>enableOptimizationBackup</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
     disabled: settings.isOverriddenByConfig('enableOptimizationBackup')
 }) }}
+
+{% if optimizationBackupPath ?? null %}
+    <div id="optimization-backup-info" class="{% if not settings.enableOptimizationBackup %}hidden{% endif %}">
+        {% include 'lindemannrock-base/_components/info-box' with {
+            message: '<strong>' ~ 'Optimization Backup Location:'|t('icon-manager') ~ '</strong> <code>' ~ optimizationBackupPath ~ '</code>'
+        } %}
+    </div>
+{% endif %}
 </div>

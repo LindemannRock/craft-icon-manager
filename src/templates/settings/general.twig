@@ -46,10 +46,16 @@
             suggestEnvVars: true,
             suggestAliases: true,
             required: true,
-            warning: settings.isOverriddenByConfig('iconSetsPath') ? 'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : 'All icon sets will look for icons relative to this path.',
+            warning: settings.isOverriddenByConfig('iconSetsPath') ? 'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
             disabled: settings.isOverriddenByConfig('iconSetsPath'),
             errors: settings.getErrors('iconSetsPath')
         }) }}
+
+        {% if resolvedIconSetsPath ?? null %}
+            {% include 'lindemannrock-base/_components/info-box' with {
+                message: '<strong>' ~ 'Icon Sets Location:'|t('icon-manager') ~ '</strong> <code>' ~ resolvedIconSetsPath ~ '</code>'
+            } %}
+        {% endif %}
 
         <hr>
 
