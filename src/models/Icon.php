@@ -237,8 +237,8 @@ class Icon extends Model implements \JsonSerializable
         }
 
         // Build JSON file path based on SVG path
-        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
-        $iconPath = Craft::getAlias($basePath . '/' . $this->path);
+        $basePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath();
+        $iconPath = $basePath . DIRECTORY_SEPARATOR . $this->path;
         $jsonPath = str_replace('.svg', '.json', $iconPath);
 
         if (!file_exists($jsonPath)) {
@@ -340,8 +340,8 @@ class Icon extends Model implements \JsonSerializable
 
         // SVG icons need to check if the file exists
         if ($this->type === self::TYPE_SVG && $this->path) {
-            $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
-            $fullPath = Craft::getAlias($basePath . '/' . $this->path);
+            $basePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath();
+            $fullPath = $basePath . DIRECTORY_SEPARATOR . $this->path;
             return file_exists($fullPath);
         }
 
@@ -360,8 +360,8 @@ class Icon extends Model implements \JsonSerializable
         }
 
         // Build the full path using current config
-        $basePath = IconManager::getInstance()->getSettings()->iconSetsPath;
-        $fullPath = Craft::getAlias($basePath . '/' . $this->path);
+        $basePath = IconManager::getInstance()->getSettings()->getResolvedIconSetsPath();
+        $fullPath = $basePath . DIRECTORY_SEPARATOR . $this->path;
 
         if (!file_exists($fullPath)) {
             $this->logWarning("Icon file not found: {$this->name}", [
