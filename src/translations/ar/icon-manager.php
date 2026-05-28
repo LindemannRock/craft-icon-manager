@@ -147,6 +147,7 @@ return [
     'Icon Sets Path' => 'مسار الأيقونات',
     'Icon Sets Location:' => 'موقع الأيقونات:',
     'Provide the full path to your icon files. Also supports aliases.' => 'أدخل المسار الكامل لملفات الأيقونات. يدعم أيضاً الأسماء المستعارة.',
+    'Use Craft path aliases: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code>, or <code>@webroot/dist/assets/icons</code>. Environment variables like <code>$ENV_VAR</code> are supported when they resolve inside those roots.' => 'استخدم الأسماء المستعارة لمسارات Craft: <code>@root/src/icons</code> أو <code>@storage/icon-manager/icons</code> أو <code>@webroot/dist/assets/icons</code>. متغيرات البيئة مثل <code>$ENV_VAR</code> مدعومة عندما تُحل داخل هذه الجذور.',
 
     // Settings: Logging
     'Logging Settings' => 'إعدادات التسجيل',

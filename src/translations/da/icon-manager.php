@@ -147,6 +147,7 @@ return [
     'Icon Sets Path' => 'Ikonsti',
     'Icon Sets Location:' => 'Ikonplacering:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Angiv den fulde sti til Deres ikonfiler. Understøtter også aliasser.',
+    'Use Craft path aliases: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code>, or <code>@webroot/dist/assets/icons</code>. Environment variables like <code>$ENV_VAR</code> are supported when they resolve inside those roots.' => 'Brug Craft-stialiasser: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code> eller <code>@webroot/dist/assets/icons</code>. Miljøvariabler som <code>$ENV_VAR</code> understøttes, når de opløses inden for disse rødder.',
 
     // Settings: Logging
     'Logging Settings' => 'Logindstillinger',

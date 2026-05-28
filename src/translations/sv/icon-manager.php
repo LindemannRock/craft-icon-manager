@@ -147,6 +147,7 @@ return [
     'Icon Sets Path' => 'Ikonsökväg',
     'Icon Sets Location:' => 'Ikonplats:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Ange den fullständiga sökvägen till dina ikonfiler. Stödjer även alias.',
+    'Use Craft path aliases: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code>, or <code>@webroot/dist/assets/icons</code>. Environment variables like <code>$ENV_VAR</code> are supported when they resolve inside those roots.' => 'Använd Craft-sökvägsalias: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code> eller <code>@webroot/dist/assets/icons</code>. Miljövariabler som <code>$ENV_VAR</code> stöds när de löses inom dessa rötter.',
 
     // Settings: Logging
     'Logging Settings' => 'Logginställningar',

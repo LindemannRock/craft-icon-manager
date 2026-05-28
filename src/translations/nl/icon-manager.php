@@ -147,6 +147,7 @@ return [
     'Icon Sets Path' => 'Iconenpad',
     'Icon Sets Location:' => 'Locatie van iconen:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Geef het volledige pad naar uw iconbestanden op. Aliassen worden ook ondersteund.',
+    'Use Craft path aliases: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code>, or <code>@webroot/dist/assets/icons</code>. Environment variables like <code>$ENV_VAR</code> are supported when they resolve inside those roots.' => 'Gebruik Craft-padaliassen: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code> of <code>@webroot/dist/assets/icons</code>. Omgevingsvariabelen zoals <code>$ENV_VAR</code> worden ondersteund wanneer ze binnen die roots worden opgelost.',
 
     // Settings: Logging
     'Logging Settings' => 'Logboekinstellingen',

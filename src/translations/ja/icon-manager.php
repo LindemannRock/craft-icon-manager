@@ -147,6 +147,7 @@ return [
     'Icon Sets Path' => 'アイコンパス',
     'Icon Sets Location:' => 'アイコンの場所:',
     'Provide the full path to your icon files. Also supports aliases.' => 'アイコンファイルへのフルパスを指定してください。エイリアスもサポートされています。',
+    'Use Craft path aliases: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code>, or <code>@webroot/dist/assets/icons</code>. Environment variables like <code>$ENV_VAR</code> are supported when they resolve inside those roots.' => 'Craft パスエイリアスを使用してください: <code>@root/src/icons</code>、<code>@storage/icon-manager/icons</code>、または <code>@webroot/dist/assets/icons</code>。<code>$ENV_VAR</code> のような環境変数は、これらのルート内に解決される場合にサポートされます。',
 
     // Settings: Logging
     'Logging Settings' => 'ログ設定',

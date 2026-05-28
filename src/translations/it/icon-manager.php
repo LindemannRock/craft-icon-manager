@@ -147,6 +147,7 @@ return [
     'Icon Sets Path' => 'Percorso icone',
     'Icon Sets Location:' => 'Posizione icone:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Fornire il percorso completo ai file icona. Supporta anche gli alias.',
+    'Use Craft path aliases: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code>, or <code>@webroot/dist/assets/icons</code>. Environment variables like <code>$ENV_VAR</code> are supported when they resolve inside those roots.' => 'Usare gli alias di percorso Craft: <code>@root/src/icons</code>, <code>@storage/icon-manager/icons</code> o <code>@webroot/dist/assets/icons</code>. Le variabili d\'ambiente come <code>$ENV_VAR</code> sono supportate quando si risolvono all\'interno di tali root.',
 
     // Settings: Logging
     'Logging Settings' => 'Impostazioni di log',
