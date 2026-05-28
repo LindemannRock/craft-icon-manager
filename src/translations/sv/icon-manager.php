@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handtaget "{handle}" används redan.',
     'Icon file not found: {path}' => 'Ikonfilen hittades inte: {path}',
+    'Environment variables are not allowed for this path.' => 'Miljövariabler är inte tillåtna för den här sökvägen.',
+    'Invalid path: {error}' => 'Ogiltig sökväg: {error}',
+    'Invalid path.' => 'Ogiltig sökväg.',
+    'Path must start with one of: {aliases}.' => 'Sökvägen måste börja med ett av följande värden: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Sökvägen måste lösas till en lokal filsystemsökväg, inte till en URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Sökvägen får inte innehålla navigering till överordnad katalog ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Sökvägen får inte använda @web eller @webroot eftersom de är webbtillgängliga.',
 
     // Settings: General
     'General Settings' => 'Allmänna inställningar',
     'Icon Sets Path' => 'Ikonsökväg',
+    'Icon Sets Location:' => 'Ikonplats:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Ange den fullständiga sökvägen till dina ikonfiler. Stödjer även alias.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'Aktivera SVG-optimeringsfunktioner (skanning och tillämpning av optimeringar)',
     'Enable Automatic Backups' => 'Aktivera automatiska säkerhetskopior',
     'Automatically create backups before applying optimizations' => 'Skapa automatiskt säkerhetskopior innan optimeringar tillämpas',
+    'Optimization Backup Location:' => 'Plats för optimeringssäkerhetskopia:',
     'About Optimization' => 'Om optimering',
     'For more information about each rule, see the' => 'För mer information om varje regel, se',
     'Only available in dev' => 'Bara tillgängligt i dev',

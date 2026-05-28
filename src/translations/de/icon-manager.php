@@ -132,12 +132,20 @@ return [
     'Backup restoration is only available in local/development environments.' => 'Die Wiederherstellung aus Backups ist nur in lokalen Entwicklungsumgebungen verfügbar.',
 
     // Validation messages
-    'Handle "{handle}" is already in use.' => 'Handle „{handle}" wird bereits verwendet.',
+    'Handle "{handle}" is already in use.' => 'Handle "{handle}" wird bereits verwendet.',
     'Icon file not found: {path}' => 'Icon-Datei nicht gefunden: {path}',
+    'Environment variables are not allowed for this path.' => 'Umgebungsvariablen sind für diesen Pfad nicht erlaubt.',
+    'Invalid path: {error}' => 'Ungültiger Pfad: {error}',
+    'Invalid path.' => 'Ungültiger Pfad.',
+    'Path must start with one of: {aliases}.' => 'Der Pfad muss mit einem der folgenden Werte beginnen: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Der Pfad muss zu einem lokalen Dateisystempfad aufgelöst werden, nicht zu einer URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Der Pfad darf keine Navigation in übergeordnete Verzeichnisse enthalten ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Der Pfad darf @web oder @webroot nicht verwenden, da diese webzugänglich sind.',
 
     // Settings: General
     'General Settings' => 'Allgemeine Einstellungen',
     'Icon Sets Path' => 'Icon-Pfad',
+    'Icon Sets Location:' => 'Icon-Speicherort:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Geben Sie den vollständigen Pfad zu Ihren Icon-Dateien an. Aliase werden ebenfalls unterstützt.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'SVG-Optimierungsfunktionen aktivieren (Scannen und Anwenden von Optimierungen)',
     'Enable Automatic Backups' => 'Automatische Backups aktivieren',
     'Automatically create backups before applying optimizations' => 'Vor dem Anwenden von Optimierungen automatisch Backups erstellen',
+    'Optimization Backup Location:' => 'Optimierungs-Backup-Speicherort:',
     'About Optimization' => 'Über die Optimierung',
     'For more information about each rule, see the' => 'Weitere Informationen zu den einzelnen Regeln finden Sie in den',
     'Only available in dev' => 'Nur in der Entwicklungsumgebung verfügbar',

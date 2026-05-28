@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'المعرّف "{handle}" مستخدم بالفعل.',
     'Icon file not found: {path}' => 'لم يتم العثور على ملف الأيقونة: {path}',
+    'Environment variables are not allowed for this path.' => 'متغيرات البيئة غير مسموحة لهذا المسار.',
+    'Invalid path: {error}' => 'مسار غير صالح: {error}',
+    'Invalid path.' => 'مسار غير صالح.',
+    'Path must start with one of: {aliases}.' => 'يجب أن يبدأ المسار بأحد القيم التالية: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'يجب أن يُحل المسار إلى مسار نظام ملفات محلي، وليس إلى URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'لا يمكن أن يحتوي المسار على انتقال إلى دليل أب ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'لا يمكن أن يستخدم المسار @web أو @webroot لأنهما قابلان للوصول عبر الويب.',
 
     // Settings: General
     'General Settings' => 'الإعدادات العامة',
     'Icon Sets Path' => 'مسار الأيقونات',
+    'Icon Sets Location:' => 'موقع الأيقونات:',
     'Provide the full path to your icon files. Also supports aliases.' => 'أدخل المسار الكامل لملفات الأيقونات. يدعم أيضاً الأسماء المستعارة.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'تفعيل ميزات تحسين SVG (الفحص وتطبيق التحسينات)',
     'Enable Automatic Backups' => 'تفعيل النسخ الاحتياطي التلقائي',
     'Automatically create backups before applying optimizations' => 'إنشاء نسخ احتياطية تلقائياً قبل تطبيق التحسينات',
+    'Optimization Backup Location:' => 'موقع النسخة الاحتياطية للتحسين:',
     'About Optimization' => 'حول التحسين',
     'For more information about each rule, see the' => 'لمزيد من المعلومات حول كل قاعدة، انظر',
     'Only available in dev' => 'متاح فقط في بيئة التطوير',

@@ -132,10 +132,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handle "{handle}" is already in use.',
     'Icon file not found: {path}' => 'Icon file not found: {path}',
+    'Environment variables are not allowed for this path.' => 'Environment variables are not allowed for this path.',
+    'Invalid path: {error}' => 'Invalid path: {error}',
+    'Invalid path.' => 'Invalid path.',
+    'Path must start with one of: {aliases}.' => 'Path must start with one of: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Path must resolve to a local filesystem path, not a URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Path cannot contain parent directory traversal ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Path cannot use @web or @webroot because those are web-accessible.',
 
     // Settings: General
     'General Settings' => 'General Settings',
     'Icon Sets Path' => 'Icon Sets Path',
+    'Icon Sets Location:' => 'Icon Sets Location:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Provide the full path to your icon files. Also supports aliases.',
 
     // Settings: Logging
@@ -175,6 +183,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'Enable SVG optimization features (scanning and applying optimizations)',
     'Enable Automatic Backups' => 'Enable Automatic Backups',
     'Automatically create backups before applying optimizations' => 'Automatically create backups before applying optimizations',
+    'Optimization Backup Location:' => 'Optimization Backup Location:',
     'About Optimization' => 'About Optimization',
     'For more information about each rule, see the' => 'For more information about each rule, see the',
     'Only available in dev' => 'Only available in dev',

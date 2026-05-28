@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Le handle « {handle} » est déjà utilisé.',
     'Icon file not found: {path}' => 'Fichier d\'icône introuvable : {path}',
+    'Environment variables are not allowed for this path.' => 'Les variables d\'environnement ne sont pas autorisées pour ce chemin.',
+    'Invalid path: {error}' => 'Chemin non valide : {error}',
+    'Invalid path.' => 'Chemin non valide.',
+    'Path must start with one of: {aliases}.' => 'Le chemin doit commencer par l\'un des éléments suivants : {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Le chemin doit se résoudre en chemin de système de fichiers local, et non en URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Le chemin ne peut pas contenir de traversée vers un répertoire parent (« .. »).',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Le chemin ne peut pas utiliser @web ou @webroot, car ils sont accessibles depuis le web.',
 
     // Settings: General
     'General Settings' => 'Paramètres généraux',
     'Icon Sets Path' => 'Chemin des icônes',
+    'Icon Sets Location:' => 'Emplacement des icônes :',
     'Provide the full path to your icon files. Also supports aliases.' => 'Fournissez le chemin complet vers vos fichiers d\'icônes. Les alias sont également pris en charge.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'Activer les fonctionnalités d\'optimisation SVG (scan et application des optimisations)',
     'Enable Automatic Backups' => 'Activer les sauvegardes automatiques',
     'Automatically create backups before applying optimizations' => 'Créer automatiquement des sauvegardes avant d\'appliquer les optimisations',
+    'Optimization Backup Location:' => 'Emplacement des sauvegardes d\'optimisation :',
     'About Optimization' => 'À propos de l\'optimisation',
     'For more information about each rule, see the' => 'Pour plus d\'informations sur chaque règle, consultez le',
     'Only available in dev' => 'Disponible uniquement en développement',

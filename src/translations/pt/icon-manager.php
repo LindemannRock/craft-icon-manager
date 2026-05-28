@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'O handle "{handle}" já está em uso.',
     'Icon file not found: {path}' => 'Ficheiro de ícone não encontrado: {path}',
+    'Environment variables are not allowed for this path.' => 'As variáveis de ambiente não são permitidas para este caminho.',
+    'Invalid path: {error}' => 'Caminho inválido: {error}',
+    'Invalid path.' => 'Caminho inválido.',
+    'Path must start with one of: {aliases}.' => 'O caminho deve começar com um dos seguintes valores: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'O caminho deve resolver para um caminho de sistema de ficheiros local, não para uma URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'O caminho não pode conter navegação para uma diretoria superior ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'O caminho não pode usar @web ou @webroot porque são acessíveis pela web.',
 
     // Settings: General
     'General Settings' => 'Definições gerais',
     'Icon Sets Path' => 'Caminho dos ícones',
+    'Icon Sets Location:' => 'Localização dos ícones:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Forneça o caminho completo para os seus ficheiros de ícones. Também suporta aliases.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'Ativar funcionalidades de otimização de SVG (análise e aplicação de otimizações)',
     'Enable Automatic Backups' => 'Ativar backups automáticos',
     'Automatically create backups before applying optimizations' => 'Criar backups automaticamente antes de aplicar otimizações',
+    'Optimization Backup Location:' => 'Localização do backup de otimização:',
     'About Optimization' => 'Sobre a otimização',
     'For more information about each rule, see the' => 'Para mais informações sobre cada regra, consulte',
     'Only available in dev' => 'Apenas disponível em dev',

@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'ハンドル「{handle}」はすでに使用されています。',
     'Icon file not found: {path}' => 'アイコンファイルが見つかりません: {path}',
+    'Environment variables are not allowed for this path.' => 'このパスでは環境変数を使用できません。',
+    'Invalid path: {error}' => '無効なパスです: {error}',
+    'Invalid path.' => '無効なパスです。',
+    'Path must start with one of: {aliases}.' => 'パスは次のいずれかで始まる必要があります: {aliases}。',
+    'Path must resolve to a local filesystem path, not a URL.' => 'パスは URL ではなく、ローカルファイルシステムパスに解決される必要があります。',
+    'Path cannot contain parent directory traversal ("..").' => 'パスに親ディレクトリへの移動（".."）を含めることはできません。',
+    'Path cannot use @web or @webroot because those are web-accessible.' => '@web および @webroot は Web からアクセス可能なため、このパスでは使用できません。',
 
     // Settings: General
     'General Settings' => '一般設定',
     'Icon Sets Path' => 'アイコンパス',
+    'Icon Sets Location:' => 'アイコンの場所:',
     'Provide the full path to your icon files. Also supports aliases.' => 'アイコンファイルへのフルパスを指定してください。エイリアスもサポートされています。',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'SVG 最適化機能（スキャンと最適化の適用）を有効にする',
     'Enable Automatic Backups' => '自動バックアップを有効にする',
     'Automatically create backups before applying optimizations' => '最適化を適用する前に自動的にバックアップを作成する',
+    'Optimization Backup Location:' => '最適化バックアップの場所:',
     'About Optimization' => '最適化について',
     'For more information about each rule, see the' => '各ルールの詳細については、以下を参照してください',
     'Only available in dev' => '開発環境でのみ使用できます',

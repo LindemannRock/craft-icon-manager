@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handle "{handle}" er allerede i bruk.',
     'Icon file not found: {path}' => 'Ikonfil ikke funnet: {path}',
+    'Environment variables are not allowed for this path.' => 'Miljøvariabler er ikke tillatt for denne banen.',
+    'Invalid path: {error}' => 'Ugyldig bane: {error}',
+    'Invalid path.' => 'Ugyldig bane.',
+    'Path must start with one of: {aliases}.' => 'Banen må starte med en av følgende verdier: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Banen må løses til en lokal filsystembane, ikke en URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Banen kan ikke inneholde navigering til overordnet mappe ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Banen kan ikke bruke @web eller @webroot fordi de er tilgjengelige via web.',
 
     // Settings: General
     'General Settings' => 'Generelle innstillinger',
     'Icon Sets Path' => 'Ikonbane',
+    'Icon Sets Location:' => 'Ikonplassering:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Angi full bane til ikonfilene dine. Støtter også alias.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'Aktiver SVG-optimaliseringsfunksjoner (skanning og bruk av optimaliseringer)',
     'Enable Automatic Backups' => 'Aktiver automatiske sikkerhetskopier',
     'Automatically create backups before applying optimizations' => 'Opprett automatisk sikkerhetskopier før optimaliseringer brukes',
+    'Optimization Backup Location:' => 'Plassering for optimaliseringssikkerhetskopi:',
     'About Optimization' => 'Om optimalisering',
     'For more information about each rule, see the' => 'For mer informasjon om hver regel, se',
     'Only available in dev' => 'Kun tilgjengelig i utviklingsmiljø',

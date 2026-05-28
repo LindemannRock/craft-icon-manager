@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'L\'handle "{handle}" è già in uso.',
     'Icon file not found: {path}' => 'File icona non trovato: {path}',
+    'Environment variables are not allowed for this path.' => 'Le variabili d\'ambiente non sono consentite per questo percorso.',
+    'Invalid path: {error}' => 'Percorso non valido: {error}',
+    'Invalid path.' => 'Percorso non valido.',
+    'Path must start with one of: {aliases}.' => 'Il percorso deve iniziare con uno dei seguenti valori: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Il percorso deve risolversi in un percorso del filesystem locale, non in una URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Il percorso non può contenere attraversamento della directory superiore ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Il percorso non può usare @web o @webroot perché sono accessibili dal web.',
 
     // Settings: General
     'General Settings' => 'Impostazioni generali',
     'Icon Sets Path' => 'Percorso icone',
+    'Icon Sets Location:' => 'Posizione icone:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Fornire il percorso completo ai file icona. Supporta anche gli alias.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'Abilita le funzioni di ottimizzazione SVG (scansione e applicazione delle ottimizzazioni)',
     'Enable Automatic Backups' => 'Abilita backup automatici',
     'Automatically create backups before applying optimizations' => 'Crea automaticamente backup prima di applicare le ottimizzazioni',
+    'Optimization Backup Location:' => 'Posizione backup ottimizzazione:',
     'About Optimization' => 'Informazioni sull\'ottimizzazione',
     'For more information about each rule, see the' => 'Per ulteriori informazioni su ogni regola, consultare',
     'Only available in dev' => 'Disponibile solo in sviluppo',

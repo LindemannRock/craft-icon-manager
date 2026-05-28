@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handle "{handle}" is al in gebruik.',
     'Icon file not found: {path}' => 'Iconbestand niet gevonden: {path}',
+    'Environment variables are not allowed for this path.' => 'Omgevingsvariabelen zijn niet toegestaan voor dit pad.',
+    'Invalid path: {error}' => 'Ongeldig pad: {error}',
+    'Invalid path.' => 'Ongeldig pad.',
+    'Path must start with one of: {aliases}.' => 'Het pad moet beginnen met een van: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Het pad moet verwijzen naar een lokaal bestandssysteempad, niet naar een URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Het pad mag geen navigatie naar bovenliggende mappen bevatten ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Het pad mag @web of @webroot niet gebruiken, omdat deze via het web toegankelijk zijn.',
 
     // Settings: General
     'General Settings' => 'Algemene instellingen',
     'Icon Sets Path' => 'Iconenpad',
+    'Icon Sets Location:' => 'Locatie van iconen:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Geef het volledige pad naar uw iconbestanden op. Aliassen worden ook ondersteund.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'SVG-optimalisatiefuncties inschakelen (scannen en optimalisaties toepassen)',
     'Enable Automatic Backups' => 'Automatische back-ups inschakelen',
     'Automatically create backups before applying optimizations' => 'Automatisch back-ups aanmaken vóór het toepassen van optimalisaties',
+    'Optimization Backup Location:' => 'Locatie van optimalisatieback-up:',
     'About Optimization' => 'Over optimalisatie',
     'For more information about each rule, see the' => 'Voor meer informatie over elke regel, zie de',
     'Only available in dev' => 'Alleen beschikbaar in dev',

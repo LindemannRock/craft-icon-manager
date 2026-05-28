@@ -134,10 +134,18 @@ return [
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handle "{handle}" er allerede i brug.',
     'Icon file not found: {path}' => 'Ikonfil ikke fundet: {path}',
+    'Environment variables are not allowed for this path.' => 'Miljøvariabler er ikke tilladt for denne sti.',
+    'Invalid path: {error}' => 'Ugyldig sti: {error}',
+    'Invalid path.' => 'Ugyldig sti.',
+    'Path must start with one of: {aliases}.' => 'Stien skal begynde med en af følgende værdier: {aliases}.',
+    'Path must resolve to a local filesystem path, not a URL.' => 'Stien skal opløses til en lokal filsystemsti, ikke en URL.',
+    'Path cannot contain parent directory traversal ("..").' => 'Stien må ikke indeholde navigation til overordnet mappe ("..").',
+    'Path cannot use @web or @webroot because those are web-accessible.' => 'Stien må ikke bruge @web eller @webroot, fordi de er tilgængelige via web.',
 
     // Settings: General
     'General Settings' => 'Generelle indstillinger',
     'Icon Sets Path' => 'Ikonsti',
+    'Icon Sets Location:' => 'Ikonplacering:',
     'Provide the full path to your icon files. Also supports aliases.' => 'Angiv den fulde sti til Deres ikonfiler. Understøtter også aliasser.',
 
     // Settings: Logging
@@ -177,6 +185,7 @@ return [
     'Enable SVG optimization features (scanning and applying optimizations)' => 'Aktiver SVG-optimeringsfunktioner (scanning og anvendelse af optimeringer)',
     'Enable Automatic Backups' => 'Aktiver automatiske sikkerhedskopier',
     'Automatically create backups before applying optimizations' => 'Opret automatisk sikkerhedskopier inden anvendelse af optimeringer',
+    'Optimization Backup Location:' => 'Placering af optimeringssikkerhedskopi:',
     'About Optimization' => 'Om optimering',
     'For more information about each rule, see the' => 'For yderligere oplysninger om hver regel, se',
     'Only available in dev' => 'Kun tilgængeligt i dev',
