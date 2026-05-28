@@ -299,7 +299,7 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 #### Available Configuration Options
 
 - **pluginName** - Customize the plugin display name in navigation and settings
-- **iconSetsPath** - Path to icon files (supports aliases like `@root`, `@webroot`)
+- **iconSetsPath** - Path to icon files (supports `@root`, `@storage`, `@webroot`, absolute paths inside those roots, and environment variables that resolve inside those roots)
 - **enableCache** - Whether to cache icon data for better performance
 - **cacheDuration** - How long to cache icon data, in seconds
 - **itemsPerPage** - Number of icon sets per page in CP index (10-500, default: 100)
@@ -981,8 +981,8 @@ Processing (2/123): another-icon.svg...
 **Automatic Backups:**
 
 Before optimization, a backup is automatically created (unless `--noBackup` is used):
-- Stored in `storage/backups/icon-manager/`
-- Named with timestamp: `icon-set-name-YYYY-MM-DD-HHMMSS.zip`
+- Stored in `storage/runtime/icon-manager/backups/`
+- Named with timestamp: `icon-set-name_YYYY-MM-DD_HH-MM-SS`
 - Can be restored from Icon Manager → Icon Sets → [Set] → Optimize tab (dev mode only)
 
 **When to Use SVGO:**
