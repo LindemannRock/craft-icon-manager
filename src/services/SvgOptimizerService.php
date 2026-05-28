@@ -126,10 +126,9 @@ class SvgOptimizerService extends Component
      */
     private function resolveIconSetFolder($iconSet): ?string
     {
-        $rawBase = IconManager::getInstance()->getSettings()->iconSetsPath;
-        $basePath = FileHelper::normalizePath(Craft::getAlias($rawBase));
+        $basePath = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getResolvedIconSetsPath());
         $folder = $iconSet->settings['folder'] ?? '';
-        $folderPath = FileHelper::normalizePath(Craft::getAlias($rawBase . '/' . $folder));
+        $folderPath = FileHelper::normalizePath($basePath . DIRECTORY_SEPARATOR . $folder);
 
         if (!str_starts_with($folderPath . DIRECTORY_SEPARATOR, $basePath . DIRECTORY_SEPARATOR)) {
             $this->logWarning("Icon set folder escapes base path", [
