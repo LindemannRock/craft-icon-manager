@@ -11,6 +11,7 @@ namespace lindemannrock\iconmanager\models;
 use Craft;
 use craft\base\Model;
 use craft\behaviors\EnvAttributeParserBehavior;
+use lindemannrock\base\helpers\StoragePathHelper;
 use lindemannrock\base\traits\DateFormatSettingsTrait;
 use lindemannrock\base\traits\ItemsPerPageSettingsTrait;
 use lindemannrock\base\traits\LogLevelSettingsTrait;
@@ -18,6 +19,7 @@ use lindemannrock\base\traits\PluginNameSettingsTrait;
 use lindemannrock\base\traits\SettingsConfigTrait;
 use lindemannrock\base\traits\SettingsDisplayNameTrait;
 use lindemannrock\base\traits\SettingsPersistenceTrait;
+use lindemannrock\base\validators\StoragePathValidator;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
@@ -321,6 +323,14 @@ class Settings extends Model
         return array_merge([
             [['iconSetsPath'], 'required'],
             [['iconSetsPath'], 'string'],
+            [
+                'iconSetsPath',
+                StoragePathValidator::class,
+                'translationCategory' => static::pluginHandle(),
+                'allowedAliases' => ['@root', '@storage', '@webroot'],
+                'preventWebroot' => false,
+                'requireAlias' => true,
+            ],
             [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes', 'optimizeFixAttributeNames', 'optimizeRemoveAriaAndRole', 'optimizeRemoveDataAttributes', 'optimizeRemoveDuplicateElements', 'optimizeRemoveEmptyGroups', 'optimizeRemoveEmptyTextElements', 'optimizeRemoveNonStandardAttributes', 'optimizeRemoveNonStandardTags', 'optimizeRemoveTitleAndDesc', 'optimizeRemoveUnsafeElements', 'optimizeScopeSvgStyles', 'optimizeAllowRiskyRules'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 1],
             [['cacheStorageMethod'], 'in', 'range' => ['file', 'redis']],
@@ -409,7 +419,7 @@ class Settings extends Model
      */
     public function getResolvedIconSetsPath(): string
     {
-        return Craft::getAlias($this->iconSetsPath);
+        return StoragePathHelper::resolve($this->iconSetsPath);
     }
     
     // =========================================================================
