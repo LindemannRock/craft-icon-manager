@@ -161,7 +161,7 @@ return [
     'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/Base de datos (balanceo de carga, múltiples servidores, alojamiento en la nube)',
     'Icon Caching' => 'Caché de iconos',
     'Enable Cache' => 'Activar caché',
-    'Cache icon data for better performance' => 'Cachear los datos de iconos para mejor rendimiento',
+    'Cache icon data for better performance' => 'Almacenar en caché los datos de iconos para mejor rendimiento',
     'Cache Duration' => 'Duración de la caché',
     'Min: 60 (1 minute), Max: 604800 (7 days)' => 'Mín: 60 (1 minuto), Máx: 604800 (7 días)',
 
