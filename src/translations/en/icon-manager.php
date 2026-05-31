@@ -88,11 +88,9 @@ return [
 
     // Controller messages
     'Settings saved.' => 'Settings saved.',
-    'Could not save settings' => 'Could not save settings',
     'Could not save settings.' => 'Could not save settings.',
     'Icon set saved.' => 'Icon set saved.',
     'Icon set deleted.' => 'Icon set deleted.',
-    'Icon set deleted' => 'Icon set deleted',
     'Icon set restored from backup successfully.' => 'Icon set restored from backup successfully.',
     'Icons refreshed.' => 'Icons refreshed.',
     'Icon cache cleared.' => 'Icon cache cleared.',
