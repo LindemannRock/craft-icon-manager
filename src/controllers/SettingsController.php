@@ -200,7 +200,7 @@ class SettingsController extends Controller
 
             Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Settings saved.'));
         } else {
-            Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not save settings'));
+            Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not save settings.'));
             return null;
         }
 
