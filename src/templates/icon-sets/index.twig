@@ -249,7 +249,7 @@
     // and emit as JSON-encoded JS literals via |json_encode|raw — avoids
     // the |e('js') trap (produces \uXXXX garbage when re-quoted).
     const T = {
-        iconSetDeleted: {{ 'Icon set deleted'|t('icon-manager')|json_encode|raw }},
+        iconSetDeleted: {{ 'Icon set deleted.'|t('icon-manager')|json_encode|raw }},
         deleteFailed: {{ 'Failed to delete icon set'|t('icon-manager')|json_encode|raw }},
         deleteConfirmTemplate: {{ 'Delete icon set "{name}"? This cannot be undone.'|t('icon-manager')|json_encode|raw }},
         bulkEnabledTemplate: {{ 'Enabled {count} icon sets'|t('icon-manager')|json_encode|raw }},
