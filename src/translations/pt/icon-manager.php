@@ -128,6 +128,15 @@ return [
     'Failed to restore from backup.' => 'Falha ao restaurar a partir da cópia de segurança.',
     'Could not restore backup: {error}' => 'Não foi possível restaurar a cópia de segurança: {error}',
     'Backup restoration is only available in local/development environments.' => 'O restauro de cópias de segurança só está disponível em ambientes locais/de desenvolvimento.',
+    'Icon set not found' => 'Conjunto de ícones não encontrado',
+    'User does not have permission to access Icon Manager.' => 'O utilizador não tem permissão para aceder ao Icon Manager.',
+    'User does not have permission to clear icon cache.' => 'O utilizador não tem permissão para limpar a cache de ícones.',
+    'User does not have permission to create icon sets.' => 'O utilizador não tem permissão para criar conjuntos de ícones.',
+    'User does not have permission to delete icon sets.' => 'O utilizador não tem permissão para eliminar conjuntos de ícones.',
+    'User does not have permission to edit icon sets.' => 'O utilizador não tem permissão para editar conjuntos de ícones.',
+    'User does not have permission to manage SVG optimization.' => 'O utilizador não tem permissão para gerir a otimização de SVG.',
+    'User does not have permission to refresh icons.' => 'O utilizador não tem permissão para atualizar os ícones.',
+    'User does not have permission to scan SVGs.' => 'O utilizador não tem permissão para analisar os SVGs.',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'O handle "{handle}" já está em uso.',

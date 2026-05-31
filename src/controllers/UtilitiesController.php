@@ -34,13 +34,13 @@ class UtilitiesController extends Controller
         switch ($action->id) {
             case 'refresh-all-icons':
                 if (!$user->checkPermission('iconManager:editIconSets')) {
-                    throw new ForbiddenHttpException('User does not have permission to refresh icons');
+                    throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to refresh icons.'));
                 }
                 break;
 
             case 'scan-svgs':
                 if (!$user->checkPermission('iconManager:manageOptimization')) {
-                    throw new ForbiddenHttpException('User does not have permission to scan SVGs');
+                    throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to scan SVGs.'));
                 }
                 break;
         }

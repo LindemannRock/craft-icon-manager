@@ -128,6 +128,15 @@ return [
     'Failed to restore from backup.' => 'Herstellen vanuit back-up mislukt.',
     'Could not restore backup: {error}' => 'Back-up kon niet worden hersteld: {error}',
     'Backup restoration is only available in local/development environments.' => 'Back-up herstellen is alleen beschikbaar in lokale/ontwikkelomgevingen.',
+    'Icon set not found' => 'Iconenset niet gevonden',
+    'User does not have permission to access Icon Manager.' => 'De gebruiker heeft geen toestemming om toegang te krijgen tot Icon Manager.',
+    'User does not have permission to clear icon cache.' => 'De gebruiker heeft geen toestemming om de iconencache te wissen.',
+    'User does not have permission to create icon sets.' => 'De gebruiker heeft geen toestemming om iconensets aan te maken.',
+    'User does not have permission to delete icon sets.' => 'De gebruiker heeft geen toestemming om iconensets te verwijderen.',
+    'User does not have permission to edit icon sets.' => 'De gebruiker heeft geen toestemming om iconensets te bewerken.',
+    'User does not have permission to manage SVG optimization.' => 'De gebruiker heeft geen toestemming om SVG-optimalisatie te beheren.',
+    'User does not have permission to refresh icons.' => 'De gebruiker heeft geen toestemming om iconen te vernieuwen.',
+    'User does not have permission to scan SVGs.' => 'De gebruiker heeft geen toestemming om SVG\'s te scannen.',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handle "{handle}" is al in gebruik.',

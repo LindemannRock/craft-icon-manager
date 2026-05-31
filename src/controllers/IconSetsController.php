@@ -50,7 +50,7 @@ class IconSetsController extends Controller
                         return false;
                     }
                     // No access at all
-                    throw new ForbiddenHttpException('User does not have permission to access Icon Manager');
+                    throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to access Icon Manager.'));
                 }
                 break;
 
@@ -60,12 +60,12 @@ class IconSetsController extends Controller
                 if ($iconSetId) {
                     // Viewing/editing existing icon set
                     if (!$user->checkPermission('iconManager:editIconSets')) {
-                        throw new ForbiddenHttpException('User does not have permission to edit icon sets');
+                        throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to edit icon sets.'));
                     }
                 } else {
                     // Creating new icon set
                     if (!$user->checkPermission('iconManager:createIconSets')) {
-                        throw new ForbiddenHttpException('User does not have permission to create icon sets');
+                        throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to create icon sets.'));
                     }
                 }
                 break;
@@ -76,12 +76,12 @@ class IconSetsController extends Controller
                 if ($iconSetId) {
                     // Editing existing
                     if (!$user->checkPermission('iconManager:editIconSets')) {
-                        throw new ForbiddenHttpException('User does not have permission to edit icon sets');
+                        throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to edit icon sets.'));
                     }
                 } else {
                     // Creating new
                     if (!$user->checkPermission('iconManager:createIconSets')) {
-                        throw new ForbiddenHttpException('User does not have permission to create icon sets');
+                        throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to create icon sets.'));
                     }
                 }
                 break;
@@ -89,7 +89,7 @@ class IconSetsController extends Controller
             case 'delete':
             case 'bulk-delete':
                 if (!$user->checkPermission('iconManager:deleteIconSets')) {
-                    throw new ForbiddenHttpException('User does not have permission to delete icon sets');
+                    throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to delete icon sets.'));
                 }
                 break;
 
@@ -97,7 +97,7 @@ class IconSetsController extends Controller
             case 'bulk-disable':
             case 'refresh-icons':
                 if (!$user->checkPermission('iconManager:editIconSets')) {
-                    throw new ForbiddenHttpException('User does not have permission to edit icon sets');
+                    throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to edit icon sets.'));
                 }
                 break;
 
@@ -108,7 +108,7 @@ class IconSetsController extends Controller
             case 'save-optimized-svgs':
             case 'delete-backup':
                 if (!$user->checkPermission('iconManager:manageOptimization')) {
-                    throw new ForbiddenHttpException('User does not have permission to manage SVG optimization');
+                    throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to manage SVG optimization.'));
                 }
                 break;
         }
@@ -267,7 +267,7 @@ class IconSetsController extends Controller
                 // Force fresh load
                 $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId, true);
                 if (!$iconSet) {
-                    throw new \yii\web\NotFoundHttpException('Icon set not found');
+                    throw new \yii\web\NotFoundHttpException(Craft::t('icon-manager', 'Icon set not found'));
                 }
             } else {
                 $iconSet = new IconSet();
@@ -311,7 +311,7 @@ class IconSetsController extends Controller
         if ($iconSetId) {
             $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
             if (!$iconSet) {
-                throw new \yii\web\NotFoundHttpException('Icon set not found');
+                throw new \yii\web\NotFoundHttpException(Craft::t('icon-manager', 'Icon set not found'));
             }
         } else {
             $iconSet = new IconSet();
@@ -367,7 +367,7 @@ class IconSetsController extends Controller
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
 
         if (!$iconSet) {
-            throw new \yii\web\NotFoundHttpException('Icon set not found');
+            throw new \yii\web\NotFoundHttpException(Craft::t('icon-manager', 'Icon set not found'));
         }
 
         if (!IconManager::getInstance()->iconSets->deleteIconSet($iconSet)) {
@@ -487,7 +487,7 @@ class IconSetsController extends Controller
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
 
         if (!$iconSet) {
-            throw new \yii\web\NotFoundHttpException('Icon set not found');
+            throw new \yii\web\NotFoundHttpException(Craft::t('icon-manager', 'Icon set not found'));
         }
 
         try {
@@ -544,7 +544,7 @@ class IconSetsController extends Controller
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
 
         if (!$iconSet) {
-            throw new \yii\web\NotFoundHttpException('Icon set not found');
+            throw new \yii\web\NotFoundHttpException(Craft::t('icon-manager', 'Icon set not found'));
         }
 
         try {
@@ -622,7 +622,7 @@ class IconSetsController extends Controller
 
         $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
         if (!$iconSet) {
-            throw new \yii\web\NotFoundHttpException('Icon set not found');
+            throw new \yii\web\NotFoundHttpException(Craft::t('icon-manager', 'Icon set not found'));
         }
 
         try {

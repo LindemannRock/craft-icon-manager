@@ -128,6 +128,15 @@ return [
     'Failed to restore from backup.' => 'فشل الاستعادة من النسخة الاحتياطية.',
     'Could not restore backup: {error}' => 'تعذّر استعادة النسخة الاحتياطية: {error}',
     'Backup restoration is only available in local/development environments.' => 'استعادة النسخ الاحتياطية متاحة فقط في بيئات التطوير المحلية.',
+    'Icon set not found' => 'لم يتم العثور على مجموعة الأيقونات',
+    'User does not have permission to access Icon Manager.' => 'ليس لدى المستخدم صلاحية للوصول إلى Icon Manager.',
+    'User does not have permission to clear icon cache.' => 'ليس لدى المستخدم صلاحية لمسح Cache الأيقونات.',
+    'User does not have permission to create icon sets.' => 'ليس لدى المستخدم صلاحية لإنشاء مجموعات الأيقونات.',
+    'User does not have permission to delete icon sets.' => 'ليس لدى المستخدم صلاحية لحذف مجموعات الأيقونات.',
+    'User does not have permission to edit icon sets.' => 'ليس لدى المستخدم صلاحية لتعديل مجموعات الأيقونات.',
+    'User does not have permission to manage SVG optimization.' => 'ليس لدى المستخدم صلاحية لإدارة تحسين SVG.',
+    'User does not have permission to refresh icons.' => 'ليس لدى المستخدم صلاحية لتحديث الأيقونات.',
+    'User does not have permission to scan SVGs.' => 'ليس لدى المستخدم صلاحية لفحص ملفات SVG.',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'المعرّف "{handle}" مستخدم بالفعل.',

@@ -126,6 +126,15 @@ return [
     'Failed to restore from backup.' => 'Failed to restore from backup.',
     'Could not restore backup: {error}' => 'Could not restore backup: {error}',
     'Backup restoration is only available in local/development environments.' => 'Backup restoration is only available in local/development environments.',
+    'Icon set not found' => 'Icon set not found',
+    'User does not have permission to access Icon Manager.' => 'User does not have permission to access Icon Manager.',
+    'User does not have permission to clear icon cache.' => 'User does not have permission to clear icon cache.',
+    'User does not have permission to create icon sets.' => 'User does not have permission to create icon sets.',
+    'User does not have permission to delete icon sets.' => 'User does not have permission to delete icon sets.',
+    'User does not have permission to edit icon sets.' => 'User does not have permission to edit icon sets.',
+    'User does not have permission to manage SVG optimization.' => 'User does not have permission to manage SVG optimization.',
+    'User does not have permission to refresh icons.' => 'User does not have permission to refresh icons.',
+    'User does not have permission to scan SVGs.' => 'User does not have permission to scan SVGs.',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handle "{handle}" is already in use.',

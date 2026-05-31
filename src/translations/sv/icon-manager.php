@@ -128,6 +128,15 @@ return [
     'Failed to restore from backup.' => 'Det gick inte att återställa från säkerhetskopian.',
     'Could not restore backup: {error}' => 'Det gick inte att återställa säkerhetskopian: {error}',
     'Backup restoration is only available in local/development environments.' => 'Återställning av säkerhetskopior är bara tillgängligt i lokala/utvecklingsmiljöer.',
+    'Icon set not found' => 'Ikonuppsättningen hittades inte',
+    'User does not have permission to access Icon Manager.' => 'Användaren har inte behörighet att komma åt Icon Manager.',
+    'User does not have permission to clear icon cache.' => 'Användaren har inte behörighet att rensa ikoncachen.',
+    'User does not have permission to create icon sets.' => 'Användaren har inte behörighet att skapa ikonuppsättningar.',
+    'User does not have permission to delete icon sets.' => 'Användaren har inte behörighet att ta bort ikonuppsättningar.',
+    'User does not have permission to edit icon sets.' => 'Användaren har inte behörighet att redigera ikonuppsättningar.',
+    'User does not have permission to manage SVG optimization.' => 'Användaren har inte behörighet att hantera SVG-optimering.',
+    'User does not have permission to refresh icons.' => 'Användaren har inte behörighet att uppdatera ikoner.',
+    'User does not have permission to scan SVGs.' => 'Användaren har inte behörighet att skanna SVG:er.',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handtaget "{handle}" används redan.',

@@ -128,6 +128,15 @@ return [
     'Failed to restore from backup.' => 'バックアップからの復元に失敗しました。',
     'Could not restore backup: {error}' => 'バックアップを復元できませんでした: {error}',
     'Backup restoration is only available in local/development environments.' => 'バックアップの復元はローカル/開発環境でのみ使用できます。',
+    'Icon set not found' => 'アイコンセットが見つかりません',
+    'User does not have permission to access Icon Manager.' => 'ユーザーに Icon Manager にアクセスする権限がありません。',
+    'User does not have permission to clear icon cache.' => 'ユーザーにアイコンのキャッシュを削除する権限がありません。',
+    'User does not have permission to create icon sets.' => 'ユーザーにアイコンセットを作成する権限がありません。',
+    'User does not have permission to delete icon sets.' => 'ユーザーにアイコンセットを削除する権限がありません。',
+    'User does not have permission to edit icon sets.' => 'ユーザーにアイコンセットを編集する権限がありません。',
+    'User does not have permission to manage SVG optimization.' => 'ユーザーに SVG 最適化を管理する権限がありません。',
+    'User does not have permission to refresh icons.' => 'ユーザーにアイコンを更新する権限がありません。',
+    'User does not have permission to scan SVGs.' => 'ユーザーに SVG をスキャンする権限がありません。',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'ハンドル「{handle}」はすでに使用されています。',

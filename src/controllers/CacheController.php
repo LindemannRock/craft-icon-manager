@@ -32,7 +32,7 @@ class CacheController extends Controller
         $user = Craft::$app->getUser();
 
         if (!$user->checkPermission('iconManager:clearCache')) {
-            throw new ForbiddenHttpException('User does not have permission to clear icon cache');
+            throw new ForbiddenHttpException(Craft::t('icon-manager', 'User does not have permission to clear icon cache.'));
         }
 
         return parent::beforeAction($action);

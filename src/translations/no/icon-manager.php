@@ -128,6 +128,15 @@ return [
     'Failed to restore from backup.' => 'Kunne ikke gjenopprette fra sikkerhetskopi.',
     'Could not restore backup: {error}' => 'Kunne ikke gjenopprette sikkerhetskopien: {error}',
     'Backup restoration is only available in local/development environments.' => 'Gjenoppretting av sikkerhetskopi er kun tilgjengelig i lokale/utviklingsmiljøer.',
+    'Icon set not found' => 'Icon-sett ikke funnet',
+    'User does not have permission to access Icon Manager.' => 'Brukeren har ikke tillatelse til å få tilgang til Icon Manager.',
+    'User does not have permission to clear icon cache.' => 'Brukeren har ikke tillatelse til å fjerne Icon-cachen.',
+    'User does not have permission to create icon sets.' => 'Brukeren har ikke tillatelse til å opprette Icon-sett.',
+    'User does not have permission to delete icon sets.' => 'Brukeren har ikke tillatelse til å slette Icon-sett.',
+    'User does not have permission to edit icon sets.' => 'Brukeren har ikke tillatelse til å redigere Icon-sett.',
+    'User does not have permission to manage SVG optimization.' => 'Brukeren har ikke tillatelse til å administrere SVG-optimalisering.',
+    'User does not have permission to refresh icons.' => 'Brukeren har ikke tillatelse til å oppdatere ikoner.',
+    'User does not have permission to scan SVGs.' => 'Brukeren har ikke tillatelse til å skanne SVG-er.',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'Handle "{handle}" er allerede i bruk.',

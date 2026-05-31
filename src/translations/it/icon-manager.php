@@ -128,6 +128,15 @@ return [
     'Failed to restore from backup.' => 'Impossibile ripristinare dal backup.',
     'Could not restore backup: {error}' => 'Impossibile ripristinare il backup: {error}',
     'Backup restoration is only available in local/development environments.' => 'Il ripristino del backup è disponibile solo negli ambienti locali/di sviluppo.',
+    'Icon set not found' => 'Set di icone non trovato',
+    'User does not have permission to access Icon Manager.' => 'L\'utente non dispone dell\'autorizzazione per accedere a Icon Manager.',
+    'User does not have permission to clear icon cache.' => 'L\'utente non dispone dell\'autorizzazione per svuotare la cache delle icone.',
+    'User does not have permission to create icon sets.' => 'L\'utente non dispone dell\'autorizzazione per creare set di icone.',
+    'User does not have permission to delete icon sets.' => 'L\'utente non dispone dell\'autorizzazione per eliminare set di icone.',
+    'User does not have permission to edit icon sets.' => 'L\'utente non dispone dell\'autorizzazione per modificare set di icone.',
+    'User does not have permission to manage SVG optimization.' => 'L\'utente non dispone dell\'autorizzazione per gestire l\'ottimizzazione SVG.',
+    'User does not have permission to refresh icons.' => 'L\'utente non dispone dell\'autorizzazione per aggiornare le icone.',
+    'User does not have permission to scan SVGs.' => 'L\'utente non dispone dell\'autorizzazione per scansionare i SVG.',
 
     // Validation messages
     'Handle "{handle}" is already in use.' => 'L\'handle "{handle}" è già in uso.',
