@@ -405,13 +405,16 @@
     {% if not isNew %}
         <fieldset>
             <dl class="meta read-only">
-                <div class="data">
-                    <dt class="heading">{{ 'Status'|t('icon-manager') }}</dt>
-                    <dd class="value">
-                        <span class="status {{ iconSet.enabled ? 'live' : 'disabled' }}"></span>
-                        <span>{{ iconSet.enabled ? 'Enabled'|t('icon-manager') : 'Disabled'|t('icon-manager') }}</span>
-                    </dd>
-                </div>
+	                <div class="data">
+	                    <dt class="heading">{{ 'Status'|t('icon-manager') }}</dt>
+	                    <dd class="value">
+	                        {% include 'lindemannrock-base/_components/status-dot' with {
+	                            value: iconSet.enabled ? 'enabled' : 'disabled',
+	                            colorSet: 'status',
+	                        } only %}
+	                        <span>{{ iconSet.enabled ? 'Enabled'|t('icon-manager') : 'Disabled'|t('icon-manager') }}</span>
+	                    </dd>
+	                </div>
                 <div class="data">
                     <dt class="heading">{{ 'Icons'|t('icon-manager') }}</dt>
                     <dd class="value">{{ iconSet.getIconCount()|number_format }}</dd>
