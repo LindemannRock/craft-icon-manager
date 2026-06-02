@@ -7,6 +7,7 @@
 
 {% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
+{% do view.registerAssetBundle('lindemannrock\\base\\web\\assets\\components\\ComponentsAsset') %}
 
 {% set fullPageForm = true %}
 {% set selectedSubnavItem = 'icon-sets' %}
@@ -477,48 +478,9 @@
     });
     {% endif %}
 
-    // Auto-generate handle from name (only for new icon sets or when handle is empty)
-    var nameField = document.getElementById('name');
-    var handleField = document.getElementById('handle');
-    var isNewIconSet = {{ isNew ? 'true' : 'false' }};
-    var handleModified = false;
-
-    // Check if handle was manually modified
-    if (handleField) {
-        handleField.addEventListener('input', function() {
-            handleModified = true;
-        });
-    }
-
-    // Generate handle from name (only for new icon sets or empty handles)
-    if (nameField && handleField) {
-        nameField.addEventListener('input', function() {
-            // Only auto-generate if:
-            // 1. It's a new icon set, OR
-            // 2. The handle is currently empty (user cleared it)
-            // 3. Handle hasn't been manually modified by user typing directly in handle field
-            if (isNewIconSet || handleField.value === '') {
-                var handle = this.value
-                    .toLowerCase()
-                    .replace(/[^\w\s-]/g, '') // Remove special characters
-                    .replace(/\s+/g, '-') // Replace spaces with hyphens
-                    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-                    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
-
-                // Convert to camelCase if it contains hyphens
-                if (handle.includes('-')) {
-                    handle = handle.split('-').map(function(word, index) {
-                        if (index === 0) {
-                            return word;
-                        }
-                        return word.charAt(0).toUpperCase() + word.slice(1);
-                    }).join('');
-                }
-
-                handleField.value = handle;
-            }
-        });
-    }
+    window.lrIdentifiers?.bindSlugHandle('#name', '#handle', {
+        isNew: {{ isNew ? 'true' : 'false' }},
+    });
 
     // Handle type changes
     var typeField = document.getElementById('type');
