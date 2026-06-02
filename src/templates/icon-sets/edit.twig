@@ -406,23 +406,39 @@
     {% if not isNew %}
         <fieldset>
             <dl class="meta read-only">
-	                <div class="data">
-	                    <dt class="heading">{{ 'Status'|t('icon-manager') }}</dt>
-	                    <dd class="value">
-	                        {% include 'lindemannrock-base/_components/status-dot' with {
-	                            value: iconSet.enabled ? 'enabled' : 'disabled',
-	                            colorSet: 'status',
-	                        } only %}
-	                        <span>{{ iconSet.enabled ? 'Enabled'|t('icon-manager') : 'Disabled'|t('icon-manager') }}</span>
-	                    </dd>
-	                </div>
+                {% if iconSet.id %}
+                    <div class="data">
+                        <dt class="heading">{{ 'ID'|t('icon-manager') }}</dt>
+                        <dd class="value">{{ iconSet.id }}</dd>
+                    </div>
+                {% endif %}
                 <div class="data">
-                    <dt class="heading">{{ 'Icons'|t('icon-manager') }}</dt>
-                    <dd class="value">{{ iconSet.getIconCount()|number_format }}</dd>
+                    <dt class="heading">{{ 'Status'|t('icon-manager') }}</dt>
+                    <dd class="value">
+                        {% include 'lindemannrock-base/_components/status-dot' with {
+                            value: iconSet.enabled ? 'enabled' : 'disabled',
+                            colorSet: 'status',
+                        } only %}
+                        <span>{{ iconSet.enabled ? 'Enabled'|t('icon-manager') : 'Disabled'|t('icon-manager') }}</span>
+                    </dd>
+                </div>
+                <div class="data">
+                    <dt class="heading">{{ 'Handle'|t('icon-manager') }}</dt>
+                    <dd class="value"><code>{{ iconSet.handle }}</code></dd>
                 </div>
                 <div class="data">
                     <dt class="heading">{{ 'Type'|t('icon-manager') }}</dt>
-                    <dd class="value">{{ iconSet.type }}</dd>
+                    <dd class="value">
+                        {% include 'lindemannrock-base/_components/status-dot' with {
+                            value: iconSet.type,
+                            colorSet: 'iconType',
+                        } only %}
+                        <span>{{ iconSet.getTypeLabel() }}</span>
+                    </dd>
+                </div>
+                <div class="data">
+                    <dt class="heading">{{ 'Icons'|t('icon-manager') }}</dt>
+                    <dd class="value">{{ iconSet.getIconCount()|number_format }}</dd>
                 </div>
                 <div class="data">
                     <dt class="heading">{{ 'Created at'|t('icon-manager') }}</dt>
