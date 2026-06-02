@@ -62,6 +62,7 @@ return [
     'Date' => 'Date',
     'Filter' => 'Filtre',
     'Filters' => 'Filtres',
+    'ID' => 'ID',
     'Handle' => 'Handle',
     'Icons' => 'Icônes',
     'Label' => 'Libellé',

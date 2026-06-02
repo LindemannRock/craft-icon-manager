@@ -62,6 +62,7 @@ return [
     'Date' => '日付',
     'Filter' => 'フィルター',
     'Filters' => 'フィルター',
+    'ID' => 'ID',
     'Handle' => 'ハンドル',
     'Icons' => 'アイコン',
     'Label' => 'ラベル',
