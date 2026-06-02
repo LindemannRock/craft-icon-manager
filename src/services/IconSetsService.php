@@ -3,7 +3,7 @@
  * Icon Manager plugin for Craft CMS 5.x
  *
  * @link      https://lindemannrock.com
- * @copyright Copyright (c) 2025 LindemannRock
+ * @copyright Copyright (c) 2025-2026 LindemannRock
  */
 
 namespace lindemannrock\iconmanager\services;
@@ -14,6 +14,7 @@ use craft\db\Query;
 use craft\helpers\DateTimeHelper;
 
 use craft\helpers\StringHelper;
+use lindemannrock\base\helpers\SlugHandleHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\iconmanager\records\IconSetRecord;
@@ -167,6 +168,11 @@ class IconSetsService extends Component
     public function saveIconSet(IconSet $iconSet, bool $runValidation = true): bool
     {
         $isNew = !$iconSet->id;
+        $iconSet->handle = SlugHandleHelper::normalizeSlug($iconSet->handle, (string)$iconSet->name);
+
+        if ($isNew) {
+            $iconSet->handle = SlugHandleHelper::makeUnique(IconSetRecord::tableName(), 'handle', $iconSet->handle);
+        }
 
         if ($runValidation && !$iconSet->validate()) {
             // Format errors for readable message

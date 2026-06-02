@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\models;
 
 use Craft;
 use craft\base\Model;
+use lindemannrock\base\helpers\SlugHandleHelper;
 use lindemannrock\iconmanager\IconManager;
 
 /**
@@ -82,7 +83,7 @@ class IconSet extends Model
         return [
             [['name', 'handle', 'type'], 'required'],
             [['name', 'handle'], 'string', 'max' => 255],
-            [['handle'], 'match', 'pattern' => '/^[a-zA-Z][a-zA-Z0-9_]*$/'],
+            [['handle'], 'match', 'pattern' => '/^[a-zA-Z][a-zA-Z0-9_-]*$/'],
             [['handle'], 'validateUniqueHandle'],
             [['type'], 'in', 'range' => ['svg-folder', 'svg-sprite', 'font-awesome', 'material-icons', 'web-font', 'custom']],
             [['enabled'], 'boolean'],
@@ -115,18 +116,10 @@ class IconSet extends Model
     {
         $handle = $this->$attribute;
 
-        // Build query to check for existing handle
-        $query = (new \craft\db\Query())
-            ->from('{{%iconmanager_iconsets}}')
-            ->where(['handle' => $handle]);
-
-        // Exclude current record if editing
-        if ($this->id) {
-            $query->andWhere(['not', ['id' => $this->id]]);
-        }
-
-        if ($query->exists()) {
-            $this->addError($attribute, Craft::t('icon-manager', 'Handle "{handle}" is already in use.', ['handle' => $handle]));
+        if (SlugHandleHelper::exists('{{%iconmanager_iconsets}}', 'handle', $handle, [
+            'excludeId' => $this->id,
+        ])) {
+            $this->addError($attribute, Craft::t('icon-manager', 'Handle must be unique.'));
         }
     }
 
