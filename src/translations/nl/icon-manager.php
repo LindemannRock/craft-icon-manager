@@ -139,7 +139,7 @@ return [
     'User does not have permission to scan SVGs.' => 'De gebruiker heeft geen toestemming om SVG\'s te scannen.',
 
     // Validation messages
-    'Handle "{handle}" is already in use.' => 'Handle "{handle}" is al in gebruik.',
+    'Handle must be unique.' => 'De handle moet uniek zijn.',
     'Icon file not found: {path}' => 'Iconbestand niet gevonden: {path}',
     'Environment variables are not allowed for this path.' => 'Omgevingsvariabelen zijn niet toegestaan voor dit pad.',
     'Invalid path: {error}' => 'Ongeldig pad: {error}',

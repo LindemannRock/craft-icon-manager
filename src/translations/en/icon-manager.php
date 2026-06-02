@@ -137,7 +137,7 @@ return [
     'User does not have permission to scan SVGs.' => 'User does not have permission to scan SVGs.',
 
     // Validation messages
-    'Handle "{handle}" is already in use.' => 'Handle "{handle}" is already in use.',
+    'Handle must be unique.' => 'Handle must be unique.',
     'Icon file not found: {path}' => 'Icon file not found: {path}',
     'Environment variables are not allowed for this path.' => 'Environment variables are not allowed for this path.',
     'Invalid path: {error}' => 'Invalid path: {error}',

@@ -139,7 +139,7 @@ return [
     'User does not have permission to scan SVGs.' => 'Brukeren har ikke tillatelse til å skanne SVG-er.',
 
     // Validation messages
-    'Handle "{handle}" is already in use.' => 'Handle "{handle}" er allerede i bruk.',
+    'Handle must be unique.' => 'Handle må være unik.',
     'Icon file not found: {path}' => 'Ikonfil ikke funnet: {path}',
     'Environment variables are not allowed for this path.' => 'Miljøvariabler er ikke tillatt for denne banen.',
     'Invalid path: {error}' => 'Ugyldig bane: {error}',

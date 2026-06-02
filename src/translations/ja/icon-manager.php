@@ -139,7 +139,7 @@ return [
     'User does not have permission to scan SVGs.' => 'ユーザーに SVG をスキャンする権限がありません。',
 
     // Validation messages
-    'Handle "{handle}" is already in use.' => 'ハンドル「{handle}」はすでに使用されています。',
+    'Handle must be unique.' => 'ハンドルは一意である必要があります。',
     'Icon file not found: {path}' => 'アイコンファイルが見つかりません: {path}',
     'Environment variables are not allowed for this path.' => 'このパスでは環境変数を使用できません。',
     'Invalid path: {error}' => '無効なパスです: {error}',

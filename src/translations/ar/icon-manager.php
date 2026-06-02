@@ -139,7 +139,7 @@ return [
     'User does not have permission to scan SVGs.' => 'ليس لدى المستخدم صلاحية لفحص ملفات SVG.',
 
     // Validation messages
-    'Handle "{handle}" is already in use.' => 'المعرّف "{handle}" مستخدم بالفعل.',
+    'Handle must be unique.' => 'يجب أن يكون المعرّف فريدًا.',
     'Icon file not found: {path}' => 'لم يتم العثور على ملف الأيقونة: {path}',
     'Environment variables are not allowed for this path.' => 'متغيرات البيئة غير مسموحة لهذا المسار.',
     'Invalid path: {error}' => 'مسار غير صالح: {error}',
