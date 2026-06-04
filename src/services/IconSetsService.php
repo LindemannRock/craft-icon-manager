@@ -170,7 +170,7 @@ class IconSetsService extends Component
         $isNew = !$iconSet->id;
         $iconSet->handle = SlugHandleHelper::normalizeSlug($iconSet->handle, (string)$iconSet->name);
 
-        if ($isNew) {
+        if ($isNew && $iconSet->handle !== '') {
             $iconSet->handle = SlugHandleHelper::makeUnique(IconSetRecord::tableName(), 'handle', $iconSet->handle);
         }
 
