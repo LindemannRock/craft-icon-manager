@@ -13,6 +13,7 @@
 {% set selectedSubnavItem = 'icon-sets' %}
 {% set saveShortcutRedirect = cpUrl('icon-manager/icon-sets/{id}') %}
 {% set retainScrollOnSaveShortcut = true %}
+{% set errorSummary = '' %}
 
 {% set title = isNew ? 'New Icon Set'|t('icon-manager') : iconSet.name %}
 {% set pluginName = iconHelper.fullName %}
@@ -40,6 +41,14 @@
     {% endif %}
 
     {% set selectedTab = 'settings' %}
+{% endif %}
+
+{% if iconSet.hasErrors() %}
+    {% set errorSummary = include('lindemannrock-base/_partials/error-summary', {
+        errors: iconSet.getErrors(),
+        linkMode: 'field-id',
+        translationCategory: 'icon-manager'
+    })|trim %}
 {% endif %}
 
 {% block actionButton %}
@@ -92,14 +101,6 @@
 
     {% if not isNew %}
         {{ hiddenInput('iconSetId', iconSet.id) }}
-    {% endif %}
-
-    {% if iconSet.hasErrors() %}
-        {{ include('lindemannrock-base/_partials/error-summary', {
-            errors: iconSet.getErrors(),
-            linkMode: 'field-id',
-            translationCategory: 'icon-manager'
-        }) }}
     {% endif %}
 
     {# Settings Tab #}
