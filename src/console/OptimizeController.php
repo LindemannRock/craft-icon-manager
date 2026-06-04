@@ -97,21 +97,18 @@ class OptimizeController extends Controller
      * This does not prove visual equivalence, but it does prove that each rule can run,
      * produce parseable SVG output, and avoid obvious structural breakage.
      *
-     * @param string|null $path Path to an SVG file or directory
      * @return int
      * @since 5.11.3
      */
-    public function actionVerify(?string $path = null): int
+    public function actionVerify(): int
     {
-        $targetPath = $path ?: $this->path;
-
-        if ($targetPath === '') {
+        if ($this->path === '') {
             $this->stderr("Error: Provide a file or directory path.\n", Console::FG_RED);
             $this->stdout("Example: ./craft icon-manager/optimize/verify --path=/absolute/path/to/svgs\n");
             return ExitCode::USAGE;
         }
 
-        $resolvedPath = Craft::getAlias($targetPath);
+        $resolvedPath = Craft::getAlias($this->path);
         $svgFiles = $this->resolveSvgFiles($resolvedPath);
 
         if ($svgFiles === []) {
