@@ -69,6 +69,7 @@ This plugin is in active development and not yet available on the Craft Plugin S
   - [Permissions](#permissions)
   - [Environment-Specific Paths](#environment-specific-paths)
   - [SVG Optimization](#svg-optimization)
+    - [Console Help](#console-help)
     - [Enabling/Disabling Optimization](#enablingdisabling-optimization)
     - [Optimization Features](#optimization-features)
     - [Issue Detection](#issue-detection)
@@ -804,6 +805,23 @@ Icons are stored with relative paths in the database, so changing `iconSetsPath`
 
 Icon Manager supports two SVG optimization engines with intelligent issue detection.
 
+### Console Help
+
+Icon Manager includes a plugin-level console help command that lists the available CLI commands and explains the options that matter for each workflow:
+
+```bash
+ddev craft icon-manager/help
+ddev craft icon-manager/help optimize
+ddev craft icon-manager/help optimize/verify
+```
+
+Craft's native help is still available for exact command signatures:
+
+```bash
+ddev craft help icon-manager/optimize
+ddev craft help icon-manager/optimize/verify
+```
+
 ### Enabling/Disabling Optimization
 
 SVG optimization can be controlled globally via settings or config file:
@@ -904,27 +922,27 @@ pnpm add -D svgo
 
 ```bash
 # Interactive mode - prompts for icon set, engine, and optimization preset
-./craft icon-manager/optimize
+ddev craft icon-manager/optimize
 
 # Check if SVGO is available
-./craft icon-manager/optimize/check
+ddev craft icon-manager/optimize/check
 
 # Direct command with specific icon set
-./craft icon-manager/optimize --set=3 --engine=svgo
+ddev craft icon-manager/optimize --set=3 --engine=svgo
 
 # Use custom config file
-./craft icon-manager/optimize --set=3 --engine=svgo --config=my-svgo.config.js
+ddev craft icon-manager/optimize --set=3 --engine=svgo --config=my-svgo.config.js
 
 # Skip backup creation
-./craft icon-manager/optimize --set=3 --engine=svgo --noBackup
+ddev craft icon-manager/optimize --set=3 --engine=svgo --no-backup
 
 # Dry run (see what would be optimized without making changes)
-./craft icon-manager/optimize --set=3 --engine=svgo --dryRun
+ddev craft icon-manager/optimize --set=3 --engine=svgo --dry-run
 ```
 
 **Interactive Mode:**
 
-When running `./craft icon-manager/optimize` without flags, the command will:
+When running `ddev craft icon-manager/optimize` without flags, the command will:
 1. List available SVG folder icon sets
 2. Let you choose an icon set
 3. Show available engines (PHP or SVGO)
@@ -980,7 +998,7 @@ Processing (2/123): another-icon.svg...
 
 **Automatic Backups:**
 
-Before optimization, a backup is automatically created (unless `--noBackup` is used):
+Before optimization, a backup is automatically created (unless `--no-backup` is used):
 - Stored in `storage/runtime/icon-manager/backups/`
 - Named with timestamp: `icon-set-name_YYYY-MM-DD_HH-MM-SS`
 - Can be restored from Icon Manager → Icon Sets → [Set] → Optimize tab (dev mode only)
@@ -1013,13 +1031,13 @@ Prepare a fixture directory with SVG files that represent the icon shapes and SV
 **Run PHP optimizer verification:**
 
 ```bash
-ddev exec "./craft icon-manager/optimize/verify --engine=php --path=path/to/svg-fixtures --keepOutputs=1"
+ddev craft icon-manager/optimize/verify --engine=php --path=path/to/svg-fixtures --keep-outputs=1
 ```
 
 **Run SVGO verification:**
 
 ```bash
-ddev exec "./craft icon-manager/optimize/verify --engine=svgo --path=path/to/svg-fixtures --config=path/to/svgo.config.mjs --keepOutputs=1"
+ddev craft icon-manager/optimize/verify --engine=svgo --path=path/to/svg-fixtures --config=path/to/svgo.config.mjs --keep-outputs=1
 ```
 
 **Notes:**
@@ -1342,7 +1360,7 @@ You changed SVG files on disk (added new files, deleted files, removed a whole s
 npm install --save-dev svgo
 
 # Or verify it's installed
-./craft icon-manager/optimize/check
+ddev craft icon-manager/optimize/check
 ```
 
 ### Performance Issues with Large Icon Sets
