@@ -11,7 +11,7 @@ namespace lindemannrock\iconmanager\controllers;
 use Craft;
 use craft\helpers\FileHelper;
 use craft\web\Controller;
-
+use lindemannrock\base\helpers\SettingsPostHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Settings;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
@@ -150,36 +150,17 @@ class SettingsController extends Controller
         // Get only the posted settings (fields from the current page)
         $settingsData = Craft::$app->getRequest()->getBodyParam('settings', []);
 
-        // Only update fields that were posted and are not overridden by config
-        foreach ($settingsData as $key => $value) {
-            if (!$settings->isOverriddenByConfig($key) && property_exists($settings, $key)) {
-                // Multi-state selects (e.g. "Use global default" = '') need '' → null
-                // so nullable properties hold null, not a coerced false / 0.
-                if ($value === '') {
-                    $type = (new \ReflectionProperty($settings, $key))->getType();
-                    if ($type instanceof \ReflectionNamedType && $type->allowsNull()) {
-                        $value = null;
-                    }
-                }
+        $result = SettingsPostHelper::apply(
+            model: $settings,
+            postedValues: is_array($settingsData) ? $settingsData : [],
+            allowedAttributes: $this->_validationAttributesForSection($section),
+            isOverridden: fn(string $attribute): bool => $settings->isOverriddenByConfig($attribute),
+        );
 
-                // Check for setter method first (handles array conversions, etc.)
-                $setterMethod = 'set' . ucfirst($key);
-                if (method_exists($settings, $setterMethod)) {
-                    $settings->$setterMethod($value);
-                } else {
-                    $settings->$key = $value;
-                }
-            }
-        }
-
-        $attributesToValidate = $this->_validationAttributesForSection($section);
-        $attributesToValidate = array_values(array_filter(
-            $attributesToValidate,
-            fn(string $attribute): bool => !$settings->isOverriddenByConfig($attribute),
-        ));
+        $attributesToValidate = $result->attributesToValidate;
 
         // Validate only current section attributes
-        if (!$settings->validate($attributesToValidate)) {
+        if ($result->hasErrors || !$settings->validate($attributesToValidate)) {
             Craft::$app->getSession()->setError(Craft::t('icon-manager', 'Could not save settings.'));
 
             $template = $section === 'svg-optimization'

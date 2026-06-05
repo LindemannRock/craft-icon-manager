@@ -1323,6 +1323,12 @@ You changed SVG files on disk (added new files, deleted files, removed a whole s
 **Quick workaround for a single set:**
 - Temporarily switch Cache Storage Method to **File**, save settings, click **Refresh Icons** on the set, then switch back to Redis if you want.
 
+### Settings Save Shows a Validation Error
+
+Numeric settings such as cache duration and items per page must be whole numbers within the allowed range. If a value is invalid, Icon Manager keeps you on the same settings page and shows the field error inline.
+
+When a setting is overridden in `config/icon-manager.php`, the Control Panel field is skipped during save. Change the config file value instead.
+
 ### Icons Not Rendering in Templates
 
 **Check the icon exists:**
