@@ -503,7 +503,7 @@ class IconManager extends Plugin
             }
         } else {
             // Clear file cache
-            $runtimePath = Craft::$app->path->getRuntimePath();
+            $runtimePath = Craft::$app->getRuntimePath();
             $cacheBasePath = $runtimePath . '/icon-manager/cache/';
             $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
 

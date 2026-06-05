@@ -481,7 +481,7 @@ class SvgOptimizerService extends Component
      */
     private function createBackup(string $folderPath, string $iconSetName, bool $includeSubfolders = true)
     {
-        $runtimePath = Craft::$app->path->getRuntimePath();
+        $runtimePath = Craft::$app->getRuntimePath();
         $backupBasePath = $runtimePath . '/icon-manager/backups';
 
         // Create backups directory if it doesn't exist
@@ -721,7 +721,7 @@ class SvgOptimizerService extends Component
      */
     public function listBackups(string $iconSetName): array
     {
-        $runtimePath = Craft::$app->path->getRuntimePath();
+        $runtimePath = Craft::$app->getRuntimePath();
         $backupBasePath = $runtimePath . '/icon-manager/backups';
 
         if (!is_dir($backupBasePath)) {
@@ -904,7 +904,7 @@ class SvgOptimizerService extends Component
      */
     private function isWithinBackupRoot(string $path): bool
     {
-        $backupRoot = FileHelper::normalizePath(Craft::$app->path->getRuntimePath() . '/icon-manager/backups');
+        $backupRoot = FileHelper::normalizePath(Craft::$app->getRuntimePath() . '/icon-manager/backups');
         $normalized = FileHelper::normalizePath($path);
 
         return str_starts_with($normalized . DIRECTORY_SEPARATOR, $backupRoot . DIRECTORY_SEPARATOR);

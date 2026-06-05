@@ -285,6 +285,6 @@ class SettingsController extends Controller
 
     private function optimizationBackupPath(): string
     {
-        return FileHelper::normalizePath(Craft::$app->path->getRuntimePath() . '/icon-manager/backups');
+        return FileHelper::normalizePath(Craft::$app->getRuntimePath() . '/icon-manager/backups');
     }
 }

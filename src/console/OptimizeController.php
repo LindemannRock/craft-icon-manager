@@ -248,7 +248,7 @@ class OptimizeController extends Controller
         $this->stdout("Failures:           " . count($summary['failures']) . "\n");
 
         if ($this->keepOutputs) {
-            $this->stdout("Saved outputs:      " . Craft::$app->path->getRuntimePath() . "/icon-manager/verify\n");
+            $this->stdout("Saved outputs:      " . Craft::$app->getRuntimePath() . "/icon-manager/verify\n");
         }
 
         if ($summary['failures'] !== []) {
@@ -348,7 +348,7 @@ class OptimizeController extends Controller
         $this->stdout("Failures:        " . count($failures) . "\n");
 
         if ($this->keepOutputs) {
-            $this->stdout("Saved outputs:   " . Craft::$app->path->getRuntimePath() . "/icon-manager/verify/svgo\n");
+            $this->stdout("Saved outputs:   " . Craft::$app->getRuntimePath() . "/icon-manager/verify/svgo\n");
         }
 
         if ($failures !== []) {
@@ -821,7 +821,7 @@ class OptimizeController extends Controller
      */
     private function createTempConfig(string $preset): string
     {
-        $runtimePath = \Craft::$app->path->getRuntimePath();
+        $runtimePath = \Craft::$app->getRuntimePath();
         $tempPath = $runtimePath . '/icon-manager/svgo-preset-' . $preset . '.js';
 
         // Ensure directory exists
@@ -1042,14 +1042,14 @@ class OptimizeController extends Controller
 
     private function persistVerificationOutput(string $sourceFilePath, string $ruleName, string $content): void
     {
-        $baseDir = Craft::$app->path->getRuntimePath() . '/icon-manager/verify/' . $ruleName;
+        $baseDir = Craft::$app->getRuntimePath() . '/icon-manager/verify/' . $ruleName;
         FileHelper::createDirectory($baseDir);
         file_put_contents($baseDir . '/' . basename($sourceFilePath), $content);
     }
 
     private function copyToVerificationTemp(string $sourceFilePath): string
     {
-        $tempDir = Craft::$app->path->getRuntimePath() . '/icon-manager/verify-temp';
+        $tempDir = Craft::$app->getRuntimePath() . '/icon-manager/verify-temp';
         FileHelper::createDirectory($tempDir);
 
         $tempFile = $tempDir . '/' . uniqid('svgo-', true) . '-' . basename($sourceFilePath);

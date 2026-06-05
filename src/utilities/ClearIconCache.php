@@ -87,7 +87,7 @@ class ClearIconCache extends Utility
 
         // Only count files when using file storage (Redis counts are not displayed)
         if ($user->getIdentity() && $user->checkPermission('iconManager:clearCache') && $settings->cacheStorageMethod === 'file') {
-            $runtimePath = Craft::$app->path->getRuntimePath();
+            $runtimePath = Craft::$app->getRuntimePath();
             $cacheBasePath = $runtimePath . '/icon-manager/cache/';
             foreach (array_keys($cacheStats) as $type) {
                 $cachePath = $cacheBasePath . $type . '/';
