@@ -266,10 +266,7 @@ class IconManagerField extends Field implements PreviewableFieldInterface, Sorta
             // Try to decode JSON
             $decoded = Json::decodeIfJson($value);
             if (is_array($decoded)) {
-                $icon = $this->_createIconFromArray($decoded, $element);
-                if ($icon) {
-                }
-                return $icon;
+                return $this->_createIconFromArray($decoded, $element);
             }
         }
 
