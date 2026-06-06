@@ -62,11 +62,6 @@ class IconsService extends Component
         if ($settings->enableCache) {
             $cacheDuration = $settings->cacheDuration;
 
-            // Check if already cached in memory
-            if (isset($this->_iconsBySetId[$iconSetId])) {
-                return $this->_iconsBySetId[$iconSetId];
-            }
-
             // Check custom file cache
             $cached = $this->_getCachedIcons($iconSetId);
             if ($cached !== null) {
