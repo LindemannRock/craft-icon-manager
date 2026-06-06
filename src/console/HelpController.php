@@ -25,7 +25,10 @@ final class HelpController extends AbstractHelpController
         return [
             'title' => 'Icon Manager',
             'pluginHandle' => 'icon-manager',
-            'commandPrefix' => 'ddev craft',
+            'commandPrefixes' => [
+                'php craft',
+                'ddev craft',
+            ],
             'summary' => 'Use these commands to optimize SVG folder icon sets, check SVGO availability, and verify optimizer rules against fixture SVG files.',
             'common' => [
                 'optimize',
