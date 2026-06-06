@@ -76,6 +76,11 @@ class IconSet extends Model
     private array $_icons = [];
 
     /**
+     * @var int|null Memoized optimization issue count (a full disk scan)
+     */
+    private ?int $_optimizationIssueCount = null;
+
+    /**
      * @inheritdoc
      */
     protected function defineRules(): array
@@ -196,31 +201,37 @@ class IconSet extends Model
     /**
      * Recursively scan directories
      */
-    private static function _scanDirectories(string $basePath, string $relativePath, array &$options): void
+    private static function _scanDirectories(string $basePath, string $relativePath, array &$options, int $depth = 0): void
     {
+        // is_dir() follows symlinks, so a cycle (or a pathologically deep tree)
+        // under the configured icon sets path would recurse without bound. Cap it.
+        if ($depth > 8) {
+            return;
+        }
+
         $currentPath = $basePath . ($relativePath ? DIRECTORY_SEPARATOR . $relativePath : '');
-        
+
         if (!is_dir($currentPath)) {
             return;
         }
-        
+
         $items = scandir($currentPath);
         foreach ($items as $item) {
             if ($item === '.' || $item === '..' || strpos($item, '.') === 0) {
                 continue;
             }
-            
+
             $itemPath = $currentPath . DIRECTORY_SEPARATOR . $item;
             $relativeItemPath = $relativePath ? $relativePath . '/' . $item : $item;
-            
+
             if (is_dir($itemPath)) {
                 $options[] = [
                     'label' => '/' . $relativeItemPath,
                     'value' => $relativeItemPath,
                 ];
-                
+
                 // Recursively scan subdirectories
-                self::_scanDirectories($basePath, $relativeItemPath, $options);
+                self::_scanDirectories($basePath, $relativeItemPath, $options, $depth + 1);
             }
         }
     }
@@ -294,6 +305,12 @@ class IconSet extends Model
             return 0;
         }
 
+        // scanIconSet() is a full disk scan; memoize so the sort pre-pass and the
+        // listing template don't scan the same set's folder twice per request.
+        if ($this->_optimizationIssueCount !== null) {
+            return $this->_optimizationIssueCount;
+        }
+
         // Scan this icon set for issues
         $scanResult = IconManager::getInstance()->svgOptimizer->scanIconSet($this);
 
@@ -307,6 +324,8 @@ class IconSet extends Model
                           ($scanResult['issues']['inlineStyles'] ?? 0) +
                           ($scanResult['issues']['largeFiles'] ?? 0);
         }
+
+        $this->_optimizationIssueCount = $totalIssues;
 
         return $totalIssues;
     }
