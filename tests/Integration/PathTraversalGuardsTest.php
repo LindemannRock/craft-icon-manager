@@ -77,12 +77,10 @@ final class PathTraversalGuardsTest extends TestCase
         // Source directory outside runtime/icon-manager/backups — typical
         // attacker input would be a system path like /etc, but a temp dir
         // we control is enough to prove the guard fires.
-        $maliciousSource = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::MARKER_PREFIX . 'restore_src_' . bin2hex(random_bytes(3));
-        FileHelper::createDirectory($maliciousSource);
+        $maliciousSource = $this->createTrackedTempDirectory(self::MARKER_PREFIX . 'restore-src-');
         file_put_contents($maliciousSource . '/dummy.svg', '<svg></svg>');
 
-        $target = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::MARKER_PREFIX . 'restore_target_' . bin2hex(random_bytes(3));
-        FileHelper::createDirectory($target);
+        $target = $this->createTrackedTempDirectory(self::MARKER_PREFIX . 'restore-target-');
         file_put_contents($target . '/keep-me.txt', 'untouched');
 
         $result = IconManager::getInstance()->svgOptimizer->restoreFromBackup($maliciousSource, $target);
@@ -92,9 +90,6 @@ final class PathTraversalGuardsTest extends TestCase
             $target . '/keep-me.txt',
             'Target must not be wiped — the guard must fire before deleteDirectory().'
         );
-
-        FileHelper::removeDirectory($maliciousSource);
-        FileHelper::removeDirectory($target);
     }
 
     public function testInjectSpriteRejectsSpriteFileTraversal(): void
@@ -250,8 +245,7 @@ final class PathTraversalGuardsTest extends TestCase
 
     public function testDeleteBackupRejectsPathOutsideBackupRoot(): void
     {
-        $maliciousTarget = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::MARKER_PREFIX . 'delete_target_' . bin2hex(random_bytes(3));
-        FileHelper::createDirectory($maliciousTarget);
+        $maliciousTarget = $this->createTrackedTempDirectory(self::MARKER_PREFIX . 'delete-target-');
         file_put_contents($maliciousTarget . '/keep-me.txt', 'untouched');
 
         $result = IconManager::getInstance()->svgOptimizer->deleteBackup($maliciousTarget);
@@ -262,8 +256,6 @@ final class PathTraversalGuardsTest extends TestCase
             'Target directory must survive — the guard must fire before deleteDirectory().'
         );
         $this->assertFileExists($maliciousTarget . '/keep-me.txt');
-
-        FileHelper::removeDirectory($maliciousTarget);
     }
 
     /**

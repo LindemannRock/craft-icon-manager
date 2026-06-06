@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace lindemannrock\iconmanager\tests;
 
-use Craft;
-use craft\helpers\FileHelper;
 use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\base\testing\IntegrationTestCase;
 use lindemannrock\iconmanager\IconManager;
@@ -55,15 +53,13 @@ abstract class TestCase extends IntegrationTestCase
         $this->purgeRowsByMarker('{{%iconmanager_icons}}', 'name', self::MARKER_PREFIX);
         $this->purgeRowsByMarker('{{%iconmanager_iconsets}}', 'handle', self::MARKER_PREFIX);
 
-        parent::tearDown();
-
-        if ($this->savedIconSetsPath !== null) {
-            IconManager::getInstance()->getSettings()->iconSetsPath = $this->savedIconSetsPath;
-            $this->savedIconSetsPath = null;
-        }
-
-        if ($this->tempIconRoot !== null && is_dir($this->tempIconRoot)) {
-            FileHelper::removeDirectory($this->tempIconRoot);
+        try {
+            parent::tearDown();
+        } finally {
+            if ($this->savedIconSetsPath !== null) {
+                IconManager::getInstance()->getSettings()->iconSetsPath = $this->savedIconSetsPath;
+                $this->savedIconSetsPath = null;
+            }
             $this->tempIconRoot = null;
         }
     }
@@ -98,8 +94,7 @@ abstract class TestCase extends IntegrationTestCase
             return $this->tempIconRoot;
         }
 
-        $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::MARKER_PREFIX . bin2hex(random_bytes(6));
-        FileHelper::createDirectory($root);
+        $root = $this->createTrackedTempDirectory(self::MARKER_PREFIX);
 
         $settings = IconManager::getInstance()->getSettings();
         $this->savedIconSetsPath = $settings->iconSetsPath;
