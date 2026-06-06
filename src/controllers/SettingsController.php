@@ -154,7 +154,7 @@ class SettingsController extends Controller
             model: $settings,
             postedValues: is_array($settingsData) ? $settingsData : [],
             allowedAttributes: $this->_validationAttributesForSection($section),
-            isOverridden: fn(string $attribute): bool => $settings->isOverriddenByConfig($attribute),
+            shouldSkipAttribute: fn(string $attribute): bool => $settings->isOverriddenByConfig($attribute),
         );
 
         $attributesToValidate = $result->attributesToValidate;
