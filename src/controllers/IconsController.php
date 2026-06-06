@@ -56,9 +56,12 @@ class IconsController extends Controller
             throw new \yii\web\NotFoundHttpException('Icon not found');
         }
 
-        // Return SVG content
+        // Return SVG content. Set an explicit MIME type so the response isn't
+        // sniffed as text/html and renders correctly when used as an <img>/<object>
+        // source. Content is already passed through Icon::sanitizeSvg().
         $response = $this->asRaw($icon->getContent());
         $response->format = Response::FORMAT_RAW;
+        $response->getHeaders()->set('Content-Type', 'image/svg+xml; charset=UTF-8');
         return $response;
     }
     
