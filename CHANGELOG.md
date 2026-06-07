@@ -1,5 +1,66 @@
 # Changelog
 
+## [5.15.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.14.0...v5.15.0) (2026-06-07)
+
+
+### Added
+
+* add act-static-analysis script for CI integration ([3181dbf](https://github.com/LindemannRock/craft-icon-manager/commit/3181dbf1b706c68adbaa0b11c7b5d4bf493381b2))
+* add base plugin overrides for date/time formatting ([05bd6df](https://github.com/LindemannRock/craft-icon-manager/commit/05bd6df5107ddfd283a50a0fdffd7bf8a5c183aa))
+* add delete action for icon sets in edit form ([f94cb97](https://github.com/LindemannRock/craft-icon-manager/commit/f94cb97f0e5d23c13387dc25473ea6470fc2ec53))
+* add icon set ID and handle display in edit template ([5074a00](https://github.com/LindemannRock/craft-icon-manager/commit/5074a00557f09f863f45e7a8c0afa391cbec713a))
+* add save and continue editing functionality to icon set form ([d967d92](https://github.com/LindemannRock/craft-icon-manager/commit/d967d92b6c6444e63bfa3219758bf6c4bb77c3ae))
+* **cli:** add HelpController for cli command assistance ([fe6149f](https://github.com/LindemannRock/craft-icon-manager/commit/fe6149f1cbe59507bf350e5404e76c1300eda688))
+* **controllers:** add filtering and sorting for icon sets in actionIndex ([7b5b571](https://github.com/LindemannRock/craft-icon-manager/commit/7b5b57113fbed3a843791270548011a07af0d074))
+* **i18n:** add "save and continue editing" translation string ([b14ca7c](https://github.com/LindemannRock/craft-icon-manager/commit/b14ca7c18fa7b23ca5a2bb607da5eda0df2d82d3))
+* **i18n:** add confirmation string for deleting icon sets ([9193d4b](https://github.com/LindemannRock/craft-icon-manager/commit/9193d4b06a1cc0f1c418fcab381d94a061b723fb))
+* **i18n:** add Craft path alias usage instructions in translations ([b699529](https://github.com/LindemannRock/craft-icon-manager/commit/b6995294ec3668c41f74acbbf2f550c85849f437))
+* **i18n:** add ID translation key in multiple languages ([fd1858f](https://github.com/LindemannRock/craft-icon-manager/commit/fd1858fcc93dd0cf696547ade21a0911ce3c16d9))
+* **i18n:** add new translation keys for icon management ([df73c38](https://github.com/LindemannRock/craft-icon-manager/commit/df73c3842bd0f613780bb3798762e2de80dac2b0))
+* **i18n:** add new translation strings for icon management ([c42f458](https://github.com/LindemannRock/craft-icon-manager/commit/c42f458aa885d544dc8a113c3cea4e49131367f6))
+* **i18n:** add new validation messages and icon sets location ([f2e59ed](https://github.com/LindemannRock/craft-icon-manager/commit/f2e59edcd39b88b6716ed1d4d76516fb16efcd11))
+* **i18n:** update icon manager translations for multiple languages ([5612e5b](https://github.com/LindemannRock/craft-icon-manager/commit/5612e5b973380910ab596b1a9cf8cf52e71e8044))
+* **settings:** add base plugin overrides for time and date formats ([52ea805](https://github.com/LindemannRock/craft-icon-manager/commit/52ea805b69f282f03b7f495cacf8eb5389367fe1))
+* **settings:** add icon sets and optimization backup location info ([82074ad](https://github.com/LindemannRock/craft-icon-manager/commit/82074ad8c6700ae54bca525b4302edda8c318cd4))
+* **settings:** add optimization options for icon processing ([9d11275](https://github.com/LindemannRock/craft-icon-manager/commit/9d11275234d6c3a5697775d9ec605e977562b147))
+* **settings:** add resolved icon sets and optimization backup paths ([0469ebc](https://github.com/LindemannRock/craft-icon-manager/commit/0469ebc8d0dc1b67c02fe886ed2564453850aabd))
+* **settings:** add storage path validation for icon sets ([31a33fa](https://github.com/LindemannRock/craft-icon-manager/commit/31a33fac418496fae18fd8a569e4374915745b43))
+* **settings:** handle empty multi-state select values in settings ([8e8c228](https://github.com/LindemannRock/craft-icon-manager/commit/8e8c228bd79d195ea5b573d2d31fa5c4df914a30))
+* **settings:** integrate additional settings traits for enhanced configuration ([9aed549](https://github.com/LindemannRock/craft-icon-manager/commit/9aed5497a7f4ad3870b5f85eff65311d5496f4bc))
+* **settings:** replace text fields with partials for plugin name and log level ([ba44ab4](https://github.com/LindemannRock/craft-icon-manager/commit/ba44ab43614447d8a5cc441c8a71da953aee7205))
+
+
+### Fixed
+
+* add containment guard for icon set folder path resolution ([221bb35](https://github.com/LindemannRock/craft-icon-manager/commit/221bb35d8679ffb2bea76737a4fef8b104ef6f7c))
+* **controllers:** add containment guard for icon set folder paths ([14c823b](https://github.com/LindemannRock/craft-icon-manager/commit/14c823bec7b83c0e2eba53ea1688419bf67cfff5))
+* **controllers:** remove unique handle generation for icon sets ([b8a5bdc](https://github.com/LindemannRock/craft-icon-manager/commit/b8a5bdcec7338a89daf132023e883f4a7eac638c))
+* **controllers:** resolve path handling for icon set folder restoration ([d276a12](https://github.com/LindemannRock/craft-icon-manager/commit/d276a1262799fc0b1f8fcbb9459c7cacec4c534e))
+* correct error handling display in icon set edit template ([1cc38e1](https://github.com/LindemannRock/craft-icon-manager/commit/1cc38e1e2a8a29f51fc51a50e7868ed566d1b6fe))
+* correct status display for icon sets in edit template ([21299cf](https://github.com/LindemannRock/craft-icon-manager/commit/21299cfaf53fdd57467ffd3b762f34ed42a6cc21))
+* ensure unique handle for new icon sets during save ([9e0a90c](https://github.com/LindemannRock/craft-icon-manager/commit/9e0a90cdc5bbb532f33c9a58107d206a53127628))
+* **i18n:** correct handle uniqueness messages in translations ([ef2cb8c](https://github.com/LindemannRock/craft-icon-manager/commit/ef2cb8c3d6687c42ed83c44d5ca5f49778dfd542))
+* **i18n:** correct permission error messages in controllers ([efc8b56](https://github.com/LindemannRock/craft-icon-manager/commit/efc8b5618536a8da221bc4960e2a03b20a1ed8e3))
+* **i18n:** correct Portuguese translations for logs and backups ([b21dbc7](https://github.com/LindemannRock/craft-icon-manager/commit/b21dbc765403cc0f021e5a47c5176c3f3d847820))
+* **i18n:** correct pronouns in Norwegian and Swedish translation strings ([a613ed3](https://github.com/LindemannRock/craft-icon-manager/commit/a613ed3d6216e98885b29ce74336ffd030cfb141))
+* **i18n:** correct punctuation in icon set deletion message ([e1c7229](https://github.com/LindemannRock/craft-icon-manager/commit/e1c72293bbb32e1519414ff3b8d9396c3d6223fd))
+* **i18n:** correct punctuation in Japanese translation strings ([7e7bf75](https://github.com/LindemannRock/craft-icon-manager/commit/7e7bf756fcd37b0f1f66fa4cd2fd5c5be05b9e1b))
+* **i18n:** correct Spanish translation for cache performance description ([5756306](https://github.com/LindemannRock/craft-icon-manager/commit/57563065d580c565464fb6a47f29fb8db95a9e9f))
+* **i18n:** correct translation keys for button and date labels ([9586bba](https://github.com/LindemannRock/craft-icon-manager/commit/9586bbacf436326f3b22e2f7207ce151172f4562))
+* **i18n:** remove 'Live' translation string ([566b3cc](https://github.com/LindemannRock/craft-icon-manager/commit/566b3ccf37595e0b45fc1bb6870f67ee72c9421b))
+* **icon-set-backup:** correct date formatting for backup timestamps ([5378918](https://github.com/LindemannRock/craft-icon-manager/commit/5378918c415787428638c3ba68d2136a3ef64594))
+* **icon-sets:** correct date formatting for backup timestamps and update labels ([ed190d4](https://github.com/LindemannRock/craft-icon-manager/commit/ed190d4c6b97f323ffa5bbaf3737b8361d069319))
+* **icon-sets:** correct date formatting for created and updated fields ([6fce62c](https://github.com/LindemannRock/craft-icon-manager/commit/6fce62c356d48c0ed481a1b45220e31020c33cd4))
+* **icon:** resolve path handling for icon set file retrieval ([8501f32](https://github.com/LindemannRock/craft-icon-manager/commit/8501f326fd38bfefd0d5c09fc5aa724d1ec59e70))
+* redirect to icon sets list after saving icon set ([936b079](https://github.com/LindemannRock/craft-icon-manager/commit/936b0791fa2dbf5c95515f1291a57155531aa3b6))
+* redirect to posted URL after saving icon set ([f1c5ca3](https://github.com/LindemannRock/craft-icon-manager/commit/f1c5ca38021697ae455f77ba6942df2c78e58f8d))
+* resolve icon set folder path handling in SvgOptimizerService ([cf8b918](https://github.com/LindemannRock/craft-icon-manager/commit/cf8b9187df5fa57abbe8c0e67fa2c5f60e39393a))
+* **settings:** clarify icon sets path instructions and add usage tip ([33443fb](https://github.com/LindemannRock/craft-icon-manager/commit/33443fb8062c82f661ae085bd03619bd52cd6cec))
+* **settings:** correct error message for saving settings ([6ebb24d](https://github.com/LindemannRock/craft-icon-manager/commit/6ebb24dfb3bb9f759e05eddf35c41c1d502c9c5c))
+* **settings:** update icon sets path instructions for clarity ([efdc574](https://github.com/LindemannRock/craft-icon-manager/commit/efdc57401c02566584cfc91f7bf5837f97920208))
+* **svg:** add containment guard for sprite file path resolution ([edd8d1e](https://github.com/LindemannRock/craft-icon-manager/commit/edd8d1e8370311ad5f85fe838cc0e2262070b95d))
+* **webfont:** add containment guard for font file path resolution ([bdfd29d](https://github.com/LindemannRock/craft-icon-manager/commit/bdfd29da5631198ee69dde3b6cc8244ccf9a7ed2))
+
 ## [5.14.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.13.0...v5.14.0) - 2026-05-21
 
 
