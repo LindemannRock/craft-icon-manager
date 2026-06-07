@@ -13,8 +13,8 @@ use craft\helpers\App;
 use craft\helpers\FileHelper;
 use craft\web\Controller;
 use lindemannrock\base\helpers\CpNavHelper;
+use lindemannrock\base\helpers\DateFormatHelper;
 use lindemannrock\iconmanager\IconManager;
-
 use lindemannrock\iconmanager\models\IconSet;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\ForbiddenHttpException;
@@ -103,6 +103,7 @@ class IconSetsController extends Controller
 
             case 'optimize':
             case 'apply-optimizations':
+            case 'get-backups':
             case 'restore-backup':
             case 'get-svg-files':
             case 'save-optimized-svgs':
@@ -290,7 +291,7 @@ class IconSetsController extends Controller
         // Add optimization data for existing SVG folder icon sets
         if ($iconSet->id && in_array($iconSet->type, ['svg-folder', 'folder'])) {
             $templateVars['scanResult'] = IconManager::getInstance()->svgOptimizer->scanIconSet($iconSet);
-            $templateVars['backups'] = IconManager::getInstance()->svgOptimizer->listBackups($iconSet->name);
+            $templateVars['optimizationBackupPath'] = FileHelper::normalizePath(Craft::$app->getRuntimePath() . '/icon-manager/backups');
         }
 
         return $this->renderTemplate('icon-manager/icon-sets/edit', $templateVars);
@@ -598,6 +599,74 @@ class IconSetsController extends Controller
 
         // Default to not allowed
         return false;
+    }
+
+    /**
+     * Get backups for an icon set as JSON.
+     *
+     * @param int $iconSetId
+     * @return Response
+     * @since 5.16.0
+     */
+    public function actionGetBackups(int $iconSetId): Response
+    {
+        $this->requireAcceptsJson();
+
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if (!$iconSet) {
+            return $this->asJson([
+                'success' => false,
+                'error' => Craft::t('icon-manager', 'Icon set not found'),
+                'backups' => [],
+            ]);
+        }
+
+        $view = Craft::$app->getView();
+        $isDevEnvironment = $this->isOptimizationAllowed();
+        $formatted = [];
+
+        foreach (IconManager::getInstance()->svgOptimizer->listBackups($iconSet->name) as $backup) {
+            $backup['id'] = $backup['name'];
+            $backup['formattedDate'] = DateFormatHelper::formatDatetime($backup['dateTime']);
+            $backup['formattedSize'] = IconManager::getInstance()->svgOptimizer->formatFileSize((int)$backup['size']);
+            $backup['rowActionsHtml'] = $view->renderTemplate('lindemannrock-base/_components/row-actions', [
+                'item' => $backup,
+                'actions' => [
+                    'type' => 'menu',
+                    'icon' => 'settings',
+                    'items' => [
+                        [
+                            'label' => Craft::t('icon-manager', 'Restore'),
+                            'class' => 'restore-backup',
+                            'jsAction' => 'restore',
+                            'showIf' => $isDevEnvironment,
+                            'data' => [
+                                'backup-path' => $backup['path'],
+                                'icon-set-id' => $iconSet->id,
+                            ],
+                        ],
+                        ['type' => 'divider'],
+                        [
+                            'label' => Craft::t('icon-manager', 'Delete'),
+                            'class' => 'delete-backup error',
+                            'jsAction' => 'delete',
+                            'showIf' => $isDevEnvironment,
+                            'data' => [
+                                'backup-path' => $backup['path'],
+                                'icon-set-id' => $iconSet->id,
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+            $formatted[] = $backup;
+        }
+
+        return $this->asJson([
+            'success' => true,
+            'backups' => $formatted,
+        ]);
     }
 
     /**

@@ -1,0 +1,163 @@
+<p>{{ "Restore previous versions of this icon set from backups created during optimization."|t('icon-manager') }}</p>
+
+<div style="margin-top: 1rem;">
+    {% include 'lindemannrock-base/_partials/backup-list' with {
+        idPrefix: 'backup'
+    } %}
+</div>
+
+{% if optimizationBackupPath ?? null %}
+    {% include 'lindemannrock-base/_components/info-box' with {
+        message: '<strong>' ~ 'Optimization Backup Location:'|t('icon-manager') ~ '</strong> <code>' ~ optimizationBackupPath ~ '</code>'
+    } %}
+{% endif %}
+
+{% include 'lindemannrock-base/_components/plugin-credit' %}
+
+{% js %}
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = text.toString();
+    return div.innerHTML;
+}
+
+function loadIconSetBackups() {
+    fetch('{{ actionUrl('icon-manager/icon-sets/get-backups', {iconSetId: iconSet.id}) }}', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const loadingDiv = document.getElementById('backup-list-loading');
+            const contentDiv = document.getElementById('backup-list-content');
+            const tableContainer = document.getElementById('backup-table-container');
+            const noBackupsMsg = document.getElementById('backup-empty-message');
+            const errorMsg = document.getElementById('backup-error-message');
+
+            loadingDiv?.classList.add('hidden');
+            contentDiv?.classList.remove('hidden');
+
+            if (data.success && data.backups && data.backups.length > 0) {
+                tableContainer.innerHTML = renderIconSetBackupsTable(data.backups);
+                noBackupsMsg?.classList.add('hidden');
+                errorMsg?.classList.add('hidden');
+
+                tableContainer.querySelectorAll('.menubtn').forEach(btn => {
+                    if (typeof Craft !== 'undefined' && Craft.MenuBtn) {
+                        new Craft.MenuBtn(btn);
+                    } else if (typeof Garnish !== 'undefined' && Garnish.MenuBtn) {
+                        new Garnish.MenuBtn(btn);
+                    }
+                });
+            } else if (data.success) {
+                tableContainer.innerHTML = '';
+                noBackupsMsg?.classList.remove('hidden');
+                errorMsg?.classList.add('hidden');
+            } else {
+                tableContainer.innerHTML = '';
+                noBackupsMsg?.classList.add('hidden');
+                if (errorMsg) {
+                    errorMsg.textContent = data.error || '';
+                    errorMsg.classList.remove('hidden');
+                }
+            }
+        })
+        .catch(error => {
+            const loadingDiv = document.getElementById('backup-list-loading');
+            const contentDiv = document.getElementById('backup-list-content');
+            const errorMsg = document.getElementById('backup-error-message');
+
+            loadingDiv?.classList.add('hidden');
+            contentDiv?.classList.remove('hidden');
+
+            if (errorMsg) {
+                errorMsg.textContent = error.message;
+                errorMsg.classList.remove('hidden');
+            }
+        });
+}
+
+function renderIconSetBackupsTable(backups) {
+    let rows = '';
+    backups.forEach(backup => {
+        const name = escapeHtml(backup.name || '');
+        const date = escapeHtml(backup.formattedDate || '');
+        const size = escapeHtml(backup.formattedSize || '-');
+        const rowActions = backup.rowActionsHtml || '<td class="thin"></td>';
+
+        rows += `<tr>
+            <td><code style="font-size: 11px;">${name}</code></td>
+            <td>${date}</td>
+            <td><code style="font-size: 11px;">${size}</code></td>
+            ${rowActions}
+        </tr>`;
+    });
+
+    return `<table class="data fullwidth">
+        <thead>
+            <tr>
+                <th>{{ "Backup Name"|t('icon-manager')|e('js') }}</th>
+                <th>{{ "Date"|t('icon-manager')|e('js') }}</th>
+                <th>{{ "Size"|t('icon-manager')|e('js') }}</th>
+                <th class="thin">{{ "Actions"|t('icon-manager')|e('js') }}</th>
+            </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function submitBackupAction(action, backupPath, iconSetId) {
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = '';
+    form.innerHTML = `
+        ${action}
+        {{ redirectInput('icon-manager/icon-sets/' ~ iconSet.id ~ '#backups')|raw }}
+        {{ csrfInput()|raw }}
+        <input type="hidden" name="iconSetId" value="${escapeHtml(iconSetId)}">
+        <input type="hidden" name="backupPath" value="${escapeHtml(backupPath)}">
+    `;
+    document.body.appendChild(form);
+    form.submit();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadIconSetBackups();
+});
+
+document.addEventListener('click', function(e) {
+    const restoreLink = e.target.closest('.restore-backup');
+    if (!restoreLink) return;
+    e.preventDefault();
+
+    if (!confirm('{{ 'This will replace all current files with files from this backup. Continue?'|t('icon-manager')|e('js') }}')) {
+        return;
+    }
+
+    submitBackupAction(
+        `{{ actionInput('icon-manager/icon-sets/restore-backup')|raw }}`,
+        restoreLink.dataset.backupPath,
+        restoreLink.dataset.iconSetId
+    );
+});
+
+document.addEventListener('click', function(e) {
+    const deleteLink = e.target.closest('.delete-backup');
+    if (!deleteLink) return;
+    e.preventDefault();
+
+    if (!confirm('{{ 'Are you sure you want to delete this backup? This cannot be undone.'|t('icon-manager')|e('js') }}')) {
+        return;
+    }
+
+    submitBackupAction(
+        `{{ actionInput('icon-manager/icon-sets/delete-backup')|raw }}`,
+        deleteLink.dataset.backupPath,
+        deleteLink.dataset.iconSetId
+    );
+});
+{% endjs %}

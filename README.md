@@ -1001,7 +1001,7 @@ Processing (2/123): another-icon.svg...
 Before optimization, a backup is automatically created (unless `--no-backup` is used):
 - Stored in `storage/runtime/icon-manager/backups/`
 - Named with timestamp: `icon-set-name_YYYY-MM-DD_HH-MM-SS`
-- Can be restored from Icon Manager → Icon Sets → [Set] → Optimize tab (dev mode only)
+- Can be restored from Icon Manager → Icon Sets → [Set] → Backups tab (dev mode only)
 
 **When to Use SVGO:**
 - Need to optimize clip-paths, masks, or file size
@@ -1232,7 +1232,7 @@ Icon Manager provides granular permissions for controlling access to plugin feat
 | **Create icon sets** | Create new icon sets |
 | **Edit icon sets** | Edit existing icon sets, enable/disable sets, refresh icons |
 | **Delete icon sets** | Delete icon sets |
-| **Manage SVG optimization** | Access the SVG Optimization tab, apply optimizations, manage backups |
+| **Manage SVG optimization** | Access the SVG Optimization and Backups tabs, apply optimizations, manage backups |
 | **Clear cache** | Clear icon caches (also controls visibility in Craft's Clear Caches utility) |
 | **View logs** | View plugin logs in the Control Panel |
 | ↳ **Download logs** | Download log files (nested under View logs) |
@@ -1245,7 +1245,7 @@ Icon Manager provides granular permissions for controlling access to plugin feat
 - The "New Icon Set" button only appears for users with **Create icon sets** permission
 - Icon set names are only clickable (linking to edit page) for users with **Edit icon sets** permission
 - Delete buttons and bulk delete actions require **Delete icon sets** permission
-- The SVG Optimization tab on icon set edit pages requires **Manage SVG optimization** permission
+- The SVG Optimization and Backups tabs on icon set edit pages require **Manage SVG optimization** permission
 
 **Cache Management:**
 - The "Icon Manager caches" option in Craft's Clear Caches utility only appears for users with **Clear cache** permission

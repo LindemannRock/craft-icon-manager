@@ -309,6 +309,7 @@ class IconManager extends Plugin
                     'icon-manager/icon-sets' => 'icon-manager/icon-sets/index',
                     'icon-manager/icon-sets/new' => 'icon-manager/icon-sets/edit',
                     'icon-manager/icon-sets/<iconSetId:\d+>/optimize' => 'icon-manager/icon-sets/optimize',
+                    'icon-manager/icon-sets/<iconSetId:\d+>/backups' => 'icon-manager/icon-sets/get-backups',
                     'icon-manager/icon-sets/<iconSetId:\d+>' => 'icon-manager/icon-sets/edit',
                     'icon-manager/icon-sets/delete' => 'icon-manager/icon-sets/delete',
                     'icon-manager/icon-sets/refresh-icons' => 'icon-manager/icon-sets/refresh-icons',
