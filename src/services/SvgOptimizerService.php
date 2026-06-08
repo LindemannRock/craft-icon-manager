@@ -8,7 +8,6 @@
 
 namespace lindemannrock\iconmanager\services;
 
-use Craft;
 use craft\base\Component;
 use craft\helpers\FileHelper;
 use lindemannrock\iconmanager\IconManager;
@@ -481,8 +480,7 @@ class SvgOptimizerService extends Component
      */
     private function createBackup(string $folderPath, string $iconSetName, bool $includeSubfolders = true)
     {
-        $runtimePath = Craft::$app->getRuntimePath();
-        $backupBasePath = $runtimePath . '/icon-manager/backups';
+        $backupBasePath = IconManager::getInstance()->getSettings()->getBackupPath();
 
         // Create backups directory if it doesn't exist
         if (!is_dir($backupBasePath)) {
@@ -721,8 +719,7 @@ class SvgOptimizerService extends Component
      */
     public function listBackups(string $iconSetName): array
     {
-        $runtimePath = Craft::$app->getRuntimePath();
-        $backupBasePath = $runtimePath . '/icon-manager/backups';
+        $backupBasePath = IconManager::getInstance()->getSettings()->getBackupPath();
 
         if (!is_dir($backupBasePath)) {
             return [];
@@ -738,7 +735,11 @@ class SvgOptimizerService extends Component
 
             $backupName = basename($backupPath);
             $size = $this->getDirectorySize($backupPath);
-            $timestamp = filemtime($backupPath);
+            // Prefer the timestamp baked into the folder name over filemtime —
+            // filemtime is reset whenever the backup is copied/moved (e.g. when
+            // relocating backup storage to a volume), which would make every
+            // backup look like it was created at the move time.
+            $timestamp = $this->parseBackupTimestamp($backupName) ?? filemtime($backupPath);
             $dateTime = (new \DateTime('@' . $timestamp))->setTimezone(new \DateTimeZone('UTC'));
 
             $backups[] = [
@@ -756,6 +757,25 @@ class SvgOptimizerService extends Component
         });
 
         return $backups;
+    }
+
+    /**
+     * Parse the creation timestamp from a backup folder name.
+     *
+     * Backups are named `{set}_{Y-m-d_H-i-s}` (see createBackup()), so the
+     * creation time is recoverable from the name even after the folder is
+     * moved/copied. Returns a Unix timestamp, or null if the name has no
+     * parseable trailing timestamp.
+     */
+    private function parseBackupTimestamp(string $backupName): ?int
+    {
+        if (!preg_match('/_(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2})$/', $backupName, $matches)) {
+            return null;
+        }
+
+        $dateTime = \DateTime::createFromFormat('Y-m-d_H-i-s', $matches[1], new \DateTimeZone('UTC'));
+
+        return $dateTime === false ? null : $dateTime->getTimestamp();
     }
 
     /**
@@ -899,12 +919,12 @@ class SvgOptimizerService extends Component
 
     /**
      * Containment guard for backup operations — assert the supplied path lives
-     * inside `runtime/icon-manager/backups`. Stops admin-supplied POST bodies
+     * inside the configured backup root. Stops admin-supplied POST bodies
      * from steering restore/delete at arbitrary directories.
      */
     private function isWithinBackupRoot(string $path): bool
     {
-        $backupRoot = FileHelper::normalizePath(Craft::$app->getRuntimePath() . '/icon-manager/backups');
+        $backupRoot = FileHelper::normalizePath(IconManager::getInstance()->getSettings()->getBackupPath());
         $normalized = FileHelper::normalizePath($path);
 
         return str_starts_with($normalized . DIRECTORY_SEPARATOR, $backupRoot . DIRECTORY_SEPARATOR);

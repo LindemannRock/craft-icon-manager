@@ -291,7 +291,7 @@ class IconSetsController extends Controller
         // Add optimization data for existing SVG folder icon sets
         if ($iconSet->id && in_array($iconSet->type, ['svg-folder', 'folder'])) {
             $templateVars['scanResult'] = IconManager::getInstance()->svgOptimizer->scanIconSet($iconSet);
-            $templateVars['optimizationBackupPath'] = FileHelper::normalizePath(Craft::$app->getRuntimePath() . '/icon-manager/backups');
+            $templateVars['optimizationBackupPath'] = IconManager::getInstance()->getSettings()->getBackupLocationLabel();
         }
 
         return $this->renderTemplate('icon-manager/icon-sets/edit', $templateVars);

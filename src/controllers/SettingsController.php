@@ -215,6 +215,8 @@ class SettingsController extends Controller
             'svg-optimization' => [
                 'enableOptimization',
                 'enableOptimizationBackup',
+                'backupVolumeUid',
+                'backupPath',
                 'scanClipPaths',
                 'scanMasks',
                 'scanFilters',
@@ -285,6 +287,6 @@ class SettingsController extends Controller
 
     private function optimizationBackupPath(): string
     {
-        return FileHelper::normalizePath(Craft::$app->getRuntimePath() . '/icon-manager/backups');
+        return IconManager::getInstance()->getSettings()->getBackupLocationLabel();
     }
 }

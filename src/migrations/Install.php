@@ -69,6 +69,7 @@ class Install extends Migration
             'pluginName' => $this->string()->notNull()->defaultValue('Icon Manager'),
             // General settings
             'iconSetsPath' => $this->string()->notNull()->defaultValue('@root/icons'),
+            'iconSetsVolumeUid' => $this->string()->null(),
             'enableCache' => $this->boolean()->notNull()->defaultValue(true),
             'cacheDuration' => $this->integer()->notNull()->defaultValue(86400),
             'cacheStorageMethod' => $this->string(10)->notNull()->defaultValue('file')->comment('Cache storage method: file or redis'),
@@ -77,6 +78,8 @@ class Install extends Migration
             // Optimization settings
             'enableOptimization' => $this->boolean()->notNull()->defaultValue(true),
             'enableOptimizationBackup' => $this->boolean()->notNull()->defaultValue(true),
+            'backupPath' => $this->string()->notNull()->defaultValue('@storage/icon-manager/backups'),
+            'backupVolumeUid' => $this->string()->null(),
             // Scan control settings
             'scanClipPaths' => $this->boolean()->notNull()->defaultValue(true),
             'scanMasks' => $this->boolean()->notNull()->defaultValue(true),
@@ -152,6 +155,7 @@ class Install extends Migration
             ]),
             'enableOptimization' => true,
             'enableOptimizationBackup' => true,
+            'backupPath' => '@storage/icon-manager/backups',
             'scanClipPaths' => true,
             'scanMasks' => true,
             'scanFilters' => true,

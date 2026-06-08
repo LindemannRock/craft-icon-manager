@@ -223,6 +223,8 @@ return [
         // SVG Optimization
         'enableOptimization' => true,
         'enableOptimizationBackup' => true,
+        'backupPath' => '@storage/icon-manager/backups', // Where backups are stored (use @storage so they survive cache clears)
+        'backupVolumeUid' => null,                        // Optional asset volume UID; overrides backupPath when set
 
         // Scan Controls (what scanner detects - PHP optimizer only, SVGO uses svgo.config.js)
         'scanClipPaths' => true,              // Detect empty/unused clip-paths (used ones preserved)
@@ -307,6 +309,8 @@ See [Configuration Documentation](docs/CONFIGURATION.md) for all available optio
 - **enabledIconTypes** - Enable/disable specific icon set types
 - **enableOptimization** - Enable/disable SVG optimization features (default: true)
 - **enableOptimizationBackup** - Automatically create backups before optimization (default: true)
+- **backupPath** - Where optimization backups are stored; accepts Craft path aliases (default: `@storage/icon-manager/backups`)
+- **backupVolumeUid** - Optional asset volume UID for storing backups; overrides `backupPath` when set (default: null)
 - **Scan Controls** - Granular control over what the scanner detects (see Scan Control Settings below)
 - **logLevel** - Logging verbosity: error, warning, info, or debug
 
@@ -836,6 +840,8 @@ SVG optimization can be controlled globally via settings or config file:
 return [
     'enableOptimization' => true,          // Enable optimization features
     'enableOptimizationBackup' => true,    // Auto-backup before optimization
+    'backupPath' => '@storage/icon-manager/backups', // Backup location (path alias)
+    'backupVolumeUid' => null,             // Optional asset volume UID (overrides backupPath)
 ];
 ```
 
@@ -999,7 +1005,7 @@ Processing (2/123): another-icon.svg...
 **Automatic Backups:**
 
 Before optimization, a backup is automatically created (unless `--no-backup` is used):
-- Stored in `storage/runtime/icon-manager/backups/`
+- Stored at the configured backup location (default `@storage/icon-manager/backups`; configurable via `backupPath` or an asset volume via `backupVolumeUid`)
 - Named with timestamp: `icon-set-name_YYYY-MM-DD_HH-MM-SS`
 - Can be restored from Icon Manager → Icon Sets → [Set] → Backups tab (dev mode only)
 

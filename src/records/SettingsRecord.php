@@ -16,12 +16,15 @@ use craft\db\ActiveRecord;
  * @property int $id
  * @property string|null $pluginName
  * @property string $iconSetsPath
+ * @property string|null $iconSetsVolumeUid
  * @property bool $enableCache
  * @property int $cacheDuration
  * @property string $cacheStorageMethod
  * @property string|null $enabledIconTypes
  * @property bool $enableOptimization
  * @property bool $enableOptimizationBackup
+ * @property string $backupPath
+ * @property string|null $backupVolumeUid
  * @property bool $scanClipPaths
  * @property bool $scanMasks
  * @property bool $scanFilters

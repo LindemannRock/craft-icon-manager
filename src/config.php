@@ -51,6 +51,13 @@ return [
         'enableOptimization' => true,
         'enableOptimizationBackup' => true,
 
+        // Where optimization backups are stored. Use a Craft path alias
+        // (@storage recommended — it survives cache clears). Leave 'backupVolumeUid'
+        // empty to use 'backupPath'; set it to an asset volume UID to store
+        // backups in that volume instead.
+        'backupPath' => '@storage/icon-manager/backups',
+        'backupVolumeUid' => null,
+
         // Scan control settings (what to detect during optimization scans)
         'scanClipPaths' => true,              // Scan for unused clip-paths
         'scanMasks' => true,                  // Scan for unused masks

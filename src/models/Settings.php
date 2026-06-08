@@ -10,8 +10,8 @@ namespace lindemannrock\iconmanager\models;
 
 use Craft;
 use craft\base\Model;
-use craft\behaviors\EnvAttributeParserBehavior;
 use lindemannrock\base\helpers\StoragePathHelper;
+use lindemannrock\base\helpers\StorageVolumeHelper;
 use lindemannrock\base\traits\DateFormatSettingsTrait;
 use lindemannrock\base\traits\ItemsPerPageSettingsTrait;
 use lindemannrock\base\traits\LogLevelSettingsTrait;
@@ -20,6 +20,7 @@ use lindemannrock\base\traits\SettingsConfigTrait;
 use lindemannrock\base\traits\SettingsDisplayNameTrait;
 use lindemannrock\base\traits\SettingsPersistenceTrait;
 use lindemannrock\base\validators\StoragePathValidator;
+use lindemannrock\base\validators\StorageVolumeValidator;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 
 /**
@@ -58,6 +59,16 @@ class Settings extends Model
     public string $iconSetsPath = '@root/icons';
 
     /**
+     * @var string|null Optional asset volume UID for icon set sources
+     *
+     * Reserved for editor-managed (uploaded) icon sets. Not yet surfaced in the
+     * Control Panel — the per-set volume source is wired up in a later release.
+     *
+     * @since 5.16.0
+     */
+    public ?string $iconSetsVolumeUid = null;
+
+    /**
      * @var bool Whether to enable icon caching
      */
     public bool $enableCache = true;
@@ -92,6 +103,20 @@ class Settings extends Model
      * @var bool Enable automatic backups before optimization
      */
     public bool $enableOptimizationBackup = true;
+
+    /**
+     * @var string Local filesystem path for storing optimization backups
+     *
+     * @since 5.16.0
+     */
+    public string $backupPath = '@storage/icon-manager/backups';
+
+    /**
+     * @var string|null Optional asset volume UID for storing optimization backups
+     *
+     * @since 5.16.0
+     */
+    public ?string $backupVolumeUid = null;
 
     /**
      * @var bool Scan for unused clip-paths
@@ -307,12 +332,10 @@ class Settings extends Model
      */
     protected function defineBehaviors(): array
     {
-        return [
-            'parser' => [
-                'class' => EnvAttributeParserBehavior::class,
-                'attributes' => ['iconSetsPath'],
-            ],
-        ];
+        // Path attributes (iconSetsPath, backupPath) are resolved + validated
+        // through StoragePathValidator / StoragePathHelper, which handle aliases
+        // and env vars directly — no EnvAttributeParserBehavior needed.
+        return [];
     }
 
     /**
@@ -331,6 +354,19 @@ class Settings extends Model
                 'preventWebroot' => false,
                 'requireAlias' => true,
             ],
+            [['backupPath'], 'required'],
+            [['backupPath'], 'string'],
+            [
+                'backupPath',
+                StoragePathValidator::class,
+                'translationCategory' => static::pluginHandle(),
+                'allowedAliases' => ['@storage', '@root'],
+                'preventWebroot' => true,
+                'requireAlias' => true,
+            ],
+            [['backupPath'], 'validateBackupPathRootSubfolder'],
+            [['backupVolumeUid'], StorageVolumeValidator::class],
+            [['iconSetsVolumeUid'], 'safe'],
             [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes', 'optimizeFixAttributeNames', 'optimizeRemoveAriaAndRole', 'optimizeRemoveDataAttributes', 'optimizeRemoveDuplicateElements', 'optimizeRemoveEmptyGroups', 'optimizeRemoveEmptyTextElements', 'optimizeRemoveNonStandardAttributes', 'optimizeRemoveNonStandardTags', 'optimizeRemoveTitleAndDesc', 'optimizeRemoveUnsafeElements', 'optimizeScopeSvgStyles', 'optimizeAllowRiskyRules'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 60, 'max' => 604800],
             [['cacheStorageMethod'], 'in', 'range' => ['file', 'redis']],
@@ -351,6 +387,8 @@ class Settings extends Model
             'cacheStorageMethod' => Craft::t('icon-manager', 'Cache Storage Method'),
             'enableOptimization' => Craft::t('icon-manager', 'Enable Optimization'),
             'enableOptimizationBackup' => Craft::t('icon-manager', 'Enable Automatic Backups'),
+            'backupPath' => Craft::t('icon-manager', 'Custom Backup Path'),
+            'backupVolumeUid' => Craft::t('icon-manager', 'Backup Storage Volume'),
             'optimizeAllowRiskyRules' => Craft::t('icon-manager', 'Allow Risky Rules'),
             'optimizeConvertColorsToHex' => Craft::t('icon-manager', 'Convert Colors to Hex'),
             'optimizeConvertCssClasses' => Craft::t('icon-manager', 'Convert CSS Classes to Attributes'),
@@ -421,7 +459,102 @@ class Settings extends Model
     {
         return StoragePathHelper::resolve($this->iconSetsPath);
     }
-    
+
+    /**
+     * Get the resolved optimization backup root path.
+     *
+     * Resolves the configured asset volume (if any) to a local filesystem path,
+     * otherwise resolves the configured path. Falls back to a safe default in
+     * @storage when the volume is remote/invalid or the path cannot be resolved.
+     *
+     * @since 5.16.0
+     */
+    public function getBackupPath(): string
+    {
+        if ($this->backupVolumeUid) {
+            $volumeErrors = StorageVolumeHelper::validateVolume($this->backupVolumeUid);
+            if ($volumeErrors !== []) {
+                $this->logWarning('Backup volume failed validation. Using safe default.', [
+                    'backupVolumeUid' => $this->backupVolumeUid,
+                    'errors' => $volumeErrors,
+                ]);
+
+                return Craft::getAlias('@storage/icon-manager/backups');
+            }
+
+            $localRootPath = StorageVolumeHelper::localRootPath($this->backupVolumeUid);
+            if ($localRootPath !== null) {
+                return rtrim($localRootPath, '/') . '/icon-manager/backups';
+            }
+
+            $this->logWarning('Backup volume could not be resolved to a local path. Using safe default.', [
+                'backupVolumeUid' => $this->backupVolumeUid,
+            ]);
+
+            return Craft::getAlias('@storage/icon-manager/backups');
+        }
+
+        if (!$this->validate(['backupPath'])) {
+            return Craft::getAlias('@storage/icon-manager/backups');
+        }
+
+        try {
+            $path = StoragePathHelper::resolve($this->backupPath);
+        } catch (\Throwable $e) {
+            $this->logWarning('Backup path could not be resolved. Using safe default.', [
+                'path' => $this->backupPath,
+                'error' => $e->getMessage(),
+            ]);
+
+            return Craft::getAlias('@storage/icon-manager/backups');
+        }
+
+        // Never let backups land in the project root.
+        $rootPath = Craft::getAlias('@root');
+        if ($path === $rootPath || $path === '/' || $path === '') {
+            $path = Craft::getAlias('@storage/icon-manager/backups');
+            $this->logWarning('Backup path was pointing to root directory. Using safe default');
+        }
+
+        return $path;
+    }
+
+    /**
+     * Get the backup location label for Control Panel display.
+     *
+     * @since 5.16.0
+     */
+    public function getBackupLocationLabel(): string
+    {
+        if ($this->backupVolumeUid) {
+            return StorageVolumeHelper::displayPath($this->backupVolumeUid, 'icon-manager/backups')
+                ?? Craft::t('icon-manager', 'Backup Storage Volume');
+        }
+
+        return $this->getBackupPath();
+    }
+
+    /**
+     * Require a subfolder when using @root for backupPath.
+     *
+     * @since 5.16.0
+     */
+    public function validateBackupPathRootSubfolder(string $attribute): void
+    {
+        $value = trim((string)$this->$attribute);
+        if ($value === '') {
+            return;
+        }
+
+        $normalized = rtrim($value, '/\\');
+        if (strcasecmp($normalized, '@root') === 0) {
+            $this->addError(
+                $attribute,
+                Craft::t('icon-manager', 'When using @root, include a subfolder (for example: @root/backups/icon-manager).')
+            );
+        }
+    }
+
     // =========================================================================
     // Trait Configuration Methods
     // =========================================================================

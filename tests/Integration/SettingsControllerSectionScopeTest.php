@@ -38,6 +38,8 @@ final class SettingsControllerSectionScopeTest extends TestCase
             'svg-optimization' => [
                 'enableOptimization',
                 'enableOptimizationBackup',
+                'backupVolumeUid',
+                'backupPath',
                 'scanClipPaths',
                 'scanMasks',
                 'scanFilters',

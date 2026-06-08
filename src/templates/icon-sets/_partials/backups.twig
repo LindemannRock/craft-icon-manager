@@ -8,7 +8,7 @@
 
 {% if optimizationBackupPath ?? null %}
     {% include 'lindemannrock-base/_components/info-box' with {
-        message: '<strong>' ~ 'Optimization Backup Location:'|t('icon-manager') ~ '</strong> <code>' ~ optimizationBackupPath ~ '</code>'
+        message: '<strong>' ~ 'Optimization Backup Location:'|t('icon-manager') ~ '</strong> <code>' ~ optimizationBackupPath|e ~ '</code>'
     } %}
 {% endif %}
 

@@ -25,11 +25,68 @@
     disabled: settings.isOverriddenByConfig('enableOptimizationBackup')
 }) }}
 
-{% if optimizationBackupPath ?? null %}
-    <div id="optimization-backup-info" class="{% if not settings.enableOptimizationBackup %}hidden{% endif %}">
-        {% include 'lindemannrock-base/_components/info-box' with {
-            message: '<strong>' ~ 'Optimization Backup Location:'|t('icon-manager') ~ '</strong> <code>' ~ optimizationBackupPath ~ '</code>'
-        } %}
+<div id="optimization-backup-info" class="{% if not settings.enableOptimizationBackup %}hidden{% endif %}">
+    {# Asset volume selection dropdown for backups #}
+    {% set volumeOptions = [{label: 'Use custom path'|t('icon-manager'), value: ''}] %}
+    {% for volume in craft.app.volumes.getAllVolumes() %}
+        {% set volumeOptions = volumeOptions|merge([{
+            label: volume.name,
+            value: volume.uid
+        }]) %}
+    {% endfor %}
+
+    {{ forms.selectField({
+        label: 'Backup Storage Volume'|t('icon-manager'),
+        instructions: 'Select an asset volume or use a custom path for storing optimization backups.'|t('icon-manager'),
+        id: 'backupVolumeUid',
+        name: 'settings[backupVolumeUid]',
+        options: volumeOptions,
+        value: settings.backupVolumeUid ?? '',
+        errors: settings.getErrors('backupVolumeUid'),
+        disabled: settings.isOverriddenByConfig('backupVolumeUid'),
+        warning: settings.isOverriddenByConfig('backupVolumeUid') ? 'This is being overridden by the <code>backupVolumeUid</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+    }) }}
+
+    <div id="custom-backup-path" class="{{ settings.backupVolumeUid ? 'hidden' }}">
+        {{ forms.autosuggestField({
+            label: 'Custom Backup Path'|t('icon-manager'),
+            instructions: 'The custom path where optimization backups are stored (only used when no volume is selected).'|t('icon-manager'),
+            tip: 'Use Craft path aliases: <code>@storage/icon-manager/backups</code> (recommended) or <code>@root/backups/icon-manager</code>. Environment variables like <code>$ENV_VAR</code> are supported.'|t('icon-manager')|raw,
+            id: 'backupPath',
+            name: 'settings[backupPath]',
+            value: settings.backupPath,
+            errors: settings.getErrors('backupPath'),
+            required: not settings.backupVolumeUid,
+            suggestEnvVars: true,
+            disabled: settings.isOverriddenByConfig('backupPath'),
+            warning: settings.isOverriddenByConfig('backupPath') ? 'This is being overridden by the <code>backupPath</code> setting in the <code>config/icon-manager.php</code> file.'|t('icon-manager')|raw : null,
+        }) }}
     </div>
-{% endif %}
+
+    {% if optimizationBackupPath ?? null and not settings.getErrors('backupPath') %}
+        {% include 'lindemannrock-base/_components/info-box' with {
+            message: '<strong>' ~ 'Optimization Backup Location:'|t('icon-manager') ~ '</strong> <code>' ~ optimizationBackupPath|e ~ '</code>'
+        } %}
+    {% endif %}
 </div>
+</div>
+
+{% js %}
+    document.addEventListener('DOMContentLoaded', function() {
+        const volumeSelect = document.getElementById('backupVolumeUid');
+        const customPathDiv = document.getElementById('custom-backup-path');
+        const pathField = document.getElementById('backupPath');
+
+        if (volumeSelect) {
+            volumeSelect.addEventListener('change', function() {
+                if (this.value) {
+                    customPathDiv.classList.add('hidden');
+                    pathField.removeAttribute('required');
+                } else {
+                    customPathDiv.classList.remove('hidden');
+                    pathField.setAttribute('required', 'required');
+                }
+            });
+        }
+    });
+{% endjs %}
