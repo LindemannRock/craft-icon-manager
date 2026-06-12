@@ -491,11 +491,11 @@ return [
 
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Overvåk ytelsen til Icon-sett, administrer cache og vis systemstatus for ikonsamlingene dine.',
-    'Access main plugin sections' => 'Tilgang til Plugin-programmets hovedseksjoner',
+    'Access main plugin sections' => 'Tilgang til plugin-programmets hovedseksjoner',
     'Total Icons' => 'Totalt antall ikoner',
     'Total icon sets configured' => 'Totalt antall konfigurerte Icon-sett',
     'Cache Status' => 'Cache-status',
-    'Total cached entries' => 'Totalt antall cache-oppføringer',
+    'Total cached entries' => 'Totale cachede oppføringer',
     'Sprite' => 'Sprite',
     'Fonts' => 'Typesnitt',
     'Cache duration' => 'Cache-varighet',

@@ -140,7 +140,7 @@ return [
     'User does not have permission to scan SVGs.' => 'L\'utente non dispone dell\'autorizzazione per scansionare i SVG.',
 
     // Validation messages
-    'Handle must be unique.' => 'L’handle deve essere univoco.',
+    'Handle must be unique.' => 'L\'handle deve essere univoco.',
     'Icon file not found: {path}' => 'File icona non trovato: {path}',
     'Environment variables are not allowed for this path.' => 'Le variabili d\'ambiente non sono consentite per questo percorso.',
     'Invalid path: {error}' => 'Percorso non valido: {error}',

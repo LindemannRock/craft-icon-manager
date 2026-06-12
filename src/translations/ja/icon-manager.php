@@ -149,7 +149,7 @@ return [
     'Path must resolve to a local filesystem path, not a URL.' => 'パスは URL ではなく、ローカルファイルシステムパスに解決される必要があります。',
     'Path cannot contain parent directory traversal ("..").' => 'パスに親ディレクトリへの移動（".."）を含めることはできません。',
     'Path cannot use @web or @webroot because those are web-accessible.' => '@web および @webroot は Web からアクセス可能なため、このパスでは使用できません。',
-    'When using @root, include a subfolder (for example: @root/backups/icon-manager).' => '@root を使用する場合は、サブフォルダーを含めてください（例: @root/backups/icon-manager）。',
+    'When using @root, include a subfolder (for example: @root/backups/icon-manager).' => '@root を使用する場合は、サブフォルダを含めてください（例: @root/backups/icon-manager）。',
 
     // Settings: General
     'General Settings' => '一般設定',
@@ -177,17 +177,17 @@ return [
     // Settings: Icon Types
     'Icon Types Settings' => 'アイコンタイプ設定',
     'Choose which icon set types are available in the system.' => 'システムで使用できるアイコンセットのタイプを選択してください。',
-    'Enable SVG files from folders' => 'フォルダーからの SVG ファイルを有効にする',
+    'Enable SVG files from folders' => 'フォルダからの SVG ファイルを有効にする',
     'Enable SVG sprite files' => 'SVG スプライトファイルを有効にする',
     'Enable Font Awesome icons' => 'Font Awesome アイコンを有効にする',
     'Enable Material Design icons' => 'Material Design アイコンを有効にする',
     'Enable custom icon fonts (TTF, WOFF, WOFF2, OTF)' => 'カスタムアイコンフォント（TTF、WOFF、WOFF2、OTF）を有効にする',
-    'SVG Folder' => 'SVG フォルダー',
+    'SVG Folder' => 'SVG フォルダ',
     'SVG Sprite' => 'SVG スプライト',
     'Font Awesome' => 'Font Awesome',
     'Material Icons' => 'Material Icons',
     'Web Font' => 'Web フォント',
-    'Folder' => 'フォルダー',
+    'Folder' => 'フォルダ',
 
     // Settings: SVG Optimization
     'SVG Optimization Settings' => 'SVG 最適化設定',
@@ -322,10 +322,10 @@ return [
     'What this icon set will be called in the control panel.' => 'コントロールパネルでのこのアイコンセットの名前です。',
     "How you'll refer to this icon set in templates." => 'テンプレートでこのアイコンセットを参照する方法です。',
     'The type of icon set.' => 'アイコンセットのタイプです。',
-    'SVG Folder Settings' => 'SVG フォルダー設定',
-    'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.' => 'SVG アイコンが存在するフォルダーを選択してください。アイコンパス設定からの相対パスです。',
-    'Include Subfolders' => 'サブフォルダーを含める',
-    'Whether to include icons from subfolders.' => 'サブフォルダーからアイコンを含めるかどうかです。',
+    'SVG Folder Settings' => 'SVG フォルダ設定',
+    'Select the folder where your SVG icons exist. This is relative to your Icons Path setting.' => 'SVG アイコンが存在するフォルダを選択してください。アイコンパス設定からの相対パスです。',
+    'Include Subfolders' => 'サブフォルダを含める',
+    'Whether to include icons from subfolders.' => 'サブフォルダからアイコンを含めるかどうかです。',
     'SVG Sprite Settings' => 'SVG スプライト設定',
     'Sprite File' => 'スプライトファイル',
     'Select the SVG sprite file. Sprite files must contain <symbol> elements.' => 'SVG スプライトファイルを選択してください。スプライトファイルには <symbol> 要素が含まれている必要があります。',
@@ -516,7 +516,7 @@ return [
     'Comment' => 'コメント',
     'Style' => 'スタイル',
     'No SVG icon sets found' => 'SVG アイコンセットが見つかりません',
-    'Create an SVG Folder icon set to scan for quality issues.' => '品質の問題をスキャンするために SVG フォルダーのアイコンセットを作成してください。',
+    'Create an SVG Folder icon set to scan for quality issues.' => '品質の問題をスキャンするために SVG フォルダのアイコンセットを作成してください。',
 
     // Config overrides
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>iconSetsPath</code> 設定によって上書きされています。',
