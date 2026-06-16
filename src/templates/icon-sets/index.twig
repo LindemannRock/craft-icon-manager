@@ -204,27 +204,23 @@
 
 {% block bulkActions %}
     {% if canEdit %}
-        <div>
-            <button type="button" class="btn menubtn secondary" id="lr-bulk-status-btn" aria-label="{{ 'Set status'|t('icon-manager') }}">
-                {{ 'Set status'|t('icon-manager') }}
-            </button>
-            <div class="menu">
-                <ul>
-                    <li><a id="lr-bulk-enable-action">{{ 'Enable'|t('icon-manager') }}</a></li>
-                    <li><a id="lr-bulk-disable-action">{{ 'Disable'|t('icon-manager') }}</a></li>
-                </ul>
-            </div>
-        </div>
+        {% include 'lindemannrock-base/_components/bulk-status-menu' with {
+            label: 'Set status'|t('icon-manager'),
+            countId: 'lr-bulk-status-count',
+            items: [
+                {id: 'lr-bulk-enable-action', label: 'Enable'|t('icon-manager'), status: 'enabled'},
+                {id: 'lr-bulk-disable-action', label: 'Disable'|t('icon-manager'), status: 'disabled'},
+            ],
+        } only %}
     {% endif %}
     {% if canDelete %}
-        <div>
-            <button type="button" class="btn secondary menubtn" data-icon="settings" title="{{ 'Actions'|t('icon-manager') }}" id="lr-bulk-actions-btn"></button>
-            <div class="menu">
-                <ul>
-                    <li><a id="lr-bulk-delete-action" class="error">{{ 'Delete...'|t('icon-manager') }}</a></li>
-                </ul>
-            </div>
-        </div>
+        {% include 'lindemannrock-base/_components/bulk-actions-menu' with {
+            label: 'Actions'|t('icon-manager'),
+            countId: 'lr-bulk-actions-count',
+            items: [
+                {id: 'lr-bulk-delete-action', label: 'Delete...'|t('icon-manager'), class: 'error'},
+            ],
+        } only %}
     {% endif %}
 {% endblock %}
 
@@ -232,18 +228,6 @@
 <script>
 (function() {
     if (typeof Craft === 'undefined') return;
-
-    // Initialise menubtn instances — without `new Craft.MenuBtn(...)`, the
-    // bulk-action buttons don't open their menus so the items inside are
-    // unreachable.
-    const bulkStatusBtn = document.getElementById('lr-bulk-status-btn');
-    if (bulkStatusBtn && Craft.MenuBtn) {
-        new Craft.MenuBtn(bulkStatusBtn);
-    }
-    const bulkActionsBtn = document.getElementById('lr-bulk-actions-btn');
-    if (bulkActionsBtn && Craft.MenuBtn) {
-        new Craft.MenuBtn(bulkActionsBtn);
-    }
 
     // Pre-translated strings: keep |t() in Twig (so they're translatable)
     // and emit as JSON-encoded JS literals via |json_encode|raw — avoids
