@@ -52,7 +52,6 @@ return [
     'Created at' => 'Opprettet',
     'Custom' => 'Egendefinert',
     'Delete' => 'Slett',
-    'Delete...' => 'Slett...',
     'Disable' => 'Deaktiver',
     'Disabled' => 'Deaktivert',
     'Done' => 'Ferdig',

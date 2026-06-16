@@ -52,7 +52,6 @@ return [
     'Created at' => 'Gemaakt op',
     'Custom' => 'Aangepast',
     'Delete' => 'Verwijderen',
-    'Delete...' => 'Verwijderen...',
     'Disable' => 'Uitschakelen',
     'Disabled' => 'Uitgeschakeld',
     'Done' => 'Gereed',

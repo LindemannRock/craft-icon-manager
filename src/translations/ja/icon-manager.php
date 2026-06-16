@@ -52,7 +52,6 @@ return [
     'Created at' => '作成日時',
     'Custom' => 'カスタム',
     'Delete' => '削除する',
-    'Delete...' => '削除する...',
     'Disable' => '無効にする',
     'Disabled' => '無効',
     'Done' => '完了',

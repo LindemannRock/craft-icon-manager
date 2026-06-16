@@ -52,7 +52,6 @@ return [
     'Created at' => 'Oprettet',
     'Custom' => 'Brugerdefineret',
     'Delete' => 'Slet',
-    'Delete...' => 'Slet...',
     'Disable' => 'Deaktiver',
     'Disabled' => 'Deaktiveret',
     'Done' => 'Færdig',

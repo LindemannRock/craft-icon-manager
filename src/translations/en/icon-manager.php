@@ -50,7 +50,6 @@ return [
     'Created at' => 'Created at',
     'Custom' => 'Custom',
     'Delete' => 'Delete',
-    'Delete...' => 'Delete...',
     'Disable' => 'Disable',
     'Disabled' => 'Disabled',
     'Done' => 'Done',

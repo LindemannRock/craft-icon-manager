@@ -52,7 +52,6 @@ return [
     'Created at' => 'Criado a',
     'Custom' => 'Personalizado',
     'Delete' => 'Eliminar',
-    'Delete...' => 'Eliminar...',
     'Disable' => 'Desativar',
     'Disabled' => 'Desativado',
     'Done' => 'Concluído',

@@ -52,7 +52,6 @@ return [
     'Created at' => 'Erstellt am',
     'Custom' => 'Benutzerdefiniert',
     'Delete' => 'Löschen',
-    'Delete...' => 'Löschen...',
     'Disable' => 'Deaktivieren',
     'Disabled' => 'Deaktiviert',
     'Done' => 'Fertig',

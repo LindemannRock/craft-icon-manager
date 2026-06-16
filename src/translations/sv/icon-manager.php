@@ -52,7 +52,6 @@ return [
     'Created at' => 'Skapad',
     'Custom' => 'Anpassad',
     'Delete' => 'Ta bort',
-    'Delete...' => 'Ta bort...',
     'Disable' => 'Inaktivera',
     'Disabled' => 'Inaktiverad',
     'Done' => 'Klar',

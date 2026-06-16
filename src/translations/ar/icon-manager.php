@@ -52,7 +52,6 @@ return [
     'Created at' => 'تم الإنشاء في',
     'Custom' => 'مخصص',
     'Delete' => 'حذف',
-    'Delete...' => 'حذف...',
     'Disable' => 'تعطيل',
     'Disabled' => 'معطّل',
     'Done' => 'تم',
