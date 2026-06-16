@@ -61,10 +61,11 @@
                 {
                     param: 'status',
                     current: statusFilter,
+                    colorSet: 'status',
                     options: [
                         {value: 'all', label: 'All'|t('icon-manager'), status: 'all'},
-                        {value: 'enabled', label: 'Enabled'|t('icon-manager'), status: 'green'},
-                        {value: 'disabled', label: 'Disabled'|t('icon-manager'), status: 'disabled'},
+                        {value: 'enabled', label: 'Enabled'|t('icon-manager'), colorKey: 'enabled'},
+                        {value: 'disabled', label: 'Disabled'|t('icon-manager'), colorKey: 'disabled'},
                     ],
                 },
                 {
