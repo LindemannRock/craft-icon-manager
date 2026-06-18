@@ -1,5 +1,18 @@
 # Changelog
 
+## [5.16.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.15.0...v5.16.0) (2026-06-18)
+
+
+### Added
+
+* add backups management for icon sets ([b540f48](https://github.com/LindemannRock/craft-icon-manager/commit/b540f48e30704f2a49290968fc250d29c11afcb2))
+* add configurable optimization backup storage ([6aa1a21](https://github.com/LindemannRock/craft-icon-manager/commit/6aa1a21a91920d097b53b9461548734f7f34aa9e))
+
+
+### Fixed
+
+* **i18n:** correct translations across multiple locales ([1bc6fe5](https://github.com/LindemannRock/craft-icon-manager/commit/1bc6fe5faaca6837de04712bca3f721a9080375b))
+
 ## [5.15.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.14.0...v5.15.0) - 2026-06-07
 
 
