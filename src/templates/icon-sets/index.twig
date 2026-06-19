@@ -243,7 +243,8 @@
         bulkDisableFailed: {{ 'Failed to disable icon sets'|t('icon-manager')|json_encode|raw }},
         bulkDeletedTemplate: {{ 'Deleted {count} icon sets'|t('icon-manager')|json_encode|raw }},
         bulkDeleteFailed: {{ 'Failed to delete icon sets'|t('icon-manager')|json_encode|raw }},
-        bulkDeleteConfirmTemplate: {{ 'Delete {count} icon set(s)? This cannot be undone.'|t('icon-manager')|json_encode|raw }},
+        bulkDeleteConfirmSingular: {{ 'Delete {count} icon set? This cannot be undone.'|t('icon-manager')|json_encode|raw }},
+        bulkDeleteConfirmPlural: {{ 'Delete {count} icon sets? This cannot be undone.'|t('icon-manager')|json_encode|raw }},
     };
 
     function selectedIds() {
@@ -320,7 +321,8 @@
         e.preventDefault();
         const ids = selectedIds();
         if (!ids.length) return;
-        if (!confirm(T.bulkDeleteConfirmTemplate.replace('{count}', ids.length))) return;
+        const confirmTemplate = ids.length === 1 ? T.bulkDeleteConfirmSingular : T.bulkDeleteConfirmPlural;
+        if (!confirm(confirmTemplate.replace('{count}', ids.length))) return;
         runBulkStatus('icon-manager/icon-sets/bulk-delete', T.bulkDeletedTemplate, T.bulkDeleteFailed);
     });
 })();
