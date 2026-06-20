@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.17.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.16.0...v5.17.0) (2026-06-20)
+
+
+### Added
+
+* **i18n:** correct translations for icon set deletion prompts across locales ([ebce3f5](https://github.com/LindemannRock/craft-icon-manager/commit/ebce3f5b3bd5a3b4d27a9e2a6d1b533a985911aa))
+
 ## [5.16.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.15.0...v5.16.0) - 2026-06-18
 
 
