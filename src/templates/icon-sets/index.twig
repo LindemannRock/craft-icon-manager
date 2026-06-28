@@ -56,7 +56,7 @@
             type: 'status',
             param: 'status',
             current: statusFilter,
-            label: statusFilter == 'all' ? 'All'|t('icon-manager') : statusFilter|capitalize,
+            label: statusFilter == 'all' ? 'All'|t('icon-manager') : (statusFilter == 'enabled' ? 'Enabled'|t('icon-manager') : (statusFilter == 'disabled' ? 'Disabled'|t('icon-manager') : statusFilter|capitalize)),
             groups: [
                 {
                     param: 'status',
