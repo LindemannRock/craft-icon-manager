@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.17.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.17.0...v5.17.1) - 2026-06-29
+
+
+### Fixed
+
+* correct status filter label for enabled and disabled states ([4323323](https://github.com/LindemannRock/craft-icon-manager/commit/43233235276d48de88582dc170c088c636a7d64b))
+* handle unsupported font file formats in WebFont class ([249ff7b](https://github.com/LindemannRock/craft-icon-manager/commit/249ff7bb0376d9025c9a70c66290d5c1accb0d9c))
+
 ## [5.17.0](https://github.com/LindemannRock/craft-icon-manager/compare/v5.16.0...v5.17.0) - 2026-06-20
 
 
