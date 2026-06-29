@@ -115,6 +115,15 @@ class WebFont
 
         try {
             $font = Font::load($fontPath);
+
+            if ($font === null) {
+                self::log('warning', 'Unsupported font file format', [
+                    'fontPath' => $fontPath,
+                ]);
+
+                return [];
+            }
+
             $font->parse();
 
             // Get unicode character map
