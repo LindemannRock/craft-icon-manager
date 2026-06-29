@@ -1,6 +1,6 @@
 # Changelog
 
-## [5.17.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.17.0...v5.17.1) (2026-06-29)
+## [5.17.1](https://github.com/LindemannRock/craft-icon-manager/compare/v5.17.0...v5.17.1) - 2026-06-29
 
 
 ### Fixed
