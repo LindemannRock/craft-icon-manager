@@ -54,7 +54,7 @@
 
         {% if resolvedIconSetsPath ?? null %}
             {% include 'lindemannrock-base/_components/info-box' with {
-                message: '<strong>' ~ 'Icon Sets Location:'|t('icon-manager') ~ '</strong> <code>' ~ resolvedIconSetsPath ~ '</code>'
+                message: '<strong>' ~ 'Icon Sets Location:'|t('icon-manager') ~ '</strong> <code>' ~ resolvedIconSetsPath|e ~ '</code>'
             } %}
         {% endif %}
 

@@ -97,7 +97,7 @@
                 {% set navButtons = navButtons|merge([{type: 'link', label: 'Manage Icon Sets'|t('icon-manager'), url: url('icon-manager')}]) %}
             {% endif %}
             {% if canManageSettings %}
-                {% set navButtons = navButtons|merge([{type: 'link', label: 'Manage settings'|t('icon-manager'), url: url('icon-manager/settings')}]) %}
+                {% set navButtons = navButtons|merge([{type: 'link', label: 'Manage Settings'|t('icon-manager'), url: url('icon-manager/settings')}]) %}
             {% endif %}
 
             {% include 'lindemannrock-base/_layouts/cp-utilities/_action-section' with {

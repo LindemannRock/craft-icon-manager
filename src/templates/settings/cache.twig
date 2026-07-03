@@ -48,7 +48,7 @@
 
         <div id="cache-location-file" class="{{ (settings.cacheStorageMethod ?? 'file') == 'redis' ? 'hidden' }}">
             {% include 'lindemannrock-base/_components/info-box' with {
-                message: '<strong>Cache Location:</strong> <code>' ~ iconHelper.cacheBasePath ~ '</code>',
+                message: '<strong>Cache Location:</strong> <code>' ~ iconHelper.cacheBasePath|e ~ '</code>',
                 type: 'info'
             } %}
         </div>
