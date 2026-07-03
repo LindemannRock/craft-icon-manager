@@ -491,6 +491,7 @@ return [
 
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'アイコンセットのパフォーマンスを監視し、キャッシュを管理して、アイコンコレクションのシステム状態を表示します。',
+    'Manage Settings' => '設定を管理する',
     'Access main plugin sections' => 'プラグインのメインセクションにアクセスする',
     'Total Icons' => 'アイコンの合計',
     'Total icon sets configured' => '設定されたアイコンセットの合計',

@@ -489,6 +489,7 @@ return [
 
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'Monitor icon set performance, manage cache, and view system status for your icon collections.',
+    'Manage Settings' => 'Manage Settings',
     'Access main plugin sections' => 'Access main plugin sections',
     'Total Icons' => 'Total Icons',
     'Total icon sets configured' => 'Total icon sets configured',

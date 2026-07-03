@@ -491,6 +491,7 @@ return [
 
     // Utilities
     'Monitor icon set performance, manage cache, and view system status for your icon collections.' => 'راقب أداء مجموعات الأيقونات، وأدر Cache، واعرض حالة النظام لمجموعات الأيقونات الخاصة بك.',
+    'Manage Settings' => 'إدارة الإعدادات',
     'Access main plugin sections' => 'الوصول إلى الأقسام الرئيسية للإضافة',
     'Total Icons' => 'إجمالي الأيقونات',
     'Total icon sets configured' => 'إجمالي مجموعات الأيقونات المُعدَّة',
