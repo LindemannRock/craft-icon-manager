@@ -423,15 +423,40 @@ JS;
     /**
      * @inheritdoc
      */
-    public function getSearchKeywords(mixed $value, ElementInterface $element): string
+    protected function searchKeywords(mixed $value, ElementInterface $element): string
     {
+        $keywords = [];
+
         if ($value instanceof Icon) {
-            $keywords = [$value->name, $value->label];
-            $keywords = array_merge($keywords, $value->keywords);
-            return implode(' ', $keywords);
+            $keywords = $this->iconKeywordParts($value);
+        } elseif (is_array($value)) {
+            foreach ($value as $icon) {
+                if ($icon instanceof Icon) {
+                    $keywords = array_merge($keywords, $this->iconKeywordParts($icon));
+                }
+            }
         }
 
-        return '';
+        $keywords = array_values(array_unique(array_filter(array_map(
+            static fn(mixed $keyword): string => trim((string)$keyword),
+            $keywords,
+        ))));
+
+        return implode(' ', $keywords);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function iconKeywordParts(Icon $icon): array
+    {
+        return array_merge([
+            $icon->getDisplayLabel(),
+            $icon->label,
+            $icon->name,
+            $icon->value,
+            $icon->iconSetHandle,
+        ], $icon->keywords);
     }
 
     /**
