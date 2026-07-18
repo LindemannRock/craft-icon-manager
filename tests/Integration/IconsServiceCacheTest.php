@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace lindemannrock\iconmanager\tests\Integration;
 
 use Craft;
+use craft\helpers\App;
 use craft\helpers\Db;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
@@ -158,9 +159,24 @@ final class IconsServiceCacheTest extends TestCase
      */
     public function testRefreshIconsForSetClearsRedisCacheAndRescans(): void
     {
-        if (!(Craft::$app->cache instanceof \yii\redis\Cache)) {
+        $redisHost = App::env('REDIS_HOST');
+        if (!$redisHost || !class_exists(\yii\redis\Cache::class)) {
             $this->markTestSkipped('Redis cache not configured for this environment.');
         }
+
+        $originalCache = Craft::$app->getCache();
+        Craft::$app->set('cache', [
+            'class' => \yii\redis\Cache::class,
+            'keyPrefix' => Craft::$app->id,
+            'defaultDuration' => 3600,
+            'redis' => [
+                'class' => \yii\redis\Connection::class,
+                'hostname' => $redisHost,
+                'port' => App::env('REDIS_PORT') ?: 6379,
+                'password' => App::env('REDIS_PASSWORD') ?: null,
+                'database' => (int) (App::env('REDIS_DATABASE') ?: 0),
+            ],
+        ]);
 
         $settings = IconManager::getInstance()->getSettings();
         $settings->cacheStorageMethod = 'redis';
@@ -227,6 +243,8 @@ final class IconsServiceCacheTest extends TestCase
                 Craft::$app->cache->delete($cacheKey);
                 Craft::$app->cache->redis->executeCommand('SREM', [$trackingSet, $cacheKey]);
             }
+
+            Craft::$app->set('cache', $originalCache);
         }
     }
 
