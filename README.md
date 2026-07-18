@@ -4,7 +4,7 @@
 [![Craft CMS](https://img.shields.io/badge/Craft%20CMS-5.0+-orange.svg)](https://craftcms.com/)
 [![PHP](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://php.net/)
 [![Logging Library](https://img.shields.io/badge/Logging%20Library-5.0+-green.svg)](https://github.com/LindemannRock/craft-logging-library)
-[![License](https://img.shields.io/packagist/l/lindemannrock/craft-icon-manager.svg)](LICENSE)
+[![License](https://img.shields.io/packagist/l/lindemannrock/craft-icon-manager.svg)](LICENSE.md)
 
 A comprehensive icon management field supporting SVG libraries and icon fonts for Craft CMS 5.x.
 
