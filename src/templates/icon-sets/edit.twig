@@ -47,7 +47,6 @@
 {% if iconSet.hasErrors() %}
     {% set errorSummary = include('lindemannrock-base/_partials/error-summary', {
         errors: iconSet.getErrors(),
-        linkMode: 'field-id',
     })|trim %}
 {% endif %}
 
