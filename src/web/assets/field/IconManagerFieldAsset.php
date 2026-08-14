@@ -3,7 +3,7 @@
  * Icon Manager plugin for Craft CMS 5.x
  *
  * @link      https://lindemannrock.com
- * @copyright Copyright (c) 2025 LindemannRock
+ * @copyright Copyright (c) 2025-2026 LindemannRock
  */
 
 namespace lindemannrock\iconmanager\web\assets\field;
@@ -23,7 +23,7 @@ class IconManagerFieldAsset extends AssetBundle
      */
     public function init(): void
     {
-        $this->sourcePath = __DIR__ . '/dist';
+        $this->sourcePath = '@lindemannrock/iconmanager/web/assets/field/dist';
 
         $this->depends = [
             CpAsset::class,
