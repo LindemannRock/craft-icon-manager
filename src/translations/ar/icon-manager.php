@@ -164,10 +164,6 @@ return [
     // Settings: Cache
     'Cache Settings' => 'إعدادات Cache',
     'Cache Storage Settings' => 'إعدادات تخزين Cache',
-    'Cache Storage Method' => 'طريقة تخزين Cache',
-    'How to store cache data. Use Redis/Database for load-balanced or multi-server environments.' => 'كيفية تخزين بيانات Cache. استخدم Redis/قاعدة البيانات للبيئات ذات موازنة التحميل أو متعددة الخوادم.',
-    'File System (default, single server)' => 'نظام الملفات (افتراضي، خادم واحد)',
-    'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/قاعدة البيانات (موازنة تحميل، خوادم متعددة، استضافة سحابية)',
     'Icon Caching' => 'تخزين الأيقونات مؤقتاً',
     'Enable Cache' => 'تفعيل Cache',
     'Cache icon data for better performance' => 'تخزين بيانات الأيقونات مؤقتاً لتحسين الأداء',
@@ -523,7 +519,6 @@ return [
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>iconSetsPath</code> في ملف <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>enableCache</code> في ملف <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>cacheDuration</code> في ملف <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'يتم تجاوز هذا الإعداد بواسطة إعداد <code>cacheStorageMethod</code> في <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "يتم تجاوز هذا الإعداد بواسطة إعداد <code>enabledIconTypes['svg-folder']</code> في ملف <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "يتم تجاوز هذا الإعداد بواسطة إعداد <code>enabledIconTypes['svg-sprite']</code> في ملف <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "يتم تجاوز هذا الإعداد بواسطة إعداد <code>enabledIconTypes['font-awesome']</code> في ملف <code>config/icon-manager.php</code>.",

@@ -123,7 +123,7 @@ See [Usage](#usage) below for template examples and advanced features.
 - **Multiple Icon Formats**: Support for SVG files, SVG sprites, Font Awesome, Material Icons, and custom web fonts
 - **Intuitive Interface**: Searchable icon picker with preview, tabs/dropdown for multiple sets
 - **Flexible Configuration**: Configure icon sets and field settings (size, labels, search)
-- **Performance Optimized**: File or Redis caching for fast icon loading
+- **Performance Optimized**: Durable file or portable Craft application caching for fast icon loading
 - **Security**: SVG sanitization to prevent XSS attacks
 - **Twig Integration**: Easy icon rendering in templates with automatic HTML safety
 - **GraphQL Support**: Icon fields expose structured icon data in Craft GraphQL schemas
@@ -276,7 +276,7 @@ return [
         'iconSetsPath' => '@webroot/dist/assets/icons',
 
         // Optimize for production
-        'cacheStorageMethod' => 'redis',  // Use Redis in production
+        'cacheStorageMethod' => 'craft',  // Use Craft's configured application cache
         'enableCache' => true,
         'cacheDuration' => 2592000, // 30 days
 
@@ -771,21 +771,23 @@ Icon Manager includes a comprehensive caching system for better performance:
 ```php
 // config/icon-manager.php
 return [
-    'cacheStorageMethod' => 'file',  // 'file' or 'redis'
+    'cacheStorageMethod' => 'file',  // 'file', 'craft', or legacy-compatible 'redis'
     'enableCache' => true,           // Enable/disable caching
     'cacheDuration' => 86400,        // Cache duration in seconds (24 hours)
 ];
 ```
 
 **Storage Methods:**
-- **File** - Default, stores cache in `storage/runtime/icon-manager/cache/`
-- **Redis** - For load-balanced or cloud hosting (Servd, AWS, Platform.sh)
+- **File cache** - Default on hosts with durable filesystems. Stores disposable data in `storage/runtime/icon-manager/cache/` using the existing per-type paths and formats.
+- **Application cache** - Uses Craft's configured cache component. The saved `craft` token is preferred; the existing `redis` token remains compatible and selects the same portable application-cache behavior.
+
+On an ephemeral host such as Craft Cloud, File cache automatically uses a suitable cross-request application cache instead. If Craft only exposes an in-memory cache, an ephemeral filesystem cache, no cache, or an unavailable cache, persistent caching is disabled and Icon Manager recomputes the data as needed. Unknown storage tokens also disable persistent caching. Setting `enableCache` to `false` always disables persistent caching while preserving reuse within the current request.
 
 ### Cache Management
 - **Clear Icon Cache Utility**: Go to Utilities → Clear Icon Cache
 - **Integrated with Craft**: Available in Utilities → Clear Caches
 - **Automatic**: Cache clears when refreshing icon sets
-- **Redis Support**: All cache clearing methods work with both file and Redis storage
+- **Scoped invalidation**: Per-set refreshes invalidate only that icon set; manual and Craft Clear Caches actions invalidate all Icon Manager collections and decoded definitions without flushing unrelated application-cache entries
 
 ## Environment-Specific Paths
 
@@ -1183,7 +1185,7 @@ Material Icons loads a ~3.7MB font file containing all 3,800+ icons. For better 
     'cacheDuration' => 86400,    // 1 day - balance updates/performance
 ],
 'production' => [
-    'cacheStorageMethod' => 'redis',  // Use Redis in production
+    'cacheStorageMethod' => 'craft',  // Use Craft's configured application cache
     'cacheDuration' => 2592000,       // 30 days - maximum performance
 ],
 ```
@@ -1316,18 +1318,18 @@ ls /path/to/your/project/icons
 You changed SVG files on disk (added new files, deleted files, removed a whole subfolder), clicked **Refresh Icons** on the icon set's edit page, but the **Icons** count and the **Preview** tab still show the pre-change state.
 
 **Force-wipe the cache:**
-- Go to **Utilities → Clear Icon Cache**. This works regardless of storage method and iterates the tracked Redis keys + per-set file caches.
+- Go to **Utilities → Clear Icon Cache**. File mode removes Icon Manager's disposable cache files. Application-cache mode advances Icon Manager's private cache generation, making its previous entries unreachable without enumerating or flushing shared cache data.
 
 **Check your Cache Storage Method:**
 - Icon Manager → Settings → Cache → **Cache Storage Method**
-- If set to **Redis/Database**, verify Redis is reachable: `ddev redis ping` or your platform's equivalent.
+- If set to **Application cache**, verify Craft's `cache` component is configured and available. Redis, managed Craft Cloud cache, database cache, and durable filesystem cache components are supported according to the current host.
 
 **Check the plugin log for cache-component warnings:**
-- Look for lines like `icon-manager: cacheStorageMethod=redis configured, but Craft's cache component is …`
-- This means Redis is selected as the storage method but Craft's `cache` component is not a Redis-backed Yii cache. Icon Manager logs this warning and skips Redis-specific cache operations until the cache component is fixed. Either configure Redis in `config/app.php`, or switch the plugin's storage method to **File**.
+- Look for an Icon Manager or Base disposable-cache warning describing an unavailable or failing application cache.
+- On durable hosts, switch to **File cache** if the application cache is unsuitable. On ephemeral hosts, configure a suitable cross-request Craft cache; Icon Manager will recompute instead of writing runtime cache files when none is available.
 
 **Quick workaround for a single set:**
-- Temporarily switch Cache Storage Method to **File**, save settings, click **Refresh Icons** on the set, then switch back to Redis if you want.
+- Click **Refresh Icons** on the affected set. Saving cache settings invalidates both the old and new effective stores, so switching methods does not resurrect older Icon Manager entries.
 
 ### Settings Save Shows a Validation Error
 

@@ -79,7 +79,7 @@ class Settings extends Model
     public int $cacheDuration = 86400;
 
     /**
-     * @var string Cache storage method (file or redis)
+     * @var string Cache storage method (file, redis, or craft)
      */
     public string $cacheStorageMethod = 'file';
 
@@ -369,7 +369,7 @@ class Settings extends Model
             [['iconSetsVolumeUid'], 'safe'],
             [['enableCache', 'enableOptimization', 'enableOptimizationBackup', 'scanClipPaths', 'scanMasks', 'scanFilters', 'scanComments', 'scanInlineStyles', 'scanLargeFiles', 'scanWidthHeight', 'scanWidthHeightWithViewBox', 'optimizeConvertColorsToHex', 'optimizeConvertCssClasses', 'optimizeConvertEmptyTags', 'optimizeConvertInlineStyles', 'optimizeFlattenGroups', 'optimizeMinifyCoordinates', 'optimizeMinifyTransformations', 'optimizeRemoveComments', 'optimizeRemoveDefaultAttributes', 'optimizeRemoveDeprecatedAttributes', 'optimizeRemoveDoctype', 'optimizeRemoveEnableBackground', 'optimizeRemoveEmptyAttributes', 'optimizeRemoveInkscapeFootprints', 'optimizeRemoveInvisibleCharacters', 'optimizeRemoveMetadata', 'optimizeRemoveWhitespace', 'optimizeRemoveUnusedNamespaces', 'optimizeRemoveUnusedMasks', 'optimizeRemoveWidthHeight', 'optimizeSortAttributes', 'optimizeFixAttributeNames', 'optimizeRemoveAriaAndRole', 'optimizeRemoveDataAttributes', 'optimizeRemoveDuplicateElements', 'optimizeRemoveEmptyGroups', 'optimizeRemoveEmptyTextElements', 'optimizeRemoveNonStandardAttributes', 'optimizeRemoveNonStandardTags', 'optimizeRemoveTitleAndDesc', 'optimizeRemoveUnsafeElements', 'optimizeScopeSvgStyles', 'optimizeAllowRiskyRules'], 'boolean'],
             [['cacheDuration'], 'integer', 'min' => 60, 'max' => 604800],
-            [['cacheStorageMethod'], 'in', 'range' => ['file', 'redis']],
+            [['cacheStorageMethod'], 'in', 'range' => ['file', 'redis', 'craft']],
             [['enabledIconTypes'], 'safe'],
         ], $this->pluginNameSettingsRules(), $this->logLevelSettingsRules(), $this->dateFormatSettingsRules(), $this->itemsPerPageSettingsRules());
     }
@@ -384,7 +384,7 @@ class Settings extends Model
             'enabledIconTypes' => Craft::t('icon-manager', 'Icon Types'),
             'enableCache' => Craft::t('icon-manager', 'Enable Cache'),
             'cacheDuration' => Craft::t('icon-manager', 'Cache Duration'),
-            'cacheStorageMethod' => Craft::t('icon-manager', 'Cache Storage Method'),
+            'cacheStorageMethod' => Craft::t('lindemannrock-base', 'Cache Storage Method'),
             'enableOptimization' => Craft::t('icon-manager', 'Enable Optimization'),
             'enableOptimizationBackup' => Craft::t('icon-manager', 'Enable Automatic Backups'),
             'backupPath' => Craft::t('icon-manager', 'Custom Backup Path'),

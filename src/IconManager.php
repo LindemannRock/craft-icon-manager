@@ -31,6 +31,7 @@ use lindemannrock\base\helpers\CpNavHelper;
 use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\fields\IconManagerField;
 use lindemannrock\iconmanager\models\Settings;
+use lindemannrock\iconmanager\services\IconCacheService;
 use lindemannrock\iconmanager\services\IconSetsService;
 use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\services\SvgOptimizerService;
@@ -49,6 +50,7 @@ use yii\base\Event;
  * @since     1.0.0
  *
  * @property-read IconsService $icons
+ * @property-read IconCacheService $iconCache
  * @property-read IconSetsService $iconSets
  * @property-read SvgOptimizerService $svgOptimizer
  * @property-read SvgoService $svgo
@@ -92,6 +94,7 @@ class IconManager extends Plugin
         return [
             'components' => [
                 'icons' => IconsService::class,
+                'iconCache' => IconCacheService::class,
                 'iconSets' => IconSetsService::class,
                 'svgOptimizer' => SvgOptimizerService::class,
                 'svgo' => \lindemannrock\iconmanager\services\SvgoService::class,
@@ -481,42 +484,7 @@ class IconManager extends Plugin
      */
     private function _clearIconCache(): void
     {
-        $settings = $this->getSettings();
-
-        if ($settings->cacheStorageMethod === 'redis') {
-            // Clear Redis cache
-            if ($redisCache = PluginHelper::getRedisCacheOrLog($this->id)) {
-                $redis = $redisCache->redis;
-
-                // Get all icon cache keys from tracking set
-                $keys = $redis->executeCommand('SMEMBERS', [PluginHelper::getCacheKeySet($this->id, 'icons')]) ?: [];
-
-                // Delete icon cache keys using Craft's cache component
-                foreach ($keys as $key) {
-                    $redisCache->delete($key);
-                }
-
-                // Clear the tracking set
-                $redis->executeCommand('DEL', [PluginHelper::getCacheKeySet($this->id, 'icons')]);
-            }
-        } else {
-            // Clear file cache
-            $runtimePath = Craft::$app->getRuntimePath();
-            $cacheBasePath = $runtimePath . '/icon-manager/cache/';
-            $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
-
-            foreach ($cacheTypes as $type) {
-                $cachePath = $cacheBasePath . $type . '/';
-                if (is_dir($cachePath)) {
-                    $cacheFiles = glob($cachePath . '*.cache');
-                    foreach ($cacheFiles as $file) {
-                        @unlink($file);
-                    }
-                }
-            }
-        }
-
-        // Clear memory caches
+        $this->iconCache->invalidateFamily();
         $this->icons->clearMemoryCache();
     }
 }

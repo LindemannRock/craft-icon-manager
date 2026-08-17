@@ -15,7 +15,6 @@ use craft\helpers\Db;
 
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
-use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Icon;
 use lindemannrock\iconmanager\models\IconSet;
@@ -56,31 +55,21 @@ class IconsService extends Component
             return $this->_iconsBySetId[$iconSetId];
         }
         
-        $settings = IconManager::getInstance()->getSettings();
-        
-        // Use cache if enabled
-        if ($settings->enableCache) {
-            $cacheDuration = $settings->cacheDuration;
-
-            // Check custom file cache
-            $cached = $this->_getCachedIcons($iconSetId);
-            if ($cached !== null) {
-                $this->_iconsBySetId[$iconSetId] = $cached;
-                return $cached;
+        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
+        if ($iconSet) {
+            $cached = IconManager::getInstance()->iconCache->readIconCollection($iconSetId, $iconSet);
+            if ($cached->isHit()) {
+                /** @var Icon[] $icons */
+                $icons = $cached->value;
+                $this->_iconsBySetId[$iconSetId] = $icons;
+                return $icons;
             }
-
-            // Cache miss - load from database
-            $icons = $this->_loadIconsFromDatabase($iconSetId);
-
-            // Store in custom file cache
-            $this->_cacheIcons($iconSetId, $icons, $cacheDuration);
-
-            $this->_iconsBySetId[$iconSetId] = $icons;
-            return $icons;
         }
 
-        // No cache - load directly
         $icons = $this->_loadIconsFromDatabase($iconSetId);
+        if ($iconSet) {
+            IconManager::getInstance()->iconCache->writeIconCollection($iconSetId, $iconSet, $icons);
+        }
         $this->_iconsBySetId[$iconSetId] = $icons;
 
         return $icons;
@@ -155,35 +144,15 @@ class IconsService extends Component
     /**
      * Refresh icons for an icon set
      */
-    public function refreshIconsForSet(IconSet $iconSet): void
+    public function refreshIconsForSet(IconSet $iconSet, bool $invalidateAfterCommit = true): void
     {
+        IconManager::getInstance()->iconCache->invalidateSet($iconSet->id, [$iconSet->type]);
+        $this->clearMemoryCacheForSet($iconSet->id);
+
         $db = Craft::$app->getDb();
         $transaction = $db->beginTransaction();
 
         try {
-            // Invalidate this set's cache entry (Redis or file) plus the in-memory copy
-            $settings = IconManager::getInstance()->getSettings();
-            $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $iconSet->id;
-
-            if ($settings->cacheStorageMethod === 'redis') {
-                Craft::$app->cache->delete($cacheKey);
-
-                if ($redisCache = PluginHelper::getRedisCacheOrLog(IconManager::$plugin->id)) {
-                    $redisCache->redis->executeCommand('SREM', [
-                        PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons'),
-                        $cacheKey,
-                    ]);
-                }
-            } else {
-                $cachePath = $this->_getCachePath($iconSet);
-                $cacheFile = $cachePath . 'set_' . $iconSet->id . '.cache';
-                if (file_exists($cacheFile)) {
-                    @unlink($cacheFile);
-                }
-            }
-
-            unset($this->_iconsBySetId[$iconSet->id]);
-
             // Delete existing icons
             $db->createCommand()
                 ->delete('{{%iconmanager_icons}}', ['iconSetId' => $iconSet->id])
@@ -209,13 +178,17 @@ class IconsService extends Component
                     ->execute();
             }
 
-            // Clear cache
-            unset($this->_iconsBySetId[$iconSet->id]);
-
             $transaction->commit();
         } catch (\Throwable $e) {
-            $transaction->rollBack();
+            if ($transaction->getIsActive()) {
+                $transaction->rollBack();
+            }
             throw $e;
+        }
+
+        $this->clearMemoryCacheForSet($iconSet->id);
+        if ($invalidateAfterCommit) {
+            IconManager::getInstance()->iconCache->invalidateSet($iconSet->id, [$iconSet->type]);
         }
     }
 
@@ -463,105 +436,13 @@ class IconsService extends Component
     }
 
     /**
-     * Get cache path for icon set based on type
+     * Clear one icon set from the request-local cache.
+     *
+     * @since 5.18.0
      */
-    private function _getCachePath(IconSet $iconSet): string
+    public function clearMemoryCacheForSet(int $iconSetId): void
     {
-        // Organize cache by icon type
-        $typeMap = [
-            'svg-folder' => 'svg-folder',
-            'svg-sprite' => 'svg-sprite',
-            'material-icons' => 'material-icons',
-            'font-awesome' => 'font-awesome',
-            'web-font' => 'web-font',
-        ];
-
-        $typeFolder = $typeMap[$iconSet->type] ?? 'other';
-        return PluginHelper::getCachePath(IconManager::$plugin, $typeFolder);
-    }
-
-    /**
-     * Get cached icons from storage (file or Redis)
-     */
-    private function _getCachedIcons(int $iconSetId): ?array
-    {
-        $settings = IconManager::getInstance()->getSettings();
-        $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $iconSetId;
-
-        // Use Redis/database cache if configured
-        if ($settings->cacheStorageMethod === 'redis') {
-            $cached = Craft::$app->cache->get($cacheKey);
-            return $cached !== false ? $cached : null;
-        }
-
-        // Use file-based cache (default)
-        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-        if (!$iconSet) {
-            return null;
-        }
-
-        $cachePath = $this->_getCachePath($iconSet);
-        $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
-
-        if (!file_exists($cacheFile)) {
-            return null;
-        }
-
-        // Check if cache is expired
-        $mtime = filemtime($cacheFile);
-        if (time() - $mtime > $settings->cacheDuration) {
-            @unlink($cacheFile);
-            return null;
-        }
-
-        $data = file_get_contents($cacheFile);
-
-        // `allowed_classes` restricts deserialization to the Icon model only —
-        // even if the cache file is tampered with (filesystem compromise), PHP
-        // can't instantiate arbitrary classes with __destruct/__wakeup gadgets.
-        $icons = @unserialize($data, ['allowed_classes' => [Icon::class]]);
-
-        return is_array($icons) ? $icons : null;
-    }
-
-    /**
-     * Cache icons to storage (file or Redis)
-     */
-    private function _cacheIcons(int $iconSetId, array $icons, int $duration): void
-    {
-        $settings = IconManager::getInstance()->getSettings();
-        $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $iconSetId;
-
-        // Use Redis/database cache if configured
-        if ($settings->cacheStorageMethod === 'redis') {
-            Craft::$app->cache->set($cacheKey, $icons, $duration);
-
-            // Track key in set for selective deletion
-            if ($redisCache = PluginHelper::getRedisCacheOrLog(IconManager::$plugin->id)) {
-                $redisCache->redis->executeCommand('SADD', [
-                    PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons'),
-                    $cacheKey,
-                ]);
-            }
-
-            return;
-        }
-
-        // Use file-based cache (default)
-        $iconSet = IconManager::getInstance()->iconSets->getIconSetById($iconSetId);
-        if (!$iconSet) {
-            return;
-        }
-
-        $cachePath = $this->_getCachePath($iconSet);
-
-        // Create directory if it doesn't exist
-        if (!is_dir($cachePath)) {
-            FileHelper::createDirectory($cachePath);
-        }
-
-        $cacheFile = $cachePath . 'set_' . $iconSetId . '.cache';
-        file_put_contents($cacheFile, serialize($icons));
+        unset($this->_iconsBySetId[$iconSetId]);
     }
 
     /**

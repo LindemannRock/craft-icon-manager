@@ -164,10 +164,6 @@ return [
     // Settings: Cache
     'Cache Settings' => 'Cache-instellingen',
     'Cache Storage Settings' => 'Cache-opslaginstellingen',
-    'Cache Storage Method' => 'Cache-opslagmethode',
-    'How to store cache data. Use Redis/Database for load-balanced or multi-server environments.' => 'Hoe cachegegevens worden opgeslagen. Gebruik Redis/Database voor omgevingen met taakverdeling of meerdere servers.',
-    'File System (default, single server)' => 'Bestandssysteem (standaard, enkele server)',
-    'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/Database (taakverdeling, meerdere servers, cloudhosting)',
     'Icon Caching' => 'Iconencaching',
     'Enable Cache' => 'Cache inschakelen',
     'Cache icon data for better performance' => 'Iconengegevens cachen voor betere prestaties',
@@ -523,7 +519,6 @@ return [
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Deze instelling wordt overschreven door de instelling <code>iconSetsPath</code> in het bestand <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Deze instelling wordt overschreven door de instelling <code>enableCache</code> in het bestand <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Deze instelling wordt overschreven door de instelling <code>cacheDuration</code> in het bestand <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Deze instelling wordt overschreven door de instelling <code>cacheStorageMethod</code> in <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Deze instelling wordt overschreven door de instelling <code>enabledIconTypes['svg-folder']</code> in het bestand <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Deze instelling wordt overschreven door de instelling <code>enabledIconTypes['svg-sprite']</code> in het bestand <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Deze instelling wordt overschreven door de instelling <code>enabledIconTypes['font-awesome']</code> in het bestand <code>config/icon-manager.php</code>.",

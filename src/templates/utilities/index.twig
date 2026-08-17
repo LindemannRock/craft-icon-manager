@@ -40,36 +40,30 @@
 
     {# Cache Status Card #}
     {% if canClearCache %}
-    {% if cacheEnabled %}
-        {% if storageMethod == 'redis' %}
-            {% include 'lindemannrock-base/_components/unified-card' with {
-                title: 'Cache Status'|t('icon-manager') ~ ' (Redis)',
-                color: lrPaletteColor('emerald').color,
-                value: 'Active'|t('icon-manager'),
-            } only %}
-        {% else %}
-            {% set totalCached = cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'] %}
-            {% include 'lindemannrock-base/_components/unified-card' with {
-                title: 'Cache Status'|t('icon-manager') ~ ' (File)',
-                color: lrPaletteColor('emerald').color,
-                value: totalCached,
-                description: 'Total cached entries'|t('icon-manager'),
-                subBoxes: [
-                    {value: cacheStats['svg-folder'], label: 'SVG Folder'|t('icon-manager')},
-                    {value: cacheStats['svg-sprite'], label: 'Sprite'|t('icon-manager')},
-                    {value: cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'], label: 'Fonts'|t('icon-manager')},
-                ],
-            } only %}
-        {% endif %}
-    {% else %}
+        {% set cacheCardColor = cacheStorage.utilitySeverity == 'warning'
+            ? lrPaletteColor('amber').color
+            : (cacheStorage.utilitySeverity == 'info'
+                ? lrPaletteColor('sky').color
+                : (cacheStorage.utilitySeverity == 'inactive'
+                    ? lrPaletteColor('gray').color
+                    : lrPaletteColor('emerald').color)) %}
+        {% set hasFileCounts = cacheEnabled and cacheStats is not null %}
+        {% set cacheSubBoxes = hasFileCounts ? [
+            {value: cacheStats['svg-folder'], label: 'SVG Folder'|t('icon-manager')},
+            {value: cacheStats['svg-sprite'], label: 'Sprite'|t('icon-manager')},
+            {value: cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'], label: 'Fonts'|t('icon-manager')},
+        ] : [] %}
+        {% set totalCached = hasFileCounts
+            ? cacheStats['svg-folder'] + cacheStats['svg-sprite'] + cacheStats['material-icons'] + cacheStats['font-awesome'] + cacheStats['web-font'] + cacheStats['other']
+            : null %}
+
         {% include 'lindemannrock-base/_components/unified-card' with {
             title: 'Cache Status'|t('icon-manager'),
-            color: lrPaletteColor('gray').color,
-            value: 'Disabled'|t('icon-manager'),
-            valueColor: lrPaletteColor('gray').color,
-            description: 'Cache is disabled'|t('icon-manager'),
+            color: cacheCardColor,
+            value: hasFileCounts ? totalCached : cacheStorage.utilityValueKey|t('lindemannrock-base'),
+            description: hasFileCounts ? 'Total cached entries'|t('icon-manager') : cacheStorage.utilityDescriptionKey|t('lindemannrock-base'),
+            subBoxes: cacheSubBoxes,
         } only %}
-    {% endif %}
     {% endif %}
 
     {# Cache Settings Card #}

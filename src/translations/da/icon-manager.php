@@ -164,10 +164,6 @@ return [
     // Settings: Cache
     'Cache Settings' => 'Cache-indstillinger',
     'Cache Storage Settings' => 'Indstillinger for cache-lagring',
-    'Cache Storage Method' => 'Metode for cache-lagring',
-    'How to store cache data. Use Redis/Database for load-balanced or multi-server environments.' => 'Sådan lagres cache-data. Brug Redis/Database til belastningsbalancerede eller flerservermiljøer.',
-    'File System (default, single server)' => 'Filsystem (standard, enkelt server)',
-    'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/Database (belastningsbalancering, flerserver, cloudhosting)',
     'Icon Caching' => 'Ikoncaching',
     'Enable Cache' => 'Aktiver cache',
     'Cache icon data for better performance' => 'Cach ikondata for bedre ydeevne',
@@ -523,7 +519,6 @@ return [
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne indstilling tilsidesættes af <code>iconSetsPath</code> i filen <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne indstilling tilsidesættes af <code>enableCache</code> i filen <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Denne indstilling tilsidesættes af <code>cacheDuration</code> i filen <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Denne indstilling tilsidesættes af <code>cacheStorageMethod</code> i <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Denne indstilling tilsidesættes af <code>enabledIconTypes['svg-folder']</code> i filen <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Denne indstilling tilsidesættes af <code>enabledIconTypes['svg-sprite']</code> i filen <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Denne indstilling tilsidesættes af <code>enabledIconTypes['font-awesome']</code> i filen <code>config/icon-manager.php</code>.",

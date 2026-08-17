@@ -9,7 +9,6 @@
 namespace lindemannrock\iconmanager\iconsets;
 
 use craft\helpers\Json;
-use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 
 use lindemannrock\iconmanager\models\Icon;
@@ -267,43 +266,15 @@ class FontAwesome
      */
     private function loadIconDefinitions(string $version, string $license): array
     {
-        $settings = IconManager::getInstance()->getSettings();
-
-        // Skip cache if disabled
-        if (!$settings->enableCache) {
-            return $this->loadIconDefinitionsFromFile($version, $license);
+        $cached = IconManager::getInstance()->iconCache->readFontAwesomeDefinitions($version, $license);
+        if ($cached->isHit()) {
+            /** @var array $definitions */
+            $definitions = $cached->value;
+            return $definitions;
         }
 
-        // Check custom file cache (organized by icon type)
-        $cachePath = PluginHelper::getCachePath(IconManager::$plugin, 'font-awesome');
-        $cacheFile = $cachePath . "{$version}_{$license}.cache";
-
-        if (file_exists($cacheFile)) {
-            // Check if cache is expired
-            $mtime = filemtime($cacheFile);
-            if (time() - $mtime <= $settings->cacheDuration) {
-                $data = file_get_contents($cacheFile);
-                $decoded = json_decode($data, true);
-                if (is_array($decoded)) {
-                    return $decoded;
-                }
-                // Corrupt or legacy serialize-format file — drop it and re-cache below.
-                @unlink($cacheFile);
-            } else {
-                // Cache expired, delete it
-                @unlink($cacheFile);
-            }
-        }
-
-        // Load from file and cache it
         $definitions = $this->loadIconDefinitionsFromFile($version, $license);
-
-        // Create directory if it doesn't exist
-        if (!is_dir($cachePath)) {
-            \craft\helpers\FileHelper::createDirectory($cachePath);
-        }
-
-        file_put_contents($cacheFile, json_encode($definitions));
+        IconManager::getInstance()->iconCache->writeFontAwesomeDefinitions($version, $license, $definitions);
 
         return $definitions;
     }

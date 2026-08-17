@@ -28,6 +28,17 @@ final class TemplateEscapingTest extends TestCase
         self::assertStringNotContainsString('~ ' . $variable . ' ~', $contents);
     }
 
+    public function testSharedCacheStatusAutoEscapesTheConsumerFilePath(): void
+    {
+        $pluginTemplate = (string)file_get_contents(dirname(__DIR__, 2) . '/src/templates/settings/cache.twig');
+        $baseTemplate = (string)file_get_contents(dirname(__DIR__, 3) . '/base/src/templates/_components/cache-storage-status.twig');
+
+        self::assertStringContainsString("'lindemannrock-base/_partials/field-cache-storage'", $pluginTemplate);
+        self::assertStringContainsString('filePath: cacheStorage.filePath', $pluginTemplate);
+        self::assertStringContainsString('<code>{{ filePath }}</code>', $baseTemplate);
+        self::assertStringNotContainsString('filePath|raw', $baseTemplate);
+    }
+
     /**
      * @return array<string, array{string, string}>
      */
@@ -36,7 +47,6 @@ final class TemplateEscapingTest extends TestCase
         $templateRoot = dirname(__DIR__, 2) . '/src/templates';
 
         return [
-            'cache base path' => [$templateRoot . '/settings/cache.twig', 'iconHelper.cacheBasePath'],
             'icon sets path' => [$templateRoot . '/settings/general.twig', 'resolvedIconSetsPath'],
         ];
     }

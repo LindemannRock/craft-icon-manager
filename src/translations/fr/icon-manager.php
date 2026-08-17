@@ -164,10 +164,6 @@ return [
     // Settings: Cache
     'Cache Settings' => 'Paramètres du cache',
     'Cache Storage Settings' => 'Paramètres de stockage du cache',
-    'Cache Storage Method' => 'Méthode de stockage du cache',
-    'How to store cache data. Use Redis/Database for load-balanced or multi-server environments.' => 'Comment stocker les données du cache. Utilisez Redis/Base de données pour les environnements à charge équilibrée ou multi-serveurs.',
-    'File System (default, single server)' => 'Système de fichiers (par défaut, serveur unique)',
-    'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/Base de données (charge équilibrée, multi-serveurs, hébergement cloud)',
     'Icon Caching' => 'Cache des icônes',
     'Enable Cache' => 'Activer le cache',
     'Cache icon data for better performance' => 'Mettre en cache les données des icônes pour de meilleures performances',
@@ -523,7 +519,6 @@ return [
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Ce paramètre est remplacé par le paramètre <code>iconSetsPath</code> dans le fichier <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Ce paramètre est remplacé par le paramètre <code>enableCache</code> dans le fichier <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Ce paramètre est remplacé par le paramètre <code>cacheDuration</code> dans le fichier <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Ce paramètre est remplacé par le paramètre <code>cacheStorageMethod</code> dans <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Ce paramètre est remplacé par le paramètre <code>enabledIconTypes['svg-folder']</code> dans le fichier <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Ce paramètre est remplacé par le paramètre <code>enabledIconTypes['svg-sprite']</code> dans le fichier <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Ce paramètre est remplacé par le paramètre <code>enabledIconTypes['font-awesome']</code> dans le fichier <code>config/icon-manager.php</code>.",

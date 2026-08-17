@@ -11,6 +11,8 @@ namespace lindemannrock\iconmanager\controllers;
 use Craft;
 use craft\helpers\FileHelper;
 use craft\web\Controller;
+use lindemannrock\base\cache\DisposableCacheStoragePresenter;
+use lindemannrock\base\cache\DisposableCacheStorageResolver;
 use lindemannrock\base\helpers\SettingsPostHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\Settings;
@@ -128,6 +130,7 @@ class SettingsController extends Controller
 
         return $this->renderTemplate('icon-manager/settings/cache', [
             'settings' => $settings,
+            'cacheStorage' => $this->cacheStorageTemplateVariables($settings),
         ]);
     }
 
@@ -146,6 +149,7 @@ class SettingsController extends Controller
 
         // Load current settings from database
         $settings = Settings::loadFromDatabase();
+        $oldCacheStorage = $settings->cacheStorageMethod;
 
         // Get only the posted settings (fields from the current page)
         $settingsData = Craft::$app->getRequest()->getBodyParam('settings', []);
@@ -167,17 +171,31 @@ class SettingsController extends Controller
                 ? 'icon-manager/settings/svg-optimization/index'
                 : "icon-manager/settings/{$section}";
 
-            return $this->renderTemplate($template, [
+            $variables = [
                 'settings' => $settings,
                 'resolvedIconSetsPath' => $section === 'general' ? $this->resolvedIconSetsPath($settings) : null,
                 'optimizationBackupPath' => $section === 'svg-optimization' ? $this->optimizationBackupPath() : null,
-            ]);
+            ];
+            if ($section === 'cache') {
+                $variables['cacheStorage'] = $this->cacheStorageTemplateVariables($settings);
+            }
+
+            return $this->renderTemplate($template, $variables);
         }
 
         // Save only current section attributes
         if ($settings->saveToDatabase($attributesToValidate)) {
             // Reload settings so Craft picks up the new values
             IconManager::$plugin->reloadSettings();
+
+            if ($section === 'cache') {
+                $newSettings = IconManager::$plugin->getSettings();
+                IconManager::$plugin->iconCache->invalidateStorageTransition(
+                    $oldCacheStorage,
+                    $newSettings->cacheStorageMethod,
+                );
+                IconManager::$plugin->icons->clearMemoryCache();
+            }
 
             Craft::$app->getSession()->setNotice(Craft::t('icon-manager', 'Settings saved.'));
         } else {
@@ -288,5 +306,29 @@ class SettingsController extends Controller
     private function optimizationBackupPath(): string
     {
         return IconManager::getInstance()->getSettings()->getBackupLocationLabel();
+    }
+
+    /**
+     * @return array{
+     *     applicationToken: string,
+     *     filePresentation: \lindemannrock\base\cache\DisposableCacheStoragePresentation,
+     *     applicationPresentation: \lindemannrock\base\cache\DisposableCacheStoragePresentation,
+     *     filePath: string|null
+     * }
+     */
+    private function cacheStorageTemplateVariables(Settings $settings): array
+    {
+        $storage = IconManager::$plugin->iconCache;
+        $presenter = new DisposableCacheStoragePresenter();
+        $applicationToken = DisposableCacheStorageResolver::applicationOptionToken($settings->cacheStorageMethod);
+        $fileDecision = $storage->getStorageDecision('file');
+        $applicationDecision = $storage->getStorageDecision($applicationToken);
+
+        return [
+            'applicationToken' => $applicationToken,
+            'filePresentation' => $presenter->present($fileDecision),
+            'applicationPresentation' => $presenter->present($applicationDecision),
+            'filePath' => $storage->getDisplayFilePath($fileDecision),
+        ];
     }
 }

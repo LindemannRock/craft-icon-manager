@@ -39,4 +39,17 @@ final class SettingsCacheDurationValidationTest extends TestCase
         self::assertFalse($settings->validate(['cacheDuration']));
         self::assertNotEmpty($settings->getErrors('cacheDuration'));
     }
+
+    public function testCacheStorageAcceptsLegacyAndPortableApplicationTokens(): void
+    {
+        $settings = new Settings();
+
+        foreach (['file', 'redis', 'craft'] as $storage) {
+            $settings->cacheStorageMethod = $storage;
+            self::assertTrue($settings->validate(['cacheStorageMethod']));
+        }
+
+        $settings->cacheStorageMethod = 'unknown';
+        self::assertFalse($settings->validate(['cacheStorageMethod']));
+    }
 }

@@ -164,10 +164,6 @@ return [
     // Settings: Cache
     'Cache Settings' => 'キャッシュ設定',
     'Cache Storage Settings' => 'キャッシュストレージ設定',
-    'Cache Storage Method' => 'キャッシュストレージ方式',
-    'How to store cache data. Use Redis/Database for load-balanced or multi-server environments.' => 'キャッシュデータの保存方法です。ロードバランシングやマルチサーバー環境では Redis/データベースを使用してください。',
-    'File System (default, single server)' => 'ファイルシステム（デフォルト、単一サーバー）',
-    'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/データベース（ロードバランシング、マルチサーバー、クラウドホスティング）',
     'Icon Caching' => 'アイコンのキャッシュ',
     'Enable Cache' => 'キャッシュを有効にする',
     'Cache icon data for better performance' => 'パフォーマンス向上のためにアイコンデータをキャッシュする',
@@ -523,7 +519,6 @@ return [
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>iconSetsPath</code> 設定によって上書きされています。',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>enableCache</code> 設定によって上書きされています。',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => '<code>config/icon-manager.php</code> ファイルの <code>cacheDuration</code> 設定によって上書きされています。',
-    'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => '<code>config/icon-manager.php</code> の <code>cacheStorageMethod</code> 設定によって上書きされています。',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "<code>config/icon-manager.php</code> ファイルの <code>enabledIconTypes['svg-folder']</code> 設定によって上書きされています。",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "<code>config/icon-manager.php</code> ファイルの <code>enabledIconTypes['svg-sprite']</code> 設定によって上書きされています。",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "<code>config/icon-manager.php</code> ファイルの <code>enabledIconTypes['font-awesome']</code> 設定によって上書きされています。",

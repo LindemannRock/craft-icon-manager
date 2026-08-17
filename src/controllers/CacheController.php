@@ -10,7 +10,6 @@ namespace lindemannrock\iconmanager\controllers;
 
 use Craft;
 use craft\web\Controller;
-use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\logginglibrary\traits\LoggingTrait;
 use yii\web\ForbiddenHttpException;
@@ -50,51 +49,12 @@ class CacheController extends Controller
         try {
             $this->logInfo("Starting icon cache clearing operation");
 
-            $settings = IconManager::getInstance()->getSettings();
-            $totalCleared = 0;
-            $cacheStats = [];
-
-            if ($settings->cacheStorageMethod === 'redis') {
-                // Clear Redis cache
-                if ($redisCache = PluginHelper::getRedisCacheOrLog(IconManager::$plugin->id)) {
-                    $redis = $redisCache->redis;
-
-                    // Get all icon cache keys from tracking set
-                    $keys = $redis->executeCommand('SMEMBERS', [PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons')]) ?: [];
-
-                    // Delete icon cache keys using Craft's cache component
-                    foreach ($keys as $key) {
-                        $redisCache->delete($key);
-                    }
-
-                    // Clear the tracking set
-                    $redis->executeCommand('DEL', [PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons')]);
-                }
-            } else {
-                // Clear file cache
-                $runtimePath = Craft::$app->getRuntimePath();
-                $cacheBasePath = $runtimePath . '/icon-manager/cache/';
-                $cacheTypes = ['svg-folder', 'svg-sprite', 'material-icons', 'font-awesome', 'web-font'];
-
-                foreach ($cacheTypes as $type) {
-                    $cachePath = $cacheBasePath . $type . '/';
-                    $typeCount = 0;
-
-                    if (is_dir($cachePath)) {
-                        $cacheFiles = glob($cachePath . '*.cache');
-                        foreach ($cacheFiles as $file) {
-                            if (@unlink($file)) {
-                                $typeCount++;
-                            }
-                        }
-                    }
-
-                    $cacheStats[$type] = $typeCount;
-                    $totalCleared += $typeCount;
-                }
+            $cacheStats = IconManager::getInstance()->iconCache->countFileCaches() ?? [];
+            $totalCleared = array_sum($cacheStats);
+            if (!IconManager::getInstance()->iconCache->invalidateFamily()) {
+                throw new \RuntimeException('Icon cache invalidation failed.');
             }
 
-            // Clear memory caches
             IconManager::getInstance()->icons->clearMemoryCache();
 
             $this->logInfo("Icon cache cleared successfully", [

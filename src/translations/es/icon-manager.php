@@ -164,10 +164,6 @@ return [
     // Settings: Cache
     'Cache Settings' => 'Configuración de caché',
     'Cache Storage Settings' => 'Configuración de almacenamiento de caché',
-    'Cache Storage Method' => 'Método de almacenamiento de caché',
-    'How to store cache data. Use Redis/Database for load-balanced or multi-server environments.' => 'Cómo almacenar los datos de caché. Use Redis/Base de datos para entornos con balanceo de carga o múltiples servidores.',
-    'File System (default, single server)' => 'Sistema de archivos (predeterminado, servidor único)',
-    'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/Base de datos (balanceo de carga, múltiples servidores, alojamiento en la nube)',
     'Icon Caching' => 'Caché de iconos',
     'Enable Cache' => 'Activar caché',
     'Cache icon data for better performance' => 'Almacenar en caché los datos de iconos para mejor rendimiento',
@@ -523,7 +519,6 @@ return [
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta configuración está siendo sobreescrita por el ajuste <code>iconSetsPath</code> en el archivo <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta configuración está siendo sobreescrita por el ajuste <code>enableCache</code> en el archivo <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta configuración está siendo sobreescrita por el ajuste <code>cacheDuration</code> en el archivo <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Esta configuración está siendo sobreescrita por el ajuste <code>cacheStorageMethod</code> en <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta configuración está siendo sobreescrita por el ajuste <code>enabledIconTypes['svg-folder']</code> en el archivo <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta configuración está siendo sobreescrita por el ajuste <code>enabledIconTypes['svg-sprite']</code> en el archivo <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta configuración está siendo sobreescrita por el ajuste <code>enabledIconTypes['font-awesome']</code> en el archivo <code>config/icon-manager.php</code>.",

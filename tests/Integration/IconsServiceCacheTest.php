@@ -11,14 +11,15 @@ declare(strict_types=1);
 namespace lindemannrock\iconmanager\tests\Integration;
 
 use Craft;
-use craft\helpers\App;
 use craft\helpers\Db;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
 use lindemannrock\base\helpers\PluginHelper;
 use lindemannrock\iconmanager\IconManager;
 use lindemannrock\iconmanager\models\IconSet;
+use lindemannrock\iconmanager\services\IconsService;
 use lindemannrock\iconmanager\tests\TestCase;
+use yii\caching\Cache;
 
 /**
  * Pins IconsService::getIconsBySetId() cache contract + refreshIconsForSet()
@@ -102,6 +103,24 @@ final class IconsServiceCacheTest extends TestCase
         $this->assertCount(3, $second, 'In-memory cache should still satisfy the second call.');
     }
 
+    public function testDisabledPersistentCacheStillReusesTheRequestLocalCollection(): void
+    {
+        $settings = IconManager::getInstance()->getSettings();
+        $settings->enableCache = false;
+        [$setId] = $this->seedIconSet('svg-sprite', 2);
+
+        $service = new IconsService();
+        $first = $service->getIconsBySetId($setId);
+        $this->assertCount(2, $first);
+
+        Craft::$app->getDb()->createCommand()
+            ->delete('{{%iconmanager_icons}}', ['iconSetId' => $setId])
+            ->execute();
+
+        $second = $service->getIconsBySetId($setId);
+        $this->assertCount(2, $second);
+    }
+
     /**
      * refreshIconsForSet() must drop BOTH the file cache and the in-memory
      * map, otherwise a CP "rescan" leaves consumers reading stale icons.
@@ -148,102 +167,48 @@ final class IconsServiceCacheTest extends TestCase
         $this->assertSame(['fresh-a', 'fresh-b'], $names);
     }
 
-    /**
-     * Same contract as the file-cache test above, but for the Redis storage
-     * method. Pre-fix, refreshIconsForSet() only invalidated the file path —
-     * Redis kept the stale icon list and every "Refresh Icons" click was a
-     * no-op for users on Redis (the reported "I deleted icons but the count
-     * is still 123" symptom). This test pins both sides of the fix: the
-     * cached value is deleted, AND the key is removed from the SADD tracking
-     * set used by the Clear-Icon-Cache utility.
-     */
-    public function testRefreshIconsForSetClearsRedisCacheAndRescans(): void
+    public function testApplicationCachePersistsAcrossServiceInstancesAndRefreshInvalidatesTheSet(): void
     {
-        $redisHost = App::env('REDIS_HOST');
-        if (!$redisHost || !class_exists(\yii\redis\Cache::class)) {
-            $this->markTestSkipped('Redis cache not configured for this environment.');
-        }
-
         $originalCache = Craft::$app->getCache();
-        Craft::$app->set('cache', [
-            'class' => \yii\redis\Cache::class,
-            'keyPrefix' => Craft::$app->id,
-            'defaultDuration' => 3600,
-            'redis' => [
-                'class' => \yii\redis\Connection::class,
-                'hostname' => $redisHost,
-                'port' => App::env('REDIS_PORT') ?: 6379,
-                'password' => App::env('REDIS_PASSWORD') ?: null,
-                'database' => (int) (App::env('REDIS_DATABASE') ?: 0),
-            ],
-        ]);
-
         $settings = IconManager::getInstance()->getSettings();
-        $settings->cacheStorageMethod = 'redis';
-
-        $cacheKey = null;
-        $trackingSet = PluginHelper::getCacheKeySet(IconManager::$plugin->id, 'icons');
+        $cache = new IconCollectionApplicationCache();
+        Craft::$app->set('cache', $cache);
+        $settings->cacheStorageMethod = 'craft';
 
         try {
             $root = $this->seedTempIconRoot();
             file_put_contents($root . '/post-refresh.svg', <<<'SVG'
                 <?xml version="1.0" encoding="UTF-8"?>
                 <svg xmlns="http://www.w3.org/2000/svg">
-                    <symbol id="redis-fresh-a" viewBox="0 0 24 24"><path d="M0"/></symbol>
-                    <symbol id="redis-fresh-b" viewBox="0 0 24 24"><path d="M0"/></symbol>
+                    <symbol id="application-fresh-a" viewBox="0 0 24 24"><path d="M0"/></symbol>
+                    <symbol id="application-fresh-b" viewBox="0 0 24 24"><path d="M0"/></symbol>
                 </svg>
                 SVG);
 
             [$setId, $iconSet] = $this->seedIconSet('svg-sprite', 5, [
                 'spriteFile' => 'post-refresh.svg',
             ]);
-            $cacheKey = PluginHelper::getCacheKeyPrefix(IconManager::$plugin->id, 'icons') . $setId;
+            $first = (new IconsService())->getIconsBySetId($setId);
+            $this->assertCount(5, $first);
+            $this->assertGreaterThan(0, $cache->writes);
 
-            // Warm Redis: SET via _cacheIcons + SADD into the tracking set.
-            IconManager::getInstance()->icons->getIconsBySetId($setId);
-            $this->assertNotFalse(
-                Craft::$app->cache->get($cacheKey),
-                'getIconsBySetId() should have populated the Redis cache entry.'
-            );
-
-            $redis = Craft::$app->cache->redis;
-            $trackedKeys = $redis->executeCommand('SMEMBERS', [$trackingSet]) ?: [];
-            $this->assertContains(
-                $cacheKey,
-                $trackedKeys,
-                '_cacheIcons() should have added the cache key to the tracking set.'
-            );
+            Craft::$app->getDb()->createCommand()
+                ->delete('{{%iconmanager_icons}}', ['iconSetId' => $setId])
+                ->execute();
+            $second = (new IconsService())->getIconsBySetId($setId);
+            $this->assertCount(5, $second, 'A new service instance should reuse the application cache.');
 
             IconManager::getInstance()->icons->refreshIconsForSet($iconSet);
-
-            $this->assertFalse(
-                Craft::$app->cache->get($cacheKey),
-                'refreshIconsForSet() should drop the Redis cache entry.'
-            );
-
-            $trackedKeysAfter = $redis->executeCommand('SMEMBERS', [$trackingSet]) ?: [];
-            $this->assertNotContains(
-                $cacheKey,
-                $trackedKeysAfter,
-                'refreshIconsForSet() should SREM the cache key from the tracking set.'
-            );
 
             $rowCount = $this->countRows('{{%iconmanager_icons}}', ['iconSetId' => $setId]);
             $this->assertSame(2, $rowCount);
 
-            $fresh = IconManager::getInstance()->icons->getIconsBySetId($setId);
+            $fresh = (new IconsService())->getIconsBySetId($setId);
             $this->assertCount(2, $fresh);
             $names = array_map(fn($icon) => $icon->name, $fresh);
             sort($names);
-            $this->assertSame(['redis-fresh-a', 'redis-fresh-b'], $names);
+            $this->assertSame(['application-fresh-a', 'application-fresh-b'], $names);
         } finally {
-            // Redis is non-transactional and the test re-warms the cache after
-            // refresh — clean up explicitly so we don't leak keys to later runs.
-            if ($cacheKey !== null && Craft::$app->cache instanceof \yii\redis\Cache) {
-                Craft::$app->cache->delete($cacheKey);
-                Craft::$app->cache->redis->executeCommand('SREM', [$trackingSet, $cacheKey]);
-            }
-
             Craft::$app->set('cache', $originalCache);
         }
     }
@@ -317,5 +282,49 @@ final class IconsServiceCacheTest extends TestCase
         FileHelper::createDirectory($path);
 
         return $path . 'set_' . $iconSet->id . '.cache';
+    }
+}
+
+/**
+ * Cross-request-capable cache double with operation counters.
+ */
+final class IconCollectionApplicationCache extends Cache
+{
+    /** @var array<string, mixed> */
+    private array $values = [];
+
+    public int $writes = 0;
+
+    protected function getValue($key)
+    {
+        return $this->values[$key] ?? false;
+    }
+
+    protected function setValue($key, $value, $duration)
+    {
+        $this->writes++;
+        $this->values[$key] = $value;
+        return true;
+    }
+
+    protected function addValue($key, $value, $duration)
+    {
+        if (array_key_exists($key, $this->values)) {
+            return false;
+        }
+
+        return $this->setValue($key, $value, $duration);
+    }
+
+    protected function deleteValue($key)
+    {
+        unset($this->values[$key]);
+        return true;
+    }
+
+    protected function flushValues()
+    {
+        $this->values = [];
+        return true;
     }
 }

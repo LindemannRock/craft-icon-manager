@@ -164,10 +164,6 @@ return [
     // Settings: Cache
     'Cache Settings' => 'Definições de cache',
     'Cache Storage Settings' => 'Definições de armazenamento de cache',
-    'Cache Storage Method' => 'Método de armazenamento de cache',
-    'How to store cache data. Use Redis/Database for load-balanced or multi-server environments.' => 'Como armazenar dados de cache. Use Redis/Base de dados para ambientes com balanceamento de carga ou multi-servidor.',
-    'File System (default, single server)' => 'Sistema de ficheiros (predefinido, servidor único)',
-    'Redis/Database (load-balanced, multi-server, cloud hosting)' => 'Redis/Base de dados (balanceamento de carga, multi-servidor, cloud hosting)',
     'Icon Caching' => 'Cache de ícones',
     'Enable Cache' => 'Ativar cache',
     'Cache icon data for better performance' => 'Guardar dados de ícones em cache para melhor desempenho',
@@ -523,7 +519,6 @@ return [
     'This is being overridden by the <code>iconSetsPath</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>iconSetsPath</code> no ficheiro <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>enableCache</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>enableCache</code> no ficheiro <code>config/icon-manager.php</code>.',
     'This is being overridden by the <code>cacheDuration</code> setting in the <code>config/icon-manager.php</code> file.' => 'Esta definição está a ser substituída por <code>cacheDuration</code> no ficheiro <code>config/icon-manager.php</code>.',
-    'This is being overridden by the <code>cacheStorageMethod</code> setting in <code>config/icon-manager.php</code>.' => 'Esta definição está a ser substituída por <code>cacheStorageMethod</code> em <code>config/icon-manager.php</code>.',
     "This is being overridden by the <code>enabledIconTypes['svg-folder']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta definição está a ser substituída por <code>enabledIconTypes['svg-folder']</code> no ficheiro <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['svg-sprite']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta definição está a ser substituída por <code>enabledIconTypes['svg-sprite']</code> no ficheiro <code>config/icon-manager.php</code>.",
     "This is being overridden by the <code>enabledIconTypes['font-awesome']</code> setting in the <code>config/icon-manager.php</code> file." => "Esta definição está a ser substituída por <code>enabledIconTypes['font-awesome']</code> no ficheiro <code>config/icon-manager.php</code>.",

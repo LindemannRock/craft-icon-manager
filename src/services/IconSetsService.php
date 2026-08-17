@@ -192,6 +192,7 @@ class IconSetsService extends Component
 
         $db = Craft::$app->getDb();
         $transaction = $db->beginTransaction();
+        $cacheTypes = [$iconSet->type];
 
         try {
             // Get the record
@@ -200,6 +201,9 @@ class IconSetsService extends Component
                 if (!$record) {
                     throw new \Exception('Invalid icon set ID: ' . $iconSet->id);
                 }
+                $cacheTypes[] = $record->type;
+                IconManager::getInstance()->iconCache->invalidateSet($iconSet->id, $cacheTypes);
+                IconManager::getInstance()->icons->clearMemoryCacheForSet($iconSet->id);
             } else {
                 $record = new IconSetRecord();
                 $iconSet->uid = StringHelper::UUID();
@@ -228,20 +232,13 @@ class IconSetsService extends Component
             $this->_iconSetsByHandle = null;
 
             // Update icon cache for this set
-            IconManager::getInstance()->icons->refreshIconsForSet($iconSet);
+            IconManager::getInstance()->icons->refreshIconsForSet($iconSet, false);
 
             $transaction->commit();
-
-            // Log successful operation
-            $action = $isNew ? 'created' : 'updated';
-            $this->logInfo("Icon set operation successful", [
-                'action' => $action,
-                'iconSetId' => $iconSet->id,
-                'name' => $iconSet->name,
-                'type' => $iconSet->type,
-            ]);
         } catch (\Throwable $e) {
-            $transaction->rollBack();
+            if ($transaction->getIsActive()) {
+                $transaction->rollBack();
+            }
             $this->logError("Failed to save icon set", [
                 'error' => $e->getMessage(),
                 'iconSetId' => $iconSet->id ?? 'new',
@@ -249,6 +246,18 @@ class IconSetsService extends Component
             ]);
             throw $e;
         }
+
+        // A cache failure after commit must not report the durable save as failed.
+        IconManager::getInstance()->icons->clearMemoryCacheForSet($iconSet->id);
+        IconManager::getInstance()->iconCache->invalidateSet($iconSet->id, $cacheTypes);
+
+        $action = $isNew ? 'created' : 'updated';
+        $this->logInfo("Icon set operation successful", [
+            'action' => $action,
+            'iconSetId' => $iconSet->id,
+            'name' => $iconSet->name,
+            'type' => $iconSet->type,
+        ]);
 
         return true;
     }
@@ -261,6 +270,9 @@ class IconSetsService extends Component
      */
     public function deleteIconSet(IconSet $iconSet): bool
     {
+        IconManager::getInstance()->iconCache->invalidateSet($iconSet->id, [$iconSet->type]);
+        IconManager::getInstance()->icons->clearMemoryCacheForSet($iconSet->id);
+
         $db = Craft::$app->getDb();
         $transaction = $db->beginTransaction();
 
@@ -277,15 +289,10 @@ class IconSetsService extends Component
             $this->_iconSetsByHandle = null;
 
             $transaction->commit();
-
-            // Log successful deletion
-            $this->logInfo("Icon set deleted successfully", [
-                'iconSetId' => $iconSet->id,
-                'name' => $iconSet->name,
-                'type' => $iconSet->type,
-            ]);
         } catch (\Throwable $e) {
-            $transaction->rollBack();
+            if ($transaction->getIsActive()) {
+                $transaction->rollBack();
+            }
             $this->logError("Failed to delete icon set", [
                 'error' => $e->getMessage(),
                 'iconSetId' => $iconSet->id,
@@ -293,6 +300,16 @@ class IconSetsService extends Component
             ]);
             throw $e;
         }
+
+        // A cache failure after commit must not report the durable deletion as failed.
+        IconManager::getInstance()->icons->clearMemoryCacheForSet($iconSet->id);
+        IconManager::getInstance()->iconCache->invalidateSet($iconSet->id, [$iconSet->type]);
+
+        $this->logInfo("Icon set deleted successfully", [
+            'iconSetId' => $iconSet->id,
+            'name' => $iconSet->name,
+            'type' => $iconSet->type,
+        ]);
 
         return true;
     }

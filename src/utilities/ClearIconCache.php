@@ -10,6 +10,7 @@ namespace lindemannrock\iconmanager\utilities;
 
 use Craft;
 use craft\base\Utility;
+use lindemannrock\base\cache\DisposableCacheStoragePresenter;
 use lindemannrock\iconmanager\IconManager;
 
 /**
@@ -76,34 +77,24 @@ class ClearIconCache extends Utility
             $duration = $minutes . ' ' . ($minutes == 1 ? Craft::t('icon-manager', 'minute') : Craft::t('icon-manager', 'minutes'));
         }
 
-        // Count cache files (only for file storage)
-        $cacheStats = [
-            'svg-folder' => 0,
-            'svg-sprite' => 0,
-            'material-icons' => 0,
-            'font-awesome' => 0,
-            'web-font' => 0,
-        ];
-
-        // Only count files when using file storage (Redis counts are not displayed)
-        if ($user->getIdentity() && $user->checkPermission('iconManager:clearCache') && $settings->cacheStorageMethod === 'file') {
-            $runtimePath = Craft::$app->getRuntimePath();
-            $cacheBasePath = $runtimePath . '/icon-manager/cache/';
-            foreach (array_keys($cacheStats) as $type) {
-                $cachePath = $cacheBasePath . $type . '/';
-                if (is_dir($cachePath)) {
-                    $cacheStats[$type] = count(glob($cachePath . '*.cache'));
-                }
-            }
+        $cacheDecision = IconManager::getInstance()->iconCache->getStorageDecision();
+        $persistentCacheEnabled = $settings->enableCache && $settings->cacheDuration > 0;
+        $cachePresentation = (new DisposableCacheStoragePresenter())->present(
+            $cacheDecision,
+            $persistentCacheEnabled,
+        );
+        $cacheStats = null;
+        if ($user->getIdentity() && $user->checkPermission('iconManager:clearCache')) {
+            $cacheStats = IconManager::getInstance()->iconCache->countFileCaches($cacheDecision);
         }
 
         return Craft::$app->getView()->renderTemplate('icon-manager/utilities/index', [
             'iconSetCount' => count($iconSets),
             'totalIcons' => $totalIcons,
-            'cacheEnabled' => $settings->enableCache,
+            'cacheEnabled' => $persistentCacheEnabled,
             'cacheDuration' => $duration,
             'cacheStats' => $cacheStats,
-            'storageMethod' => $settings->cacheStorageMethod,
+            'cacheStorage' => $cachePresentation,
         ]);
     }
 }

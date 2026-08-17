@@ -128,7 +128,7 @@ return [
 
         // Cache Storage Method
         // 'file' = File system (default, single server)
-        // 'redis' = Redis/Database (load-balanced, multi-server, cloud hosting)
+        // 'redis' or 'craft' = Craft application cache (portable shared storage)
         'cacheStorageMethod' => 'file',
 
         'enableCache' => true,
@@ -188,7 +188,7 @@ return [
             'material-icons' => false,        // Beta
             'web-font' => false,              // Beta
         ],
-        'cacheStorageMethod' => 'redis',      // Use Redis for production (Servd/AWS/Platform.sh)
+        'cacheStorageMethod' => 'craft',      // Use Craft's configured application cache
         'enableCache' => true,
         'cacheDuration' => 2592000,           // 30 days
     ],
